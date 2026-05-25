@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BarMatrix.app
 
-## Getting Started
+> Premium MBE wrong-answer intelligence. Diagnose the recurring trap patterns behind your missed multiple-choice questions and assign targeted repair drills.
 
-First, run the development server:
+## Source of truth
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+This repo is the **production Next.js 15+ web app**. The locked launch decisions, stack, copy, taxonomy, schema, and operating rules live in the **BARMATRIX/** master folder in the operations repo (`auronpep/barmatrix-ops-center`). When this repo disagrees with `BARMATRIX/`, that folder wins.
+
+| Surface | Location |
+|---|---|
+| Locked offer + decisions | `BARMATRIX/CLAUDE.md`, `BARMATRIX/RULES.md`, `BARMATRIX/MASTER_CONTEXT.md` |
+| Sprint plan | `BARMATRIX/launch/72_HOUR_BUILD_AND_7_DAY_RAMP.md` |
+| Stack + deployment | `BARMATRIX/engineering/STACK_AND_DEPLOYMENT.md` |
+| API contracts | `BARMATRIX/engineering/API_CONTRACTS.md` |
+| Postgres schema | `BARMATRIX/engineering/SCHEMA_ONE_COHORT.sql` |
+| Public copy | `BARMATRIX/growth/WEBSITE_COPY_AND_CREATIVE.md` |
+| Drift policy | `BARMATRIX/DRIFT_CONTROL.md` |
+
+The locked copy is mirrored into this repo at [`lib/copy.ts`](lib/copy.ts).
+
+## Stack
+
+| Layer | Tech |
+|---|---|
+| Framework | Next.js 16 (App Router) |
+| UI | React 19 + Tailwind v4 |
+| Auth | Clerk (planned) |
+| Payments | Stripe Checkout + webhook (planned) |
+| Analytics | PostHog (planned) |
+| Hosting | Vercel |
+| Backend API | Flask on Cloud Run (separate repo) |
+| Database | Cloud SQL Postgres (per `SCHEMA_ONE_COHORT.sql`) |
+| Email | Resend or Postmark (planned) |
+| DNS / WAF | Cloudflare |
+| Monitoring | Sentry (planned) |
+
+## Locked offer
+
+```text
+BarMatrix Flagship — $999.
+One July-cycle cohort. Limited seats available.
+Enrollment closes when capacity is reached.
+Payment plan: $500 today + $499 in 30 days.
+Platforms: web, iOS, Android.
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Do not** introduce launch discounts, "first 250 save $100," "$899," "early bird," or "web-only" framing. See `BARMATRIX/DRIFT_CONTROL.md` for the full blocklist.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Development
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+npm run dev
+```
 
-## Learn More
+Then open <http://localhost:3000>.
 
-To learn more about Next.js, take a look at the following resources:
+## Deploy
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Production deploys via Vercel. Connect this repo to a Vercel project with the `barmatrix.app` domain via Cloudflare.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Proprietary — © BarMatrix. All rights reserved.

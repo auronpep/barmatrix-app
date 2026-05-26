@@ -2,13 +2,33 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { api, ApiClientError, type DiagnosticStartResponse } from "@/lib/api-client";
 
-type Phase = "intro" | "starting" | "started" | "error";
+type Phase = "intro" | "starting" | "empty_bank" | "error";
+
+function cacheSession(session: DiagnosticStartResponse): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.setItem(
+      `barmatrix.diagnostic.${session.diagnostic_id}`,
+      JSON.stringify({
+        diagnostic_id: session.diagnostic_id,
+        question_ids: session.question_ids,
+        total_questions: session.total_questions,
+        expected_total: session.expected_total,
+        bank_loaded: session.bank_loaded,
+      }),
+    );
+  } catch {
+    // sessionStorage unavailable — first question page will redirect home.
+  }
+}
 
 export default function DiagnosticPage() {
+  const router = useRouter();
   const [phase, setPhase] = useState<Phase>("intro");
-  const [session, setSession] = useState<DiagnosticStartResponse | null>(null);
+  const [emptyMessage, setEmptyMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const start = async () => {
@@ -16,8 +36,15 @@ export default function DiagnosticPage() {
     setError(null);
     try {
       const result = await api.startDiagnostic({});
-      setSession(result);
-      setPhase("started");
+      if (result.question_ids.length === 0) {
+        setEmptyMessage(
+          "Question bank isn&apos;t loaded yet — the diagnostic launches once content ingestion completes.",
+        );
+        setPhase("empty_bank");
+        return;
+      }
+      cacheSession(result);
+      router.push(`/diagnostic/${result.diagnostic_id}/0`);
     } catch (err) {
       const message =
         err instanceof ApiClientError
@@ -43,10 +70,12 @@ export default function DiagnosticPage() {
 
       {phase === "intro" && (
         <div className="mt-12 rounded-lg border border-zinc-200 bg-zinc-50 p-8">
-          <p className="text-sm font-medium text-zinc-700">12 questions · ~15 minutes</p>
+          <p className="text-sm font-medium text-zinc-700">
+            Hearsay seam · 6 questions · ~10 minutes
+          </p>
           <p className="mt-2 text-zinc-600">
             At the end you&apos;ll see your Red-Zone Map: the top trap families your wrong
-            answers landed in, ranked by frequency and focus-group attractiveness.
+            answers landed in, with focus-group data showing how other test-takers chose.
           </p>
           <button
             type="button"
@@ -64,41 +93,16 @@ export default function DiagnosticPage() {
         </div>
       )}
 
-      {phase === "started" && session && (
-        <div className="mt-12 rounded-lg border border-zinc-300 bg-white p-8 shadow-sm">
-          <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-            Session created
-          </p>
-          <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
-            <div>
-              <dt className="text-zinc-500">Diagnostic ID</dt>
-              <dd className="font-mono text-xs text-zinc-700">{session.diagnostic_id}</dd>
-            </div>
-            <div>
-              <dt className="text-zinc-500">Questions queued</dt>
-              <dd>
-                {session.total_questions} / {session.expected_total}
-              </dd>
-            </div>
-            <div className="sm:col-span-2">
-              <dt className="text-zinc-500">Question bank</dt>
-              <dd>
-                {session.bank_loaded ? (
-                  <span className="text-emerald-700">Loaded</span>
-                ) : (
-                  <span className="text-amber-700">
-                    Bank not yet loaded — diagnostic content arrives when the 2,400-question
-                    bank ingestion completes.
-                  </span>
-                )}
-              </dd>
-            </div>
-          </dl>
-          <p className="mt-6 text-sm text-zinc-600">
-            Question-flow UI lands in the next update. In the meantime, your session is
-            recorded — when the question UI ships, it will pick up at index{" "}
-            <code className="font-mono">{session.next_question_index}</code>.
-          </p>
+      {phase === "empty_bank" && (
+        <div className="mt-12 rounded-lg border border-amber-200 bg-amber-50 p-8">
+          <p className="font-medium text-amber-900">{emptyMessage}</p>
+          <button
+            type="button"
+            onClick={start}
+            className="mt-6 rounded-md border border-amber-300 px-5 py-2.5 text-sm font-medium text-amber-900 hover:bg-amber-100"
+          >
+            Check again
+          </button>
         </div>
       )}
 

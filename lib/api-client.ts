@@ -54,6 +54,78 @@ export interface CheckoutSessionRequest {
   referral_click_id?: string | null;
 }
 
+// --- Hearsay seam (Handoff 10) ---
+
+export type Letter = "A" | "B" | "C" | "D";
+
+export interface QuestionChoice {
+  choice_id: string;
+  letter: Letter;
+  choice_text: string;
+}
+
+export interface QuestionPayload {
+  question_id: string;
+  external_id: string | null;
+  subject: string;
+  topic: string | null;
+  subtopic: string | null;
+  tension_point: string | null;
+  fact_pattern: string;
+  question_stem: string;
+  call_of_question: string | null;
+  choices: QuestionChoice[];
+}
+
+export interface AttemptRequest {
+  question_id: string;
+  selected_letter: Letter;
+  confidence: number;
+  time_seconds: number;
+  platform?: "web" | "ios" | "android";
+  set_id?: string;
+  student_id?: string;
+}
+
+export interface AttemptResponse {
+  attempt_id: string;
+  correct: boolean;
+  correct_answer: Letter | null;
+  forensics_url: string;
+  red_zone_updates: Array<{ dimension: string; tag: string }>;
+}
+
+export interface FocusGroupBlock {
+  selected_choice_pct: number;
+  sample_size: number;
+}
+
+export interface ForensicsResponse {
+  correct: boolean;
+  // Wrong-variant fields:
+  trap_name?: string;
+  why_attractive?: string;
+  why_wrong?: string;
+  future_cue?: string;
+  assigned_drill?: { name: string; slug: string } | null;
+  // Correct-variant fields:
+  why_correct?: string;
+  // Shared:
+  focus_group: FocusGroupBlock | null;
+}
+
+export interface RedZoneEntry {
+  tag: string;
+  proficiency_score: number;
+  attempts: number;
+  high_confidence_wrongs: number;
+}
+
+export interface RedZonesResponse {
+  by_dimension: Record<string, RedZoneEntry[]>;
+  message?: string;
+}
+
 export interface ApiError {
   error: string | Record<string, unknown>;
 }
@@ -119,6 +191,26 @@ export const api = {
 
   health: () =>
     request<{ ok: boolean; db: string }>("/health"),
+
+  // Hearsay seam endpoints — Handoff 10
+  getQuestion: (id: string) =>
+    request<QuestionPayload>(`/api/questions/${encodeURIComponent(id)}`),
+
+  submitAttempt: (payload: AttemptRequest) =>
+    request<AttemptResponse>("/api/attempts", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  getForensics: (attemptId: string) =>
+    request<ForensicsResponse>(
+      `/api/attempts/${encodeURIComponent(attemptId)}/forensics`,
+    ),
+
+  getRedZones: (studentId?: string) =>
+    request<RedZonesResponse>(
+      `/api/red-zones${studentId ? `?student_id=${encodeURIComponent(studentId)}` : ""}`,
+    ),
 };
 
 export { ApiClientError, API_URL };

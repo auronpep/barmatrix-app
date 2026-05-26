@@ -59,7 +59,18 @@ export default function RootLayout({
           </nav>
         </header>
         <main className="flex-1">{children}</main>
+        <footer className="border-t border-zinc-200 py-8 mt-auto">
+          <div className="mx-auto max-w-6xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-500">
+            <p>&copy; {new Date().getFullYear()} BarMatrix. All rights reserved.</p>
+            <nav className="flex gap-6">
+              <Link href="/privacy" className="hover:text-zinc-900">Privacy Policy</Link>
+              <Link href="/terms" className="hover:text-zinc-900">Terms of Service</Link>
+              <Link href="/partners" className="hover:text-zinc-900">Partners</Link>
+            </nav>
+          </div>
+        </footer>
       </body>
     </html>
   );
 }
+

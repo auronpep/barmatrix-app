@@ -2,30 +2,38 @@ import type { Metadata } from "next";
 import { Newsreader, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
+import { DISCLAIMER } from "@/lib/copy";
 
 const newsreader = Newsreader({
   variable: "--font-newsreader",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
+  style: ["normal", "italic"],
 });
 
 const plexSans = IBM_Plex_Sans({
   variable: "--font-plex-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 const plexMono = IBM_Plex_Mono({
   variable: "--font-plex-mono",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
-  title: "BarMatrix — Master the finite universe of MBE traps",
+  title: "BarMatrix — Diagnose. Repair. Pass the MBE.",
   description:
-    "Premium MBE wrong-answer intelligence. Diagnose the recurring trap patterns behind your missed multiple-choice questions and assign targeted repair drills.",
+    "Multiple-choice-only MBE repair system. Diagnose recurring trap patterns. Repair what the test keeps reusing.",
   metadataBase: new URL("https://barmatrix.app"),
+  openGraph: {
+    title: "BarMatrix · Diagnose. Repair. Pass the MBE.",
+    description:
+      "Multiple-choice-only MBE repair system. Diagnose recurring trap patterns. Repair what the test keeps reusing.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -33,44 +41,143 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const buildYear = new Date().getFullYear();
   return (
     <html
       lang="en"
-      className={`${newsreader.variable} ${plexSans.variable} ${plexMono.variable} h-full antialiased`}
+      className={`${newsreader.variable} ${plexSans.variable} ${plexMono.variable}`}
     >
-      <body className="min-h-full flex flex-col bg-white text-zinc-900 font-sans">
-        <header className="border-b border-zinc-200">
-          <nav className="mx-auto max-w-6xl flex items-center justify-between px-6 py-4">
-            <Link href="/" className="font-serif text-xl font-semibold tracking-tight">
-              BarMatrix
+      <body>
+        <div className="tape-strip" aria-hidden="true" />
+        <nav className="nav">
+          <div className="nav-inner">
+            <Link href="/" className="brand" aria-label="BarMatrix home">
+              <span className="mark">B</span>
+              <span>
+                BarMatrix<span className="dot" />
+              </span>
             </Link>
-            <div className="hidden md:flex items-center gap-6 text-sm">
-              <Link href="/diagnostic" className="hover:text-zinc-600">Diagnostic</Link>
-              <Link href="/how-it-works" className="hover:text-zinc-600">How it works</Link>
-              <Link href="/pricing" className="hover:text-zinc-600">Pricing</Link>
-              <Link href="/app" className="hover:text-zinc-600">Apps</Link>
-              <Link
-                href="/checkout"
-                className="rounded-md bg-zinc-900 px-4 py-2 text-white hover:bg-zinc-700"
-              >
-                Enroll
+            <div className="nav-links">
+              <Link href="/how-it-works">How It Works</Link>
+              <Link href="/pricing">Pricing</Link>
+              <Link href="/diagnostic">Diagnostic</Link>
+              <Link href="/red-zones">Red Zones</Link>
+              <Link href="/faq">FAQ</Link>
+            </div>
+            <div className="nav-cta">
+              <Link href="/app" className="btn btn-sm ghost hide-md">
+                Open App
+              </Link>
+              <Link href="/diagnostic" className="btn btn-sm red">
+                Free Diagnostic <span className="arrow">→</span>
               </Link>
             </div>
-          </nav>
-        </header>
-        <main className="flex-1">{children}</main>
-        <footer className="border-t border-zinc-200 py-8 mt-auto">
-          <div className="mx-auto max-w-6xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-500">
-            <p>&copy; {new Date().getFullYear()} BarMatrix. All rights reserved.</p>
-            <nav className="flex gap-6">
-              <Link href="/privacy" className="hover:text-zinc-900">Privacy Policy</Link>
-              <Link href="/terms" className="hover:text-zinc-900">Terms of Service</Link>
-              <Link href="/partners" className="hover:text-zinc-900">Partners</Link>
-            </nav>
+          </div>
+        </nav>
+
+        <main>{children}</main>
+
+        <footer className="footer">
+          <div className="container">
+            <div className="footer-grid">
+              <div>
+                <div
+                  className="brand"
+                  style={{ color: "white", marginBottom: 16 }}
+                >
+                  <span
+                    className="mark"
+                    style={{ background: "white", color: "#0a0a0a" }}
+                  >
+                    B
+                  </span>
+                  <span>
+                    BarMatrix<span className="dot" />
+                  </span>
+                </div>
+                <p
+                  style={{
+                    fontSize: 14,
+                    color: "#a39e93",
+                    maxWidth: "40ch",
+                    margin: 0,
+                    lineHeight: 1.55,
+                  }}
+                >
+                  A multiple-choice-only MBE repair system. Diagnose recurring
+                  trap patterns. Repair what the test keeps reusing.
+                </p>
+              </div>
+              <div>
+                <h5>Product</h5>
+                <ul>
+                  <li>
+                    <Link href="/how-it-works">How It Works</Link>
+                  </li>
+                  <li>
+                    <Link href="/pricing">Pricing</Link>
+                  </li>
+                  <li>
+                    <Link href="/diagnostic">Free Diagnostic</Link>
+                  </li>
+                  <li>
+                    <Link href="/red-zones">Red-Zone Map</Link>
+                  </li>
+                  <li>
+                    <Link href="/app">Open App</Link>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h5>Audience</h5>
+                <ul>
+                  <li>California · July 2026</li>
+                  <li>Repeat Takers</li>
+                  <li>Full-Course Companion</li>
+                  <li>
+                    <Link href="/partners">Partners &amp; Tutors</Link>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h5>Platforms</h5>
+                <ul>
+                  <li>
+                    <Link href="/app">Web App</Link>
+                  </li>
+                  <li>iOS — TestFlight</li>
+                  <li>Android — Play</li>
+                  <li>
+                    <Link href="/partners">Partner Program</Link>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h5>Company</h5>
+                <ul>
+                  <li>
+                    <Link href="/faq">FAQ</Link>
+                  </li>
+                  <li>
+                    <Link href="/terms">Terms</Link>
+                  </li>
+                  <li>
+                    <Link href="/privacy">Privacy</Link>
+                  </li>
+                  <li>
+                    <Link href="/account">Account</Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="footer-bottom">
+              <span>© {buildYear} BarMatrix LLC</span>
+              <span>BAR-MTX-V1 · BUILD {buildYear.toString().slice(-2)}.07</span>
+            </div>
+            <p className="disclaimer">{DISCLAIMER}</p>
           </div>
         </footer>
       </body>
     </html>
   );
 }
-

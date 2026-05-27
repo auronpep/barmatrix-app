@@ -7,7 +7,6 @@ export const metadata = {
     "Frequently asked questions about BarMatrix Flagship: pricing, cohort access, iOS/Android availability, course companion use, and refund terms.",
 };
 
-// FAQ items that go beyond the homepage block — pulled from SRC-0029 + SRC-0007.
 const EXTENDED_FAQ: Array<{ q: string; a: string }> = [
   {
     q: "Does BarMatrix include essays or performance tests?",
@@ -31,40 +30,82 @@ const EXTENDED_FAQ: Array<{ q: string; a: string }> = [
   },
 ];
 
-// Combine the homepage-tier FAQ (from lib/copy.ts) with the extended set.
 const ALL = [...FAQ, ...EXTENDED_FAQ];
 
 export default function FaqPage() {
   return (
     <>
-      <section className="mx-auto max-w-3xl px-6 py-20">
-        <h1 className="font-serif text-4xl font-semibold tracking-tight sm:text-5xl">
-          Frequently asked questions
-        </h1>
-        <p className="mt-6 text-zinc-600">
-          Quick answers about pricing, scope, platforms, and what comes after you enroll. Don&apos;t see your question?{" "}
-          <Link href="mailto:support@barmatrix.app" className="underline">
-            Email support
-          </Link>
-          .
-        </p>
-
-        <dl className="mt-12 space-y-8">
-          {ALL.map((item) => (
-            <div key={item.q} className="border-b border-zinc-200 pb-6 last:border-b-0">
-              <dt className="font-serif text-xl font-semibold">{item.q}</dt>
-              <dd className="mt-2 text-zinc-700">{item.a}</dd>
-            </div>
-          ))}
-        </dl>
+      <section className="hero">
+        <div className="container">
+          <div className="hero-meta">
+            <span className="stamp">SUPPORT · ANSWERS</span>
+            <span className="stamp">PRICING · SCOPE · PLATFORMS</span>
+            <span className="stamp">EDITION : LAUNCH</span>
+          </div>
+          <div className="eyebrow-red" style={{ marginBottom: 24 }}>
+            ▌ FAQ
+          </div>
+          <h1
+            className="display display-lg"
+            style={{ margin: "0 0 24px", maxWidth: "22ch" }}
+          >
+            Frequently asked{" "}
+            <span style={{ fontStyle: "italic" }}>questions.</span>
+          </h1>
+          <p className="body-lg" style={{ marginBottom: 0 }}>
+            Quick answers about pricing, scope, platforms, and what comes after
+            you enroll. Don&apos;t see your question?{" "}
+            <Link
+              href="mailto:support@barmatrix.app"
+              style={{
+                borderBottom: "1px solid var(--ink)",
+                paddingBottom: 1,
+              }}
+            >
+              Email support
+            </Link>
+            .
+          </p>
+        </div>
       </section>
 
-      <section className="border-t border-zinc-200 bg-zinc-50 py-16">
-        <div className="mx-auto max-w-3xl px-6">
-          <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-            Important
-          </p>
-          <p className="mt-2 text-xs leading-relaxed text-zinc-600">{DISCLAIMER}</p>
+      <section className="section">
+        <div className="container">
+          <div style={{ maxWidth: 880, margin: "0 auto" }}>
+            {ALL.map((item) => (
+              <details key={item.q} className="faq-item">
+                <summary className="q">
+                  <h4>{item.q}</h4>
+                  <span className="toggle">+</span>
+                </summary>
+                <div className="a">{item.a}</div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section alt">
+        <div className="container">
+          <div style={{ maxWidth: 880, margin: "0 auto" }}>
+            <div
+              className="eyebrow-strong"
+              style={{ marginBottom: 16 }}
+            >
+              ▌ IMPORTANT
+            </div>
+            <p
+              style={{
+                fontSize: 13,
+                lineHeight: 1.6,
+                color: "var(--ink-soft)",
+                margin: 0,
+                maxWidth: "80ch",
+              }}
+            >
+              {DISCLAIMER}
+            </p>
+          </div>
         </div>
       </section>
     </>

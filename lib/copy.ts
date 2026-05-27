@@ -91,5 +91,20 @@ export const APP_STATUS = {
     "Download BarMatrix on the App Store or Google Play, or continue from the web app.",
 } as const;
 
+export const WELCOME = {
+  badge: "Enrollment confirmed",
+  headline: "You're in the July cohort.",
+  body: "Check your email for your access details — we'll send your onboarding link, study schedule, and Red-Zone Map walkthrough within the next few minutes.",
+  flagshipLine: "BarMatrix Flagship · One July-cycle cohort.",
+  primaryCta: { label: "Take the diagnostic now", href: "/diagnostic" },
+  secondaryCta: { label: "What's next", href: "/how-it-works" },
+} as const;
+
+export const ACCOUNT_PLACEHOLDER = {
+  headline: "Account",
+  body: "Sign-in is coming online with the cohort launch. If you've already enrolled, check your email for your access details.",
+  cta: { label: "Back to home", href: "/" },
+} as const;
+
 export const DISCLAIMER =
   "BarMatrix is an independent educational product. It is not affiliated with, endorsed by, sponsored by, or licensed by NCBE, the State Bar of California, or any bar authority. BarMatrix is multiple-choice only and does not replace essay preparation, performance-test preparation, legal advice, or official bar-admission guidance. No score, pass result, or exam outcome is guaranteed. Questions are original unless expressly identified as licensed material.";

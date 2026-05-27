@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PRICING, FAQ } from "@/lib/copy";
+import { PRICING, FAQ, DISCLAIMER } from "@/lib/copy";
 
 export const metadata = {
   title: "Pricing — BarMatrix Flagship $999",
@@ -10,52 +10,204 @@ export const metadata = {
 export default function PricingPage() {
   return (
     <>
-      <section className="mx-auto max-w-3xl px-6 py-20">
-        <h1 className="font-serif text-4xl font-semibold tracking-tight sm:text-5xl">
-          {PRICING.flagshipName} — {PRICING.priceLabel}
-        </h1>
-        <p className="mt-4 text-lg text-zinc-600">
-          One July-cycle cohort. Full MBE trap-repair access.
-        </p>
-        <ul className="mt-10 grid gap-2 sm:grid-cols-2">
-          {PRICING.includes.map((item) => (
-            <li key={item} className="flex gap-2 text-sm">
-              <span className="text-zinc-400">•</span>
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-10 rounded-lg border border-zinc-200 bg-zinc-50 p-6">
-          <p className="font-mono text-sm text-zinc-700">{PRICING.paymentPlanLabel}</p>
-          <p className="mt-2 font-mono text-sm text-zinc-500">{PRICING.capacityLine}</p>
-        </div>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Link
-            href="/checkout"
-            className="rounded-md bg-zinc-900 px-6 py-3 text-base font-medium text-white hover:bg-zinc-700"
+      <section className="hero">
+        <div className="container">
+          <div className="hero-meta">
+            <span className="stamp">PRICING · ONE COHORT</span>
+            <span className="stamp">CALIFORNIA · JULY 2026 CYCLE</span>
+            <span className="stamp">EDITION : LAUNCH</span>
+          </div>
+          <div className="eyebrow-red" style={{ marginBottom: 24 }}>
+            ▌ BARMATRIX FLAGSHIP
+          </div>
+          <h1
+            className="display display-lg"
+            style={{ margin: "0 0 24px", maxWidth: "20ch" }}
           >
-            Enroll in BarMatrix Flagship
-          </Link>
-          <Link
-            href="/diagnostic"
-            className="rounded-md border border-zinc-300 px-6 py-3 text-base font-medium text-zinc-900 hover:border-zinc-500"
-          >
-            Take the Free Diagnostic first
-          </Link>
+            One price. <span style={{ fontStyle: "italic" }}>One cohort.</span>{" "}
+            <span style={{ color: "var(--red)" }}>Full repair access.</span>
+          </h1>
+          <p className="body-lg" style={{ marginBottom: 0 }}>
+            BarMatrix Flagship is a multiple-choice-only MBE repair system.
+            Diagnostic, Red-Zone Map, 2,400-question forensic bank, assigned
+            drills, boot camps, timed sets, dashboard, and web/iOS/Android
+            access — all included.
+          </p>
         </div>
       </section>
 
-      <section className="border-t border-zinc-200 bg-zinc-50 py-20">
-        <div className="mx-auto max-w-3xl px-6">
-          <h2 className="font-serif text-3xl font-semibold">FAQ</h2>
-          <dl className="mt-8 space-y-6">
-            {FAQ.map((item) => (
-              <div key={item.q}>
-                <dt className="font-medium">{item.q}</dt>
-                <dd className="mt-1 text-zinc-600">{item.a}</dd>
+      <section className="section">
+        <div className="container">
+          <div className="two-col" style={{ alignItems: "start" }}>
+            {/* Flagship card */}
+            <div className="price-card flagship">
+              <span className="ribbon">JULY 2026 COHORT</span>
+              <h2 className="name">{PRICING.flagshipName}</h2>
+              <p className="summary">
+                One cohort. Full MBE trap-repair access. Limited seats.
+              </p>
+              <div className="price">
+                <span className="num">{PRICING.priceLabel}</span>
               </div>
+              <div className="plan">{PRICING.paymentPlanLabel}</div>
+              <ul>
+                {PRICING.includes.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+              <Link
+                href="/checkout"
+                className="btn btn-lg red"
+                style={{ width: "100%", justifyContent: "center" }}
+              >
+                Enroll in Flagship <span className="arrow">→</span>
+              </Link>
+              <p
+                className="mono"
+                style={{
+                  fontSize: 11,
+                  letterSpacing: "0.15em",
+                  textTransform: "uppercase",
+                  color: "var(--muted-light)",
+                  marginTop: 18,
+                  textAlign: "center",
+                }}
+              >
+                {PRICING.capacityLine}
+              </p>
+            </div>
+
+            {/* Right column: scarcity + try-first */}
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: 32 }}
+            >
+              <div className="scarcity-meter">
+                <div className="meter-row">
+                  <span className="left">July-cycle cohort</span>
+                  <span className="right">Limited Seats</span>
+                </div>
+                <div className="meter-bar">
+                  <div className="fill" style={{ width: "62%" }} />
+                </div>
+                <div className="meter-meta">
+                  Enrollment closes when capacity is reached.
+                </div>
+              </div>
+
+              <div
+                className="info-panel"
+                style={{ background: "var(--paper)" }}
+              >
+                <div
+                  className="eyebrow-strong"
+                  style={{ marginBottom: 12 }}
+                >
+                  ▸ START FREE
+                </div>
+                <h3
+                  className="serif"
+                  style={{
+                    fontSize: 24,
+                    fontWeight: 700,
+                    margin: "0 0 12px",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  Try the diagnostic first.
+                </h3>
+                <p
+                  style={{
+                    color: "var(--ink-soft)",
+                    fontSize: 15,
+                    margin: "0 0 20px",
+                    lineHeight: 1.55,
+                  }}
+                >
+                  The Free MBE Trap Diagnostic builds your Red-Zone Map and
+                  shows you the kind of feedback Flagship gives on every miss.
+                  No card. No commitment.
+                </p>
+                <Link href="/diagnostic" className="btn">
+                  Take the Free Diagnostic <span className="arrow">→</span>
+                </Link>
+              </div>
+
+              <div className="info-panel">
+                <div
+                  className="eyebrow"
+                  style={{ marginBottom: 12, color: "var(--ink)" }}
+                >
+                  ▸ WHAT FLAGSHIP IS NOT
+                </div>
+                <ul
+                  style={{
+                    listStyle: "none",
+                    padding: 0,
+                    margin: 0,
+                    fontSize: 14,
+                    color: "var(--ink-soft)",
+                    lineHeight: 1.55,
+                  }}
+                >
+                  {[
+                    "A full bar review course",
+                    "Essay or performance-test prep",
+                    "Official NCBE material",
+                    "A guarantee of any exam outcome",
+                  ].map((t) => (
+                    <li
+                      key={t}
+                      style={{
+                        padding: "8px 0",
+                        borderBottom: "1px solid var(--rule-soft)",
+                      }}
+                    >
+                      <span
+                        className="mono"
+                        style={{
+                          color: "var(--muted-light)",
+                          marginRight: 12,
+                        }}
+                      >
+                        ×
+                      </span>
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section alt">
+        <div className="container">
+          <div className="section-rule">
+            <span className="label">▌ Frequently Asked</span>
+          </div>
+          <div style={{ maxWidth: 880, margin: "0 auto" }}>
+            {FAQ.map((item) => (
+              <details key={item.q} className="faq-item">
+                <summary className="q">
+                  <h4>{item.q}</h4>
+                  <span className="toggle">+</span>
+                </summary>
+                <div className="a">{item.a}</div>
+              </details>
             ))}
-          </dl>
+            <p
+              style={{
+                marginTop: 32,
+                fontSize: 12,
+                lineHeight: 1.6,
+                color: "var(--muted)",
+                maxWidth: "80ch",
+              }}
+            >
+              {DISCLAIMER}
+            </p>
+          </div>
         </div>
       </section>
     </>

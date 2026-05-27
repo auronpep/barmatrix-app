@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { api, ApiClientError, type PaymentPlan } from "@/lib/api-client";
 import { PRICING, DISCLAIMER } from "@/lib/copy";
@@ -15,8 +16,6 @@ export default function CheckoutPage() {
     setError(null);
     try {
       const session = await api.createCheckoutSession({ payment_plan: plan });
-      // Hand off to Stripe-hosted checkout. window.location.assign keeps the
-      // session bound to the same tab so the success redirect lands cleanly.
       window.location.assign(session.checkout_url);
     } catch (err) {
       const message =
@@ -31,64 +30,162 @@ export default function CheckoutPage() {
   };
 
   return (
-    <section className="mx-auto max-w-2xl px-6 py-20">
-      <h1 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
-        Enroll in {PRICING.flagshipName}
-      </h1>
-      <p className="mt-4 text-zinc-600">
-        You are enrolling in BarMatrix Flagship, a multiple-choice-only MBE repair system.
-        Access includes the diagnostic, question-bank access, Wrong Answer Forensics, Red-Zone
-        Map, assigned drills, boot camp modules, timed mixed sets, dashboard access, and
-        web/iOS/Android app access.
-      </p>
-
-      <div className="mt-10 space-y-4">
-        <div className="rounded-lg border border-zinc-300 bg-white p-6">
-          <div className="flex items-baseline justify-between">
-            <h2 className="font-serif text-xl font-semibold">Pay in full</h2>
-            <span className="font-mono text-lg">{PRICING.priceLabel}</span>
+    <>
+      <section className="hero">
+        <div className="container">
+          <div className="hero-meta">
+            <span className="stamp">ENROLLMENT · JULY 2026 COHORT</span>
+            <span className="stamp">BARMATRIX FLAGSHIP</span>
+            <span className="stamp">EDITION : LAUNCH</span>
           </div>
-          <p className="mt-2 text-sm text-zinc-600">One charge. Immediate access.</p>
-          <button
-            type="button"
-            onClick={() => enroll("pay_in_full")}
-            disabled={phase === "redirecting"}
-            className="mt-4 w-full rounded-md bg-zinc-900 px-5 py-3 text-base font-medium text-white hover:bg-zinc-700 disabled:opacity-60"
-          >
-            {phase === "redirecting" ? "Redirecting to Stripe…" : "Continue · Pay $999"}
-          </button>
-        </div>
-
-        <div className="rounded-lg border border-zinc-300 bg-white p-6">
-          <div className="flex items-baseline justify-between">
-            <h2 className="font-serif text-xl font-semibold">Payment plan</h2>
-            <span className="font-mono text-lg">$500 + $499</span>
+          <div className="eyebrow-red" style={{ marginBottom: 24 }}>
+            ▌ ENROLL IN {PRICING.flagshipName.toUpperCase()}
           </div>
-          <p className="mt-2 text-sm text-zinc-600">{PRICING.paymentPlanLabel}. Same total.</p>
-          <button
-            type="button"
-            onClick={() => enroll("two_pay_500_499")}
-            disabled={phase === "redirecting"}
-            className="mt-4 w-full rounded-md border border-zinc-900 px-5 py-3 text-base font-medium text-zinc-900 hover:bg-zinc-50 disabled:opacity-60"
+          <h1
+            className="display display-lg"
+            style={{ margin: "0 0 24px", maxWidth: "20ch" }}
           >
-            {phase === "redirecting"
-              ? "Redirecting to Stripe…"
-              : "Continue · Payment plan"}
-          </button>
-        </div>
-      </div>
-
-      {phase === "error" && (
-        <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4">
-          <p className="font-medium text-red-800">Couldn&apos;t start checkout.</p>
-          <p className="mt-1 font-mono text-xs text-red-700">{error}</p>
-          <p className="mt-2 text-xs text-red-700">
-            If this persists, email support@barmatrix.app and we&apos;ll resolve it.
+            One step from your{" "}
+            <span style={{ fontStyle: "italic", color: "var(--red)" }}>
+              Red-Zone Map.
+            </span>
+          </h1>
+          <p className="body-lg" style={{ marginBottom: 0 }}>
+            BarMatrix Flagship is a multiple-choice-only MBE repair system.
+            Access includes the diagnostic, question-bank access, Wrong Answer
+            Forensics, Red-Zone Map, assigned drills, boot camp modules, timed
+            mixed sets, dashboard access, and web/iOS/Android app access.
           </p>
         </div>
-      )}
+      </section>
 
-      <p className="mt-10 text-xs leading-relaxed text-zinc-500">{DISCLAIMER}</p>
-    </section>
+      <section className="section">
+        <div className="container">
+          <div style={{ maxWidth: 880, margin: "0 auto" }}>
+            <div className="section-rule">
+              <span className="label">▌ Choose Your Plan</span>
+            </div>
+
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: 24 }}
+            >
+              {/* Pay in full */}
+              <div className="price-card flagship">
+                <span className="ribbon">RECOMMENDED</span>
+                <h2 className="name">Pay in full</h2>
+                <p className="summary">
+                  One charge. Immediate access to the full Flagship cohort.
+                </p>
+                <div className="price">
+                  <span className="num">{PRICING.priceLabel}</span>
+                </div>
+                <div className="plan">$999 USD · one-time</div>
+                <button
+                  type="button"
+                  onClick={() => enroll("pay_in_full")}
+                  disabled={phase === "redirecting"}
+                  className="btn btn-lg red"
+                  style={{ width: "100%", justifyContent: "center" }}
+                >
+                  {phase === "redirecting"
+                    ? "Redirecting to Stripe…"
+                    : "Continue · Pay $999 →"}
+                </button>
+              </div>
+
+              {/* Payment plan */}
+              <div className="price-card">
+                <h2 className="name">Payment plan</h2>
+                <p className="summary">
+                  Same total. Split across two charges.
+                </p>
+                <div className="price">
+                  <span className="num">$500</span>
+                  <span
+                    className="mono"
+                    style={{
+                      fontSize: 14,
+                      color: "var(--muted)",
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    + $499 in 30 days
+                  </span>
+                </div>
+                <div className="plan">{PRICING.paymentPlanLabel}</div>
+                <button
+                  type="button"
+                  onClick={() => enroll("two_pay_500_499")}
+                  disabled={phase === "redirecting"}
+                  className="btn btn-lg"
+                  style={{ width: "100%", justifyContent: "center" }}
+                >
+                  {phase === "redirecting"
+                    ? "Redirecting to Stripe…"
+                    : "Continue · Payment plan →"}
+                </button>
+              </div>
+            </div>
+
+            {phase === "error" && (
+              <div
+                className="info-panel error"
+                style={{ marginTop: 32 }}
+              >
+                <div
+                  className="eyebrow-strong"
+                  style={{ marginBottom: 12, color: "var(--red)" }}
+                >
+                  ▌ COULDN&apos;T START CHECKOUT
+                </div>
+                <p
+                  className="mono"
+                  style={{
+                    fontSize: 12,
+                    color: "var(--red-deep)",
+                    margin: "0 0 12px",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  {error}
+                </p>
+                <p
+                  style={{
+                    fontSize: 14,
+                    color: "var(--ink-soft)",
+                    margin: 0,
+                  }}
+                >
+                  If this persists, email{" "}
+                  <Link
+                    href="mailto:support@barmatrix.app"
+                    style={{
+                      borderBottom: "1px solid var(--ink)",
+                      paddingBottom: 1,
+                    }}
+                  >
+                    support@barmatrix.app
+                  </Link>{" "}
+                  and we&apos;ll resolve it.
+                </p>
+              </div>
+            )}
+
+            <p
+              style={{
+                fontSize: 12,
+                lineHeight: 1.6,
+                color: "var(--muted)",
+                margin: "40px 0 0",
+                maxWidth: "80ch",
+              }}
+            >
+              {DISCLAIMER}
+            </p>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

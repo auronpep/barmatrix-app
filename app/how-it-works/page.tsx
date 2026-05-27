@@ -9,22 +9,22 @@ export const metadata = {
 
 const sections = [
   {
-    n: "1",
+    num: "STEP 01",
     title: "Diagnostic first",
     body: "Start with a short MBE Trap Diagnostic. Instead of reporting only a percentage, BarMatrix looks at the type of wrong answers you choose: legally true but irrelevant, wrong timing, exception omitted, wrong party, wrong standard, and other recurring MBE trap patterns.",
   },
   {
-    n: "2",
+    num: "STEP 02",
     title: "Wrong Answer Forensics",
     body: "When you miss a question, BarMatrix explains why your selected answer was attractive before explaining why it was wrong. A miss becomes a diagnosis: the rule boundary, trigger fact, timing issue, or misconception that needs repair.",
   },
   {
-    n: "3",
+    num: "STEP 03",
     title: "Focus-group comparison",
     body: "Where focus-group data is available, BarMatrix shows how often prior respondents selected the same answer. If a wrong answer pulled in a meaningful share of the group, the product treats it as a high-value trap worth drilling.",
   },
   {
-    n: "4",
+    num: "STEP 04",
     title: "Assigned repair",
     body: "Each miss is connected to a repair action: a Red-Zone Drill, boot camp, timed set, or spaced review assignment. The goal is not to do more questions randomly. The goal is to stop repeating the same trap.",
   },
@@ -33,84 +33,152 @@ const sections = [
 export default function HowItWorksPage() {
   return (
     <>
-      <section className="mx-auto max-w-3xl px-6 py-20">
-        <h1 className="font-serif text-4xl font-semibold tracking-tight sm:text-5xl">
-          How BarMatrix works
-        </h1>
-        <p className="mt-6 text-lg text-zinc-600">
-          The MBE is not an infinite universe. It is a bounded set of recurring legal tension points and answer-choice traps. BarMatrix maps the traps, diagnoses why attractive wrong answers pull you in, and assigns the drill that fixes the underlying misconception.
-        </p>
-
-        <ol className="mt-12 space-y-10">
-          {sections.map((s) => (
-            <li key={s.n} className="grid gap-4 sm:grid-cols-[auto_1fr] sm:gap-6">
-              <div className="font-serif text-5xl text-zinc-300">{s.n}</div>
-              <div>
-                <h2 className="font-serif text-2xl font-semibold">{s.title}</h2>
-                <p className="mt-2 text-zinc-600">{s.body}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
+      <section className="hero">
+        <div className="container">
+          <div className="hero-meta">
+            <span className="stamp">METHOD · 04 STEPS</span>
+            <span className="stamp">WRONG-ANSWER FORENSICS</span>
+            <span className="stamp">EDITION : LAUNCH</span>
+          </div>
+          <div className="eyebrow-red" style={{ marginBottom: 24 }}>
+            ▌ HOW BARMATRIX WORKS
+          </div>
+          <h1
+            className="display display-lg"
+            style={{ margin: "0 0 24px", maxWidth: "22ch" }}
+          >
+            Diagnose the miss.{" "}
+            <span style={{ fontStyle: "italic" }}>Repair the pattern.</span>{" "}
+            <span style={{ color: "var(--red)" }}>Stop repeating it.</span>
+          </h1>
+          <p className="body-lg" style={{ marginBottom: 0 }}>
+            The MBE is not an infinite universe. It is a bounded set of
+            recurring legal tension points and answer-choice traps. BarMatrix
+            maps the traps, diagnoses why attractive wrong answers pull you in,
+            and assigns the drill that fixes the underlying misconception.
+          </p>
+        </div>
       </section>
 
-      {/* Worked example — same proof card from the homepage so the
-          method has visible artifact, not just prose. */}
-      <section className="border-y border-zinc-200 bg-zinc-50 py-16">
-        <div className="mx-auto max-w-3xl px-6">
-          <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-            Worked example
-          </p>
-          <h2 className="mt-2 font-serif text-2xl font-semibold">
-            One miss → one diagnosis → one drill
-          </h2>
-          <div className="mt-6 rounded-lg border border-zinc-300 bg-white p-8 shadow-sm">
-            <dl className="grid gap-3 text-sm sm:grid-cols-2">
-              <div>
-                <dt className="text-zinc-500">Trap</dt>
-                <dd className="font-medium">{PROOF_CARD.trap}</dd>
+      <section className="section">
+        <div className="container">
+          <div className="section-rule">
+            <span className="label">▌ The Method · 01</span>
+          </div>
+          <div className="four-col">
+            {sections.map((s) => (
+              <div className="method-step" key={s.title}>
+                <div className="num">{s.num}</div>
+                <h3>{s.title}</h3>
+                <p>{s.body}</p>
               </div>
-              <div>
-                <dt className="text-zinc-500">Student selected</dt>
-                <dd className="font-medium">{PROOF_CARD.studentSelected}</dd>
-              </div>
-              <div className="sm:col-span-2 text-zinc-500">{PROOF_CARD.focusGroupLine}</div>
-              <div>
-                <dt className="text-zinc-500">Forensic tag</dt>
-                <dd className="font-medium">{PROOF_CARD.forensicTag}</dd>
-              </div>
-              <div>
-                <dt className="text-zinc-500">Next drill</dt>
-                <dd className="font-medium">{PROOF_CARD.nextDrill}</dd>
-              </div>
-              <div className="sm:col-span-2">
-                <dt className="text-zinc-500">Why it looked right</dt>
-                <dd>{PROOF_CARD.whyLookedRight}</dd>
-              </div>
-              <div className="sm:col-span-2">
-                <dt className="text-zinc-500">Why it fails</dt>
-                <dd>{PROOF_CARD.whyFails}</dd>
-              </div>
-            </dl>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-3xl px-6 py-20 text-center">
-        <h2 className="font-serif text-3xl font-semibold">Ready to find your traps?</h2>
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-          <Link
-            href="/diagnostic"
-            className="rounded-md bg-zinc-900 px-6 py-3 text-base font-medium text-white hover:bg-zinc-700"
+      {/* Worked example — proof card */}
+      <section className="section alt">
+        <div className="container">
+          <div className="section-rule">
+            <span className="label">▌ Worked Example · 02</span>
+          </div>
+          <div className="two-col" style={{ alignItems: "start" }}>
+            <div>
+              <h2
+                className="display display-md"
+                style={{ margin: "0 0 24px" }}
+              >
+                One miss →{" "}
+                <span style={{ fontStyle: "italic" }}>one diagnosis</span> →{" "}
+                <span style={{ color: "var(--red)" }}>one drill</span>.
+              </h2>
+              <p className="body-lg">
+                A wrong answer isn&apos;t the end of the explanation —
+                it&apos;s the start of the forensic record. Every miss gets
+                tagged with the trap that pulled you in and the drill that
+                repairs it.
+              </p>
+            </div>
+            <div className="forensics-card">
+              <div className="forensics-header">
+                <span>
+                  <span className="live-dot" />
+                  Forensic Record
+                </span>
+                <span>EX-0001</span>
+              </div>
+              <div className="forensics-body">
+                <div className="q-meta">
+                  <div>
+                    <div className="k">Trap</div>
+                    <div className="v">{PROOF_CARD.trap}</div>
+                  </div>
+                  <div>
+                    <div className="k">Selected</div>
+                    <div className="v">{PROOF_CARD.studentSelected}</div>
+                  </div>
+                  <div>
+                    <div className="k">Focus group</div>
+                    <div className="v">22% match</div>
+                  </div>
+                  <div>
+                    <div className="k">Forensic tag</div>
+                    <div className="v">{PROOF_CARD.forensicTag}</div>
+                  </div>
+                </div>
+                <p className="forensic-why">
+                  <strong>Why it looked right:</strong>{" "}
+                  {PROOF_CARD.whyLookedRight}
+                </p>
+                <p className="forensic-why" style={{ marginBottom: 16 }}>
+                  <strong>Why it fails:</strong> {PROOF_CARD.whyFails}
+                </p>
+                <div className="repair-cta">
+                  <div>
+                    <div className="label">Assigned Drill</div>
+                    <div className="drill-name">{PROOF_CARD.nextDrill}</div>
+                  </div>
+                  <span className="arrow">→</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="section"
+        style={{ background: "var(--ink)", color: "var(--bg)" }}
+      >
+        <div className="container center">
+          <div
+            className="eyebrow-red"
+            style={{ marginBottom: 24, justifyContent: "center" }}
           >
-            Take the Free MBE Trap Diagnostic
-          </Link>
-          <Link
-            href="/pricing"
-            className="rounded-md border border-zinc-300 px-6 py-3 text-base font-medium text-zinc-900 hover:border-zinc-500"
+            ▌ READY TO FIND YOUR TRAPS?
+          </div>
+          <h2
+            className="display display-md"
+            style={{ color: "white", margin: "0 auto 32px", maxWidth: "20ch" }}
           >
-            See pricing
-          </Link>
+            Take the Free Diagnostic.
+          </h2>
+          <div
+            style={{
+              display: "flex",
+              gap: 16,
+              flexWrap: "wrap",
+              justifyContent: "center",
+            }}
+          >
+            <Link href="/diagnostic" className="btn btn-lg red">
+              Start the Diagnostic <span className="arrow">→</span>
+            </Link>
+            <Link href="/pricing" className="btn btn-lg ghost" style={{ color: "white", borderColor: "white" }}>
+              See Pricing
+            </Link>
+          </div>
         </div>
       </section>
     </>

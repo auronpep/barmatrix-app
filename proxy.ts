@@ -20,7 +20,15 @@ const isProtectedRoute = createRouteMatcher([
 
 const withClerk = clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) {
-    await auth.protect();
+    const { userId } = await auth();
+    // Explicit redirect: auth.protect() returns a 404 (not a redirect) when it
+    // can't resolve the sign-in URL in this setup, so send signed-out users to
+    // /sign-in ourselves and preserve where they were headed.
+    if (!userId) {
+      const signInUrl = new URL("/sign-in", req.url);
+      signInUrl.searchParams.set("redirect_url", req.url);
+      return NextResponse.redirect(signInUrl);
+    }
   }
 });
 

@@ -5,13 +5,13 @@
 //
 // API URL resolution order:
 //   1. NEXT_PUBLIC_API_URL env var at build time (Vercel injects this)
-//   2. Direct Cloud Run URL fallback (works until api.barmatrix.app DNS flips)
+//   2. Intended Hostinger API domain fallback
 //
 // Source of truth: BARMATRIX/engineering/API_CONTRACTS.md (SRC-0020).
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ??
-  "https://barmatrix-api-153207558013.us-central1.run.app";
+  "https://api.barmatrix.app";
 
 export type CohortPublicStatus =
   | "open"
@@ -126,6 +126,91 @@ export interface RedZonesResponse {
   message?: string;
 }
 
+export type KnowledgeComponent =
+  | "01-tension-map"
+  | "02-trap-taxonomy"
+  | "03-question-bank"
+  | "04-drill-library"
+  | "05-boot-camp";
+
+export interface KnowledgeSearchParams {
+  q?: string;
+  subject?: string;
+  topic?: string;
+  subtopic?: string;
+  component?: KnowledgeComponent | string;
+  channel?: "channel1" | "channel2" | "bridge" | "product_surface" | string;
+  object_type?: string;
+  canonicality?: "canonical" | "candidate" | "rejected" | "reference_only" | string;
+  review_status?:
+    | "needs_review"
+    | "content_review"
+    | "content_approved"
+    | "attorney_review"
+    | "attorney_approved"
+    | "rejected"
+    | string;
+  promotion_status?: "hold" | "queued" | "promoted" | "rejected" | "archived" | string;
+  source_id?: string;
+  include_rejected?: boolean;
+  limit?: number;
+}
+
+export interface KnowledgeSearchFilters {
+  q?: string;
+  subject?: string;
+  topic?: string;
+  subtopic?: string;
+  component?: KnowledgeComponent;
+  channel?: string;
+  objectType?: string;
+  canonicality?: string;
+  reviewStatus?: string;
+  promotionStatus?: string;
+  sourceId?: string;
+  includeRejected: boolean;
+  limit: number;
+}
+
+export interface KnowledgeSearchResult {
+  object_id: string;
+  object_type: string;
+  summary: string | null;
+  body_preview: string;
+  subject: string | null;
+  topic: string | null;
+  subtopic: string | null;
+  taxonomy_version: string | null;
+  taxonomy_ids: Record<string, unknown>;
+  channel: string;
+  component_targets: KnowledgeComponent[];
+  wrong_answer_tags: string[];
+  channel2_architecture: string | null;
+  surface_pattern: string | null;
+  decoder_move: string | null;
+  metadata: Record<string, unknown>;
+  text_score: number;
+  source: {
+    source_id: string;
+    source_role: string;
+    source_path: string | null;
+    source_span_start: number | null;
+    source_span_end: number | null;
+  };
+  review: {
+    canonicality: string;
+    review_status: string;
+    promotion_status: string;
+  };
+}
+
+export interface KnowledgeSearchResponse {
+  filters: KnowledgeSearchFilters;
+  results: KnowledgeSearchResult[];
+  by_component: Record<string, string[]>;
+  review_summary: Record<string, number>;
+}
+
 export interface ApiError {
   error: string | Record<string, unknown>;
 }
@@ -174,6 +259,17 @@ async function request<T>(
   return body as T;
 }
 
+function queryString(params: KnowledgeSearchParams): string {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== "") {
+      search.set(key, String(value));
+    }
+  }
+  const text = search.toString();
+  return text ? `?${text}` : "";
+}
+
 export const api = {
   cohortStatus: () => request<CohortStatus>("/api/cohort/status"),
 
@@ -210,6 +306,11 @@ export const api = {
   getRedZones: (studentId?: string) =>
     request<RedZonesResponse>(
       `/api/red-zones${studentId ? `?student_id=${encodeURIComponent(studentId)}` : ""}`,
+    ),
+
+  searchKnowledge: (params: KnowledgeSearchParams = {}) =>
+    request<KnowledgeSearchResponse>(
+      `/api/knowledge/search${queryString(params)}`,
     ),
 };
 

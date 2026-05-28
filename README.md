@@ -4,7 +4,7 @@
 
 ## Source of truth
 
-This repo is the **production Next.js 15+ web app**. The locked launch decisions, stack, copy, taxonomy, schema, and operating rules live in the **BARMATRIX/** master folder in the operations repo (`auronpep/barmatrix-ops-center`). When this repo disagrees with `BARMATRIX/`, that folder wins.
+This repo is the **production Next.js 16 web app**. The locked launch decisions, stack, copy, taxonomy, schema, and operating rules live in the **BARMATRIX/** master folder in the operations repo (`auronpep/barmatrix-ops-center`). When this repo disagrees with `BARMATRIX/`, that folder wins.
 
 | Surface | Location |
 |---|---|
@@ -24,14 +24,14 @@ The locked copy is mirrored into this repo at [`lib/copy.ts`](lib/copy.ts).
 |---|---|
 | Framework | Next.js 16 (App Router) |
 | UI | React 19 + Tailwind v4 |
-| Auth | Clerk (planned) |
-| Payments | Stripe Checkout + webhook (planned) |
-| Analytics | PostHog (planned) |
+| Auth | Clerk or equivalent magic-link login (planned) |
+| Payments | Stripe Checkout + webhook (planned, API-owned) |
+| Analytics | PostHog + GA4 (planned) |
 | Hosting | Vercel |
-| Backend API | Flask on Cloud Run (separate repo) |
-| Database | Cloud SQL Postgres (per `SCHEMA_ONE_COHORT.sql`) |
+| Backend API | Node 24 + Express + TypeScript on Hostinger Node.js Selector (separate repo) |
+| Database | Hostinger MySQL 8 (per `SCHEMA_MYSQL.sql`) |
 | Email | Resend or Postmark (planned) |
-| DNS / WAF | Cloudflare |
+| DNS / WAF | Hostinger DNS; Cloudflare optional later |
 | Monitoring | Sentry (planned) |
 
 ## Locked offer
@@ -57,7 +57,9 @@ Then open <http://localhost:3000>.
 
 ## Deploy
 
-Production deploys via Vercel. Connect this repo to a Vercel project with the `barmatrix.app` domain via Cloudflare.
+Production deploys via Vercel. Connect this repo to a Vercel project with the `barmatrix.app` domain using the current Hostinger DNS zone; Cloudflare remains optional later.
+
+Set the public frontend environment variables from [`.env.example`](.env.example) in Vercel. Backend secrets such as database credentials, Stripe secret keys, webhook secrets, and Clerk secret keys belong in the separate API runtime environment.
 
 ## License
 

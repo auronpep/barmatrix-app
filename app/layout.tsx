@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Newsreader, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import Link from "next/link";
+import { Suspense } from "react";
 import "./globals.css";
+import { AnalyticsEvents } from "./analytics-events";
 import { DISCLAIMER } from "@/lib/copy";
 
 const newsreader = Newsreader({
@@ -74,6 +76,10 @@ export default function RootLayout({
             </div>
           </div>
         </nav>
+
+        <Suspense fallback={null}>
+          <AnalyticsEvents />
+        </Suspense>
 
         <main>{children}</main>
 

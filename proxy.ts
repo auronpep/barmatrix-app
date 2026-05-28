@@ -14,7 +14,8 @@ const isProtectedRoute = createRouteMatcher([
   "/drills(.*)",
   "/forensics(.*)",
   "/questions(.*)",
-  "/red-zones(.*)",
+  // /red-zones is a public marketing page (nav-linked) that renders a logged-out
+  // empty-state CTA — must NOT be auth-gated, or it 404s without a sign-in page.
 ]);
 
 const withClerk = clerkMiddleware(async (auth, req) => {

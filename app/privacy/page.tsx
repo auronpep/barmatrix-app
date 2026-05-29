@@ -39,7 +39,7 @@ export default function PrivacyPage() {
           <h2 className="font-serif text-2xl font-semibold text-zinc-900">2. How We Use Your Information</h2>
           <ul className="mt-4 list-disc pl-5 space-y-2">
             <li>Create and manage your account and cohort seat</li>
-            <li>Deliver the Platform's core features (diagnostic, forensics, Red-Zone Map, drills)</li>
+            <li>Deliver the Platform&apos;s core features (diagnostic, forensics, Red-Zone Map, drills)</li>
             <li>Process payments and payment plans, and issue referral payouts</li>
             <li>Send transactional emails (enrollment confirmation, receipts, reminders)</li>
             <li>Monitor and improve Platform performance and stability</li>
@@ -96,7 +96,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="font-serif text-2xl font-semibold text-zinc-900">7. Children's Privacy</h2>
+          <h2 className="font-serif text-2xl font-semibold text-zinc-900">7. Children&apos;s Privacy</h2>
           <p className="mt-4">The Platform is intended for adults preparing for the Multistate Bar Examination. We do not knowingly collect personal information from anyone under 18.</p>
         </section>
 

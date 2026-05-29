@@ -12,7 +12,7 @@
   --paper: #fffdf7;
   --ink: #0a0a0a;
   --ink-soft: #1f1f1f;
-  --muted: #6b6862;
+  --muted: #5f5b54;
   --muted-light: #a39e93;
   --rule: rgba(10, 10, 10, 0.85);
   --rule-soft: rgba(10, 10, 10, 0.15);
@@ -333,6 +333,14 @@ button {
 .section.dark .muted {
   color: #a39e93;
 }
+.section.dark [style*="var(--red)"],
+.section.dark .txt-red,
+.section.dark .eyebrow-red,
+.section[style*="var(--ink)"] [style*="var(--red)"],
+.section[style*="var(--ink)"] .txt-red,
+.section[style*="var(--ink)"] .eyebrow-red {
+  color: #ff8a9a !important;
+}
 
 /* ====== HERO ====== */
 .hero {
@@ -525,7 +533,7 @@ button {
   font-weight: 700;
 }
 .choice.dim {
-  opacity: 0.5;
+  background: rgba(10, 10, 10, 0.018);
 }
 
 /* ====== FORENSICS BREAKDOWN ====== */
@@ -862,7 +870,7 @@ button {
 .faq-item .q::-webkit-details-marker {
   display: none;
 }
-.faq-item h4 {
+.faq-item h2 {
   font-family: var(--serif);
   font-weight: 600;
   font-size: 22px;
@@ -900,7 +908,7 @@ button {
   gap: 48px;
   margin-bottom: 48px;
 }
-.footer h5 {
+.footer h2 {
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.18em;
@@ -930,8 +938,11 @@ button {
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.1em;
-  color: #6b6862;
+  color: #c8c4ba;
   text-transform: uppercase;
+}
+.footer-bottom span {
+  color: #e8e1d2;
 }
 .footer .disclaimer {
   font-size: 12px;

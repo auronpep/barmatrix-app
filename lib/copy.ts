@@ -25,7 +25,6 @@ export const PRICING = {
     "Red-Zone Map",
     "2,400-question forensic bank",
     "Wrong Answer Forensics",
-    "Focus-group answer comparison where available",
     "Targeted Red-Zone Drills",
     "Boot Camps",
     "Timed mixed sets",
@@ -48,7 +47,6 @@ export const CAPACITY_COPY = {
 export const PROOF_CARD = {
   trap: "Hearsay — Purpose of Offer",
   studentSelected: "Exclude as hearsay",
-  focusGroupLine: "Focus group: 22% selected the same trap",
   forensicTag: "Overbroad hearsay myth",
   whyLookedRight: "The statement was made out of court.",
   whyFails: "It was offered to show notice, not truth.",

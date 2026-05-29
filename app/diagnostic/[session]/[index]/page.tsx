@@ -11,6 +11,7 @@
 // route the user back to /diagnostic to restart so we never render bogus UUIDs.
 
 import { use, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   api,
@@ -20,6 +21,11 @@ import {
   type Letter,
   type QuestionPayload,
 } from "@/lib/api-client";
+import { useSubmitAttempt } from "@/lib/use-attempts";
+import {
+  trackForensicsViewed,
+  trackQuestionAttempted,
+} from "@/lib/analytics";
 
 type Phase = "loading" | "presenting" | "submitting" | "forensics" | "error";
 
@@ -50,6 +56,7 @@ export default function DiagnosticQuestionPage({
   const { session: diagnosticId, index: indexStr } = use(params);
   const index = Number.parseInt(indexStr, 10);
   const router = useRouter();
+  const submitAttempt = useSubmitAttempt();
 
   const [sessionCache, setSessionCache] = useState<SessionCache | null>(null);
   const [question, setQuestion] = useState<QuestionPayload | null>(null);
@@ -59,10 +66,12 @@ export default function DiagnosticQuestionPage({
   const [confidence, setConfidence] = useState<number>(3);
   const [attempt, setAttempt] = useState<AttemptResponse | null>(null);
   const [forensics, setForensics] = useState<ForensicsResponse | null>(null);
-  const startedAtRef = useRef<number>(Date.now());
+  const startedAtRef = useRef<number>(0);
 
   // Load the session cache + the question for this index on mount.
   useEffect(() => {
+    let active = true;
+
     if (Number.isNaN(index) || index < 0) {
       router.replace("/diagnostic");
       return;
@@ -72,7 +81,11 @@ export default function DiagnosticQuestionPage({
       router.replace("/diagnostic");
       return;
     }
-    setSessionCache(cache);
+    queueMicrotask(() => {
+      if (active) {
+        setSessionCache(cache);
+      }
+    });
 
     if (index >= cache.question_ids.length) {
       router.replace(`/diagnostic/${diagnosticId}/results`);
@@ -86,22 +99,31 @@ export default function DiagnosticQuestionPage({
     }
 
     startedAtRef.current = Date.now();
-    setSelected(null);
-    setConfidence(3);
-    setAttempt(null);
-    setForensics(null);
-    setPhase("loading");
+    queueMicrotask(() => {
+      if (!active) return;
+      setSelected(null);
+      setConfidence(3);
+      setAttempt(null);
+      setForensics(null);
+      setPhase("loading");
+    });
 
     api
       .getQuestion(qid)
       .then((q) => {
+        if (!active) return;
         setQuestion(q);
         setPhase("presenting");
       })
       .catch((err: unknown) => {
+        if (!active) return;
         setErrorMsg(humanError(err));
         setPhase("error");
       });
+
+    return () => {
+      active = false;
+    };
   }, [diagnosticId, index, router]);
 
   const total = sessionCache?.total_questions ?? 0;
@@ -116,7 +138,7 @@ export default function DiagnosticQuestionPage({
       Math.round((Date.now() - startedAtRef.current) / 1000),
     );
     try {
-      const resp = await api.submitAttempt({
+      const resp = await submitAttempt({
         question_id: question.question_id,
         selected_letter: selected,
         confidence,
@@ -125,8 +147,19 @@ export default function DiagnosticQuestionPage({
         set_id: diagnosticId,
       });
       setAttempt(resp);
+      trackQuestionAttempted({
+        questionId: question.question_id,
+        correct: resp.correct,
+        confidence,
+        sessionId: diagnosticId,
+      });
       const f = await api.getForensics(resp.attempt_id);
       setForensics(f);
+      trackForensicsViewed({
+        attemptId: resp.attempt_id,
+        forensicTags: collectForensicTags(resp, f),
+        sessionId: diagnosticId,
+      });
       setPhase("forensics");
     } catch (err) {
       setErrorMsg(humanError(err));
@@ -153,7 +186,7 @@ export default function DiagnosticQuestionPage({
         <ErrorPanel
           message={errorMsg}
           onRetry={() => {
-            router.refresh();
+            window.location.reload();
           }}
         />
       )}
@@ -201,8 +234,23 @@ function ProgressIndicator({
 
 function Loading() {
   return (
-    <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-8">
-      <p className="text-zinc-600">Loading question…</p>
+    <div className="border border-zinc-900 bg-white p-8" aria-live="polite">
+      <p className="font-mono text-xs uppercase tracking-wider text-red-700">
+        Loading question
+      </p>
+      <div className="mt-5 space-y-3">
+        <SkeletonLine width="70%" />
+        <SkeletonLine width="100%" />
+        <SkeletonLine width="92%" />
+        <SkeletonLine width="64%" />
+      </div>
+      <div className="mt-8 grid gap-3">
+        {[0, 1, 2, 3].map((item) => (
+          <div key={item} className="border border-zinc-200 bg-zinc-50 p-4">
+            <SkeletonLine width={`${72 + item * 5}%`} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -215,17 +263,37 @@ function ErrorPanel({
   onRetry: () => void;
 }) {
   return (
-    <div className="rounded-lg border border-red-200 bg-red-50 p-8">
-      <p className="font-medium text-red-800">Something went wrong.</p>
-      {message && <p className="mt-2 font-mono text-xs text-red-700">{message}</p>}
-      <button
-        type="button"
-        onClick={onRetry}
-        className="mt-6 rounded-md border border-red-300 px-5 py-2.5 text-sm font-medium text-red-900 hover:bg-red-100"
-      >
-        Try again
-      </button>
+    <div className="border border-red-300 bg-red-50 p-8" aria-live="polite">
+      <p className="font-mono text-xs uppercase tracking-wider text-red-700">
+        Question unavailable
+      </p>
+      <h2 className="mt-3 font-serif text-2xl font-semibold text-red-950">
+        Something went wrong loading this question.
+      </h2>
+      <p className="mt-3 text-sm leading-6 text-red-900">
+        Retry the question request. If the session cache is stale, restart the diagnostic
+        and BarMatrix will open a fresh question sequence.
+      </p>
+      {message && <p className="mt-3 font-mono text-xs text-red-800">{message}</p>}
+      <div className="mt-6 flex flex-wrap gap-3">
+        <button type="button" onClick={onRetry} className="btn red">
+          Retry question
+        </button>
+        <Link href="/diagnostic" className="btn ghost">
+          Restart diagnostic
+        </Link>
+      </div>
     </div>
+  );
+}
+
+function SkeletonLine({ width }: { width: string }) {
+  return (
+    <div
+      className="h-3 bg-zinc-200"
+      style={{ width }}
+      aria-hidden="true"
+    />
   );
 }
 
@@ -310,9 +378,9 @@ function QuestionCard({
         type="button"
         onClick={onSubmit}
         disabled={disabled || selected === null}
-        className="mt-8 rounded-md bg-zinc-900 px-6 py-3 text-base font-medium text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-400"
+        className="btn red mt-8"
       >
-        {disabled ? "Submitting…" : "Submit answer"}
+        {disabled ? "Submitting answer..." : "Submit answer"}
       </button>
     </div>
   );
@@ -370,7 +438,7 @@ function ForensicsCard({
             </Section>
           )}
           {forensics.why_wrong && (
-            <Section title="Why it&apos;s actually wrong">{forensics.why_wrong}</Section>
+            <Section title="Why it is actually wrong">{forensics.why_wrong}</Section>
           )}
           {forensics.future_cue && (
             <Section title="Cue for next time">{forensics.future_cue}</Section>
@@ -419,4 +487,17 @@ function humanError(err: unknown): string {
   if (err instanceof ApiClientError) return `API ${err.status}: ${err.message}`;
   if (err instanceof Error) return err.message;
   return "Unknown error";
+}
+
+function collectForensicTags(
+  attempt: AttemptResponse,
+  forensics: ForensicsResponse,
+): string[] {
+  const tags = [
+    ...attempt.red_zone_updates.map((update) => `${update.dimension}:${update.tag}`),
+    forensics.trap_name,
+    forensics.assigned_drill?.slug,
+  ].filter((tag): tag is string => Boolean(tag));
+
+  return tags.length > 0 ? tags : ["diagnostic_attempt"];
 }

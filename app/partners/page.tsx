@@ -31,7 +31,7 @@ export default function PartnersPage() {
           Partner with BarMatrix
         </h1>
         <p className="mt-6 text-lg text-zinc-600">
-          Help students stop repeating the same MBE traps. BarMatrix is a premium MBE wrong-answer intelligence system — diagnostic-first, drill-assigned, focus-group-backed where data exists. We work with creators, tutors, and bar-prep organizations who can recommend it accurately.
+          Help students stop repeating the same MBE traps. BarMatrix is a premium MBE wrong-answer intelligence system — diagnostic-first and drill-assigned. We work with creators, tutors, and bar-prep organizations who can recommend it accurately.
         </p>
       </section>
 

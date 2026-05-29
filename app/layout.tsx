@@ -5,7 +5,11 @@ import Link from "next/link";
 import { Suspense } from "react";
 import "./globals.css";
 import { AnalyticsEvents } from "./analytics-events";
-import { DISCLAIMER } from "@/lib/copy";
+import { NavAuth } from "./nav-auth";
+import { BRAND, DISCLAIMER, DOMAIN } from "@/lib/copy";
+
+const SITE_DESCRIPTION =
+  "Multiple-choice-only MBE repair system. Diagnose recurring trap patterns. Repair what the test keeps reusing.";
 
 const newsreader = Newsreader({
   variable: "--font-newsreader",
@@ -27,15 +31,49 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BarMatrix — Diagnose. Repair. Pass the MBE.",
-  description:
-    "Multiple-choice-only MBE repair system. Diagnose recurring trap patterns. Repair what the test keeps reusing.",
-  metadataBase: new URL("https://barmatrix.app"),
+  metadataBase: new URL(`https://${DOMAIN}`),
+  title: {
+    default: `${BRAND} - Diagnose. Repair. Pass the MBE.`,
+    template: `%s | ${BRAND}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: BRAND,
+  keywords: [
+    "MBE diagnostic",
+    "bar exam MBE",
+    "wrong answer forensics",
+    "MBE practice",
+    "bar exam repeat takers",
+    "California bar exam",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
-    title: "BarMatrix · Diagnose. Repair. Pass the MBE.",
-    description:
-      "Multiple-choice-only MBE repair system. Diagnose recurring trap patterns. Repair what the test keeps reusing.",
+    title: `${BRAND} - Diagnose. Repair. Pass the MBE.`,
+    description: SITE_DESCRIPTION,
+    url: "/",
+    siteName: BRAND,
     type: "website",
+    locale: "en_US",
+    images: [
+      {
+        url: "/og-image.svg",
+        width: 1200,
+        height: 630,
+        alt: `${BRAND}: Diagnose. Repair. Pass the MBE.`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${BRAND} - Diagnose. Repair. Pass the MBE.`,
+    description: SITE_DESCRIPTION,
+    images: ["/og-image.svg"],
   },
 };
 
@@ -55,7 +93,7 @@ export default function RootLayout({
           <div className="tape-strip" aria-hidden="true" />
           <nav className="nav">
             <div className="nav-inner">
-              <Link href="/" className="brand" aria-label="BarMatrix home">
+              <Link href="/" className="brand">
                 <span className="mark">B</span>
                 <span>
                   BarMatrix<span className="dot" />
@@ -69,9 +107,13 @@ export default function RootLayout({
                 <Link href="/faq">FAQ</Link>
               </div>
               <div className="nav-cta">
-                <Link href="/app" className="btn btn-sm ghost hide-md">
-                  Open App
-                </Link>
+                {hasClerk ? (
+                  <NavAuth />
+                ) : (
+                  <Link href="/sign-in" className="btn btn-sm ghost">
+                    Sign in
+                  </Link>
+                )}
                 <Link href="/diagnostic" className="btn btn-sm red">
                   Free Diagnostic <span className="arrow">→</span>
                 </Link>
@@ -117,7 +159,7 @@ export default function RootLayout({
                   </p>
                 </div>
                 <div>
-                  <h5>Product</h5>
+                  <h2>Product</h2>
                   <ul>
                     <li>
                       <Link href="/how-it-works">How It Works</Link>
@@ -137,7 +179,7 @@ export default function RootLayout({
                   </ul>
                 </div>
                 <div>
-                  <h5>Audience</h5>
+                  <h2>Audience</h2>
                   <ul>
                     <li>California · July 2026</li>
                     <li>Repeat Takers</li>
@@ -148,7 +190,7 @@ export default function RootLayout({
                   </ul>
                 </div>
                 <div>
-                  <h5>Platforms</h5>
+                  <h2>Platforms</h2>
                   <ul>
                     <li>
                       <Link href="/app">Web App</Link>
@@ -161,7 +203,7 @@ export default function RootLayout({
                   </ul>
                 </div>
                 <div>
-                  <h5>Company</h5>
+                  <h2>Company</h2>
                   <ul>
                     <li>
                       <Link href="/faq">FAQ</Link>

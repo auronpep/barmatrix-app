@@ -4,7 +4,6 @@ import { HERO, PRICING, PROOF_CARD } from "@/lib/copy";
 const stats = [
   { num: "2,400", red: ".", lbl: "Questions · fully tagged" },
   { num: "156", lbl: "Tension points mapped" },
-  { num: "1,247", lbl: "Focus-group respondents" },
   { num: "07", lbl: "MBE subjects covered" },
 ];
 
@@ -20,7 +19,7 @@ const methodSteps = [
   {
     num: "STEP 01",
     title: "Diagnose",
-    body: "A short MBE Trap Diagnostic weighted toward the highest-attractiveness wrong answers — the ones that pull in real respondents.",
+    body: "A short MBE Trap Diagnostic weighted toward the highest-attractiveness wrong answers — the ones engineered to be most attractive.",
   },
   {
     num: "STEP 02",
@@ -56,9 +55,9 @@ const anatomy = [
     note: "The taxonomy of why your wrong answer looked right. Each tag links to a repair drill.",
   },
   {
-    k: "04 · Focus-Group %",
-    v: PROOF_CARD.focusGroupLine.replace("Focus group: ", ""),
-    note: "The trap that pulled the most respondents — your moat data, made visible.",
+    k: "04 · Repair Drill",
+    v: PROOF_CARD.nextDrill,
+    note: "Every tagged miss links to the exact drill that repairs that pattern.",
   },
 ];
 
@@ -279,8 +278,8 @@ export default function Home() {
           >
             When you miss a question on BarMatrix, you don&apos;t see
             &quot;incorrect.&quot; You see exactly which trap pulled you in,
-            what share of the focus group picked the same wrong answer, and the
-            next drill assignment.
+            why that wrong answer was attractive, and the next drill
+            assignment.
           </p>
           <div className="four-col">
             {anatomy.map((item) => (
@@ -466,7 +465,7 @@ export default function Home() {
               >
                 The free MBE Trap Diagnostic is the fastest way to see your
                 Red-Zone Map — your most attractive trap patterns, built from
-                your actual misses, compared to the focus-group base rate.
+                your actual misses.
               </p>
               <Link href="/diagnostic" className="btn btn-lg red">
                 Start the Diagnostic <span className="arrow">→</span>
@@ -501,7 +500,7 @@ export default function Home() {
                   {[
                     "Personal Red-Zone Map (dashboard)",
                     "Top trap patterns ranked by attractiveness",
-                    "Focus-group base rates on your specific misses",
+                    "Forensic tags explaining why each miss was attractive",
                     "Sample assigned drills — try before you buy",
                     "Companion path with your existing bar course",
                   ].map((t, i, arr) => (
@@ -666,7 +665,7 @@ function ForensicsCard() {
               Exclude as hearsay — out-of-court statement offered to prove the
               defect existed.
             </span>
-            <span className="pct">22% picked</span>
+            <span className="pct">Your pick</span>
           </div>
           <div className="choice correct">
             <span className="letter">B</span>
@@ -674,21 +673,19 @@ function ForensicsCard() {
               Admit — offered to show notice, not for the truth of the matter
               asserted.
             </span>
-            <span className="pct">31% picked</span>
+            <span className="pct">Correct</span>
           </div>
           <div className="choice dim">
             <span className="letter">C</span>
             <span className="text">
               Exclude — improper character evidence.
             </span>
-            <span className="pct">19%</span>
           </div>
           <div className="choice dim">
             <span className="letter">D</span>
             <span className="text">
               Admit only with a limiting instruction on bias.
             </span>
-            <span className="pct">28%</span>
           </div>
         </div>
 
@@ -696,7 +693,7 @@ function ForensicsCard() {
           <div className="verdict">
             <span className="verdict-label">▌ Trap Diagnosed</span>
             <span className="verdict-stat">
-              Focus group n=1,247 · 22% mislead
+              Purpose-of-offer trap
             </span>
           </div>
           <div className="tags-row">

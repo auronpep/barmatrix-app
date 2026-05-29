@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PRICING, FAQ, DISCLAIMER } from "@/lib/copy";
+import { PricingAnalytics } from "./pricing-analytics";
 
 export const metadata = {
   title: "Pricing — BarMatrix Flagship $999",
@@ -10,6 +11,7 @@ export const metadata = {
 export default function PricingPage() {
   return (
     <>
+      <PricingAnalytics />
       <section className="hero">
         <div className="container">
           <div className="hero-meta">

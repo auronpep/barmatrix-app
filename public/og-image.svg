@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">BarMatrix OpenGraph image</title>
+  <desc id="desc">BarMatrix: Diagnose. Repair. Pass the MBE.</desc>
+  <rect width="1200" height="630" fill="#0a0a0a"/>
+  <rect width="1200" height="12" fill="#c8102e"/>
+  <rect x="86" y="94" width="86" height="86" fill="#ffffff"/>
+  <text x="129" y="158" font-family="Georgia, serif" font-size="62" font-weight="900" text-anchor="middle" fill="#0a0a0a">B</text>
+  <text x="96" y="280" font-family="Georgia, serif" font-size="94" font-weight="800" fill="#ffffff">BarMatrix.</text>
+  <text x="96" y="374" font-family="Georgia, serif" font-size="58" font-weight="700" font-style="italic" fill="#c8102e">Diagnose. Repair.</text>
+  <text x="96" y="474" font-family="Arial, sans-serif" font-size="31" fill="#f6f1e8">Multiple-choice-only MBE repair system.</text>
+  <text x="96" y="545" font-family="Courier New, monospace" font-size="20" letter-spacing="5" fill="#a39e93">WRONG ANSWER FORENSICS - RED-ZONE DRILLS - BOOT CAMPS</text>
+</svg>

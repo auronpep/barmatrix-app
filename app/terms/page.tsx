@@ -64,7 +64,7 @@ export default function TermsPage() {
 
         <section>
           <h2 className="font-serif text-2xl font-semibold text-zinc-900">6. Referral Program</h2>
-          <p className="mt-4">We offer a referral payout of <strong>$199 per qualified paid referral</strong>. A qualified referral means a new student who enrolls and completes full payment through your unique referral link and was not previously known to us. Referral payouts are issued after the referred student's payment plan is complete and all funds clear. We reserve the right to modify or discontinue the referral program at any time. Fraudulent referrals void the payout and may result in account termination.</p>
+          <p className="mt-4">We offer a referral payout of <strong>$199 per qualified paid referral</strong>. A qualified referral means a new student who enrolls and completes full payment through your unique referral link and was not previously known to us. Referral payouts are issued after the referred student&apos;s payment plan is complete and all funds clear. We reserve the right to modify or discontinue the referral program at any time. Fraudulent referrals void the payout and may result in account termination.</p>
         </section>
 
         <section>
@@ -84,7 +84,7 @@ export default function TermsPage() {
 
         <section>
           <h2 className="font-serif text-2xl font-semibold text-zinc-900">10. Disclaimer of Warranties</h2>
-          <p className="mt-4 uppercase text-sm">The platform is provided "as is" and "as available" without warranties of any kind, express or implied, including warranties of merchantability, fitness for a particular purpose, or non-infringement. We do not warrant that the platform will be uninterrupted or error-free.</p>
+          <p className="mt-4 uppercase text-sm">The platform is provided &quot;as is&quot; and &quot;as available&quot; without warranties of any kind, express or implied, including warranties of merchantability, fitness for a particular purpose, or non-infringement. We do not warrant that the platform will be uninterrupted or error-free.</p>
         </section>
 
         <section>

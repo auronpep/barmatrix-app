@@ -4,7 +4,7 @@ import { PROOF_CARD } from "@/lib/copy";
 export const metadata = {
   title: "How BarMatrix works — Wrong Answer Forensics",
   description:
-    "Diagnostic first. Wrong Answer Forensics. Focus-group comparison. Assigned repair. The four-step BarMatrix method for MBE repair.",
+    "Diagnostic first. Wrong Answer Forensics. Assigned repair. The BarMatrix method for MBE repair.",
 };
 
 const sections = [
@@ -20,11 +20,6 @@ const sections = [
   },
   {
     num: "STEP 03",
-    title: "Focus-group comparison",
-    body: "Where focus-group data is available, BarMatrix shows how often prior respondents selected the same answer. If a wrong answer pulled in a meaningful share of the group, the product treats it as a high-value trap worth drilling.",
-  },
-  {
-    num: "STEP 04",
     title: "Assigned repair",
     body: "Each miss is connected to a repair action: a Red-Zone Drill, boot camp, timed set, or spaced review assignment. The goal is not to do more questions randomly. The goal is to stop repeating the same trap.",
   },
@@ -36,7 +31,7 @@ export default function HowItWorksPage() {
       <section className="hero">
         <div className="container">
           <div className="hero-meta">
-            <span className="stamp">METHOD · 04 STEPS</span>
+            <span className="stamp">METHOD · 03 STEPS</span>
             <span className="stamp">WRONG-ANSWER FORENSICS</span>
             <span className="stamp">EDITION : LAUNCH</span>
           </div>
@@ -119,8 +114,8 @@ export default function HowItWorksPage() {
                     <div className="v">{PROOF_CARD.studentSelected}</div>
                   </div>
                   <div>
-                    <div className="k">Focus group</div>
-                    <div className="v">22% match</div>
+                    <div className="k">Tension</div>
+                    <div className="v">Purpose of Offer</div>
                   </div>
                   <div>
                     <div className="k">Forensic tag</div>

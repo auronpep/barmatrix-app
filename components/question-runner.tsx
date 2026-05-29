@@ -17,6 +17,7 @@ import {
   type QuestionPayload,
 } from "@/lib/api-client";
 import { trackForensicsViewed, trackQuestionAttempted } from "@/lib/analytics";
+import { useSubmitAttempt } from "@/lib/use-attempts";
 
 type Phase = "loading" | "presenting" | "submitting" | "forensics" | "error" | "done";
 
@@ -74,6 +75,7 @@ export default function QuestionRunner({
   const [correct, setCorrect] = useState(initialCorrect);
   const [answered, setAnswered] = useState(priorAnswered);
   const startedAtRef = useRef(0);
+  const submitAttempt = useSubmitAttempt();
 
   const currentQid = pending[index];
   const isLast = index >= pending.length - 1;
@@ -119,7 +121,7 @@ export default function QuestionRunner({
     setErrorMsg(null);
     const timeSeconds = Math.max(0, Math.round((Date.now() - startedAtRef.current) / 1000));
     try {
-      const resp = await api.submitAttempt({
+      const resp = await submitAttempt({
         question_id: question.question_id,
         selected_letter: selected,
         confidence,

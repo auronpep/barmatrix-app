@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "@clerk/nextjs";
 import { api, ApiClientError, type DashboardData } from "@/lib/api-client";
+import { useClerkAuth } from "@/lib/use-clerk-auth";
 
 export interface DashboardState {
   loading: boolean;
@@ -23,7 +23,7 @@ interface FetchResult {
 // Loading and signed-out states are DERIVED during render (no setState in the
 // effect body); the effect only writes state from its async callback.
 export function useDashboard(): DashboardState {
-  const { isLoaded, isSignedIn, getToken } = useAuth();
+  const { isLoaded, isSignedIn, getToken } = useClerkAuth();
   const [result, setResult] = useState<FetchResult | null>(null);
 
   useEffect(() => {

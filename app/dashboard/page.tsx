@@ -12,6 +12,7 @@ import {
 } from "@/lib/api-client";
 import { useDashboard } from "@/lib/use-dashboard";
 import { useFoundations } from "@/lib/use-foundations";
+import { useC3 } from "@/lib/use-c3";
 import type { FoundationsOutline } from "@/lib/api-client";
 
 // Static path guide — the repair loop shape, shown regardless of data state.
@@ -40,6 +41,7 @@ type DisplayZone = {
 export default function DashboardPage() {
   const dash = useDashboard();
   const foundations = useFoundations();
+  const c3 = useC3();
   const [status, setStatus] = useState<CohortStatus | null>(null);
   const [cohortError, setCohortError] = useState<string | null>(null);
 
@@ -97,6 +99,10 @@ export default function DashboardPage() {
         !foundations.data.progress.complete && (
           <MethodGate data={foundations.data} />
         )}
+
+      {c3.signedIn && c3.data && (
+        <C3HeroCard data={c3.data} />
+      )}
 
       {banner && <StateBanner banner={banner} />}
 
@@ -238,6 +244,28 @@ function MethodGate({ data }: { data: FoundationsOutline }) {
       >
         View all 14 lessons
       </Link>
+    </section>
+  );
+}
+
+function C3HeroCard({ data }: { data: import("@/lib/api-client").C3Mastery }) {
+  const measured = data.readiness.score !== null;
+  return (
+    <section className="mt-6 border-2 border-zinc-900 bg-white p-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-wider text-red-700">C3 Mastery — your flagship metric</p>
+          <h2 className="mt-2 font-serif text-3xl font-semibold tracking-tight text-zinc-950">
+            {measured ? `Readiness ${data.readiness.score}` : "Not yet measured"}
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-zinc-700">
+            {measured
+              ? `Clean-cut ${data.tracks.clean_cut_hit_rate == null ? "—" : Math.round(data.tracks.clean_cut_hit_rate * 100) + "%"} · calibration ${data.tracks.calibration.direction}. Everything below is a facet of this.`
+              : `Work the bank or the diagnostic — mastery lights up after ${data.readiness.mold_floor} exposures per skill.`}
+          </p>
+        </div>
+        <Link href="/mastery" className="rounded-md bg-zinc-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-700">Open Mastery →</Link>
+      </div>
     </section>
   );
 }

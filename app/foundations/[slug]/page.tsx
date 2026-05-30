@@ -29,8 +29,11 @@ export default function FoundationsLessonPage() {
   useEffect(() => {
     if (!slug) return;
     let cancelled = false;
-    setResp(null);
-    setError(null);
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setResp(null);
+      setError(null);
+    });
     api.getFoundationsLesson(slug).then(
       (data) => {
         if (!cancelled) setResp(data);
@@ -78,8 +81,10 @@ export default function FoundationsLessonPage() {
   // Seed drill checks + completion from the lesson endpoint's own progress block.
   useEffect(() => {
     if (!resp) return;
-    setChecked(new Set(resp.progress.drills_completed));
-    if (resp.progress.status === "completed") setCompleted(true);
+    queueMicrotask(() => {
+      setChecked(new Set(resp.progress.drills_completed));
+      setCompleted(resp.progress.status === "completed");
+    });
   }, [resp]);
 
   const persist = useCallback(

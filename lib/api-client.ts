@@ -992,6 +992,113 @@ export interface C3DeckResponse {
   cards: C3DeckCard[];
 }
 
+// --- C3 Mastery Certification (Phase 4) — gated, auto-graded scorecard ---
+// GET /api/certification (outline) + GET /api/certification/:id (key-free content)
+// + POST /api/me/certification/:id/start + POST /api/me/certification/:id (grade).
+// Answer keys NEVER reach the client; the grade response is the only place the
+// correct answers appear. Shapes mirror barmatrix-api/src/routes/certification.ts.
+
+export type CertCapture =
+  | "single"
+  | "rule_distractor"
+  | "axis_survivor"
+  | "band"
+  | "integration";
+
+export interface CertMcqOption {
+  letter: string;
+  text: string;
+}
+
+export interface CertPublicItem {
+  id: string;
+  prompt: string;
+  options?: CertMcqOption[];
+  axis_options?: string[];
+  survivor_options?: CertMcqOption[];
+}
+
+export interface CertPassSpec {
+  type: string;
+  n?: number;
+  of?: number;
+  band_match_min?: number;
+  no_undercalled_cut?: boolean;
+  accuracy?: { n: number; of: number };
+  phase_min?: number;
+}
+
+export interface CertCompetencyStatus {
+  id: string;
+  title: string;
+  capture: CertCapture;
+  pass: CertPassSpec;
+  status: "passed" | "not_yet" | "not_started";
+  attempts: number;
+  retry_at: string | null;
+}
+
+export interface CertOutline {
+  title: string;
+  preview: boolean;
+  preview_note: string;
+  overall_gate: string;
+  lessons_completed: number;
+  lesson_count: number;
+  unlocked: boolean;
+  overall: "CONFIRMED" | "NOT_YET";
+  competencies: CertCompetencyStatus[];
+}
+
+export interface CertPublicCompetency {
+  id: string;
+  title: string;
+  capture: CertCapture;
+  pass: CertPassSpec;
+  lesson_refs: string[];
+  label_options?: string[];
+  rule_options?: string[];
+  distractor_options?: string[];
+  band_options?: string[];
+  phase_options?: string[];
+  items: CertPublicItem[];
+}
+
+export interface CertPerItem {
+  id: string;
+  correct: boolean;
+  your: string | null;
+  key: string | null;
+  explanation?: string;
+}
+
+export interface CertGradeResult {
+  persisted: boolean;
+  passed: boolean;
+  score: number;
+  conditions: {
+    accuracy_score: number | null;
+    forks_passed: boolean | null;
+    phase_score: number | null;
+    calibration_passed: boolean | null;
+  };
+  per_item: CertPerItem[];
+  remediation_lessons: string[];
+  overall?: "CONFIRMED" | "NOT_YET";
+}
+
+export interface CertSubmitAnswer {
+  id: string;
+  value?: string;
+  rule?: string;
+  distractor?: string;
+  axis?: string;
+  survivor?: string;
+  band?: "HIGH" | "MED" | "COIN";
+  phase?: "CUT" | "CLASH" | "CALL";
+  flag?: boolean;
+}
+
 export const api = {
   cohortStatus: () => request<CohortStatus>("/api/cohort/status"),
 
@@ -1148,37 +1255,43 @@ export const api = {
           { method: "POST", body: JSON.stringify(payload) },
         ),
 
-  getBootCampSession: (sessionId: string, init?: RequestInit) =>
-    request<BootCampSession>(
+  getBootCampSession: (sessionId: string, token: string, init?: RequestInit) =>
+    authedRequest<BootCampSession>(
       `/api/boot-camps/sessions/${encodeURIComponent(sessionId)}`,
+      token,
       init,
     ),
 
-  startBootCampDay: (sessionId: string, day: number) =>
-    request<BootCampDayStartResponse>(
+  startBootCampDay: (sessionId: string, day: number, token: string) =>
+    authedRequest<BootCampDayStartResponse>(
       `/api/boot-camps/sessions/${encodeURIComponent(sessionId)}/days/${day}/start`,
+      token,
       { method: "POST", body: JSON.stringify({}) },
     ),
 
   completeBootCampDay: (
     sessionId: string,
     day: number,
+    token: string,
     payload: { skip?: boolean } = {},
   ) =>
-    request<BootCampDayCompleteResponse>(
+    authedRequest<BootCampDayCompleteResponse>(
       `/api/boot-camps/sessions/${encodeURIComponent(sessionId)}/days/${day}/complete`,
+      token,
       { method: "POST", body: JSON.stringify(payload) },
     ),
 
-  startBootCampMastery: (sessionId: string) =>
-    request<BootCampMasteryStartResponse>(
+  startBootCampMastery: (sessionId: string, token: string) =>
+    authedRequest<BootCampMasteryStartResponse>(
       `/api/boot-camps/sessions/${encodeURIComponent(sessionId)}/mastery/start`,
+      token,
       { method: "POST", body: JSON.stringify({}) },
     ),
 
-  completeBootCampMastery: (sessionId: string) =>
-    request<BootCampMasteryCompleteResponse>(
+  completeBootCampMastery: (sessionId: string, token: string) =>
+    authedRequest<BootCampMasteryCompleteResponse>(
       `/api/boot-camps/sessions/${encodeURIComponent(sessionId)}/mastery/complete`,
+      token,
       { method: "POST", body: JSON.stringify({}) },
     ),
 
@@ -1200,12 +1313,17 @@ export const api = {
           body: JSON.stringify(payload),
         }),
 
-  getDrill: (drillId: string, init?: RequestInit) =>
-    request<DrillDetail>(`/api/drills/${encodeURIComponent(drillId)}`, init),
+  getDrill: (drillId: string, token: string, init?: RequestInit) =>
+    authedRequest<DrillDetail>(
+      `/api/drills/${encodeURIComponent(drillId)}`,
+      token,
+      init,
+    ),
 
-  completeDrill: (drillId: string) =>
-    request<DrillCompleteResponse>(
+  completeDrill: (drillId: string, token: string) =>
+    authedRequest<DrillCompleteResponse>(
       `/api/drills/${encodeURIComponent(drillId)}/complete`,
+      token,
       { method: "POST", body: JSON.stringify({}) },
     ),
 
@@ -1244,6 +1362,34 @@ export const api = {
   // Public list of C3 deck cards.
   listC3Deck: (init?: RequestInit) =>
     request<C3DeckResponse>("/api/c3/deck", init),
+
+  // --- C3 Mastery Certification (Phase 4) — gated scorecard + runner ---
+  // Outline (anonymous -> locked + zero progress; authed -> merged status).
+  getCertification: (token: string) =>
+    authedRequest<CertOutline>("/api/certification", token),
+
+  // Per-competency content (key-free). Requires the unlock gate to pass.
+  getCertCompetency: (token: string, id: string) =>
+    authedRequest<CertPublicCompetency>(
+      `/api/certification/${encodeURIComponent(id)}`,
+      token,
+    ),
+
+  // Start a server-timestamped session before answering.
+  startCert: (token: string, id: string) =>
+    authedRequest<{ session_id: string }>(
+      `/api/me/certification/${encodeURIComponent(id)}/start`,
+      token,
+      { method: "POST", body: JSON.stringify({}) },
+    ),
+
+  // Submit answers; the grade response is the only place keys appear.
+  submitCert: (token: string, id: string, answers: CertSubmitAnswer[]) =>
+    authedRequest<CertGradeResult>(
+      `/api/me/certification/${encodeURIComponent(id)}`,
+      token,
+      { method: "POST", body: JSON.stringify({ answers }) },
+    ),
 };
 
 export { ApiClientError, API_URL };

@@ -103,6 +103,7 @@ export default function RootLayout({
                 <Link href="/how-it-works">How It Works</Link>
                 <Link href="/foundations">The Method</Link>
                 <Link href="/mastery">Mastery</Link>
+                <Link href="/certification">Certification</Link>
                 <Link href="/pricing">Pricing</Link>
                 <Link href="/diagnostic">Diagnostic</Link>
                 <Link href="/red-zones">Red Zones</Link>

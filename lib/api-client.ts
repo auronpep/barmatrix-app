@@ -929,6 +929,69 @@ export interface FoundationsMarkResponse {
   progress?: FoundationsProgressSummary;
 }
 
+// --- C3 Mastery (flagship measurement surface) ---
+// GET /api/me/c3 (Clerk-gated mastery payload) + GET /api/c3/deck (public).
+// Shapes mirror shapeC3Response in barmatrix-api/src/routes/c3.ts.
+
+export interface C3Calibration {
+  error: number;
+  direction: "overconfident" | "underconfident" | "calibrated";
+  buckets: Array<{ confidence: number; actual: number; n: number }>;
+}
+
+export interface C3WeakMold {
+  mold_code: string;
+  name: string;
+  family: string;
+  bite_pct: number;
+  exposures: number;
+  deck_ref: string | null;
+  lesson_slug: string | null;
+  proficiency: number | null;
+}
+
+export interface C3Family {
+  family: string;
+  proficiency: number | null;
+  measured_molds: number;
+  accuracy: number | null;
+}
+
+export interface C3Mastery {
+  coverage: { measured_attempts: number; total_attempts: number; pct: number };
+  readiness: {
+    score: number | null;
+    label: "measured" | "not_yet_measured";
+    mold_floor: number;
+  };
+  families: C3Family[];
+  tracks: {
+    ear_overclaim: number | null;
+    ear_falsity: number | null;
+    ear_distortion: number | null;
+    issue_sense: number | null;
+    phase_accuracy: Record<string, number>;
+    clean_cut_hit_rate: number | null;
+    calibration: C3Calibration;
+  };
+  weak_molds: C3WeakMold[];
+  facets: {
+    by_subject: Array<{ subject: string; accuracy: number; n: number }>;
+  };
+}
+
+export interface C3DeckCard {
+  card_id: string;
+  type: string;
+  subject: string | null;
+  front: string;
+  is_fork: boolean;
+}
+
+export interface C3DeckResponse {
+  cards: C3DeckCard[];
+}
+
 export const api = {
   cohortStatus: () => request<CohortStatus>("/api/cohort/status"),
 
@@ -1173,6 +1236,14 @@ export const api = {
       token,
       { method: "POST", body: JSON.stringify(payload) },
     ),
+
+  // --- C3 Mastery (flagship measurement surface) ---
+  // Clerk-gated mastery payload; student is server-derived.
+  getMyC3: (token: string) => authedRequest<C3Mastery>("/api/me/c3", token),
+
+  // Public list of C3 deck cards.
+  listC3Deck: (init?: RequestInit) =>
+    request<C3DeckResponse>("/api/c3/deck", init),
 };
 
 export { ApiClientError, API_URL };

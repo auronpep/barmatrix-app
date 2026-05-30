@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { api, ApiClientError, type BootCampDetail } from "@/lib/api-client";
 import { humanizeTag } from "@/lib/boot-camps";
 import { trackBootcampStarted } from "@/lib/analytics";
+import { useClerkAuth } from "@/lib/use-clerk-auth";
 
 type State =
   | { phase: "loading" }
@@ -22,6 +23,7 @@ export default function BootCampDetailPage({
 }) {
   const { slug } = use(params);
   const router = useRouter();
+  const { isLoaded, isSignedIn, getToken } = useClerkAuth();
   const [state, setState] = useState<State>({ phase: "loading" });
   const [starting, setStarting] = useState(false);
   const [startError, setStartError] = useState<string | null>(null);
@@ -46,16 +48,28 @@ export default function BootCampDetailPage({
   }, [slug]);
 
   const start = async () => {
+    if (!isLoaded) return;
+    if (!isSignedIn) {
+      setStartError("Sign in to start this boot camp.");
+      return;
+    }
     setStarting(true);
     setStartError(null);
     try {
-      const res = await api.startBootCamp(slug);
+      const token = await getToken();
+      const res = await api.startBootCamp(slug, {}, token);
       trackBootcampStarted({ bootcampId: slug, source: "manual" });
       router.push(`/boot-camps/sessions/${res.session_id}`);
     } catch (err) {
-      setStartError(
-        err instanceof ApiClientError ? `API ${err.status}` : "Could not start the camp",
-      );
+      if (err instanceof ApiClientError && err.status === 401) {
+        setStartError("Sign in to start this boot camp.");
+      } else if (err instanceof ApiClientError && err.status === 403) {
+        setStartError("Enrollment required — enroll at barmatrix.app/checkout.");
+      } else {
+        setStartError(
+          err instanceof ApiClientError ? `API ${err.status}` : "Could not start the camp",
+        );
+      }
       setStarting(false);
     }
   };

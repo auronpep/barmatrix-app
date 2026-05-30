@@ -101,6 +101,7 @@ export default function RootLayout({
               </Link>
               <div className="nav-links">
                 <Link href="/how-it-works">How It Works</Link>
+                <Link href="/foundations">The Method</Link>
                 <Link href="/pricing">Pricing</Link>
                 <Link href="/diagnostic">Diagnostic</Link>
                 <Link href="/red-zones">Red Zones</Link>

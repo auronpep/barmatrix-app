@@ -828,6 +828,107 @@ export interface DrillCompleteResponse {
   red_zone: DrillRedZoneSnapshot | null;
 }
 
+// --- Foundations ("The Method" / C3) — the gated core starter course ---
+// Content reads are anonymous + DB-free (authored, shipped in the API). Progress
+// is Clerk-gated and server-attributed. See routes/foundations.ts.
+
+export type FoundationsLessonStatus = "not_started" | "in_progress" | "completed";
+
+export interface FoundationsPart {
+  roman: string;
+  title: string;
+  lesson_numbers: number[];
+}
+
+export interface FoundationsLessonOutline {
+  slug: string;
+  number: number;
+  part: string;
+  part_title: string;
+  title: string;
+  objective: string;
+  est_minutes: number;
+  drill_count: number;
+  drill_item_count: number;
+  status: FoundationsLessonStatus;
+  drills_completed: number;
+}
+
+export interface FoundationsProgressSummary {
+  lessons_completed: number;
+  lesson_count: number;
+  percent: number;
+  complete: boolean;
+  next_slug: string | null;
+}
+
+export interface FoundationsOutline {
+  slug: string;
+  title: string;
+  subtitle: string;
+  tagline: string;
+  version: string;
+  lesson_count: number;
+  drill_item_count: number;
+  est_total_minutes: number;
+  parts: FoundationsPart[];
+  lessons: FoundationsLessonOutline[];
+  progress: FoundationsProgressSummary;
+}
+
+export interface FoundationsDrill {
+  id: string;
+  title: string;
+  instructions_md: string;
+  items: string[];
+  item_count: number;
+  key_md: string;
+}
+
+export interface FoundationsLesson {
+  slug: string;
+  number: number;
+  part: string;
+  part_title: string;
+  title: string;
+  objective: string;
+  est_minutes: number;
+  body_md: string;
+  drills: FoundationsDrill[];
+  how_to_use_md: string;
+  drill_item_count: number;
+}
+
+export interface FoundationsLessonProgress {
+  status: FoundationsLessonStatus;
+  drills_completed: string[];
+  completed_at: string | null;
+}
+
+export interface FoundationsLessonResponse {
+  course_slug: string;
+  course_title: string;
+  lesson: FoundationsLesson;
+  prev_slug: string | null;
+  next_slug: string | null;
+  progress: FoundationsLessonProgress;
+}
+
+export interface FoundationsMarkRequest {
+  status?: FoundationsLessonStatus;
+  completed?: boolean;
+  drills_completed?: string[];
+}
+
+export interface FoundationsMarkResponse {
+  persisted: boolean;
+  reason?: string;
+  lesson_slug: string;
+  status: FoundationsLessonStatus;
+  drills_completed: string[];
+  progress?: FoundationsProgressSummary;
+}
+
 export const api = {
   cohortStatus: () => request<CohortStatus>("/api/cohort/status"),
 
@@ -1035,6 +1136,34 @@ export const api = {
     request<DrillCompleteResponse>(
       `/api/drills/${encodeURIComponent(drillId)}/complete`,
       { method: "POST", body: JSON.stringify({}) },
+    ),
+
+  // --- Foundations ("The Method") — gated core starter course ---
+  // Public course outline (anonymous; progress is all zeros).
+  listFoundations: (init?: RequestInit) =>
+    request<FoundationsOutline>("/api/foundations", init),
+
+  // Signed-in outline: same shape, merged with the student's lesson status.
+  getMyFoundations: (token: string) =>
+    authedRequest<FoundationsOutline>("/api/me/foundations", token),
+
+  // Public lesson content (full body + drills + keys).
+  getFoundationsLesson: (slug: string, init?: RequestInit) =>
+    request<FoundationsLessonResponse>(
+      `/api/foundations/${encodeURIComponent(slug)}`,
+      init,
+    ),
+
+  // Persist lesson progress (mark complete / record self-checked drills).
+  markFoundationsLesson: (
+    token: string,
+    slug: string,
+    payload: FoundationsMarkRequest,
+  ) =>
+    authedRequest<FoundationsMarkResponse>(
+      `/api/me/foundations/${encodeURIComponent(slug)}`,
+      token,
+      { method: "POST", body: JSON.stringify(payload) },
     ),
 };
 

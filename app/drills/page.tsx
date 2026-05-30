@@ -19,6 +19,7 @@ import {
   type PrescribedDrillSuggestion,
 } from "@/lib/api-client";
 import { useDashboard } from "@/lib/use-dashboard";
+import { useClerkAuth } from "@/lib/use-clerk-auth";
 import { trackAnalyticsEvent } from "@/lib/analytics";
 import {
   SUBJECT_QUICK_DRILLS,
@@ -36,6 +37,7 @@ const TABS: ReadonlyArray<{ id: TabId; label: string }> = [
 
 export default function DrillsPage() {
   const dash = useDashboard();
+  const { isLoaded: authLoaded, isSignedIn: authSignedIn, getToken } = useClerkAuth();
   const studentId = dash.data?.student_id ?? null;
   const router = useRouter();
 
@@ -62,22 +64,24 @@ export default function DrillsPage() {
     };
   }, []);
 
-  // Prescribed needs the resolved student id (from the Clerk -> dashboard bridge).
+  // Prescribed needs a Clerk token.
   useEffect(() => {
-    if (!studentId) return;
+    if (!authLoaded || !authSignedIn) return;
     let active = true;
-    api
-      .getPrescribedDrills(studentId)
-      .then((p) => {
+    void (async () => {
+      try {
+        const token = await getToken();
+        if (!token || !active) return;
+        const p = await api.getPrescribedDrills(token);
         if (active) setPrescribed(p);
-      })
-      .catch(() => {
+      } catch {
         if (active) setPrescribed({ suggested: [], in_progress: [] });
-      });
+      }
+    })();
     return () => {
       active = false;
     };
-  }, [studentId]);
+  }, [authLoaded, authSignedIn, getToken]);
 
   // Fire drill_library_viewed once, after the catalog resolves.
   useEffect(() => {
@@ -100,10 +104,8 @@ export default function DrillsPage() {
       setBusy(key);
       setStartError(null);
       try {
-        const res = await api.startDrill({
-          ...payload,
-          student_id: studentId ?? undefined,
-        });
+        const token = authSignedIn ? await getToken() : null;
+        const res = await api.startDrill({ ...payload }, token);
         if (!res.drill_id) {
           setStartError(
             "No active questions matched that drill yet. Try another while the bank is loading.",
@@ -113,13 +115,21 @@ export default function DrillsPage() {
         }
         router.push(`/drills/${res.drill_id}`);
       } catch (err) {
-        setStartError(
-          err instanceof ApiClientError ? `Could not start drill (API ${err.status}).` : "Could not start drill.",
-        );
+        if (err instanceof ApiClientError && err.status === 401) {
+          setStartError("Sign in to start a drill.");
+        } else if (err instanceof ApiClientError && err.status === 403) {
+          setStartError("Enrollment required — enroll at barmatrix.app/checkout.");
+        } else {
+          setStartError(
+            err instanceof ApiClientError
+              ? `Could not start drill (API ${err.status}).`
+              : "Could not start drill.",
+          );
+        }
         setBusy(null);
       }
     },
-    [busy, router, studentId],
+    [busy, router, authSignedIn, getToken],
   );
 
   const onTabKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {

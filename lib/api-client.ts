@@ -1073,11 +1073,17 @@ export const api = {
   getBootCamp: (slug: string, init?: RequestInit) =>
     request<BootCampDetail>(`/api/boot-camps/${encodeURIComponent(slug)}`, init),
 
-  startBootCamp: (slug: string, payload: BootCampStartRequest = {}) =>
-    request<BootCampStartResponse>(
-      `/api/boot-camps/${encodeURIComponent(slug)}/start`,
-      { method: "POST", body: JSON.stringify(payload) },
-    ),
+  startBootCamp: (slug: string, payload: BootCampStartRequest = {}, token?: string | null) =>
+    token
+      ? authedRequest<BootCampStartResponse>(
+          `/api/boot-camps/${encodeURIComponent(slug)}/start`,
+          token,
+          { method: "POST", body: JSON.stringify(payload) },
+        )
+      : request<BootCampStartResponse>(
+          `/api/boot-camps/${encodeURIComponent(slug)}/start`,
+          { method: "POST", body: JSON.stringify(payload) },
+        ),
 
   getBootCampSession: (sessionId: string, init?: RequestInit) =>
     request<BootCampSession>(
@@ -1113,21 +1119,23 @@ export const api = {
       { method: "POST", body: JSON.stringify({}) },
     ),
 
-  // --- Drill Library (Web Component 04) — anonymous-first ---
+  // --- Drill Library (Web Component 04) — enrolled starts, public catalog ---
   getDrillCatalog: (init?: RequestInit) =>
     request<DrillCatalogResponse>("/api/drills/catalog", init),
 
-  getPrescribedDrills: (studentId: string, init?: RequestInit) =>
-    request<PrescribedDrillsResponse>(
-      `/api/drills/prescribed?student_id=${encodeURIComponent(studentId)}`,
-      init,
-    ),
+  getPrescribedDrills: (token: string) =>
+    authedRequest<PrescribedDrillsResponse>("/api/drills/prescribed", token),
 
-  startDrill: (payload: DrillStartRequest) =>
-    request<DrillStartResponse>("/api/drills/start", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    }),
+  startDrill: (payload: DrillStartRequest, token?: string | null) =>
+    token
+      ? authedRequest<DrillStartResponse>("/api/drills/start", token, {
+          method: "POST",
+          body: JSON.stringify(payload),
+        })
+      : request<DrillStartResponse>("/api/drills/start", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        }),
 
   getDrill: (drillId: string, init?: RequestInit) =>
     request<DrillDetail>(`/api/drills/${encodeURIComponent(drillId)}`, init),

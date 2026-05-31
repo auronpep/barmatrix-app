@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getTrapCatalog } from "@/lib/traps";
 import type { TrapEntry } from "@/lib/api-client";
 import { TrapTaxonomyAnalytics } from "./trap-analytics";
+import { TrapProfileProvider, PersonalTrapBadge } from "./your-trap-profile";
 
 export const metadata: Metadata = {
   title: "Trap Taxonomy",
@@ -132,7 +133,7 @@ export default async function TrapsPage({
       )}
 
       {!isEmpty && !filteredEmpty && (
-        <>
+        <TrapProfileProvider>
           <div className="mt-10 grid gap-8 lg:grid-cols-2">
             <TrapColumn
               title="Wrong-answer architecture"
@@ -154,7 +155,7 @@ export default async function TrapsPage({
               officialOnly={officialOnly}
             />
           )}
-        </>
+        </TrapProfileProvider>
       )}
     </section>
   );
@@ -236,6 +237,7 @@ function TrapRow({ trap }: { trap: TrapEntry }) {
               Official
             </span>
           )}
+          <PersonalTrapBadge slug={trap.slug} />
         </span>
         <span className="mt-0.5 block font-mono text-[11px] text-zinc-400">
           {trap.slug}

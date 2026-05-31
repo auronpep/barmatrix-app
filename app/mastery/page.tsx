@@ -28,7 +28,7 @@ export default function MasteryPage() {
         <div className="mt-8 border-2 border-zinc-900 bg-zinc-950 p-6 text-white">
           <p className="font-serif text-2xl font-semibold">Not yet measured</p>
           <p className="mt-2 text-sm text-zinc-200">Finish The Method, then work questions or the diagnostic — your mastery lights up after {data.readiness.mold_floor} exposures per skill.</p>
-          <Link href="/foundations" className="mt-4 inline-block rounded-md bg-white px-5 py-2.5 text-sm font-medium text-zinc-950 hover:bg-red-700 hover:text-white">Go to The Method →</Link>
+          <Link href="/foundations" className="mt-4 inline-block rounded-md bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-900">Go to The Method →</Link>
         </div>
       ) : (
         <section className="mt-8 grid gap-4 md:grid-cols-3">

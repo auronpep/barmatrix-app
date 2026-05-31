@@ -233,7 +233,7 @@ function MethodGate({ data }: { data: FoundationsOutline }) {
         </div>
         <Link
           href={`/foundations/${started ? resumeSlug : "lesson-01"}`}
-          className="rounded-md bg-white px-6 py-3 text-sm font-medium text-zinc-950 hover:bg-red-700 hover:text-white"
+          className="rounded-md bg-red-700 px-6 py-3 text-sm font-medium text-white hover:bg-red-600"
         >
           {started ? "Resume the method" : "Start Lesson 1"} <span aria-hidden>→</span>
         </Link>

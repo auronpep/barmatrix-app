@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { WELCOME, ACCOUNT_PLACEHOLDER } from "@/lib/copy";
 import { BillingPortalButton } from "./billing-portal-button";
+import { EnrollmentRecoveryPanel } from "./enrollment-recovery";
 
 export const metadata: Metadata = {
   title: "Account — BarMatrix",
@@ -28,6 +29,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div>
           {isWelcome ? <WelcomePanel /> : <AccountPlaceholder />}
+          <EnrollmentRecoveryPanel checkoutSessionId={checkoutSessionId} />
           <BillingPanel checkoutSessionId={checkoutSessionId} />
         </div>
         <aside className="space-y-6">

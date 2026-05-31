@@ -7,9 +7,10 @@
 //     plus the seven existing subject quick-drills.
 // Starting a drill creates a drill_assignments row and routes to the runner.
 
+import { Suspense } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   api,
   ApiClientError,
@@ -36,10 +37,28 @@ const TABS: ReadonlyArray<{ id: TabId; label: string }> = [
 ];
 
 export default function DrillsPage() {
+  return (
+    <Suspense fallback={<DrillsPageFallback />}>
+      <DrillsPageContent />
+    </Suspense>
+  );
+}
+
+function DrillsPageFallback() {
+  return (
+    <section className="mx-auto max-w-7xl px-6 py-10 sm:py-14">
+      <p className="text-zinc-600">Loading drill library…</p>
+    </section>
+  );
+}
+
+function DrillsPageContent() {
   const dash = useDashboard();
   const { isLoaded: authLoaded, isSignedIn: authSignedIn, getToken } = useClerkAuth();
   const studentId = dash.data?.student_id ?? null;
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const tensionParam = searchParams.get("tension");
 
   const [tab, setTab] = useState<TabId>("prescribed");
   const [catalog, setCatalog] = useState<DrillCatalogResponse | null>(null);
@@ -82,6 +101,25 @@ export default function DrillsPage() {
       active = false;
     };
   }, [authLoaded, authSignedIn, getToken]);
+
+  // Switch to catalog tab if tension parameter is present.
+  useEffect(() => {
+    if (tensionParam) {
+      setTab("catalog");
+    }
+  }, [tensionParam]);
+
+  // Scroll to tension in catalog if passed via ?tension parameter.
+  useEffect(() => {
+    if (!tensionParam || !catalog) return;
+    const timer = setTimeout(() => {
+      const element = document.getElementById(`tension-${tensionParam}`);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [tensionParam, catalog]);
 
   // Fire drill_library_viewed once, after the catalog resolves.
   useEffect(() => {
@@ -481,8 +519,9 @@ function CatalogGroup({
         <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => {
             const key = `${kind}:${item.slug}`;
+            const elementId = kind === "tension" ? `tension-${item.slug}` : undefined;
             return (
-              <article key={key} className="flex flex-col border border-zinc-300 bg-white p-5">
+              <article key={key} id={elementId} className="flex flex-col border border-zinc-300 bg-white p-5">
                 <h3 className="font-serif text-xl font-semibold leading-tight text-zinc-950">
                   {item.label}
                 </h3>

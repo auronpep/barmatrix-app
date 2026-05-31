@@ -303,6 +303,9 @@ export default function CriminalLawSubjectPage() {
             <Link href="/subjects/constitutional-law" className="btn btn-lg ghost">
               Compare Constitutional Law
             </Link>
+            <Link href={`/tensions?subject=${encodeURIComponent(SUBJECTS[0])}`} className="btn btn-lg ghost">
+              Explore Criminal Law tensions
+            </Link>
           </div>
           {practiceError && (
             <p className="mono" style={{ color: "var(--red)", marginTop: 18 }}>

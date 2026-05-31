@@ -282,6 +282,9 @@ export default function CivilProcedureSubjectPage() {
             <Link href="/subjects/evidence" className="btn btn-lg ghost">
               Compare Evidence
             </Link>
+            <Link href={`/tensions?subject=${encodeURIComponent(SUBJECT)}`} className="btn btn-lg ghost">
+              Explore Civil Procedure tensions
+            </Link>
           </div>
           {practiceError && (
             <p className="mono" style={{ color: "var(--red)", marginTop: 18 }}>

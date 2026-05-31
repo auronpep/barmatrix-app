@@ -282,6 +282,9 @@ export default function RealPropertySubjectPage() {
             <Link href="/subjects/contracts" className="btn btn-lg ghost">
               Compare Contracts
             </Link>
+            <Link href={`/tensions?subject=${encodeURIComponent(SUBJECT)}`} className="btn btn-lg ghost">
+              Explore Real Property tensions
+            </Link>
           </div>
           {practiceError && (
             <p className="mono" style={{ color: "var(--red)", marginTop: 18 }}>

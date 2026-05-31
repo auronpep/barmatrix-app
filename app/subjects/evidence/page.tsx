@@ -280,6 +280,9 @@ export default function EvidenceSubjectPage() {
             <Link href="/diagnostic" className="btn btn-lg ghost">
               Run diagnostic
             </Link>
+            <Link href={`/tensions?subject=${encodeURIComponent(SUBJECT)}`} className="btn btn-lg ghost">
+              Explore Evidence tensions
+            </Link>
           </div>
           {practiceError && (
             <p className="mono" style={{ color: "var(--red)", marginTop: 18 }}>

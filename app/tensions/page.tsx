@@ -13,17 +13,23 @@ export const metadata: Metadata = {
 export default async function TensionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ curated?: string }>;
+  searchParams: Promise<{ curated?: string; subject?: string }>;
 }) {
-  const [{ curated }, catalog] = await Promise.all([
+  const [{ curated, subject }, catalog] = await Promise.all([
     searchParams,
     getTensionCatalog(),
   ]);
   const curatedOnly = curated === "1" || curated === "true";
 
-  const visible = curatedOnly
+  let visible = curatedOnly
     ? catalog.tensions.filter((t) => t.official)
     : catalog.tensions;
+
+  if (subject) {
+    visible = visible.filter(
+      (t) => t.subject.toLowerCase() === subject.toLowerCase()
+    );
+  }
 
   const isEmpty = catalog.tensions.length === 0;
   const filteredEmpty = !isEmpty && visible.length === 0;

@@ -282,6 +282,9 @@ export default function ConstitutionalLawSubjectPage() {
             <Link href="/subjects/civil-procedure" className="btn btn-lg ghost">
               Compare Civil Procedure
             </Link>
+            <Link href={`/tensions?subject=${encodeURIComponent(SUBJECT)}`} className="btn btn-lg ghost">
+              Explore Constitutional Law tensions
+            </Link>
           </div>
           {practiceError && (
             <p className="mono" style={{ color: "var(--red)", marginTop: 18 }}>

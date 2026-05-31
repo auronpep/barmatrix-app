@@ -289,6 +289,9 @@ export default function TortsSubjectPage() {
             <Link href="/diagnostic" className="btn btn-lg ghost">
               Run diagnostic
             </Link>
+            <Link href={`/tensions?subject=${encodeURIComponent(SUBJECT)}`} className="btn btn-lg ghost">
+              Explore Torts tensions
+            </Link>
           </div>
           {practiceError && (
             <p className="mono" style={{ color: "var(--red)", marginTop: 18 }}>

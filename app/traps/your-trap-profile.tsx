@@ -56,7 +56,7 @@ function YourTrapProfile({ state }: { state: MyTrapProfileState }) {
 
   // Anonymous or still resolving Clerk: render nothing (no CTA flash).
   if (!state.signedIn) return null;
-  if (state.loading || !data) return null;
+  if (state.loading || state.error || !data) return null;
   if (data.traps.length === 0) {
     return (
       <div className="mb-8 rounded-lg border border-zinc-200 bg-zinc-50 p-5">

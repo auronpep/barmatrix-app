@@ -10,6 +10,7 @@ export default function GamificationSummary({ data }: { data: MyGamification }) 
         <StreakFlame count={data.current_streak} />
         <XpTotal value={data.total_xp} />
       </div>
+      <div className="hidden sm:block w-px self-stretch bg-zinc-200" aria-hidden="true" />
       <BadgeShelf earnedSlugs={data.badges.map((b) => b.slug)} />
     </div>
   );

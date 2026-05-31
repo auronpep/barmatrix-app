@@ -4,7 +4,14 @@ export default function StreakFlame({ count }: { count: number }) {
   const active = count > 0;
   return (
     <div className="flex items-center gap-2" aria-label={streakLabel(count)}>
-      <span className={active ? "text-2xl" : "text-2xl opacity-30 grayscale"} aria-hidden="true">
+      <span
+        className={
+          active
+            ? "text-2xl transition-transform hover:scale-110"
+            : "text-2xl opacity-30 grayscale"
+        }
+        aria-hidden="true"
+      >
         🔥
       </span>
       <div className="leading-tight">

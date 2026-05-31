@@ -14,8 +14,10 @@ export default function BadgeShelf({ earnedSlugs }: { earnedSlugs: string[] }) {
             key={slug}
             title={`${meta.label} — ${meta.description}`}
             aria-label={`${meta.label}: ${has ? "earned" : "locked"}`}
-            className={`flex items-center gap-1.5 border px-2.5 py-1.5 ${
-              has ? "border-amber-300 bg-amber-50" : "border-zinc-200 bg-zinc-50 opacity-50 grayscale"
+            className={`flex items-center gap-1.5 rounded-sm border px-2.5 py-1.5 transition-colors ${
+              has
+                ? "border-amber-300 bg-amber-50 hover:border-amber-400 hover:bg-amber-100 cursor-default"
+                : "border-zinc-200 bg-zinc-50 opacity-50 grayscale"
             }`}
           >
             <span className="text-base" aria-hidden="true">

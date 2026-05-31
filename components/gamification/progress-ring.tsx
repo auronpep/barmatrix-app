@@ -1,5 +1,9 @@
-// Circular progress indicator — replaces the flat session-hub bar. Pure SVG, no
-// motion. Keeps an aria-label equivalent to the previous bar for screen readers.
+"use client";
+
+// Circular progress indicator — replaces the flat session-hub bar. Animates
+// on mount. Keeps proper progressbar semantics for screen readers.
+
+import { useEffect, useState } from "react";
 
 export default function ProgressRing({
   pct,
@@ -15,11 +19,22 @@ export default function ProgressRing({
   const clamped = Math.max(0, Math.min(100, Math.round(pct)));
   const r = (size - stroke) / 2;
   const circumference = 2 * Math.PI * r;
-  const offset = circumference - (clamped / 100) * circumference;
+  const finalOffset = circumference - (clamped / 100) * circumference;
+
+  // Start at full offset (empty), animate to real value after mount.
+  const [offset, setOffset] = useState(circumference);
+  useEffect(() => {
+    const id = setTimeout(() => setOffset(finalOffset), 50);
+    return () => clearTimeout(id);
+  }, [finalOffset]);
+
   return (
     <div
       className="relative inline-flex items-center justify-center"
-      role="img"
+      role="progressbar"
+      aria-valuenow={clamped}
+      aria-valuemin={0}
+      aria-valuemax={100}
       aria-label={label ?? `Progress ${clamped}%`}
     >
       <svg width={size} height={size} className="-rotate-90">
@@ -34,6 +49,7 @@ export default function ProgressRing({
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           strokeLinecap="round"
+          style={{ transition: "stroke-dashoffset 0.8s ease-out" }}
         />
       </svg>
       <span className="absolute font-mono text-xs font-semibold text-zinc-800">{clamped}%</span>

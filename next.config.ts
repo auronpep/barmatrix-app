@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 // Vercel hosts both static and server-rendered pages — keep SSR available
 // for future dynamic pages (cohort capacity, dashboard, drills, forensics).
@@ -17,4 +18,9 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT ?? "barmatrix-app",
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: true,
+});

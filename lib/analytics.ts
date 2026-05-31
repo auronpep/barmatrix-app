@@ -226,6 +226,16 @@ export const ANALYTICS_EVENT_CATALOG = {
     required: ["slug"],
     optional: ["kinds", "question_count", "subject_distribution", "official", "session_id", "cohort_id"],
   },
+  trap_profile_viewed: {
+    area: "product",
+    required: [],
+    optional: ["distinct_traps", "total_falls", "session_id", "cohort_id"],
+  },
+  trap_history_viewed: {
+    area: "product",
+    required: ["slug"],
+    optional: ["fell_count", "session_id", "cohort_id"],
+  },
   tension_map_viewed: {
     area: "product",
     required: ["tension_count"],
@@ -365,6 +375,21 @@ export const ANALYTICS_EVENT_CATALOG = {
       "mastery_passed",
       "post_score",
     ],
+  },
+  bootcamp_xp_earned: {
+    area: "product",
+    required: ["bootcamp_id", "xp", "source"],
+    optional: ["session_id", "cohort_id", "student_id"],
+  },
+  bootcamp_badge_unlocked: {
+    area: "product",
+    required: ["bootcamp_id", "badge_slug"],
+    optional: ["session_id", "cohort_id", "student_id"],
+  },
+  bootcamp_streak_extended: {
+    area: "product",
+    required: ["bootcamp_id", "streak"],
+    optional: ["session_id", "cohort_id", "student_id"],
   },
   mobile_login_success: {
     area: "platform",
@@ -1370,6 +1395,57 @@ export function trackTrapDetailViewedOnce({
   );
 }
 
+type TrapProfileViewedInput = {
+  distinctTraps?: number | null;
+  totalFalls?: number | null;
+  sessionId?: string | null;
+  cohortId?: string | null;
+};
+
+export function trackTrapProfileViewedOnce({
+  distinctTraps,
+  totalFalls,
+  sessionId,
+  cohortId,
+}: TrapProfileViewedInput): boolean {
+  return trackAnalyticsEvent(
+    "trap_profile_viewed",
+    {
+      distinct_traps: normalizeNonNegativeInteger(distinctTraps ?? undefined),
+      total_falls: normalizeNonNegativeInteger(totalFalls ?? undefined),
+      session_id: cleanToken(sessionId) || getAnalyticsSession().session_id,
+      cohort_id: cleanToken(cohortId) || undefined,
+    },
+    { dedupeKey: "trap-profile", dedupeScope: "session" },
+  );
+}
+
+type TrapHistoryViewedInput = {
+  slug: string;
+  fellCount?: number | null;
+  sessionId?: string | null;
+  cohortId?: string | null;
+};
+
+export function trackTrapHistoryViewedOnce({
+  slug,
+  fellCount,
+  sessionId,
+  cohortId,
+}: TrapHistoryViewedInput): boolean {
+  const cleanSlug = cleanToken(slug);
+  return trackAnalyticsEvent(
+    "trap_history_viewed",
+    {
+      slug: cleanSlug,
+      fell_count: normalizeNonNegativeInteger(fellCount ?? undefined),
+      session_id: cleanToken(sessionId) || getAnalyticsSession().session_id,
+      cohort_id: cleanToken(cohortId) || undefined,
+    },
+    { dedupeKey: `trap-history:${cleanSlug}`, dedupeScope: "session" },
+  );
+}
+
 type TensionMapViewedInput = {
   tensionCount: number;
   officialCount?: number | null;
@@ -1794,6 +1870,81 @@ export function trackBootcampCompleted({
     mastery_passed: masteryPassed ?? undefined,
     post_score: normalizeScore(postScore),
     ...buildRepairAnalyticsContext(context),
+  });
+}
+
+export interface BootcampXpEarnedInput {
+  bootcampId: string;
+  xp: number;
+  source: "boot_camp_day" | "boot_camp_mastery";
+  sessionId?: string | null;
+  cohortId?: string | null;
+  studentId?: string | null;
+}
+
+export function trackBootcampXpEarned({
+  bootcampId,
+  xp,
+  source,
+  sessionId,
+  cohortId,
+  studentId,
+}: BootcampXpEarnedInput): boolean {
+  return trackAnalyticsEvent("bootcamp_xp_earned", {
+    bootcamp_id: cleanToken(bootcampId),
+    xp: normalizeNonNegativeInteger(xp),
+    source,
+    session_id: cleanToken(sessionId) || getAnalyticsSession().session_id,
+    cohort_id: cleanToken(cohortId) || undefined,
+    student_id: cleanToken(studentId) || undefined,
+  });
+}
+
+export interface BootcampBadgeUnlockedInput {
+  bootcampId: string;
+  badgeSlug: string;
+  sessionId?: string | null;
+  cohortId?: string | null;
+  studentId?: string | null;
+}
+
+export function trackBootcampBadgeUnlocked({
+  bootcampId,
+  badgeSlug,
+  sessionId,
+  cohortId,
+  studentId,
+}: BootcampBadgeUnlockedInput): boolean {
+  return trackAnalyticsEvent("bootcamp_badge_unlocked", {
+    bootcamp_id: cleanToken(bootcampId),
+    badge_slug: cleanToken(badgeSlug),
+    session_id: cleanToken(sessionId) || getAnalyticsSession().session_id,
+    cohort_id: cleanToken(cohortId) || undefined,
+    student_id: cleanToken(studentId) || undefined,
+  });
+}
+
+export interface BootcampStreakExtendedInput {
+  bootcampId: string;
+  streak: number;
+  sessionId?: string | null;
+  cohortId?: string | null;
+  studentId?: string | null;
+}
+
+export function trackBootcampStreakExtended({
+  bootcampId,
+  streak,
+  sessionId,
+  cohortId,
+  studentId,
+}: BootcampStreakExtendedInput): boolean {
+  return trackAnalyticsEvent("bootcamp_streak_extended", {
+    bootcamp_id: cleanToken(bootcampId),
+    streak: normalizeNonNegativeInteger(streak),
+    session_id: cleanToken(sessionId) || getAnalyticsSession().session_id,
+    cohort_id: cleanToken(cohortId) || undefined,
+    student_id: cleanToken(studentId) || undefined,
   });
 }
 

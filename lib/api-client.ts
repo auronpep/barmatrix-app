@@ -335,6 +335,56 @@ export interface TrapQuestionsResponse {
   questions: TrapQuestionSummary[];
 }
 
+// --- Personal Trap Profile (Web Component 02 personalization) ---
+
+export interface MyTrapEntry {
+  slug: string;
+  name: string;
+  kind: TrapKind;
+  official: boolean;
+  fell_count: number;
+  confident_fell_count: number;
+  last_fell_at: string | null;
+}
+
+export interface MyTrapProfile {
+  enrolled: boolean;
+  student_id: string | null;
+  metrics: {
+    distinct_traps: number;
+    total_falls: number;
+    total_confident_falls: number;
+    top_trap_slug: string | null;
+  };
+  traps: MyTrapEntry[];
+}
+
+export interface MyTrapOccurrence {
+  attempt_id: string;
+  question_id: string;
+  external_id: string | null;
+  subject: string;
+  subtopic: string | null;
+  selected_letter: string;
+  confidence: number | null;
+  attempted_at: string;
+  why_attractive: string | null;
+  why_wrong: string | null;
+  future_cue: string | null;
+}
+
+export interface MyTrapHistory {
+  enrolled: boolean;
+  slug: string;
+  name: string;
+  official: boolean;
+  fell_count: number;
+  confident_fell_count: number;
+  first_fell_at: string | null;
+  last_fell_at: string | null;
+  recent: MyTrapOccurrence[];
+}
+
 // --- Tension Map (Web Component 01) — anonymous, read-only ---
 
 export interface TensionEntry {
@@ -704,6 +754,7 @@ export interface BootCampDayCompleteResponse {
   skipped: boolean;
   current_day: number;
   mastery_unlocked: boolean;
+  gamification: BootCampGamificationGrant | null;
 }
 
 export interface BootCampMasteryStartResponse {
@@ -727,6 +778,30 @@ export interface BootCampMasteryCompleteResponse {
   total?: number;
   already_completed?: boolean;
   red_zone_deltas: BootCampRedZoneDelta[];
+  gamification: BootCampGamificationGrant | null;
+}
+
+export interface BootCampGamificationGrant {
+  xp_earned: number;
+  total_xp: number;
+  current_streak: number;
+  longest_streak: number;
+  badges_unlocked: string[];
+}
+
+export interface MyGamificationBadge {
+  slug: string;
+  label: string;
+  description: string;
+  emoji: string;
+  earned_at: string;
+}
+
+export interface MyGamification {
+  total_xp: number;
+  current_streak: number;
+  longest_streak: number;
+  badges: MyGamificationBadge[];
 }
 
 // --- Drill Library (Web Component 04) — anonymous-first prescriptive drills ---
@@ -789,6 +864,7 @@ export interface DrillStartRequest {
   size?: number;
   student_id?: string;
   source_drill_id?: string;
+  subject?: string;
   exclude_mastered?: boolean;
 }
 
@@ -841,6 +917,302 @@ export interface DrillCompleteResponse {
   red_zone: DrillRedZoneSnapshot | null;
 }
 
+// --- Foundations ("The Method" / C3) — the gated core starter course ---
+// Content reads are anonymous + DB-free (authored, shipped in the API). Progress
+// is Clerk-gated and server-attributed. See routes/foundations.ts.
+
+export type FoundationsLessonStatus = "not_started" | "in_progress" | "completed";
+
+export interface FoundationsPart {
+  roman: string;
+  title: string;
+  lesson_numbers: number[];
+}
+
+export interface FoundationsLessonOutline {
+  slug: string;
+  number: number;
+  part: string;
+  part_title: string;
+  title: string;
+  objective: string;
+  est_minutes: number;
+  drill_count: number;
+  drill_item_count: number;
+  status: FoundationsLessonStatus;
+  drills_completed: number;
+}
+
+export interface FoundationsProgressSummary {
+  lessons_completed: number;
+  lesson_count: number;
+  percent: number;
+  complete: boolean;
+  next_slug: string | null;
+}
+
+export interface FoundationsOutline {
+  slug: string;
+  title: string;
+  subtitle: string;
+  tagline: string;
+  version: string;
+  lesson_count: number;
+  drill_item_count: number;
+  est_total_minutes: number;
+  parts: FoundationsPart[];
+  lessons: FoundationsLessonOutline[];
+  progress: FoundationsProgressSummary;
+}
+
+export interface FoundationsDrill {
+  id: string;
+  title: string;
+  instructions_md: string;
+  items: string[];
+  item_count: number;
+  key_md: string;
+}
+
+export interface FoundationsLesson {
+  slug: string;
+  number: number;
+  part: string;
+  part_title: string;
+  title: string;
+  objective: string;
+  est_minutes: number;
+  body_md: string;
+  drills: FoundationsDrill[];
+  how_to_use_md: string;
+  drill_item_count: number;
+}
+
+export interface FoundationsLessonProgress {
+  status: FoundationsLessonStatus;
+  drills_completed: string[];
+  completed_at: string | null;
+}
+
+export interface FoundationsLessonResponse {
+  course_slug: string;
+  course_title: string;
+  lesson: FoundationsLesson;
+  prev_slug: string | null;
+  next_slug: string | null;
+  progress: FoundationsLessonProgress;
+}
+
+export interface FoundationsMarkRequest {
+  status?: FoundationsLessonStatus;
+  completed?: boolean;
+  drills_completed?: string[];
+}
+
+export interface FoundationsMarkResponse {
+  persisted: boolean;
+  reason?: string;
+  lesson_slug: string;
+  status: FoundationsLessonStatus;
+  drills_completed: string[];
+  progress?: FoundationsProgressSummary;
+}
+
+// GET /api/me/c3/next — C3 Coach adaptive item. Mirrors buildCoachPayload in
+// barmatrix-api/src/routes/c3-coach.ts.
+export interface CoachChoice { choice_id: string; letter: string; choice_text: string; }
+export interface CoachQuestion {
+  question_id: string; external_id: string | null; subject: string;
+  topic: string | null; subtopic: string | null; tension_point: string | null;
+  fact_pattern: string; question_stem: string; call_of_question: string | null;
+  choices: CoachChoice[];
+}
+export interface CoachingMeta {
+  target_mold: string; name: string; family: string;
+  deficit_pct: number; exposures: number; measured: boolean;
+}
+export interface CoachRemediation { lesson_slug: string | null; deck_ref: string | null; }
+export type CoachNext =
+  | { available: false; reason: string }
+  | {
+      available: true;
+      coverage: { total_attempts: number; measured_attempts: number; pct: number };
+      question: CoachQuestion;
+      coaching: CoachingMeta;
+      remediation: CoachRemediation;
+      cohort_signal: null;
+    };
+
+// --- C3 Mastery (flagship measurement surface) ---
+// GET /api/me/c3 (Clerk-gated mastery payload) + GET /api/c3/deck (public).
+// Shapes mirror shapeC3Response in barmatrix-api/src/routes/c3.ts.
+
+export interface C3Calibration {
+  error: number;
+  direction: "overconfident" | "underconfident" | "calibrated";
+  buckets: Array<{ confidence: number; actual: number; n: number }>;
+}
+
+export interface C3WeakMold {
+  mold_code: string;
+  name: string;
+  family: string;
+  bite_pct: number;
+  exposures: number;
+  deck_ref: string | null;
+  lesson_slug: string | null;
+  proficiency: number | null;
+}
+
+export interface C3Family {
+  family: string;
+  proficiency: number | null;
+  measured_molds: number;
+  accuracy: number | null;
+}
+
+export interface C3Mastery {
+  coverage: { measured_attempts: number; total_attempts: number; pct: number };
+  readiness: {
+    score: number | null;
+    label: "measured" | "not_yet_measured";
+    mold_floor: number;
+  };
+  families: C3Family[];
+  tracks: {
+    ear_overclaim: number | null;
+    ear_falsity: number | null;
+    ear_distortion: number | null;
+    issue_sense: number | null;
+    phase_accuracy: Record<string, number>;
+    clean_cut_hit_rate: number | null;
+    calibration: C3Calibration;
+  };
+  weak_molds: C3WeakMold[];
+  facets: {
+    by_subject: Array<{ subject: string; accuracy: number; n: number }>;
+  };
+}
+
+export interface C3DeckCard {
+  card_id: string;
+  type: string;
+  subject: string | null;
+  front: string;
+  is_fork: boolean;
+}
+
+export interface C3DeckResponse {
+  cards: C3DeckCard[];
+}
+
+// --- C3 Mastery Certification (Phase 4) — gated, auto-graded scorecard ---
+// GET /api/certification (outline) + GET /api/certification/:id (key-free content)
+// + POST /api/me/certification/:id/start + POST /api/me/certification/:id (grade).
+// Answer keys NEVER reach the client; the grade response is the only place the
+// correct answers appear. Shapes mirror barmatrix-api/src/routes/certification.ts.
+
+export type CertCapture =
+  | "single"
+  | "rule_distractor"
+  | "axis_survivor"
+  | "band"
+  | "integration";
+
+export interface CertMcqOption {
+  letter: string;
+  text: string;
+}
+
+export interface CertPublicItem {
+  id: string;
+  prompt: string;
+  options?: CertMcqOption[];
+  axis_options?: string[];
+  survivor_options?: CertMcqOption[];
+}
+
+export interface CertPassSpec {
+  type: string;
+  n?: number;
+  of?: number;
+  band_match_min?: number;
+  no_undercalled_cut?: boolean;
+  accuracy?: { n: number; of: number };
+  phase_min?: number;
+}
+
+export interface CertCompetencyStatus {
+  id: string;
+  title: string;
+  capture: CertCapture;
+  pass: CertPassSpec;
+  status: "passed" | "not_yet" | "not_started";
+  attempts: number;
+  retry_at: string | null;
+}
+
+export interface CertOutline {
+  title: string;
+  preview: boolean;
+  preview_note: string;
+  overall_gate: string;
+  lessons_completed: number;
+  lesson_count: number;
+  unlocked: boolean;
+  overall: "CONFIRMED" | "NOT_YET";
+  competencies: CertCompetencyStatus[];
+}
+
+export interface CertPublicCompetency {
+  id: string;
+  title: string;
+  capture: CertCapture;
+  pass: CertPassSpec;
+  lesson_refs: string[];
+  label_options?: string[];
+  rule_options?: string[];
+  distractor_options?: string[];
+  band_options?: string[];
+  phase_options?: string[];
+  items: CertPublicItem[];
+}
+
+export interface CertPerItem {
+  id: string;
+  correct: boolean;
+  your: string | null;
+  key: string | null;
+  explanation?: string;
+}
+
+export interface CertGradeResult {
+  persisted: boolean;
+  passed: boolean;
+  score: number;
+  conditions: {
+    accuracy_score: number | null;
+    forks_passed: boolean | null;
+    phase_score: number | null;
+    calibration_passed: boolean | null;
+  };
+  per_item: CertPerItem[];
+  remediation_lessons: string[];
+  overall?: "CONFIRMED" | "NOT_YET";
+}
+
+export interface CertSubmitAnswer {
+  id: string;
+  value?: string;
+  rule?: string;
+  distractor?: string;
+  axis?: string;
+  survivor?: string;
+  band?: "HIGH" | "MED" | "COIN";
+  phase?: "CUT" | "CLASH" | "CALL";
+  flag?: boolean;
+}
+
 export const api = {
   cohortStatus: () => request<CohortStatus>("/api/cohort/status"),
 
@@ -856,12 +1228,19 @@ export const api = {
       body: JSON.stringify(payload),
     }),
 
-  createCustomerPortalSession: (payload: CustomerPortalSessionRequest) =>
-    request<CustomerPortalSessionResponse>("/api/billing/create-portal-session", {
-      method: "POST",
-      credentials: "include",
-      body: JSON.stringify(payload),
-    }),
+  createCustomerPortalSession: (
+    payload: CustomerPortalSessionRequest,
+    token: string,
+  ) =>
+    authedRequest<CustomerPortalSessionResponse>(
+      "/api/billing/create-portal-session",
+      token,
+      {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(payload),
+      },
+    ),
 
   health: () =>
     request<{ ok: boolean; db: string }>("/health"),
@@ -911,6 +1290,9 @@ export const api = {
   getMyRedZones: (token: string) =>
     authedRequest<RedZoneLibrary>("/api/me/red-zones", token),
 
+  getMyGamification: (token: string, init?: RequestInit) =>
+    authedRequest<MyGamification>("/api/me/gamification", token, init),
+
   getMyRedZoneDetail: (
     token: string,
     dimension: string,
@@ -923,6 +1305,15 @@ export const api = {
       )}&tag=${encodeURIComponent(tag)}${
         includeHidden ? "&include_hidden=true" : ""
       }`,
+      token,
+    ),
+
+  getMyTraps: (token: string) =>
+    authedRequest<MyTrapProfile>("/api/me/traps", token),
+
+  getMyTrap: (token: string, slug: string) =>
+    authedRequest<MyTrapHistory>(
+      `/api/me/traps/${encodeURIComponent(slug)}`,
       token,
     ),
 
@@ -985,69 +1376,155 @@ export const api = {
   getBootCamp: (slug: string, init?: RequestInit) =>
     request<BootCampDetail>(`/api/boot-camps/${encodeURIComponent(slug)}`, init),
 
-  startBootCamp: (slug: string, payload: BootCampStartRequest = {}) =>
-    request<BootCampStartResponse>(
-      `/api/boot-camps/${encodeURIComponent(slug)}/start`,
-      { method: "POST", body: JSON.stringify(payload) },
-    ),
+  startBootCamp: (slug: string, payload: BootCampStartRequest = {}, token?: string | null) =>
+    token
+      ? authedRequest<BootCampStartResponse>(
+          `/api/boot-camps/${encodeURIComponent(slug)}/start`,
+          token,
+          { method: "POST", body: JSON.stringify(payload) },
+        )
+      : request<BootCampStartResponse>(
+          `/api/boot-camps/${encodeURIComponent(slug)}/start`,
+          { method: "POST", body: JSON.stringify(payload) },
+        ),
 
-  getBootCampSession: (sessionId: string, init?: RequestInit) =>
-    request<BootCampSession>(
+  getBootCampSession: (sessionId: string, token: string, init?: RequestInit) =>
+    authedRequest<BootCampSession>(
       `/api/boot-camps/sessions/${encodeURIComponent(sessionId)}`,
+      token,
       init,
     ),
 
-  startBootCampDay: (sessionId: string, day: number) =>
-    request<BootCampDayStartResponse>(
+  startBootCampDay: (sessionId: string, day: number, token: string) =>
+    authedRequest<BootCampDayStartResponse>(
       `/api/boot-camps/sessions/${encodeURIComponent(sessionId)}/days/${day}/start`,
+      token,
       { method: "POST", body: JSON.stringify({}) },
     ),
 
   completeBootCampDay: (
     sessionId: string,
     day: number,
+    token: string,
     payload: { skip?: boolean } = {},
   ) =>
-    request<BootCampDayCompleteResponse>(
+    authedRequest<BootCampDayCompleteResponse>(
       `/api/boot-camps/sessions/${encodeURIComponent(sessionId)}/days/${day}/complete`,
+      token,
       { method: "POST", body: JSON.stringify(payload) },
     ),
 
-  startBootCampMastery: (sessionId: string) =>
-    request<BootCampMasteryStartResponse>(
+  startBootCampMastery: (sessionId: string, token: string) =>
+    authedRequest<BootCampMasteryStartResponse>(
       `/api/boot-camps/sessions/${encodeURIComponent(sessionId)}/mastery/start`,
+      token,
       { method: "POST", body: JSON.stringify({}) },
     ),
 
-  completeBootCampMastery: (sessionId: string) =>
-    request<BootCampMasteryCompleteResponse>(
+  completeBootCampMastery: (sessionId: string, token: string) =>
+    authedRequest<BootCampMasteryCompleteResponse>(
       `/api/boot-camps/sessions/${encodeURIComponent(sessionId)}/mastery/complete`,
+      token,
       { method: "POST", body: JSON.stringify({}) },
     ),
 
-  // --- Drill Library (Web Component 04) — anonymous-first ---
+  // --- Drill Library (Web Component 04) — enrolled starts, public catalog ---
   getDrillCatalog: (init?: RequestInit) =>
     request<DrillCatalogResponse>("/api/drills/catalog", init),
 
-  getPrescribedDrills: (studentId: string, init?: RequestInit) =>
-    request<PrescribedDrillsResponse>(
-      `/api/drills/prescribed?student_id=${encodeURIComponent(studentId)}`,
+  getPrescribedDrills: (token: string) =>
+    authedRequest<PrescribedDrillsResponse>("/api/drills/prescribed", token),
+
+  startDrill: (payload: DrillStartRequest, token?: string | null) =>
+    token
+      ? authedRequest<DrillStartResponse>("/api/drills/start", token, {
+          method: "POST",
+          body: JSON.stringify(payload),
+        })
+      : request<DrillStartResponse>("/api/drills/start", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        }),
+
+  getDrill: (drillId: string, token: string, init?: RequestInit) =>
+    authedRequest<DrillDetail>(
+      `/api/drills/${encodeURIComponent(drillId)}`,
+      token,
       init,
     ),
 
-  startDrill: (payload: DrillStartRequest) =>
-    request<DrillStartResponse>("/api/drills/start", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    }),
-
-  getDrill: (drillId: string, init?: RequestInit) =>
-    request<DrillDetail>(`/api/drills/${encodeURIComponent(drillId)}`, init),
-
-  completeDrill: (drillId: string) =>
-    request<DrillCompleteResponse>(
+  completeDrill: (drillId: string, token: string) =>
+    authedRequest<DrillCompleteResponse>(
       `/api/drills/${encodeURIComponent(drillId)}/complete`,
+      token,
       { method: "POST", body: JSON.stringify({}) },
+    ),
+
+  // --- Foundations ("The Method") — gated core starter course ---
+  // Public course outline (anonymous; progress is all zeros).
+  listFoundations: (init?: RequestInit) =>
+    request<FoundationsOutline>("/api/foundations", init),
+
+  // Signed-in outline: same shape, merged with the student's lesson status.
+  getMyFoundations: (token: string) =>
+    authedRequest<FoundationsOutline>("/api/me/foundations", token),
+
+  // Public lesson content (full body + drills + keys).
+  getFoundationsLesson: (slug: string, init?: RequestInit) =>
+    request<FoundationsLessonResponse>(
+      `/api/foundations/${encodeURIComponent(slug)}`,
+      init,
+    ),
+
+  // Persist lesson progress (mark complete / record self-checked drills).
+  markFoundationsLesson: (
+    token: string,
+    slug: string,
+    payload: FoundationsMarkRequest,
+  ) =>
+    authedRequest<FoundationsMarkResponse>(
+      `/api/me/foundations/${encodeURIComponent(slug)}`,
+      token,
+      { method: "POST", body: JSON.stringify(payload) },
+    ),
+
+  // --- C3 Mastery (flagship measurement surface) ---
+  // Clerk-gated mastery payload; student is server-derived.
+  getMyC3: (token: string) => authedRequest<C3Mastery>("/api/me/c3", token),
+
+  getCoachNext: (token: string, init?: RequestInit) =>
+    authedRequest<CoachNext>("/api/me/c3/next", token, init),
+
+  // Public list of C3 deck cards.
+  listC3Deck: (init?: RequestInit) =>
+    request<C3DeckResponse>("/api/c3/deck", init),
+
+  // --- C3 Mastery Certification (Phase 4) — gated scorecard + runner ---
+  // Outline (anonymous -> locked + zero progress; authed -> merged status).
+  getCertification: (token: string) =>
+    authedRequest<CertOutline>("/api/certification", token),
+
+  // Per-competency content (key-free). Requires the unlock gate to pass.
+  getCertCompetency: (token: string, id: string) =>
+    authedRequest<CertPublicCompetency>(
+      `/api/certification/${encodeURIComponent(id)}`,
+      token,
+    ),
+
+  // Start a server-timestamped session before answering.
+  startCert: (token: string, id: string) =>
+    authedRequest<{ session_id: string }>(
+      `/api/me/certification/${encodeURIComponent(id)}/start`,
+      token,
+      { method: "POST", body: JSON.stringify({}) },
+    ),
+
+  // Submit answers; the grade response is the only place keys appear.
+  submitCert: (token: string, id: string, answers: CertSubmitAnswer[]) =>
+    authedRequest<CertGradeResult>(
+      `/api/me/certification/${encodeURIComponent(id)}`,
+      token,
+      { method: "POST", body: JSON.stringify({ answers }) },
     ),
 };
 

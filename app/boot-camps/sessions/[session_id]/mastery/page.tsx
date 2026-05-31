@@ -14,7 +14,10 @@ import {
 } from "@/lib/api-client";
 import QuestionRunner from "@/components/question-runner";
 import { humanizeTag, masteryBand, pct } from "@/lib/boot-camps";
-import { trackBootcampCompleted } from "@/lib/analytics";
+import { trackBootcampCompleted, trackBootcampXpEarned, trackBootcampBadgeUnlocked, trackBootcampStreakExtended } from "@/lib/analytics";
+import { useClerkAuth } from "@/lib/use-clerk-auth";
+import Celebration from "@/components/gamification/celebration";
+import { badgeMeta, formatXp } from "@/lib/gamification";
 
 interface MasteryData {
   slug: string;
@@ -38,16 +41,35 @@ export default function BootCampMasteryPage({
   params: Promise<{ session_id: string }>;
 }) {
   const { session_id: sessionId } = use(params);
+  const { isLoaded, isSignedIn, getToken } = useClerkAuth();
   const [state, setState] = useState<State>({ phase: "loading" });
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    if (!isLoaded) return;
     let active = true;
-    Promise.all([
-      api.getBootCampSession(sessionId, { cache: "no-store" }),
-      api.startBootCampMastery(sessionId),
-    ])
-      .then(([session, masteryStart]) => {
+    if (!isSignedIn) {
+      queueMicrotask(() => {
+        if (active) {
+          setState({ phase: "error", message: "Sign in to resume this mastery check." });
+        }
+      });
+      return () => {
+        active = false;
+      };
+    }
+    void (async () => {
+      try {
+        const token = await getToken();
+        if (!active) return;
+        if (!token) {
+          setState({ phase: "error", message: "Sign in to resume this mastery check." });
+          return;
+        }
+        const [session, masteryStart] = await Promise.all([
+          api.getBootCampSession(sessionId, token, { cache: "no-store" }),
+          api.startBootCampMastery(sessionId, token),
+        ]);
         if (!active) return;
         setState({
           phase: "running",
@@ -60,8 +82,7 @@ export default function BootCampMasteryPage({
             threshold: session.mastery_threshold,
           },
         });
-      })
-      .catch((err: unknown) => {
+      } catch (err: unknown) {
         if (!active) return;
         if (err instanceof ApiClientError && err.status === 409) {
           setState({ phase: "locked" });
@@ -69,30 +90,62 @@ export default function BootCampMasteryPage({
         }
         setState({
           phase: "error",
-          message: err instanceof ApiClientError ? `API ${err.status}` : "Mastery unavailable",
+          message:
+            err instanceof ApiClientError && err.status === 401
+              ? "Sign in to resume this mastery check."
+              : err instanceof ApiClientError && err.status === 403
+                ? "Enrollment required to resume this mastery check."
+                : err instanceof ApiClientError
+                  ? `API ${err.status}`
+                  : "Mastery unavailable",
         });
-      });
+      }
+    })();
     return () => {
       active = false;
     };
-  }, [sessionId]);
+  }, [getToken, isLoaded, isSignedIn, sessionId]);
 
   const onComplete = async () => {
     if (state.phase !== "running" || submitting) return;
+    const slug = state.data.slug;
     setSubmitting(true);
     try {
-      const result = await api.completeBootCampMastery(sessionId);
+      const token = await getToken();
+      if (!token) {
+        setSubmitting(false);
+        setState({ phase: "error", message: "Sign in to score this mastery check." });
+        return;
+      }
+      const result = await api.completeBootCampMastery(sessionId, token);
       trackBootcampCompleted({
-        bootcampId: state.data.slug,
+        bootcampId: slug,
         completionStatus: "completed",
         masteryPassed: result.mastered,
         postScore: result.mastery_score,
       });
+      const grant = result.gamification;
+      if (grant) {
+        if (grant.xp_earned > 0) {
+          trackBootcampXpEarned({ bootcampId: slug, xp: grant.xp_earned, source: "boot_camp_mastery" });
+        }
+        for (const badgeSlug of grant.badges_unlocked) {
+          trackBootcampBadgeUnlocked({ bootcampId: slug, badgeSlug });
+        }
+        trackBootcampStreakExtended({ bootcampId: slug, streak: grant.current_streak });
+      }
       setState({ phase: "scored", data: state.data, result });
     } catch (err) {
       setState({
         phase: "error",
-        message: err instanceof ApiClientError ? `API ${err.status}` : "Could not score mastery",
+        message:
+          err instanceof ApiClientError && err.status === 401
+            ? "Sign in to score this mastery check."
+            : err instanceof ApiClientError && err.status === 403
+              ? "Enrollment required to score this mastery check."
+              : err instanceof ApiClientError
+                ? `API ${err.status}`
+                : "Could not score mastery",
       });
     }
   };
@@ -198,6 +251,7 @@ function MasteryResult({
       }`}
       role="status"
     >
+      <Celebration trigger={result.mastered} />
       <p
         className={`font-mono text-xs uppercase tracking-wider ${
           result.mastered ? "text-emerald-700" : "text-amber-700"
@@ -222,6 +276,33 @@ function MasteryResult({
           ? ` · ${result.correct}/${result.total} correct`
           : ""}
       </p>
+
+      {result.gamification && (
+        <div className="mt-5 border-t border-zinc-200 pt-5">
+          {result.gamification.xp_earned > 0 && (
+            <p className="text-lg font-semibold text-emerald-800">
+              +{formatXp(result.gamification.xp_earned)} XP
+            </p>
+          )}
+          {result.gamification.current_streak > 0 && (
+            <p className="mt-1 font-mono text-xs uppercase tracking-wide text-zinc-600">
+              🔥 {result.gamification.current_streak}-day streak
+            </p>
+          )}
+          {result.gamification.badges_unlocked.length > 0 && (
+            <ul className="mt-3 space-y-1">
+              {result.gamification.badges_unlocked.map((slug) => {
+                const meta = badgeMeta(slug);
+                return (
+                  <li key={slug} className="text-sm text-zinc-800">
+                    {meta.emoji} Badge unlocked: <strong>{meta.label}</strong>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+      )}
 
       {result.red_zone_deltas.length > 0 && (
         <div className="mt-6">

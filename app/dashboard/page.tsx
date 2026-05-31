@@ -11,6 +11,9 @@ import {
   type DashboardAssignedDrill,
 } from "@/lib/api-client";
 import { useDashboard } from "@/lib/use-dashboard";
+import { useFoundations } from "@/lib/use-foundations";
+import { useC3 } from "@/lib/use-c3";
+import type { FoundationsOutline } from "@/lib/api-client";
 
 // Static path guide — the repair loop shape, shown regardless of data state.
 const PROGRESS_GUIDE = [
@@ -37,6 +40,8 @@ type DisplayZone = {
 
 export default function DashboardPage() {
   const dash = useDashboard();
+  const foundations = useFoundations();
+  const c3 = useC3();
   const [status, setStatus] = useState<CohortStatus | null>(null);
   const [cohortError, setCohortError] = useState<string | null>(null);
 
@@ -88,6 +93,16 @@ export default function DashboardPage() {
           <CohortCard status={status} error={cohortError} />
         </div>
       </div>
+
+      {foundations.signedIn &&
+        foundations.data &&
+        !foundations.data.progress.complete && (
+          <MethodGate data={foundations.data} />
+        )}
+
+      {c3.signedIn && c3.data && (
+        <C3HeroCard data={c3.data} />
+      )}
 
       {banner && <StateBanner banner={banner} />}
 
@@ -185,6 +200,74 @@ function resolveBanner(
     };
   }
   return null;
+}
+
+// The core-starter gate: surfaced first, and only until the student finishes the
+// 14-lesson method course. The whole repair loop is built on this frame, so new
+// students are routed here before going deep on drills and the diagnostic.
+function MethodGate({ data }: { data: FoundationsOutline }) {
+  const p = data.progress;
+  const started = p.lessons_completed > 0;
+  const resumeSlug = p.next_slug ?? data.lessons[0]?.slug ?? "lesson-01";
+  return (
+    <section className="mt-6 border-2 border-zinc-900 bg-zinc-950 p-6 text-white">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="max-w-2xl">
+          <p className="font-mono text-xs uppercase tracking-wider text-red-300">
+            Start Here — The Method
+          </p>
+          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
+            {started
+              ? "Finish the method before you go deep on drills."
+              : "Learn the method the whole platform runs on."}
+          </h2>
+          <p className="mt-3 text-sm leading-7 text-zinc-200">
+            {data.tagline}
+          </p>
+          <div className="mt-4 h-2 w-full max-w-md overflow-hidden border border-white/30 bg-white/10">
+            <div className="h-full bg-red-600" style={{ width: `${p.percent}%` }} aria-hidden />
+          </div>
+          <p className="mt-2 font-mono text-[11px] uppercase tracking-wider text-zinc-300">
+            {p.lessons_completed}/{p.lesson_count} lessons · {p.percent}%
+          </p>
+        </div>
+        <Link
+          href={`/foundations/${started ? resumeSlug : "lesson-01"}`}
+          className="rounded-md bg-white px-6 py-3 text-sm font-medium text-zinc-950 hover:bg-red-700 hover:text-white"
+        >
+          {started ? "Resume the method" : "Start Lesson 1"} <span aria-hidden>→</span>
+        </Link>
+      </div>
+      <Link
+        href="/foundations"
+        className="mt-4 inline-block font-mono text-[11px] uppercase tracking-wider text-zinc-400 hover:text-white"
+      >
+        View all 14 lessons
+      </Link>
+    </section>
+  );
+}
+
+function C3HeroCard({ data }: { data: import("@/lib/api-client").C3Mastery }) {
+  const measured = data.readiness.score !== null;
+  return (
+    <section className="mt-6 border-2 border-zinc-900 bg-white p-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-wider text-red-700">C3 Mastery — your flagship metric</p>
+          <h2 className="mt-2 font-serif text-3xl font-semibold tracking-tight text-zinc-950">
+            {measured ? `Readiness ${data.readiness.score}` : "Not yet measured"}
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-zinc-700">
+            {measured
+              ? `Clean-cut ${data.tracks.clean_cut_hit_rate == null ? "—" : Math.round(data.tracks.clean_cut_hit_rate * 100) + "%"} · calibration ${data.tracks.calibration.direction}. Everything below is a facet of this.`
+              : `Work the bank or the diagnostic — mastery lights up after ${data.readiness.mold_floor} exposures per skill.`}
+          </p>
+        </div>
+        <Link href="/mastery" className="rounded-md bg-zinc-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-700">Open Mastery →</Link>
+      </div>
+    </section>
+  );
 }
 
 function StateBanner({ banner }: { banner: NonNullable<Banner> }) {

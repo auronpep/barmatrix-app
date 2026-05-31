@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getTrapCatalog } from "@/lib/traps";
 import type { TrapEntry } from "@/lib/api-client";
 import { TrapTaxonomyAnalytics } from "./trap-analytics";
+import { TrapProfileProvider, PersonalTrapBadge } from "./your-trap-profile";
 
 export const metadata: Metadata = {
   title: "Trap Taxonomy",
@@ -10,12 +11,17 @@ export const metadata: Metadata = {
     "Browse the attractive wrong-answer architectures the MBE reuses. Each trap shows how the distractor is built and which questions deploy it.",
 };
 
+// The catalog can hold 1,000+ observed slugs. Rendering them all inline shipped a
+// 5 MB page; paginate so each request stays small. The list is ordered by
+// question_count desc, so page 1 surfaces the most-deployed architectures first.
+const TRAPS_PER_PAGE = 60;
+
 export default async function TrapsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ official?: string }>;
+  searchParams: Promise<{ official?: string; page?: string }>;
 }) {
-  const [{ official }, catalog] = await Promise.all([
+  const [{ official, page }, catalog] = await Promise.all([
     searchParams,
     getTrapCatalog(),
   ]);
@@ -33,6 +39,20 @@ export default async function TrapsPage({
   const isEmpty = totalTraps === 0;
   const filteredEmpty =
     !isEmpty && architecture.length === 0 && misconception.length === 0;
+
+  // Paginate both columns with one shared page, driven by the longer column.
+  const pageCount = Math.max(
+    1,
+    Math.ceil(Math.max(architecture.length, misconception.length) / TRAPS_PER_PAGE),
+  );
+  const requestedPage = Number.parseInt(page ?? "1", 10);
+  const currentPage = Math.min(
+    pageCount,
+    Math.max(1, Number.isFinite(requestedPage) ? requestedPage : 1),
+  );
+  const sliceStart = (currentPage - 1) * TRAPS_PER_PAGE;
+  const architecturePage = architecture.slice(sliceStart, sliceStart + TRAPS_PER_PAGE);
+  const misconceptionPage = misconception.slice(sliceStart, sliceStart + TRAPS_PER_PAGE);
 
   return (
     <section className="mx-auto max-w-6xl px-6 py-16">
@@ -113,18 +133,29 @@ export default async function TrapsPage({
       )}
 
       {!isEmpty && !filteredEmpty && (
-        <div className="mt-10 grid gap-8 lg:grid-cols-2">
-          <TrapColumn
-            title="Wrong-answer architecture"
-            caption="How the distractor is built (forensic_tags)"
-            traps={architecture}
-          />
-          <TrapColumn
-            title="Misconception"
-            caption="The student error it preys on (misconception_tags)"
-            traps={misconception}
-          />
-        </div>
+        <TrapProfileProvider>
+          <div className="mt-10 grid gap-8 lg:grid-cols-2">
+            <TrapColumn
+              title="Wrong-answer architecture"
+              caption="How the distractor is built (forensic_tags)"
+              traps={architecturePage}
+              total={architecture.length}
+            />
+            <TrapColumn
+              title="Misconception"
+              caption="The student error it preys on (misconception_tags)"
+              traps={misconceptionPage}
+              total={misconception.length}
+            />
+          </div>
+          {pageCount > 1 && (
+            <TrapPagination
+              currentPage={currentPage}
+              pageCount={pageCount}
+              officialOnly={officialOnly}
+            />
+          )}
+        </TrapProfileProvider>
       )}
     </section>
   );
@@ -158,21 +189,24 @@ function TrapColumn({
   title,
   caption,
   traps,
+  total,
 }: {
   title: string;
   caption: string;
+  // `traps` is the current page slice; `total` is the full column count.
   traps: TrapEntry[];
+  total: number;
 }) {
   return (
     <div>
       <div className="flex items-baseline justify-between border-b border-zinc-200 pb-2">
         <h2 className="font-serif text-xl font-semibold text-zinc-950">{title}</h2>
         <span className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-          {traps.length} {traps.length === 1 ? "trap" : "traps"}
+          {total} {total === 1 ? "trap" : "traps"}
         </span>
       </div>
       <p className="mt-2 text-sm text-zinc-500">{caption}</p>
-      {traps.length === 0 ? (
+      {total === 0 ? (
         <p className="mt-6 text-sm text-zinc-500">
           No traps in this column for the current filter.
         </p>
@@ -203,6 +237,7 @@ function TrapRow({ trap }: { trap: TrapEntry }) {
               Official
             </span>
           )}
+          <PersonalTrapBadge slug={trap.slug} />
         </span>
         <span className="mt-0.5 block font-mono text-[11px] text-zinc-400">
           {trap.slug}
@@ -213,5 +248,59 @@ function TrapRow({ trap }: { trap: TrapEntry }) {
         {trap.choice_count === 1 ? "choice" : "choices"}
       </span>
     </Link>
+  );
+}
+
+function trapsHref(page: number, officialOnly: boolean): string {
+  const params = new URLSearchParams();
+  if (officialOnly) params.set("official", "1");
+  if (page > 1) params.set("page", String(page));
+  const qs = params.toString();
+  return qs ? `/traps?${qs}` : "/traps";
+}
+
+function TrapPagination({
+  currentPage,
+  pageCount,
+  officialOnly,
+}: {
+  currentPage: number;
+  pageCount: number;
+  officialOnly: boolean;
+}) {
+  const hasPrev = currentPage > 1;
+  const hasNext = currentPage < pageCount;
+  const linkClass =
+    "rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900";
+  const disabledClass =
+    "rounded-md border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-300";
+
+  return (
+    <nav
+      className="mt-10 flex items-center justify-between border-t border-zinc-200 pt-6"
+      aria-label="Trap catalog pagination"
+    >
+      {hasPrev ? (
+        <Link href={trapsHref(currentPage - 1, officialOnly)} rel="prev" className={linkClass}>
+          ← Previous
+        </Link>
+      ) : (
+        <span className={disabledClass} aria-disabled="true">
+          ← Previous
+        </span>
+      )}
+      <span className="font-mono text-xs uppercase tracking-wider text-zinc-500">
+        Page {currentPage} of {pageCount}
+      </span>
+      {hasNext ? (
+        <Link href={trapsHref(currentPage + 1, officialOnly)} rel="next" className={linkClass}>
+          Next →
+        </Link>
+      ) : (
+        <span className={disabledClass} aria-disabled="true">
+          Next →
+        </span>
+      )}
+    </nav>
   );
 }

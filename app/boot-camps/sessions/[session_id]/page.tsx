@@ -5,14 +5,17 @@
 // re-reads server progress on every visit, so closing the tab and reopening the
 // session URL lands you exactly where you left off.
 
-import { use, useCallback, useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { api, ApiClientError, type BootCampSession } from "@/lib/api-client";
+import { api, ApiClientError, type BootCampSession, type MyGamification } from "@/lib/api-client";
+import GamificationSummary from "@/components/gamification/gamification-summary";
+import ProgressRing from "@/components/gamification/progress-ring";
 import { bootCampProgress, dayChipLabel, pct } from "@/lib/boot-camps";
+import { useClerkAuth } from "@/lib/use-clerk-auth";
 
 type State =
   | { phase: "loading" }
-  | { phase: "ready"; session: BootCampSession }
+  | { phase: "ready"; session: BootCampSession; gamification: MyGamification | null }
   | { phase: "error"; message: string };
 
 export default function BootCampSessionPage({
@@ -21,28 +24,57 @@ export default function BootCampSessionPage({
   params: Promise<{ session_id: string }>;
 }) {
   const { session_id: sessionId } = use(params);
+  const { isLoaded, isSignedIn, getToken } = useClerkAuth();
   const [state, setState] = useState<State>({ phase: "loading" });
 
-  const load = useCallback(() => {
+  useEffect(() => {
+    if (!isLoaded) return;
     let active = true;
-    api
-      .getBootCampSession(sessionId, { cache: "no-store" })
-      .then((session) => {
-        if (active) setState({ phase: "ready", session });
-      })
-      .catch((err: unknown) => {
+    if (!isSignedIn) {
+      queueMicrotask(() => {
+        if (active) {
+          setState({ phase: "error", message: "Sign in to resume this boot camp." });
+        }
+      });
+      return () => {
+        active = false;
+      };
+    }
+    void (async () => {
+      try {
+        const token = await getToken();
+        if (!active) return;
+        if (!token) {
+          setState({ phase: "error", message: "Sign in to resume this boot camp." });
+          return;
+        }
+        const session = await api.getBootCampSession(sessionId, token, { cache: "no-store" });
+        let gamification: MyGamification | null = null;
+        try {
+          gamification = await api.getMyGamification(token, { cache: "no-store" });
+        } catch {
+          gamification = null;
+        }
+        if (active) setState({ phase: "ready", session, gamification });
+      } catch (err: unknown) {
         if (active)
           setState({
             phase: "error",
-            message: err instanceof ApiClientError ? `API ${err.status}` : "Session unavailable",
+            message:
+              err instanceof ApiClientError && err.status === 401
+                ? "Sign in to resume this boot camp."
+                : err instanceof ApiClientError && err.status === 403
+                  ? "Enrollment required to resume this boot camp."
+                  : err instanceof ApiClientError
+                    ? `API ${err.status}`
+                    : "Session unavailable",
           });
-      });
+      }
+    })();
     return () => {
       active = false;
     };
-  }, [sessionId]);
-
-  useEffect(() => load(), [load]);
+  }, [getToken, isLoaded, isSignedIn, sessionId]);
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-12 sm:py-16">
@@ -71,12 +103,18 @@ export default function BootCampSessionPage({
         </div>
       )}
 
-      {state.phase === "ready" && <SessionHub session={state.session} />}
+      {state.phase === "ready" && <SessionHub session={state.session} gamification={state.gamification} />}
     </main>
   );
 }
 
-function SessionHub({ session }: { session: BootCampSession }) {
+function SessionHub({
+  session,
+  gamification,
+}: {
+  session: BootCampSession;
+  gamification: MyGamification | null;
+}) {
   const progress = bootCampProgress(session.days);
   const masteryUnlocked = session.mastery.unlocked;
   const completed = session.status === "completed";
@@ -84,24 +122,25 @@ function SessionHub({ session }: { session: BootCampSession }) {
 
   return (
     <>
-      <div className="mt-6 border-b border-zinc-200 pb-8">
-        <p className="font-mono text-xs uppercase tracking-wider text-red-700">
-          {session.subject} boot camp
-        </p>
-        <h1 className="mt-3 font-serif text-4xl font-semibold tracking-tight text-zinc-950">
-          {session.display_name}
-        </h1>
-
-        <div
-          className="mt-6 h-2 w-full overflow-hidden bg-zinc-100"
-          aria-label={`Camp progress ${progress.pct}%`}
-        >
-          <div className="h-full bg-emerald-700" style={{ width: `${progress.pct}%` }} />
+      {gamification && (
+        <div className="mt-6">
+          <GamificationSummary data={gamification} />
         </div>
-        <p className="mt-2 font-mono text-[11px] uppercase tracking-wide text-zinc-500">
-          {progress.completed} of {progress.total} days complete
-          {completed ? " · camp complete" : ""}
-        </p>
+      )}
+      <div className="mt-6 flex items-start justify-between gap-6 border-b border-zinc-200 pb-8">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-wider text-red-700">
+            {session.subject} boot camp
+          </p>
+          <h1 className="mt-3 font-serif text-4xl font-semibold tracking-tight text-zinc-950">
+            {session.display_name}
+          </h1>
+          <p className="mt-2 font-mono text-[11px] uppercase tracking-wide text-zinc-500">
+            {progress.completed} of {progress.total} days complete
+            {completed ? " · camp complete" : ""}
+          </p>
+        </div>
+        <ProgressRing pct={progress.pct} label={`Camp progress ${progress.pct}%`} />
       </div>
 
       <section className="mt-8" aria-label="Day progress">

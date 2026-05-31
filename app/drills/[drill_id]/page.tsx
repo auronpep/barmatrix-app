@@ -18,6 +18,7 @@ import {
 import QuestionRunner, { type RunnerSummary } from "@/components/question-runner";
 import { trackDrillCompleted, trackDrillStarted } from "@/lib/analytics";
 import { humanizeTag, proficiencyPct } from "@/lib/drills";
+import { useClerkAuth } from "@/lib/use-clerk-auth";
 
 type State =
   | { phase: "loading" }
@@ -31,6 +32,7 @@ export default function DrillRunnerPage({
   params: Promise<{ drill_id: string }>;
 }) {
   const { drill_id: drillId } = use(params);
+  const { isLoaded, isSignedIn, getToken } = useClerkAuth();
   const [state, setState] = useState<State>({ phase: "loading" });
   const [finishing, setFinishing] = useState(false);
   const router = useRouter();
@@ -52,37 +54,56 @@ export default function DrillRunnerPage({
   };
 
   useEffect(() => {
+    if (!isLoaded) return;
     let active = true;
-    api
-      .getDrill(drillId, { cache: "no-store" })
-      .then((detail) => {
+    if (!isSignedIn) {
+      queueMicrotask(() => {
+        if (active) {
+          setState({ phase: "error", message: "Sign in to resume this drill." });
+        }
+      });
+      return () => {
+        active = false;
+      };
+    }
+    void (async () => {
+      try {
+        const token = await getToken();
+        if (!active) return;
+        if (!token) {
+          setState({ phase: "error", message: "Sign in to resume this drill." });
+          return;
+        }
+        const detail = await api.getDrill(drillId, token, { cache: "no-store" });
         if (!active) return;
         trackDrillStarted({ drillId, source: "manual" });
         setState({ phase: "ready", detail });
-      })
-      .catch((err: unknown) => {
+      } catch (err: unknown) {
         if (!active) return;
         setState({
           phase: "error",
           message:
-            err instanceof ApiClientError && err.status === 404
-              ? "This drill no longer exists."
-              : err instanceof ApiClientError
-                ? `API ${err.status}`
-                : "Drill unavailable",
+            err instanceof ApiClientError ? drillLoadErrorMessage(err) : "Drill unavailable",
         });
-      });
+      }
+    })();
     return () => {
       active = false;
     };
-  }, [drillId]);
+  }, [drillId, getToken, isLoaded, isSignedIn]);
 
   const onComplete = async (summary: RunnerSummary) => {
     if (state.phase !== "ready" || finishing) return;
     setFinishing(true);
     const detail = state.detail;
     try {
-      const result = await api.completeDrill(drillId);
+      const token = await getToken();
+      if (!token) {
+        setFinishing(false);
+        setState({ phase: "error", message: "Sign in to save this drill." });
+        return;
+      }
+      const result = await api.completeDrill(drillId, token);
       trackDrillCompleted({
         drillId,
         completionStatus: "completed",
@@ -91,7 +112,18 @@ export default function DrillRunnerPage({
         masteryPassed: result.mastered,
       });
       setState({ phase: "done", detail, result });
-    } catch {
+    } catch (err) {
+      if (err instanceof ApiClientError && (err.status === 401 || err.status === 403)) {
+        setFinishing(false);
+        setState({
+          phase: "error",
+          message:
+            err.status === 401
+              ? "Sign in to save this drill."
+              : "Enrollment required to save this drill.",
+        });
+        return;
+      }
       // Complete call failed: derive a best-effort result from the run summary
       // so the student still sees their score (the server stays authoritative).
       const mastered = summary.total > 0 && summary.correct / summary.total >= 0.75;
@@ -200,6 +232,13 @@ export default function DrillRunnerPage({
       </div>
     </main>
   );
+}
+
+function drillLoadErrorMessage(err: ApiClientError): string {
+  if (err.status === 401) return "Sign in to resume this drill.";
+  if (err.status === 403) return "Enrollment required to resume this drill.";
+  if (err.status === 404) return "This drill no longer exists.";
+  return `API ${err.status}`;
 }
 
 function MasteryCard({

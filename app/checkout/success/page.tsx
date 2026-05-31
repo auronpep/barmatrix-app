@@ -44,15 +44,19 @@ export default async function CheckoutSuccessPage({
             Your Flagship access is being activated.
           </h1>
           <p className="body-lg" style={{ marginBottom: 0 }}>
-            Stripe has returned checkout completion to BarMatrix. Continue to
-            your account or open the dashboard to begin.
+            Stripe has returned checkout completion to BarMatrix. Start with The
+            Method — the 14-lesson core the whole platform runs on — then open
+            your dashboard to begin the repair loop.
           </p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 32 }}>
-            <Link href={accountHref} className="btn btn-lg red">
-              Open Account <span className="arrow">→</span>
+            <Link href="/foundations" className="btn btn-lg red">
+              Start with The Method <span className="arrow">→</span>
             </Link>
             <Link href="/dashboard" className="btn btn-lg">
               Go to Dashboard <span className="arrow">→</span>
+            </Link>
+            <Link href={accountHref} className="btn btn-lg">
+              Open Account <span className="arrow">→</span>
             </Link>
           </div>
         </div>

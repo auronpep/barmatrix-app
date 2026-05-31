@@ -152,7 +152,7 @@ function StateBanner({ banner }: { banner: NonNullable<Banner> }) {
             href={cta.href}
             className={
               cta.primary
-                ? "rounded-md bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-900"
+                ? "btn red"
                 : "rounded-md border border-zinc-300 px-5 py-2.5 text-sm font-medium text-zinc-900 hover:bg-zinc-100"
             }
           >

@@ -50,7 +50,10 @@ export default function MasteryPage() {
 
       {data.weak_molds.length > 0 && (
         <section className="mt-8">
-          <h2 className="border-b border-zinc-300 pb-3 font-mono text-xs uppercase tracking-wider text-zinc-700">Top weak spots (remediation)</h2>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-300 pb-3">
+            <h2 className="font-mono text-xs uppercase tracking-wider text-zinc-700">Top weak spots (remediation)</h2>
+            <Link href="/coach" className="btn btn-sm red">Start Coaching →</Link>
+          </div>
           <div className="mt-4 grid gap-3">
             {data.weak_molds.map((m) => (
               <div key={m.mold_code} className="flex flex-wrap items-center justify-between gap-3 border border-zinc-300 bg-white p-4">

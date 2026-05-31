@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getTensionDetail } from "@/lib/tensions";
 import type { TensionExample } from "@/lib/api-client";
 import { TensionDetailAnalytics } from "../tension-analytics";
+import { TensionQuestionsClient } from "./tension-questions-client";
 
 export const revalidate = 60;
 
@@ -79,6 +80,15 @@ export default async function TensionDetailPage({
       </h1>
       <p className="mt-2 font-mono text-xs text-zinc-400">{detail.slug}</p>
 
+      {!detail.catalog_ready && (
+        <p className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          The curated tension catalog isn&apos;t provisioned in this environment
+          yet, so this tension is derived from the live question bank. Curated
+          copy (the doctrinal collision and decision axis) appears once the catalog
+          migration is applied.
+        </p>
+      )}
+
       {detail.legal_collision && (
         <div className="mt-6">
           <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">
@@ -135,7 +145,13 @@ export default async function TensionDetailPage({
                       {entry.question_count}
                     </span>
                   </div>
-                  <div className="mt-1 h-1.5 w-full rounded-full bg-zinc-100">
+                  <div
+                    className="mt-1 h-1.5 w-full rounded-full bg-zinc-100"
+                    role="progressbar"
+                    aria-label={`${entry.subject}: ${entry.question_count} questions (${pct}% of maximum)`}
+                    aria-valuenow={entry.question_count}
+                    aria-valuemax={maxCount}
+                  >
                     <div
                       className="h-1.5 rounded-full bg-zinc-800"
                       style={{ width: `${pct}%` }}
@@ -156,7 +172,7 @@ export default async function TensionDetailPage({
           </h2>
           {detail.examples_truncated && (
             <span className="font-mono text-xs text-zinc-500">
-              first {detail.examples.length}
+              showing {detail.examples.length} of {detail.question_count}
             </span>
           )}
         </div>
@@ -165,13 +181,24 @@ export default async function TensionDetailPage({
             No questions are loaded for this tension yet.
           </p>
         ) : (
-          <ul className="mt-4 space-y-3">
-            {detail.examples.map((example) => (
-              <li key={example.question_id}>
-                <TensionExampleCard example={example} />
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className="mt-4 space-y-3">
+              {detail.examples.map((example) => (
+                <li key={example.question_id}>
+                  <TensionExampleCard example={example} tensionSlug={detail.slug} />
+                </li>
+              ))}
+            </ul>
+            {detail.examples_truncated && (
+              <TensionQuestionsClient
+                slug={detail.slug}
+                initialCount={detail.examples.length}
+                totalCount={detail.question_count}
+                initialPage={0}
+                pageSize={12}
+              />
+            )}
+          </>
         )}
       </div>
 
@@ -180,20 +207,37 @@ export default async function TensionDetailPage({
           Drill the questions built on this tension and see why each wrong answer
           looked right.
         </p>
-        <Link
-          href={`/practice?tension=${encodeURIComponent(detail.slug)}`}
-          className="mt-4 inline-block rounded-md bg-zinc-900 px-6 py-3 text-base font-medium text-white hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
-        >
-          Practice this tension →
-        </Link>
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+          <Link
+            href={`/practice?tension=${encodeURIComponent(detail.slug)}`}
+            className="inline-block rounded-md bg-zinc-900 px-6 py-3 text-base font-medium text-white hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+          >
+            Practice this tension →
+          </Link>
+          <Link
+            href={`/drills?tension=${encodeURIComponent(detail.slug)}`}
+            className="inline-block rounded-md border border-zinc-300 bg-white px-6 py-3 text-base font-medium text-zinc-900 hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+          >
+            See drills for this tension
+          </Link>
+        </div>
       </div>
     </section>
   );
 }
 
-function TensionExampleCard({ example }: { example: TensionExample }) {
+function TensionExampleCard({
+  example,
+  tensionSlug,
+}: {
+  example: TensionExample;
+  tensionSlug: string;
+}) {
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white p-4">
+    <Link
+      href={`/practice?tension=${encodeURIComponent(tensionSlug)}`}
+      className="block rounded-lg border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+    >
       <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">
         {example.external_id ?? "—"} · {example.subject}
         {example.subtopic ? ` · ${example.subtopic}` : ""}
@@ -203,6 +247,6 @@ function TensionExampleCard({ example }: { example: TensionExample }) {
           {example.stem_preview}
         </p>
       )}
-    </div>
+    </Link>
   );
 }

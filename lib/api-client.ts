@@ -1018,6 +1018,31 @@ export interface FoundationsMarkResponse {
   progress?: FoundationsProgressSummary;
 }
 
+// GET /api/me/c3/next — C3 Coach adaptive item. Mirrors buildCoachPayload in
+// barmatrix-api/src/routes/c3-coach.ts.
+export interface CoachChoice { choice_id: string; letter: string; choice_text: string; }
+export interface CoachQuestion {
+  question_id: string; external_id: string | null; subject: string;
+  topic: string | null; subtopic: string | null; tension_point: string | null;
+  fact_pattern: string; question_stem: string; call_of_question: string | null;
+  choices: CoachChoice[];
+}
+export interface CoachingMeta {
+  target_mold: string; name: string; family: string;
+  deficit_pct: number; exposures: number; measured: boolean;
+}
+export interface CoachRemediation { lesson_slug: string | null; deck_ref: string | null; }
+export type CoachNext =
+  | { available: false; reason: string }
+  | {
+      available: true;
+      coverage: { total_attempts: number; measured_attempts: number; pct: number };
+      question: CoachQuestion;
+      coaching: CoachingMeta;
+      remediation: CoachRemediation;
+      cohort_signal: null;
+    };
+
 // --- C3 Mastery (flagship measurement surface) ---
 // GET /api/me/c3 (Clerk-gated mastery payload) + GET /api/c3/deck (public).
 // Shapes mirror shapeC3Response in barmatrix-api/src/routes/c3.ts.
@@ -1466,6 +1491,9 @@ export const api = {
   // --- C3 Mastery (flagship measurement surface) ---
   // Clerk-gated mastery payload; student is server-derived.
   getMyC3: (token: string) => authedRequest<C3Mastery>("/api/me/c3", token),
+
+  getCoachNext: (token: string, init?: RequestInit) =>
+    authedRequest<CoachNext>("/api/me/c3/next", token, init),
 
   // Public list of C3 deck cards.
   listC3Deck: (init?: RequestInit) =>

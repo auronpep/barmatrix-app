@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useCertification } from "@/lib/use-certification";
 import type { CertCompetencyStatus } from "@/lib/api-client";
 
@@ -107,8 +108,9 @@ export default function CertificationPage() {
 }
 
 function CompetencyCard({ comp }: { comp: CertCompetencyStatus }) {
+  const [now] = useState(() => Date.now());
   const lockedUntil =
-    comp.retry_at && new Date(comp.retry_at).getTime() > Date.now()
+    comp.retry_at && new Date(comp.retry_at).getTime() > now
       ? comp.retry_at
       : null;
 

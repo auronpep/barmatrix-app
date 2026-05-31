@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { api, ApiClientError } from "@/lib/api-client";
 import QuestionRunner, { type RunnerSummary } from "@/components/question-runner";
 import { trackDrillCompleted, trackDrillStarted } from "@/lib/analytics";
+import { useClerkAuth } from "@/lib/use-clerk-auth";
 
 interface DayData {
   slug: string;
@@ -35,11 +36,23 @@ export default function BootCampDayPage({
   const { session_id: sessionId, day: dayStr } = use(params);
   const day = Number.parseInt(dayStr, 10);
   const router = useRouter();
+  const { isLoaded, isSignedIn, getToken } = useClerkAuth();
   const [state, setState] = useState<State>({ phase: "loading" });
   const [finishing, setFinishing] = useState(false);
 
   useEffect(() => {
+    if (!isLoaded) return;
     let active = true;
+    if (!isSignedIn) {
+      queueMicrotask(() => {
+        if (active) {
+          setState({ phase: "error", message: "Sign in to resume this boot camp day." });
+        }
+      });
+      return () => {
+        active = false;
+      };
+    }
     if (!Number.isInteger(day) || day < 1) {
       queueMicrotask(() => {
         if (active) setState({ phase: "error", message: "Invalid day" });
@@ -48,11 +61,18 @@ export default function BootCampDayPage({
         active = false;
       };
     }
-    Promise.all([
-      api.getBootCampSession(sessionId, { cache: "no-store" }),
-      api.startBootCampDay(sessionId, day),
-    ])
-      .then(([session, dayStart]) => {
+    void (async () => {
+      try {
+        const token = await getToken();
+        if (!active) return;
+        if (!token) {
+          setState({ phase: "error", message: "Sign in to resume this boot camp day." });
+          return;
+        }
+        const [session, dayStart] = await Promise.all([
+          api.getBootCampSession(sessionId, token, { cache: "no-store" }),
+          api.startBootCampDay(sessionId, day, token),
+        ]);
         if (!active) return;
         trackDrillStarted({ drillId: `${session.slug}-day-${day}`, source: "manual" });
         setState({
@@ -66,8 +86,7 @@ export default function BootCampDayPage({
             dayCount: session.day_count,
           },
         });
-      })
-      .catch((err: unknown) => {
+      } catch (err: unknown) {
         if (!active) return;
         if (err instanceof ApiClientError && err.status === 409) {
           setState({ phase: "locked" });
@@ -75,19 +94,33 @@ export default function BootCampDayPage({
         }
         setState({
           phase: "error",
-          message: err instanceof ApiClientError ? `API ${err.status}` : "Day unavailable",
+          message:
+            err instanceof ApiClientError && err.status === 401
+              ? "Sign in to resume this boot camp day."
+              : err instanceof ApiClientError && err.status === 403
+                ? "Enrollment required to resume this boot camp day."
+                : err instanceof ApiClientError
+                  ? `API ${err.status}`
+                  : "Day unavailable",
         });
-      });
+      }
+    })();
     return () => {
       active = false;
     };
-  }, [sessionId, day]);
+  }, [day, getToken, isLoaded, isSignedIn, sessionId]);
 
   const onComplete = async (summary: RunnerSummary) => {
     if (state.phase !== "ready" || finishing) return;
     setFinishing(true);
     try {
-      const result = await api.completeBootCampDay(sessionId, day);
+      const token = await getToken();
+      if (!token) {
+        setFinishing(false);
+        setState({ phase: "error", message: "Sign in to save this boot camp day." });
+        return;
+      }
+      const result = await api.completeBootCampDay(sessionId, day, token);
       trackDrillCompleted({
         drillId: `${state.data.slug}-day-${day}`,
         completionStatus: "completed",
@@ -96,7 +129,18 @@ export default function BootCampDayPage({
         masteryPassed: result.passed,
       });
       router.push(`/boot-camps/sessions/${sessionId}`);
-    } catch {
+    } catch (err) {
+      if (err instanceof ApiClientError && (err.status === 401 || err.status === 403)) {
+        setFinishing(false);
+        setState({
+          phase: "error",
+          message:
+            err.status === 401
+              ? "Sign in to save this boot camp day."
+              : "Enrollment required to save this boot camp day.",
+        });
+        return;
+      }
       // Even if the complete call fails, send the student back to the hub,
       // which re-reads authoritative progress from the server.
       router.push(`/boot-camps/sessions/${sessionId}`);

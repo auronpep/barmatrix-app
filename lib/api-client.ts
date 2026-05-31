@@ -1114,12 +1114,19 @@ export const api = {
       body: JSON.stringify(payload),
     }),
 
-  createCustomerPortalSession: (payload: CustomerPortalSessionRequest) =>
-    request<CustomerPortalSessionResponse>("/api/billing/create-portal-session", {
-      method: "POST",
-      credentials: "include",
-      body: JSON.stringify(payload),
-    }),
+  createCustomerPortalSession: (
+    payload: CustomerPortalSessionRequest,
+    token: string,
+  ) =>
+    authedRequest<CustomerPortalSessionResponse>(
+      "/api/billing/create-portal-session",
+      token,
+      {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(payload),
+      },
+    ),
 
   health: () =>
     request<{ ok: boolean; db: string }>("/health"),

@@ -33,11 +33,15 @@ export default function CertificationRunnerPage() {
   // On mount: start a server session, then load the key-free content.
   useEffect(() => {
     if (!isLoaded || !id) return;
-    if (!isSignedIn) {
-      setError("signed_out");
-      return;
-    }
     let cancelled = false;
+    if (!isSignedIn) {
+      queueMicrotask(() => {
+        if (!cancelled) setError("signed_out");
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
     void (async () => {
       try {
         const token = await getToken();

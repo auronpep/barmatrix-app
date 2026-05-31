@@ -15,6 +15,7 @@ import {
 import QuestionRunner from "@/components/question-runner";
 import { humanizeTag, masteryBand, pct } from "@/lib/boot-camps";
 import { trackBootcampCompleted } from "@/lib/analytics";
+import { useClerkAuth } from "@/lib/use-clerk-auth";
 
 interface MasteryData {
   slug: string;
@@ -38,16 +39,35 @@ export default function BootCampMasteryPage({
   params: Promise<{ session_id: string }>;
 }) {
   const { session_id: sessionId } = use(params);
+  const { isLoaded, isSignedIn, getToken } = useClerkAuth();
   const [state, setState] = useState<State>({ phase: "loading" });
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    if (!isLoaded) return;
     let active = true;
-    Promise.all([
-      api.getBootCampSession(sessionId, { cache: "no-store" }),
-      api.startBootCampMastery(sessionId),
-    ])
-      .then(([session, masteryStart]) => {
+    if (!isSignedIn) {
+      queueMicrotask(() => {
+        if (active) {
+          setState({ phase: "error", message: "Sign in to resume this mastery check." });
+        }
+      });
+      return () => {
+        active = false;
+      };
+    }
+    void (async () => {
+      try {
+        const token = await getToken();
+        if (!active) return;
+        if (!token) {
+          setState({ phase: "error", message: "Sign in to resume this mastery check." });
+          return;
+        }
+        const [session, masteryStart] = await Promise.all([
+          api.getBootCampSession(sessionId, token, { cache: "no-store" }),
+          api.startBootCampMastery(sessionId, token),
+        ]);
         if (!active) return;
         setState({
           phase: "running",
@@ -60,8 +80,7 @@ export default function BootCampMasteryPage({
             threshold: session.mastery_threshold,
           },
         });
-      })
-      .catch((err: unknown) => {
+      } catch (err: unknown) {
         if (!active) return;
         if (err instanceof ApiClientError && err.status === 409) {
           setState({ phase: "locked" });
@@ -69,19 +88,33 @@ export default function BootCampMasteryPage({
         }
         setState({
           phase: "error",
-          message: err instanceof ApiClientError ? `API ${err.status}` : "Mastery unavailable",
+          message:
+            err instanceof ApiClientError && err.status === 401
+              ? "Sign in to resume this mastery check."
+              : err instanceof ApiClientError && err.status === 403
+                ? "Enrollment required to resume this mastery check."
+                : err instanceof ApiClientError
+                  ? `API ${err.status}`
+                  : "Mastery unavailable",
         });
-      });
+      }
+    })();
     return () => {
       active = false;
     };
-  }, [sessionId]);
+  }, [getToken, isLoaded, isSignedIn, sessionId]);
 
   const onComplete = async () => {
     if (state.phase !== "running" || submitting) return;
     setSubmitting(true);
     try {
-      const result = await api.completeBootCampMastery(sessionId);
+      const token = await getToken();
+      if (!token) {
+        setSubmitting(false);
+        setState({ phase: "error", message: "Sign in to score this mastery check." });
+        return;
+      }
+      const result = await api.completeBootCampMastery(sessionId, token);
       trackBootcampCompleted({
         bootcampId: state.data.slug,
         completionStatus: "completed",
@@ -92,7 +125,14 @@ export default function BootCampMasteryPage({
     } catch (err) {
       setState({
         phase: "error",
-        message: err instanceof ApiClientError ? `API ${err.status}` : "Could not score mastery",
+        message:
+          err instanceof ApiClientError && err.status === 401
+            ? "Sign in to score this mastery check."
+            : err instanceof ApiClientError && err.status === 403
+              ? "Enrollment required to score this mastery check."
+              : err instanceof ApiClientError
+                ? `API ${err.status}`
+                : "Could not score mastery",
       });
     }
   };

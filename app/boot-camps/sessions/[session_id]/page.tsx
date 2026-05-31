@@ -5,10 +5,11 @@
 // re-reads server progress on every visit, so closing the tab and reopening the
 // session URL lands you exactly where you left off.
 
-import { use, useCallback, useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { api, ApiClientError, type BootCampSession } from "@/lib/api-client";
 import { bootCampProgress, dayChipLabel, pct } from "@/lib/boot-camps";
+import { useClerkAuth } from "@/lib/use-clerk-auth";
 
 type State =
   | { phase: "loading" }
@@ -21,28 +22,51 @@ export default function BootCampSessionPage({
   params: Promise<{ session_id: string }>;
 }) {
   const { session_id: sessionId } = use(params);
+  const { isLoaded, isSignedIn, getToken } = useClerkAuth();
   const [state, setState] = useState<State>({ phase: "loading" });
 
-  const load = useCallback(() => {
+  useEffect(() => {
+    if (!isLoaded) return;
     let active = true;
-    api
-      .getBootCampSession(sessionId, { cache: "no-store" })
-      .then((session) => {
+    if (!isSignedIn) {
+      queueMicrotask(() => {
+        if (active) {
+          setState({ phase: "error", message: "Sign in to resume this boot camp." });
+        }
+      });
+      return () => {
+        active = false;
+      };
+    }
+    void (async () => {
+      try {
+        const token = await getToken();
+        if (!active) return;
+        if (!token) {
+          setState({ phase: "error", message: "Sign in to resume this boot camp." });
+          return;
+        }
+        const session = await api.getBootCampSession(sessionId, token, { cache: "no-store" });
         if (active) setState({ phase: "ready", session });
-      })
-      .catch((err: unknown) => {
+      } catch (err: unknown) {
         if (active)
           setState({
             phase: "error",
-            message: err instanceof ApiClientError ? `API ${err.status}` : "Session unavailable",
+            message:
+              err instanceof ApiClientError && err.status === 401
+                ? "Sign in to resume this boot camp."
+                : err instanceof ApiClientError && err.status === 403
+                  ? "Enrollment required to resume this boot camp."
+                  : err instanceof ApiClientError
+                    ? `API ${err.status}`
+                    : "Session unavailable",
           });
-      });
+      }
+    })();
     return () => {
       active = false;
     };
-  }, [sessionId]);
-
-  useEffect(() => load(), [load]);
+  }, [getToken, isLoaded, isSignedIn, sessionId]);
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-12 sm:py-16">

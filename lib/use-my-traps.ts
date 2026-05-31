@@ -71,7 +71,7 @@ export function useMyTrapHistory(slug: string): MyTrapHistoryState {
       try {
         const token = await getToken();
         if (!token) throw new Error("no session token");
-        const data = await api.getMyTrap(slug, token);
+        const data = await api.getMyTrap(token, slug);
         if (!cancelled) setResult({ data, error: null });
       } catch (err) {
         if (!cancelled) setResult({ data: null, error: errorMessage(err) });

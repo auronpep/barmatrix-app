@@ -40,8 +40,7 @@ export function YourTrapHistory({ slug }: { slug: string }) {
     );
   }
 
-  if (state.loading || !data) return null;
-  if (state.error) return null;
+  if (state.loading || state.error || !data) return null;
 
   if (data.fell_count === 0) {
     return (

@@ -1286,7 +1286,7 @@ export const api = {
   getMyTraps: (token: string) =>
     authedRequest<MyTrapProfile>("/api/me/traps", token),
 
-  getMyTrap: (slug: string, token: string) =>
+  getMyTrap: (token: string, slug: string) =>
     authedRequest<MyTrapHistory>(
       `/api/me/traps/${encodeURIComponent(slug)}`,
       token,

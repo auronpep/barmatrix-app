@@ -110,8 +110,14 @@ export function PersonalTrapBadge({ slug }: { slug: string }) {
   if (!signedIn) return null;
   const entry = bySlug.get(slug);
   if (!entry || entry.fell_count === 0) return null;
+  const label = `you fell for this ${entry.fell_count} times${
+    entry.confident_fell_count > 0 ? `, ${entry.confident_fell_count} with high confidence` : ""
+  }`;
   return (
-    <span className="shrink-0 rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-amber-700">
+    <span
+      aria-label={label}
+      className="shrink-0 rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-amber-700"
+    >
       you: {entry.fell_count}×
       {entry.confident_fell_count > 0 && <> · {entry.confident_fell_count} conf</>}
     </span>

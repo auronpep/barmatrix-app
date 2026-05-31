@@ -552,7 +552,7 @@ function QuestionCard({
         type="button"
         disabled={!canSubmit || submitting}
         onClick={onSubmit}
-        className="mt-8 rounded-md bg-zinc-900 px-6 py-3 text-base font-medium text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+        className="mt-8 rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
       >
         {submitting ? "Submitting…" : "Submit answer"}
       </button>
@@ -635,7 +635,7 @@ function ForensicsCard({
       <button
         type="button"
         onClick={onNext}
-        className="mt-6 rounded-md bg-zinc-900 px-6 py-3 text-base font-medium text-white hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+        className="mt-6 rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
       >
         {isLast ? "Finish set" : "Next question"}
       </button>
@@ -689,7 +689,7 @@ function CompletionPanel({
         <button
           type="button"
           onClick={onReset}
-          className="rounded-md bg-zinc-900 px-6 py-3 text-base font-medium text-white hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+          className="rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
         >
           Practice another set
         </button>

@@ -210,7 +210,7 @@ export default async function TensionDetailPage({
         <div className="mt-4 flex flex-col gap-3 sm:flex-row">
           <Link
             href={`/practice?tension=${encodeURIComponent(detail.slug)}`}
-            className="inline-block rounded-md bg-zinc-900 px-6 py-3 text-base font-medium text-white hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+            className="inline-block rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
           >
             Practice this tension →
           </Link>

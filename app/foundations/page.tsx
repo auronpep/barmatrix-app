@@ -65,7 +65,7 @@ export default function FoundationsPage() {
         <div className="mt-6 flex flex-wrap items-center gap-4">
           <Link
             href={`/foundations/${resumeSlug}`}
-            className="rounded-md bg-zinc-950 px-6 py-3 text-sm font-medium text-white hover:bg-red-700"
+            className="rounded-md bg-red-700 px-6 py-3 text-sm font-medium text-white hover:bg-red-900"
           >
             {resumeLabel} <span aria-hidden>→</span>
           </Link>
@@ -85,7 +85,7 @@ export default function FoundationsPage() {
           </p>
           <Link
             href="/sign-in"
-            className="rounded-md bg-zinc-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-zinc-700"
+            className="rounded-md bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-900"
           >
             Sign in
           </Link>

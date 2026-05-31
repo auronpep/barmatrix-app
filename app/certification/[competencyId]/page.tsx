@@ -168,7 +168,7 @@ export default function CertificationRunnerPage() {
           type="button"
           onClick={onSubmit}
           disabled={submitting}
-          className="rounded-md bg-zinc-950 px-6 py-3 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+          className="rounded-md bg-red-700 px-6 py-3 text-sm font-medium text-white hover:bg-red-900 disabled:opacity-50"
         >
           {submitting ? "Grading…" : "Submit for grading"}
         </button>
@@ -582,7 +582,7 @@ function Banner({
       <p className="text-sm text-zinc-800">{children}</p>
       <Link
         href={href}
-        className="rounded-md bg-zinc-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-zinc-700"
+        className="rounded-md bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-900"
       >
         {cta}
       </Link>

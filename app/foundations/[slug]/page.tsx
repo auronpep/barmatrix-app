@@ -233,7 +233,7 @@ export default function FoundationsLessonPage() {
             className={`rounded-md px-6 py-3 text-sm font-medium ${
               completed
                 ? "border border-emerald-700 text-emerald-800"
-                : "bg-zinc-950 text-white hover:bg-red-700"
+                : "bg-red-700 text-white hover:bg-red-900"
             } disabled:opacity-50`}
           >
             {completed ? "Completed ✓ — review again" : "Mark lesson complete"}

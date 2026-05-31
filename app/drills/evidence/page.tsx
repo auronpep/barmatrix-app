@@ -255,7 +255,7 @@ export default function EvidenceDrillPage() {
               type="button"
               onClick={() => void loadQueue()}
               disabled={phase === "loading-bank" || phase === "loading-question"}
-              className="rounded-md bg-zinc-950 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-400"
+              className="rounded-md bg-red-700 px-5 py-3 text-sm font-medium text-white hover:bg-red-900 disabled:cursor-not-allowed disabled:bg-zinc-400"
             >
               Start Evidence drill
             </button>
@@ -353,7 +353,7 @@ function StartPanel({ onStart }: { onStart: () => void }) {
       <button
         type="button"
         onClick={onStart}
-        className="mt-6 rounded-md bg-zinc-950 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-700"
+        className="mt-6 rounded-md bg-red-700 px-5 py-3 text-sm font-medium text-white hover:bg-red-900"
       >
         Start Evidence drill
       </button>
@@ -484,7 +484,7 @@ function QuestionCard({
         type="button"
         disabled={!canSubmit || submitting}
         onClick={onSubmit}
-        className="mt-8 rounded-md bg-zinc-950 px-6 py-3 text-base font-medium text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:bg-zinc-400"
+        className="mt-8 rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900 disabled:cursor-not-allowed disabled:bg-zinc-400"
       >
         {submitting ? "Submitting..." : "Submit answer"}
       </button>
@@ -567,7 +567,7 @@ function ForensicsPanel({
         <button
           type="button"
           onClick={onNext}
-          className="mt-6 w-full rounded-md bg-zinc-950 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-700"
+          className="mt-6 w-full rounded-md bg-red-700 px-5 py-3 text-sm font-medium text-white hover:bg-red-900"
         >
           {isLast ? "Finish drill" : "Next Evidence question"}
         </button>
@@ -650,7 +650,7 @@ function CompletionPanel({
         <button
           type="button"
           onClick={onRestart}
-          className="rounded-md bg-zinc-950 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-700"
+          className="rounded-md bg-red-700 px-5 py-3 text-sm font-medium text-white hover:bg-red-900"
         >
           Restart drill
         </button>

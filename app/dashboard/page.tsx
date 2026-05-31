@@ -264,7 +264,7 @@ function C3HeroCard({ data }: { data: import("@/lib/api-client").C3Mastery }) {
               : `Work the bank or the diagnostic — mastery lights up after ${data.readiness.mold_floor} exposures per skill.`}
           </p>
         </div>
-        <Link href="/mastery" className="rounded-md bg-zinc-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-700">Open Mastery →</Link>
+        <Link href="/mastery" className="rounded-md bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-900">Open Mastery →</Link>
       </div>
     </section>
   );
@@ -277,7 +277,7 @@ function StateBanner({ banner }: { banner: NonNullable<Banner> }) {
       {banner.cta && (
         <Link
           href={banner.cta.href}
-          className="rounded-md bg-zinc-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-zinc-700"
+          className="rounded-md bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-900"
         >
           {banner.cta.label}
         </Link>
@@ -403,7 +403,7 @@ function NextDrillPanel({ drill }: { drill: typeof FALLBACK_NEXT_DRILL }) {
         {drill.subtitle}
       </p>
       <p className="mt-5 text-sm leading-7 text-zinc-200">{drill.body}</p>
-      <Link href={drill.href} className="btn btn-lg mt-6 bg-white text-zinc-950 hover:bg-red-700 hover:text-white">
+      <Link href={drill.href} className="btn btn-lg mt-6 bg-red-700 text-white hover:bg-red-900">
         Start Next Drill
       </Link>
     </section>

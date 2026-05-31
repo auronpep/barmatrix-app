@@ -196,7 +196,7 @@ function Banner({
       <p className="text-sm text-zinc-800">{children}</p>
       <Link
         href={href}
-        className="rounded-md bg-zinc-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-zinc-700"
+        className="rounded-md bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-900"
       >
         {cta}
       </Link>

@@ -86,7 +86,7 @@ function Shell({ children }: { children: React.ReactNode }) {
 function Banner({ href, cta, children }: { href: string; cta: string; children: React.ReactNode }) {
   return (<div className="flex flex-wrap items-center justify-between gap-4 border border-zinc-300 bg-zinc-50 p-5">
     <p className="text-sm text-zinc-800">{children}</p>
-    <Link href={href} className="rounded-md bg-zinc-950 px-5 py-2.5 text-sm font-medium text-white hover:bg-zinc-700">{cta}</Link></div>);
+    <Link href={href} className="rounded-md bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-900">{cta}</Link></div>);
 }
 function Metric({ label, value, detail }: { label: string; value: string; detail: string }) {
   return (<article className="border border-zinc-300 bg-white p-5">

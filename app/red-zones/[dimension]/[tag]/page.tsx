@@ -122,7 +122,7 @@ function ReadyView({ data }: { data: RedZoneDetail }) {
           zone.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
-          <Link href="/checkout" className="rounded-md bg-zinc-950 px-6 py-3 text-base font-medium text-white hover:bg-zinc-700">
+          <Link href="/checkout" className="rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900">
             Enroll now
           </Link>
           <Link href="/diagnostic" className="rounded-md border border-zinc-300 px-6 py-3 text-base font-medium text-zinc-900 hover:bg-zinc-100">
@@ -299,7 +299,7 @@ function SignedOut() {
     <div className="mt-12 rounded-lg border border-zinc-300 bg-zinc-50 p-8">
       <p className="text-zinc-800">Sign in to open this red zone and its repair drill.</p>
       <div className="mt-6 flex flex-wrap gap-3">
-        <Link href="/sign-in" className="rounded-md bg-zinc-950 px-6 py-3 text-base font-medium text-white hover:bg-zinc-700">
+        <Link href="/sign-in" className="rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900">
           Sign in
         </Link>
         <Link href="/red-zones" className="rounded-md border border-zinc-300 px-6 py-3 text-base font-medium text-zinc-900 hover:bg-zinc-100">

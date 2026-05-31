@@ -464,7 +464,7 @@ function ForensicsCard({
       <button
         type="button"
         onClick={onNext}
-        className="mt-8 rounded-md bg-zinc-900 px-6 py-3 text-base font-medium text-white hover:bg-zinc-700"
+        className="mt-8 rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900"
       >
         {isLast ? "See results" : "Next question →"}
       </button>

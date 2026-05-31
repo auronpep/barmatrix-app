@@ -103,7 +103,7 @@ export default async function TensionsPage({
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               href="/diagnostic"
-              className="rounded-md bg-zinc-900 px-6 py-3 text-base font-medium text-white hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+              className="rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
             >
               Start the diagnostic
             </Link>

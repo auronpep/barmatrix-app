@@ -60,7 +60,7 @@ function WelcomePanel() {
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
         <Link
           href={WELCOME.primaryCta.href}
-          className="rounded-md bg-zinc-900 px-6 py-3 text-base font-medium text-white hover:bg-zinc-700"
+          className="rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900"
         >
           {WELCOME.primaryCta.label}
         </Link>

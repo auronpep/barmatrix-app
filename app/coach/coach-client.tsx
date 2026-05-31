@@ -1,15 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useCoach } from "@/lib/use-coach";
 import QuestionRunner from "@/components/question-runner";
 
 export default function CoachClient() {
   const { isLoaded, isSignedIn, current, loading, error, served, fetchNext } = useCoach();
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessionId] = useState<string>(() => crypto.randomUUID());
   const [started, setStarted] = useState(false);
-
-  useEffect(() => { setSessionId(crypto.randomUUID()); }, []);
 
   if (!isLoaded) return <p className="mt-6 text-sm text-zinc-500" role="status">Loading…</p>;
   if (!isSignedIn) {

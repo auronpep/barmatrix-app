@@ -66,8 +66,8 @@ export function useMyTrapHistory(slug: string): MyTrapHistoryState {
   useEffect(() => {
     if (!isLoaded || !isSignedIn || !slug) return;
     let cancelled = false;
-    setResult(null);
     void (async () => {
+      setResult(null);
       try {
         const token = await getToken();
         if (!token) throw new Error("no session token");

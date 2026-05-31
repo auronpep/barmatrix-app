@@ -14,7 +14,6 @@ export function EnrollmentRecoveryPanel({
   checkoutSessionId: string | null;
 }) {
   const [status, setStatus] = useState<CheckoutStatus | null>(null);
-  const [loading, setLoading] = useState(false);
   const [recovering, setRecovering] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

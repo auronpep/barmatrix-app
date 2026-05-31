@@ -60,7 +60,7 @@ function DrillsPageContent() {
   const searchParams = useSearchParams();
   const tensionParam = searchParams.get("tension");
 
-  const [tab, setTab] = useState<TabId>("prescribed");
+  const [tab, setTab] = useState<TabId>(tensionParam ? "catalog" : "prescribed");
   const [catalog, setCatalog] = useState<DrillCatalogResponse | null>(null);
   const [prescribed, setPrescribed] = useState<PrescribedDrillsResponse | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
@@ -101,13 +101,6 @@ function DrillsPageContent() {
       active = false;
     };
   }, [authLoaded, authSignedIn, getToken]);
-
-  // Switch to catalog tab if tension parameter is present.
-  useEffect(() => {
-    if (tensionParam) {
-      setTab("catalog");
-    }
-  }, [tensionParam]);
 
   // Scroll to tension in catalog if passed via ?tension parameter.
   useEffect(() => {

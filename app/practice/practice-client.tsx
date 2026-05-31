@@ -26,8 +26,20 @@ import {
   trackPracticeSetStarted,
 } from "@/lib/analytics";
 
+// Fetch up to 200 questions and shuffle to pick a fresh random subset each session.
+const FETCH_LIMIT = 200;
+// Show 20 questions per practice set (configurable for future A/B testing).
 const SET_LIMIT = 20;
 const INCLUDE_HIDDEN = process.env.NODE_ENV !== "production";
+
+// Fisher-Yates shuffle: mutates array in-place, returns it for chaining.
+function shuffle<T>(array: T[]): T[] {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
 const SUBJECTS = [
   "Civil Procedure",
@@ -78,7 +90,7 @@ async function fetchSubjectIds(subject: string): Promise<string[]> {
   const params = new URLSearchParams({
     subject,
     page: "1",
-    limit: String(SET_LIMIT),
+    limit: String(FETCH_LIMIT),
   });
   const res = await fetch(`${API_URL}/api/questions/by-subject?${params}`, {
     headers: { accept: "application/json" },
@@ -92,25 +104,31 @@ async function fetchSubjectIds(subject: string): Promise<string[]> {
     payload && typeof payload === "object" && "questions" in payload
       ? (payload as { questions: Array<{ question_id?: string }> }).questions
       : [];
-  return questions
+  const ids = questions
     .map((q) => q?.question_id)
     .filter((id): id is string => typeof id === "string");
+  // Shuffle and take the first SET_LIMIT to vary content across sessions.
+  return shuffle([...ids]).slice(0, SET_LIMIT);
 }
 
 async function fetchFilterIds(filter: ActiveFilter): Promise<string[]> {
   if (filter.type === "tension") {
     const res = await api.getTensionQuestions(filter.value, {
       include_hidden: INCLUDE_HIDDEN,
-      limit: SET_LIMIT,
+      limit: FETCH_LIMIT,
     });
-    return res.questions.map((q) => q.question_id);
+    const ids = res.questions.map((q) => q.question_id);
+    // Shuffle and take the first SET_LIMIT to vary content across sessions.
+    return shuffle([...ids]).slice(0, SET_LIMIT);
   }
   if (filter.type === "trap") {
     const res = await api.getTrapQuestions(filter.value, {
       include_hidden: INCLUDE_HIDDEN,
-      limit: SET_LIMIT,
+      limit: FETCH_LIMIT,
     });
-    return res.questions.map((q) => q.question_id);
+    const ids = res.questions.map((q) => q.question_id);
+    // Shuffle and take the first SET_LIMIT to vary content across sessions.
+    return shuffle([...ids]).slice(0, SET_LIMIT);
   }
   return fetchSubjectIds(filter.value);
 }

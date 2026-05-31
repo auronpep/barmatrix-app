@@ -403,7 +403,7 @@ function NextDrillPanel({ drill }: { drill: typeof FALLBACK_NEXT_DRILL }) {
         {drill.subtitle}
       </p>
       <p className="mt-5 text-sm leading-7 text-zinc-200">{drill.body}</p>
-      <Link href={drill.href} className="btn btn-lg mt-6 bg-red-700 text-white hover:bg-red-900">
+      <Link href={drill.href} className="btn btn-lg red mt-6 bg-red-700 text-white hover:bg-red-900">
         Start Next Drill
       </Link>
     </section>

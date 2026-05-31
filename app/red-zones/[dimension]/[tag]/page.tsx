@@ -205,7 +205,7 @@ function RepairRail({ data }: { data: RedZoneDetail }) {
         <Link
           href={`/drills/${slug}`}
           onClick={onStart}
-          className="btn btn-lg mt-6 w-full bg-red-700 text-center text-white hover:bg-red-900"
+          className="btn btn-lg red mt-6 w-full bg-red-700 text-center text-white hover:bg-red-900"
         >
           Start repair drill
         </Link>

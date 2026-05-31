@@ -52,10 +52,10 @@ export default async function CheckoutSuccessPage({
             <Link href="/foundations" className="btn btn-lg red">
               Start with The Method <span className="arrow">→</span>
             </Link>
-            <Link href="/dashboard" className="btn btn-lg">
+            <Link href="/dashboard" className="btn btn-lg red">
               Go to Dashboard <span className="arrow">→</span>
             </Link>
-            <Link href={accountHref} className="btn btn-lg">
+            <Link href={accountHref} className="btn btn-lg red">
               Open Account <span className="arrow">→</span>
             </Link>
           </div>

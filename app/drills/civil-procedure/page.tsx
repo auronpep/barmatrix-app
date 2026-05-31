@@ -500,7 +500,7 @@ function QuestionCard({
         type="button"
         disabled={!canSubmit || submitting}
         onClick={onSubmit}
-        className="btn"
+        className="btn red"
         style={{ marginTop: 32 }}
       >
         {submitting ? "Submitting..." : "Submit answer"}
@@ -584,7 +584,7 @@ function ForensicsPanel({
         <button
           type="button"
           onClick={onNext}
-          className="btn"
+          className="btn red"
           style={{ marginTop: 24, width: "100%", justifyContent: "center" }}
         >
           {isLast ? "Finish drill" : "Next Civil Procedure question"}

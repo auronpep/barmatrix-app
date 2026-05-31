@@ -580,7 +580,7 @@ export default function Home() {
                 {PRICING.capacityLine}
               </p>
               <div style={{ marginTop: 32, display: "flex", gap: 16, flexWrap: "wrap" }}>
-                <Link href="/pricing" className="btn">
+                <Link href="/pricing" className="btn red">
                   See the full flagship <span className="arrow">→</span>
                 </Link>
                 <Link href="/checkout" className="btn red">

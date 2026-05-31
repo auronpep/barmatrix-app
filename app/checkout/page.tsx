@@ -158,7 +158,7 @@ export default function CheckoutPage() {
                       type="button"
                       onClick={() => enroll("two_pay_500_499")}
                       disabled={phase === "redirecting"}
-                      className="btn btn-lg"
+                      className="btn btn-lg red"
                       style={{
                         width: "100%",
                         justifyContent: "center",

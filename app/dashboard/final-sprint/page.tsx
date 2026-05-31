@@ -386,7 +386,7 @@ function LiveTargets({ dash }: { dash: ReturnType<typeof useDashboard> }) {
         <p className="text-sm leading-6 text-zinc-800">
           Sign in to personalize the sprint with your real red zones and assigned drills.
         </p>
-        <Link href="/sign-in" className="btn btn-sm">
+        <Link href="/sign-in" className="btn btn-sm red">
           Sign in
         </Link>
       </section>

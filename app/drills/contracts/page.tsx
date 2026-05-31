@@ -267,7 +267,7 @@ export default function ContractsDrillPage() {
               type="button"
               onClick={() => void loadQueue()}
               disabled={phase === "loading-bank" || phase === "loading-question"}
-              className="btn btn-lg"
+              className="btn btn-lg red"
             >
               Start Contracts drill
             </button>
@@ -365,7 +365,7 @@ function StartPanel({ onStart }: { onStart: () => void }) {
       <button
         type="button"
         onClick={onStart}
-        className="btn btn-lg mt-6"
+        className="btn btn-lg red mt-6"
       >
         Start Contracts drill
       </button>
@@ -497,7 +497,7 @@ function QuestionCard({
         type="button"
         disabled={!canSubmit || submitting}
         onClick={onSubmit}
-        className="btn btn-lg mt-8"
+        className="btn btn-lg red mt-8"
       >
         {submitting ? "Submitting..." : "Submit answer"}
       </button>
@@ -580,7 +580,7 @@ function ForensicsPanel({
         <button
           type="button"
           onClick={onNext}
-          className="btn btn-lg mt-6 w-full justify-center"
+          className="btn btn-lg red mt-6 w-full justify-center"
         >
           {isLast ? "Finish drill" : "Next Contracts question"}
         </button>
@@ -669,7 +669,7 @@ function CompletionPanel({
         <button
           type="button"
           onClick={onRestart}
-          className="btn btn-lg"
+          className="btn btn-lg red"
         >
           Restart drill
         </button>

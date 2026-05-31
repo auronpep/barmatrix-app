@@ -312,7 +312,7 @@ export default function EvidenceSubjectPage() {
                   </p>
                   <button
                     type="button"
-                    className="btn btn-sm"
+                    className="btn btn-sm red"
                     style={{ marginTop: 20 }}
                     onClick={() => {
                       setPhase("loading");

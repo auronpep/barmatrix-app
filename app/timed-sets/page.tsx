@@ -354,7 +354,7 @@ export default function TimedSetsPage() {
               type="button"
               onClick={() => void buildSet()}
               disabled={phase === "building" || phase === "loading-question"}
-              className="btn btn-lg"
+              className="btn btn-lg red"
             >
               Start timed mixed set
             </button>
@@ -491,7 +491,7 @@ function StartPanel({ onStart }: { onStart: () => void }) {
         hidden while you answer, and send each attempt into the same forensic
         review loop used by single-subject drills.
       </p>
-      <button type="button" onClick={onStart} className="btn btn-lg mt-6">
+      <button type="button" onClick={onStart} className="btn btn-lg red mt-6">
         Start timed mixed set
       </button>
     </div>
@@ -629,7 +629,7 @@ function QuestionCard({
         type="button"
         disabled={!canSubmit || submitting}
         onClick={onSubmit}
-        className="btn btn-lg mt-8"
+        className="btn btn-lg red mt-8"
       >
         {submitting ? "Submitting..." : "Submit answer"}
       </button>
@@ -716,7 +716,7 @@ function EnginePanel({
         <button
           type="button"
           onClick={onNext}
-          className="btn btn-lg mt-6 w-full justify-center"
+          className="btn btn-lg red mt-6 w-full justify-center"
         >
           {isLast ? "Finish timed set" : "Next timed question"}
         </button>
@@ -822,7 +822,7 @@ function CompletionPanel({
         start another mixed block when you are ready.
       </p>
       <div className="mt-6 flex flex-wrap gap-3">
-        <button type="button" onClick={onRestart} className="btn btn-lg">
+        <button type="button" onClick={onRestart} className="btn btn-lg red">
           Start another timed set
         </button>
         <Link href="/red-zones" className="btn btn-lg ghost">

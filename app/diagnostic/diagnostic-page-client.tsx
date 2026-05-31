@@ -226,7 +226,7 @@ export function DiagnosticPageClient() {
                   >
                     {emptyMessage}
                   </p>
-                  <button type="button" onClick={start} className="btn">
+                  <button type="button" onClick={start} className="btn red">
                     Check again <span className="arrow">→</span>
                   </button>
                 </div>

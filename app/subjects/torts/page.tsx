@@ -322,7 +322,7 @@ export default function TortsSubjectPage() {
                   </p>
                   <button
                     type="button"
-                    className="btn btn-sm"
+                    className="btn btn-sm red"
                     style={{ marginTop: 20 }}
                     onClick={() => void syncBank()}
                   >
@@ -446,7 +446,7 @@ function IdlePanel({ onSync }: { onSync: () => void }) {
       </p>
       <button
         type="button"
-        className="btn btn-sm"
+        className="btn btn-sm red"
         style={{ marginTop: 20 }}
         onClick={onSync}
       >

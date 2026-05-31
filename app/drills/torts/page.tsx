@@ -267,7 +267,7 @@ export default function TortsDrillPage() {
               type="button"
               onClick={() => void loadQueue()}
               disabled={phase === "loading-bank" || phase === "loading-question"}
-              className="btn btn-lg"
+              className="btn btn-lg red"
             >
               Start Torts drill
             </button>
@@ -359,7 +359,7 @@ function StartPanel({ onStart }: { onStart: () => void }) {
         rail changes from a duty-and-scope preview into live wrong-answer
         forensics.
       </p>
-      <button type="button" onClick={onStart} className="btn btn-lg mt-6">
+      <button type="button" onClick={onStart} className="btn btn-lg red mt-6">
         Start Torts drill
       </button>
     </div>
@@ -486,7 +486,7 @@ function QuestionCard({
         type="button"
         disabled={!canSubmit || submitting}
         onClick={onSubmit}
-        className="btn btn-lg mt-8"
+        className="btn btn-lg red mt-8"
       >
         {submitting ? "Submitting..." : "Submit answer"}
       </button>
@@ -569,7 +569,7 @@ function ForensicsPanel({
         <button
           type="button"
           onClick={onNext}
-          className="btn btn-lg mt-6 w-full justify-center"
+          className="btn btn-lg red mt-6 w-full justify-center"
         >
           {isLast ? "Finish drill" : "Next Torts question"}
         </button>
@@ -655,7 +655,7 @@ function CompletionPanel({
         queue for another pass.
       </p>
       <div className="mt-6 flex flex-wrap gap-3">
-        <button type="button" onClick={onRestart} className="btn btn-lg">
+        <button type="button" onClick={onRestart} className="btn btn-lg red">
           Restart drill
         </button>
         <Link href="/red-zones" className="btn btn-lg ghost">

@@ -129,7 +129,7 @@ export default function PricingPage() {
                   shows you the kind of feedback Flagship gives on every miss.
                   No card. No commitment.
                 </p>
-                <Link href="/diagnostic" className="btn">
+                <Link href="/diagnostic" className="btn red">
                   Take the Free Diagnostic <span className="arrow">→</span>
                 </Link>
               </div>

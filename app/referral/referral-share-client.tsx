@@ -89,7 +89,7 @@ export function ReferralShareClient() {
           </div>
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <button type="button" onClick={copyShareUrl} className="btn btn-lg">
+            <button type="button" onClick={copyShareUrl} className="btn btn-lg red">
               Copy Link
             </button>
             <Link href={shareUrl} className="btn btn-lg ghost">

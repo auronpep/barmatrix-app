@@ -754,6 +754,7 @@ export interface BootCampDayCompleteResponse {
   skipped: boolean;
   current_day: number;
   mastery_unlocked: boolean;
+  gamification: BootCampGamificationGrant | null;
 }
 
 export interface BootCampMasteryStartResponse {
@@ -777,6 +778,30 @@ export interface BootCampMasteryCompleteResponse {
   total?: number;
   already_completed?: boolean;
   red_zone_deltas: BootCampRedZoneDelta[];
+  gamification: BootCampGamificationGrant | null;
+}
+
+export interface BootCampGamificationGrant {
+  xp_earned: number;
+  total_xp: number;
+  current_streak: number;
+  longest_streak: number;
+  badges_unlocked: string[];
+}
+
+export interface MyGamificationBadge {
+  slug: string;
+  label: string;
+  description: string;
+  emoji: string;
+  earned_at: string;
+}
+
+export interface MyGamification {
+  total_xp: number;
+  current_streak: number;
+  longest_streak: number;
+  badges: MyGamificationBadge[];
 }
 
 // --- Drill Library (Web Component 04) — anonymous-first prescriptive drills ---
@@ -1239,6 +1264,9 @@ export const api = {
 
   getMyRedZones: (token: string) =>
     authedRequest<RedZoneLibrary>("/api/me/red-zones", token),
+
+  getMyGamification: (token: string, init?: RequestInit) =>
+    authedRequest<MyGamification>("/api/me/gamification", token, init),
 
   getMyRedZoneDetail: (
     token: string,

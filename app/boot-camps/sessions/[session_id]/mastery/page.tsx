@@ -14,8 +14,10 @@ import {
 } from "@/lib/api-client";
 import QuestionRunner from "@/components/question-runner";
 import { humanizeTag, masteryBand, pct } from "@/lib/boot-camps";
-import { trackBootcampCompleted } from "@/lib/analytics";
+import { trackBootcampCompleted, trackBootcampXpEarned, trackBootcampBadgeUnlocked, trackBootcampStreakExtended } from "@/lib/analytics";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
+import Celebration from "@/components/gamification/celebration";
+import { badgeMeta, formatXp } from "@/lib/gamification";
 
 interface MasteryData {
   slug: string;
@@ -106,6 +108,7 @@ export default function BootCampMasteryPage({
 
   const onComplete = async () => {
     if (state.phase !== "running" || submitting) return;
+    const slug = state.data.slug;
     setSubmitting(true);
     try {
       const token = await getToken();
@@ -116,11 +119,21 @@ export default function BootCampMasteryPage({
       }
       const result = await api.completeBootCampMastery(sessionId, token);
       trackBootcampCompleted({
-        bootcampId: state.data.slug,
+        bootcampId: slug,
         completionStatus: "completed",
         masteryPassed: result.mastered,
         postScore: result.mastery_score,
       });
+      const grant = result.gamification;
+      if (grant) {
+        if (grant.xp_earned > 0) {
+          trackBootcampXpEarned({ bootcampId: slug, xp: grant.xp_earned, source: "boot_camp_mastery" });
+        }
+        for (const badgeSlug of grant.badges_unlocked) {
+          trackBootcampBadgeUnlocked({ bootcampId: slug, badgeSlug });
+        }
+        trackBootcampStreakExtended({ bootcampId: slug, streak: grant.current_streak });
+      }
       setState({ phase: "scored", data: state.data, result });
     } catch (err) {
       setState({
@@ -238,6 +251,7 @@ function MasteryResult({
       }`}
       role="status"
     >
+      <Celebration trigger={result.mastered} />
       <p
         className={`font-mono text-xs uppercase tracking-wider ${
           result.mastered ? "text-emerald-700" : "text-amber-700"
@@ -262,6 +276,33 @@ function MasteryResult({
           ? ` · ${result.correct}/${result.total} correct`
           : ""}
       </p>
+
+      {result.gamification && (
+        <div className="mt-5 border-t border-zinc-200 pt-5">
+          {result.gamification.xp_earned > 0 && (
+            <p className="text-lg font-semibold text-emerald-800">
+              +{formatXp(result.gamification.xp_earned)} XP
+            </p>
+          )}
+          {result.gamification.current_streak > 0 && (
+            <p className="mt-1 font-mono text-xs uppercase tracking-wide text-zinc-600">
+              🔥 {result.gamification.current_streak}-day streak
+            </p>
+          )}
+          {result.gamification.badges_unlocked.length > 0 && (
+            <ul className="mt-3 space-y-1">
+              {result.gamification.badges_unlocked.map((slug) => {
+                const meta = badgeMeta(slug);
+                return (
+                  <li key={slug} className="text-sm text-zinc-800">
+                    {meta.emoji} Badge unlocked: <strong>{meta.label}</strong>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+      )}
 
       {result.red_zone_deltas.length > 0 && (
         <div className="mt-6">

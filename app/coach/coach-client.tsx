@@ -30,7 +30,7 @@ export default function CoachClient() {
       </button>
     );
   }
-  if (loading && !current) return <p className="mt-6 text-sm text-zinc-500" role="status">Finding your weak spot…</p>;
+  if (loading) return <p className="mt-6 text-sm text-zinc-500" role="status">Finding your weak spot…</p>;
   if (error) {
     return (
       <p className="mt-6 text-sm text-red-600" role="alert">

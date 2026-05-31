@@ -30,7 +30,7 @@ export const PRICING = {
     "Timed mixed sets",
     "Pattern Mastery Board",
     "Final sprint path",
-    "Web, iOS, and Android access",
+    "Full web access",
   ],
 } as const;
 
@@ -71,22 +71,14 @@ export const FAQ: Array<{ q: string; a: string }> = [
     q: "Is this a full bar course?",
     a: "No. BarMatrix is multiple-choice-only and is designed to complement a full bar course.",
   },
-  {
-    q: "Are iOS and Android included?",
-    a: "Yes. BarMatrix is launching with web, iOS, and Android access.",
-  },
 ];
 
 export const APP_STATUS = {
-  // Day 0 default. Update through /api/app/config once builds are submitted.
-  webLiveAppsSubmitted:
-    "Web access is live now. iOS and Android cohort apps have been submitted and app links will be updated as review clears.",
-  testFlight:
-    "Web access is live now. iOS cohort access is available through TestFlight while public App Store review is pending.",
-  playTesting:
-    "Web access is live now. Android cohort access is available through the Play testing track while public review is pending.",
-  storeApproved:
-    "Download BarMatrix on the App Store or Google Play, or continue from the web app.",
+  // Web-only for now. iOS/Android messaging removed until those builds ship.
+  webLiveAppsSubmitted: "Web access is live now.",
+  testFlight: "Web access is live now.",
+  playTesting: "Web access is live now.",
+  storeApproved: "Web access is live now.",
 } as const;
 
 export const WELCOME = {

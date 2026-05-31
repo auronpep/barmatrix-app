@@ -92,7 +92,7 @@ export default function Home() {
           <div className="hero-grid">
             <div>
               <div className="eyebrow-red" style={{ marginBottom: 24 }}>
-                ▌ MBE TRAP DIAGNOSIS · WEB · iOS · ANDROID
+                ▌ MBE TRAP DIAGNOSIS · WEB
               </div>
               <h1 className="display display-xl">
                 Master the{" "}
@@ -108,7 +108,7 @@ export default function Home() {
                   {HERO.secondaryCta.label}
                 </Link>
                 <div className="platforms">
-                  WEB · iOS · ANDROID
+                  WEB
                   <br />
                   Same account. Same drills.
                 </div>

@@ -305,7 +305,7 @@ function EnrollCta() {
       <p className="mt-3 text-zinc-300">
         Enrolling saves this map to your account and unlocks your repair drills,
         the full 2,400-question forensic bank, Wrong Answer Forensics on every
-        miss, and web, iOS, and Android access.
+        miss, and full web access.
       </p>
       <div className="mt-6 flex flex-wrap gap-3">
         <Link href="/pricing" className="btn red">

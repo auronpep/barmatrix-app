@@ -199,8 +199,6 @@ export default function RootLayout({
                     <li>
                       <Link href="/app">Web App</Link>
                     </li>
-                    <li>iOS — TestFlight</li>
-                    <li>Android — Play</li>
                     <li>
                       <Link href="/partners">Partner Program</Link>
                     </li>

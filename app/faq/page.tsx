@@ -4,7 +4,7 @@ import { FAQ, DISCLAIMER } from "@/lib/copy";
 export const metadata = {
   title: "FAQ — BarMatrix",
   description:
-    "Frequently asked questions about BarMatrix Flagship: pricing, cohort access, iOS/Android availability, course companion use, and refund terms.",
+    "Frequently asked questions about BarMatrix Flagship: pricing, cohort access, course companion use, and refund terms.",
 };
 
 export default function FaqPage() {

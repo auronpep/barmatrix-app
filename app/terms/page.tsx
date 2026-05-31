@@ -78,8 +78,8 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="font-serif text-2xl font-semibold text-zinc-900">9. Mobile Applications</h2>
-          <p className="mt-4">The Platform is available on iOS and Android. Additional terms from Apple and Google apply to those versions. Where checkout is web-only, Apple and Google are not responsible for purchases or refunds.</p>
+          <h2 className="font-serif text-2xl font-semibold text-zinc-900">9. Platform Access</h2>
+          <p className="mt-4">The Platform is provided as a web application accessible from standard browsers. Checkout and account access are web-based.</p>
         </section>
 
         <section>

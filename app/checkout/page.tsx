@@ -85,7 +85,7 @@ export default function CheckoutPage() {
             BarMatrix Flagship is a multiple-choice-only MBE repair system.
             Access includes the diagnostic, question-bank access, Wrong Answer
             Forensics, Red-Zone Map, assigned drills, boot camp modules, timed
-            mixed sets, dashboard access, and web/iOS/Android app access.
+            mixed sets, and full web dashboard access.
           </p>
         </div>
       </section>

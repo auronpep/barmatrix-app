@@ -762,13 +762,24 @@ export interface InProgressDrill {
   prescribed_at: string;
 }
 
+export interface PrescribedReview {
+  available_count: number;
+  suggested_size: number;
+}
+
 export interface PrescribedDrillsResponse {
   suggested: PrescribedDrillSuggestion[];
   in_progress: InProgressDrill[];
+  review?: PrescribedReview;
   message?: string;
 }
 
-export type DrillStartKind = "tension" | "trap" | "prescribed_red_zone";
+export type DrillStartKind =
+  | "tension"
+  | "trap"
+  | "prescribed_red_zone"
+  | "review"
+  | "retry";
 
 export interface DrillStartRequest {
   kind: DrillStartKind;
@@ -777,6 +788,8 @@ export interface DrillStartRequest {
   red_zone_tag?: string;
   size?: number;
   student_id?: string;
+  source_drill_id?: string;
+  exclude_mastered?: boolean;
 }
 
 export interface DrillStartResponse {

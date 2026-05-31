@@ -8,6 +8,7 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   api,
   ApiClientError,
@@ -32,6 +33,23 @@ export default function DrillRunnerPage({
   const { drill_id: drillId } = use(params);
   const [state, setState] = useState<State>({ phase: "loading" });
   const [finishing, setFinishing] = useState(false);
+  const router = useRouter();
+  const [retrying, setRetrying] = useState(false);
+
+  const onRetryMissed = async () => {
+    if (retrying) return;
+    setRetrying(true);
+    try {
+      const res = await api.startDrill({ kind: "retry", source_drill_id: drillId });
+      if (res.drill_id) {
+        router.push(`/drills/${res.drill_id}`);
+        return;
+      }
+      setRetrying(false);
+    } catch {
+      setRetrying(false);
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -172,7 +190,12 @@ export default function DrillRunnerPage({
         )}
 
         {state.phase === "done" && (
-          <MasteryCard detail={state.detail} result={state.result} />
+          <MasteryCard
+            detail={state.detail}
+            result={state.result}
+            onRetryMissed={onRetryMissed}
+            retrying={retrying}
+          />
         )}
       </div>
     </main>
@@ -182,9 +205,13 @@ export default function DrillRunnerPage({
 function MasteryCard({
   detail,
   result,
+  onRetryMissed,
+  retrying,
 }: {
   detail: DrillDetail;
   result: DrillCompleteResponse;
+  onRetryMissed: () => void;
+  retrying: boolean;
 }) {
   const pct =
     result.total > 0 ? Math.round((result.correct / result.total) * 100) : 0;
@@ -228,6 +255,16 @@ function MasteryCard({
       )}
 
       <div className="mt-8 flex flex-wrap gap-3">
+        {result.correct < result.total && (
+          <button
+            type="button"
+            onClick={onRetryMissed}
+            disabled={retrying}
+            className="btn red"
+          >
+            {retrying ? "Building…" : "Retry missed questions"}
+          </button>
+        )}
         <Link href="/drills" className="btn red">
           Start another drill
         </Link>

@@ -247,8 +247,10 @@ function PrescribedPanel({
 
   const suggested = prescribed?.suggested ?? [];
   const inProgress = prescribed?.in_progress ?? [];
+  const review = prescribed?.review;
+  const hasReview = !!review && review.available_count > 0;
 
-  if (suggested.length === 0 && inProgress.length === 0) {
+  if (suggested.length === 0 && inProgress.length === 0 && !hasReview) {
     return (
       <EmptyState
         text="No prescribed drills yet. Take the diagnostic to build your Red-Zone Map and unlock targeted drills."
@@ -260,6 +262,39 @@ function PrescribedPanel({
 
   return (
     <div className="space-y-10">
+      {hasReview && review && (
+        <section aria-labelledby="review-heading">
+          <h2
+            id="review-heading"
+            className="font-mono text-xs uppercase tracking-wider text-zinc-700"
+          >
+            Review your misses
+          </h2>
+          <div className="mt-4">
+            <article className="flex flex-col border border-red-300 bg-red-50 p-5 md:max-w-md">
+              <h3 className="font-serif text-xl font-semibold leading-tight text-zinc-950">
+                Review missed questions
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600">
+                {review.available_count} question
+                {review.available_count === 1 ? "" : "s"} you most recently
+                missed, newest first.
+              </p>
+              <button
+                type="button"
+                disabled={busy !== null}
+                onClick={() =>
+                  onStart("review", { kind: "review", size: review.suggested_size })
+                }
+                className="btn btn-sm red mt-4 self-start"
+              >
+                {busy === "review" ? "Starting…" : "Start review drill"}
+              </button>
+            </article>
+          </div>
+        </section>
+      )}
+
       {inProgress.length > 0 && (
         <section aria-labelledby="resume-heading">
           <h2

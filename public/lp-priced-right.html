@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23c8102e'/%3E%3Ctext x='16' y='24' font-family='Georgia,serif' font-size='22' font-weight='900' fill='white' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E"/>
+  <meta name="description" content="Bar prep priced like it's not already costing you a year of your life. The cost of a retake is measured in months — BarMatrix isn't." />
+  <meta property="og:title" content="BarMatrix · Priced like your time matters." />
+  <meta property="og:description" content="A retake costs a year. The incumbents cost thousands. BarMatrix is the diagnostic layer priced for what it is." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'%3E%3Crect width='1200' height='630' fill='%230a0a0a'/%3E%3Crect width='1200' height='12' fill='%23c8102e'/%3E%3Ctext x='100' y='280' font-family='Georgia,serif' font-size='90' font-weight='700' fill='white'%3EBarMatrix.%3C/text%3E%3Ctext x='100' y='370' font-family='Georgia,serif' font-size='52' font-weight='700' fill='%23c8102e' font-style='italic'%3EDiagnose. Repair.%3C/text%3E%3Ctext x='100' y='550' font-family='monospace' font-size='22' fill='%23a39e93' letter-spacing='4'%3E%E2%96%8C MBE TRAP DIAGNOSIS %C2%B7 WEB %C2%B7 iOS %C2%B7 ANDROID%3C/text%3E%3C/svg%3E" />
+  <meta name="twitter:card" content="summary_large_image" />
+<title>BarMatrix — Bar prep priced like it's not already costing you a year of your life.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400;1,6..72,500;1,6..72,600;1,6..72,700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<style>
+.lpp-hero{padding:80px 0 56px;border-bottom:1px solid var(--rule)}
+.lpp-meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;padding-bottom:24px;margin-bottom:44px;border-bottom:1px solid var(--rule);font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--muted);text-transform:uppercase}
+.lpp-h1{font-family:var(--serif);font-weight:700;font-size:clamp(42px,5vw,76px);line-height:1.05;letter-spacing:-0.025em;margin:0 0 28px;max-width:20ch}
+.lpp-h1 em{color:var(--red);font-style:italic}
+.lpp-lede{font-family:var(--serif);font-style:italic;font-size:22px;line-height:1.45;color:var(--ink-soft);margin:0 0 36px;max-width:44ch}
+/* cost ledger */
+.lpp-ledger{border:1px solid var(--ink);background:var(--paper)}
+.lpp-ledger-h{padding:14px 22px;background:var(--ink);color:var(--bg);font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;display:flex;justify-content:space-between}
+.lpp-row{display:grid;grid-template-columns:1fr auto;gap:16px;padding:18px 22px;border-bottom:1px solid var(--rule-soft);align-items:baseline}
+.lpp-row:last-child{border-bottom:none}
+.lpp-row .nm{font-family:var(--serif);font-weight:600;font-size:17px}
+.lpp-row .nm .s{font-family:var(--sans);font-size:13px;color:var(--muted);display:block;margin-top:2px;font-weight:400}
+.lpp-row .amt{font-family:var(--serif);font-weight:700;font-size:26px;letter-spacing:-0.02em;white-space:nowrap}
+.lpp-row.cost .amt{color:var(--red)}
+.lpp-row.us{background:var(--bg-alt);border-top:2px solid var(--ink)}
+.lpp-row.us .amt{color:var(--correct)}
+.lpp-compare{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--ink)}
+.lpp-compare>div{background:var(--paper);padding:28px}
+.lpp-compare h3{font-family:var(--serif);font-weight:700;font-size:22px;letter-spacing:-0.01em;margin:0 0 14px}
+.lpp-compare ul{list-style:none;padding:0;margin:0}
+.lpp-compare li{padding:9px 0;border-bottom:1px solid var(--rule-soft);font-size:14px;line-height:1.4;display:flex;gap:10px;color:var(--ink-soft)}
+.lpp-compare li::before{font-family:var(--mono);font-weight:700}
+.lpp-compare .them li::before{content:"\00d7";color:var(--muted)}
+.lpp-compare .ussec li::before{content:"\2192";color:var(--red)}
+.lpp-incl{display:grid;grid-template-columns:1fr 1fr;gap:14px 40px;border-top:2px solid var(--ink);padding-top:24px}
+.lpp-incl div{display:flex;gap:12px;font-size:15px;line-height:1.45;padding-bottom:14px;border-bottom:1px solid var(--rule-soft)}
+.lpp-incl div::before{content:"\2192";font-family:var(--mono);font-weight:700;color:var(--red)}
+.lpp-band{background:var(--ink);color:var(--bg);text-align:center}
+@media(max-width:840px){.lpp-compare{grid-template-columns:1fr}.lpp-incl{grid-template-columns:1fr}}
+</style></head><body data-screen-label="LP · Priced Right">
+<div class="tape-strip"></div>
+<nav class="nav"><div class="nav-inner">
+  <a href="/" class="brand" style="text-decoration:none;color:inherit"><span class="mark">B</span><span>BarMatrix<span class="dot"></span></span></a>
+  <div class="nav-links">
+    <a href="/"><button>Home</button></a>
+    <a href="/"><button>Pricing</button></a>
+    <a href="/about"><button>About</button></a>
+    <a href="/partners"><button>Partners</button></a>
+  </div>
+  <div class="nav-cta"><a href="/checkout?lp=priced-right" class="btn btn-sm red">Enroll &rarr;</a></div>
+</div></nav>
+
+<!-- HERO -->
+<section class="lpp-hero"><div class="container">
+  <div class="lpp-meta">
+    <span>&#9612; THE DIAGNOSTIC LAYER</span>
+    <span>NOT ANOTHER $4K COURSE</span>
+    <span>MULTIPLE-CHOICE ONLY</span>
+    <span>WEB &middot; iOS &middot; ANDROID</span>
+  </div>
+  <div class="eyebrow-red" style="margin-bottom:20px">&#9612; THE REAL PRICE IS THE YEAR YOU'D LOSE</div>
+  <h1 class="lpp-h1">Bar prep priced like it's <em>not</em> already costing you a year of your life.</h1>
+  <p class="lpp-lede">The most expensive thing about the bar isn't the course fee. It's another cycle &mdash; the lost salary, the deferred start date, the months again. BarMatrix is priced for what it is: a sharp diagnostic layer, not a $4,000 rerun of material you already own.</p>
+  <div class="hero-actions">
+    <a href="/checkout?lp=priced-right" class="btn btn-lg red">See What's Included <span class="arrow">&rarr;</span></a>
+    <span class="platforms">Free 12-question diagnostic<br/>No card to start</span>
+  </div>
+</div></section>
+
+<!-- COST OF FAILURE LEDGER -->
+<section class="section"><div class="container">
+  <div class="section-rule"><span class="label">&#9612; What A Retake Actually Costs &middot; 01</span></div>
+  <div class="two-col" style="align-items:start;gap:64px;margin-bottom:36px">
+    <div>
+      <h2 class="display display-md" style="margin:0 0 20px;max-width:18ch">The course fee is the <span style="color:var(--red);font-style:italic">small number.</span></h2>
+      <p class="body-lg">Price the whole thing, not just the invoice. A second attempt isn't another few thousand dollars &mdash; it's the months of studying, the delayed bar admission, and the salary you don't earn while you wait. That's the figure worth optimizing against.</p>
+    </div>
+    <div class="lpp-ledger">
+      <div class="lpp-ledger-h"><span>&#9612; COST OF A SECOND CYCLE</span><span>ILLUSTRATIVE</span></div>
+      <div class="lpp-row cost"><div class="nm">Deferred attorney salary<span class="s">~6 months of delayed start</span></div><span class="amt">$$$$$</span></div>
+      <div class="lpp-row cost"><div class="nm">Another full course<span class="s">re-buying material you own</span></div><span class="amt">~$4,000</span></div>
+      <div class="lpp-row cost"><div class="nm">Months of your life<span class="s">studying the same way again</span></div><span class="amt">months</span></div>
+      <div class="lpp-row us"><div class="nm">A diagnostic layer that targets the gap<span class="s">BarMatrix &middot; multiple-choice repair</span></div><span class="amt">a fraction</span></div>
+    </div>
+  </div>
+  <p style="font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase">&#9656; Illustrative cost framing &middot; not a quote &middot; see checkout for current pricing</p>
+</div></section>
+
+<!-- VS INCUMBENTS -->
+<section class="section alt"><div class="container">
+  <div class="section-rule"><span class="label">&#9612; Not Trying To Be Your Course &middot; 02</span></div>
+  <h2 class="display display-md" style="margin:0 0 12px;max-width:26ch">Different job. <span style="color:var(--red);font-style:italic">Different price.</span></h2>
+  <p class="body-lg" style="margin:0 0 36px">The big incumbents sell you everything &mdash; lectures, outlines, essays, volume &mdash; at a price that assumes it's your whole prep. BarMatrix does one job the volume products don't: diagnose and repair the traps you keep picking.</p>
+  <div class="lpp-compare">
+    <div class="them">
+      <h3>The $4K full course</h3>
+      <ul>
+        <li>Lectures and outlines you mostly already have</li>
+        <li>Thousands of questions, no trap-level diagnosis</li>
+        <li>Volume as the strategy</li>
+        <li>Priced as your entire prep budget</li>
+      </ul>
+    </div>
+    <div class="ussec">
+      <h3>BarMatrix</h3>
+      <ul>
+        <li>Every wrong answer tagged to its trap shape</li>
+        <li>A Red Zone map from 12 questions</li>
+        <li>Targeted repair drills, not random review</li>
+        <li>Priced as a layer, not a replacement</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- MID-PAGE CTA -->
+<section class="section-tight" style="text-align:center"><div class="container">
+  <p style="font-family:var(--serif);font-style:italic;font-size:26px;line-height:1.35;margin:0 auto 24px;max-width:32ch">The cheapest version of the bar is the one you don't take twice.</p>
+  <a href="/checkout?lp=priced-right" class="btn btn-lg red">Start The Diagnostic <span class="arrow">&rarr;</span></a>
+</div></section>
+
+<!-- WHAT'S INCLUDED -->
+<section class="section"><div class="container">
+  <div class="section-rule"><span class="label">&#9612; What's Included &middot; 03</span></div>
+  <h2 class="display display-md" style="margin:0 0 32px;max-width:22ch">Everything the diagnostic layer <span style="color:var(--red);font-style:italic">needs to work.</span></h2>
+  <div class="lpp-incl">
+    <div>2,400 attorney-approved MBE questions, every distractor tagged to its trap shape.</div>
+    <div>The Red Zone diagnostic &mdash; your personal trap map, re-measured as you drill.</div>
+    <div>The 47-shape trap taxonomy with forensic and misconception tags.</div>
+    <div>Targeted repair drills generated from your own Red Zones.</div>
+    <div>The Method &mdash; Cut, Clash, Call &mdash; built into every question.</div>
+    <div>Focus-group base rates from 1,247 prior examinees on every trap.</div>
+    <div>Web, iOS, and Android &mdash; your progress synced across all three.</div>
+    <div>Built as a companion to any full course &mdash; multiple-choice only, by design.</div>
+  </div>
+</div></section>
+
+<!-- PROOF BAND -->
+<section class="section alt"><div class="container">
+  <div class="stat-line" style="display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--ink);background:var(--paper);margin:0">
+    <div style="padding:24px 20px;border-right:1px solid var(--rule)"><div style="font-family:var(--serif);font-weight:700;font-size:44px;letter-spacing:-0.025em;line-height:1;margin-bottom:8px;color:var(--red)">~$4K</div><div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase">what the incumbents charge</div></div>
+    <div style="padding:24px 20px;border-right:1px solid var(--rule)"><div style="font-family:var(--serif);font-weight:700;font-size:44px;letter-spacing:-0.025em;line-height:1;margin-bottom:8px">2,400</div><div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase">questions, every one tagged</div></div>
+    <div style="padding:24px 20px;border-right:1px solid var(--rule)"><div style="font-family:var(--serif);font-weight:700;font-size:44px;letter-spacing:-0.025em;line-height:1;margin-bottom:8px">3</div><div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase">platforms, one price</div></div>
+    <div style="padding:24px 20px"><div style="font-family:var(--serif);font-weight:700;font-size:44px;letter-spacing:-0.025em;line-height:1;margin-bottom:8px">$0</div><div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase">to run the diagnostic</div></div>
+  </div>
+</div></section>
+
+<!-- FINAL CTA -->
+<section class="section lpp-band"><div class="container">
+  <div class="eyebrow-red" style="margin-bottom:24px">&#9612; FREE DIAGNOSTIC &middot; THEN DECIDE</div>
+  <h2 class="display display-lg" style="color:#fff;margin:0 0 24px;max-width:24ch;margin-inline:auto">Priced like your <span style="color:var(--red);font-style:italic">time matters.</span></h2>
+  <p style="font-size:19px;color:#c8c4ba;line-height:1.5;margin:0 auto 32px;max-width:52ch">Run the 12-question diagnostic for free. See the gap. Then decide whether a fraction of a retake's cost is worth closing it.</p>
+  <a href="/checkout?lp=priced-right" class="btn btn-lg red">See What's Included <span class="arrow">&rarr;</span></a>
+</div></section>
+
+<footer class="footer"><div class="container">
+  <div class="footer-grid">
+    <div>
+      <div class="brand" style="color:white;margin-bottom:16px"><span class="mark" style="background:white;color:#0a0a0a">B</span><span>BarMatrix<span class="dot"></span></span></div>
+      <p style="font-size:14px;color:#a39e93;max-width:40ch;margin:0;line-height:1.55">A multiple-choice-only MBE repair system. Diagnose recurring trap patterns. Repair what the test keeps reusing.</p>
+    </div>
+    <div><h5>Product</h5><ul>
+      <li><a href="/">How It Works</a></li>
+      <li><a href="/">Pricing</a></li>
+      <li><a href="/">Free Diagnostic</a></li>
+      <li><a href="/">Live Webinars</a></li>
+      <li><a href="/dashboard">Open App</a></li>
+    </ul></div>
+    <div><h5>Audience</h5><ul>
+      <li><a href="/pricing">California &middot; July 2026</a></li>
+      <li><a href="/pricing">Repeat Takers</a></li>
+      <li><a href="/pricing">Full-Course Companion</a></li>
+      <li><a href="/partners">Partners &amp; Tutors</a></li>
+    </ul></div>
+    <div><h5>Company</h5><ul>
+      <li><a href="/about">About</a></li>
+      <li><a href="/faq">Help</a></li>
+      <li><a href="/">Terms</a></li>
+      <li><a href="/">Privacy</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom"><span>&copy; 2026 BarMatrix LLC</span><span>BAR-MTX-V1 &middot; BUILD 06.24</span></div>
+  <p class="disclaimer">BarMatrix is an independent educational product. It is not affiliated with, endorsed by, sponsored by, or licensed by NCBE, the State Bar of California, or any bar authority. BarMatrix is multiple-choice only and does not replace essay preparation, performance-test preparation, legal advice, or official bar-admission guidance. No score, pass result, or exam outcome is guaranteed. Cost figures shown are illustrative, not quotes; competitor pricing is approximate and current pricing appears at checkout.</p>
+</div></footer>
+</body></html>

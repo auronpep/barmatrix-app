@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23c8102e'/%3E%3Ctext x='16' y='24' font-family='Georgia,serif' font-size='22' font-weight='900' fill='white' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E"/>
+  <meta name="description" content="The 4 trap archetypes that write themselves into nearly every MBE question — and the system that catalogs all 47 of them." />
+  <meta property="og:title" content="BarMatrix · The 4 traps in every MBE question." />
+  <meta property="og:description" content="Stale Rule. Wrong Timing. Wrong Exception. Decisionmaker Inversion. The same shapes, across all 7 subjects." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'%3E%3Crect width='1200' height='630' fill='%230a0a0a'/%3E%3Crect width='1200' height='12' fill='%23c8102e'/%3E%3Ctext x='100' y='280' font-family='Georgia,serif' font-size='90' font-weight='700' fill='white'%3EBarMatrix.%3C/text%3E%3Ctext x='100' y='370' font-family='Georgia,serif' font-size='52' font-weight='700' fill='%23c8102e' font-style='italic'%3EDiagnose. Repair.%3C/text%3E%3Ctext x='100' y='550' font-family='monospace' font-size='22' fill='%23a39e93' letter-spacing='4'%3E%E2%96%8C MBE TRAP DIAGNOSIS %C2%B7 WEB %C2%B7 iOS %C2%B7 ANDROID%3C/text%3E%3C/svg%3E" />
+  <meta name="twitter:card" content="summary_large_image" />
+<title>BarMatrix — The 4 traps that write themselves into every MBE question.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400;1,6..72,500;1,6..72,600;1,6..72,700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<style>
+.lpt-hero{padding:80px 0 56px;border-bottom:1px solid var(--rule)}
+.lpt-meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;padding-bottom:24px;margin-bottom:44px;border-bottom:1px solid var(--rule);font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--muted);text-transform:uppercase}
+.lpt-h1{font-family:var(--serif);font-weight:700;font-size:clamp(44px,5.4vw,80px);line-height:1.04;letter-spacing:-0.025em;margin:0 0 32px;max-width:21ch}
+.lpt-h1 em{color:var(--red);font-style:italic}
+.lpt-lede{font-family:var(--serif);font-style:italic;font-size:22px;line-height:1.45;color:var(--ink-soft);margin:0 0 36px;max-width:44ch}
+.lpt-traps{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--ink)}
+.lpt-trap{background:var(--paper);padding:28px}
+.lpt-trap .tag{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between}
+.lpt-trap h3{font-family:var(--serif);font-weight:700;font-size:26px;letter-spacing:-0.015em;margin:0 0 12px;line-height:1.1}
+.lpt-trap p{font-size:14px;color:var(--ink-soft);line-height:1.55;margin:0 0 16px}
+.lpt-ex{border-top:1px dashed var(--rule);padding-top:14px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--muted);line-height:1.6;text-transform:uppercase}
+.lpt-ex b{color:var(--ink)}
+.lpt-subjects{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--rule);border:1px solid var(--ink)}
+.lpt-subjects>div{background:var(--paper);padding:18px 10px;text-align:center}
+.lpt-subjects .s{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);font-weight:600;margin-bottom:8px}
+.lpt-subjects .h{font-family:var(--serif);font-weight:700;font-size:24px;letter-spacing:-0.02em;color:var(--red)}
+.lpt-band{background:var(--ink);color:var(--bg);text-align:center}
+@media(max-width:840px){.lpt-traps{grid-template-columns:1fr}.lpt-subjects{grid-template-columns:1fr 1fr 1fr}}
+</style></head><body data-screen-label="LP · Four Traps">
+<div class="tape-strip"></div>
+<nav class="nav"><div class="nav-inner">
+  <a href="/" class="brand" style="text-decoration:none;color:inherit"><span class="mark">B</span><span>BarMatrix<span class="dot"></span></span></a>
+  <div class="nav-links">
+    <a href="/"><button>Home</button></a>
+    <a href="/"><button>Pricing</button></a>
+    <a href="/about"><button>About</button></a>
+    <a href="/partners"><button>Partners</button></a>
+  </div>
+  <div class="nav-cta"><a href="/checkout?lp=four-traps" class="btn btn-sm red">Enroll &rarr;</a></div>
+</div></nav>
+
+<!-- HERO -->
+<section class="lpt-hero"><div class="container">
+  <div class="lpt-meta">
+    <span>&#9612; THE TRAP TAXONOMY</span>
+    <span>47 SHAPES &middot; 4 ARCHETYPES</span>
+    <span>7 MBE SUBJECTS</span>
+    <span>FORENSIC &amp; MISCONCEPTION TAGS</span>
+  </div>
+  <div class="eyebrow-red" style="margin-bottom:20px">&#9612; THE EXAM IS RUNNING OUT OF NEW SHAPES</div>
+  <h1 class="lpt-h1">The <em>4 traps</em> that write themselves into nearly every MBE question.</h1>
+  <p class="lpt-lede">The MBE feels infinite. It isn't. Strip away the fact patterns and almost every attractive wrong answer collapses into one of four shapes &mdash; reused, subject after subject, year after year. Learn the shapes and the exam stops surprising you.</p>
+  <div class="hero-actions">
+    <a href="/checkout?lp=four-traps" class="btn btn-lg red">See My Trap Map <span class="arrow">&rarr;</span></a>
+    <span class="platforms">Free 12-question diagnostic<br/>No card to start</span>
+  </div>
+</div></section>
+
+<!-- THE 4 ARCHETYPES -->
+<section class="section"><div class="container">
+  <div class="section-rule"><span class="label">&#9612; The Four Archetypes &middot; 01</span></div>
+  <h2 class="display display-md" style="margin:0 0 12px;max-width:24ch">Four shapes. <span style="color:var(--red);font-style:italic">Forty-seven variants.</span></h2>
+  <p class="body-lg" style="margin:0 0 36px">Every distractor in our bank is tagged to one of these. Here's what each one does to you &mdash; with a real example of where it shows up.</p>
+  <div class="lpt-traps">
+    <div class="lpt-trap">
+      <div class="tag"><span>&#9612; ARCHETYPE 01 &middot; STALE RULE</span><span>~23%</span></div>
+      <h3>The rule that used to be right.</h3>
+      <p>The distractor states a real doctrine &mdash; just the superseded one. It feels right because you learned it first and it was true once. The exam loves the version of the law a careful student over-learned.</p>
+      <div class="lpt-ex"><b>Crim Pro:</b> picking the pre-<i>Acevedo</i> container rule over the automobile-exception scope that controls now.</div>
+    </div>
+    <div class="lpt-trap">
+      <div class="tag"><span>&#9612; ARCHETYPE 02 &middot; WRONG TIMING</span><span>~19%</span></div>
+      <h3>The right rule, one step off.</h3>
+      <p>Correct doctrine, wrong moment in the sequence. Liability that attaches too early, a defense that ripens too late, an offer revoked one beat after acceptance. The answer is true &mdash; just not at this point in the timeline.</p>
+      <div class="lpt-ex"><b>Contracts:</b> revocation treated as effective after a valid acceptance has already locked the deal.</div>
+    </div>
+    <div class="lpt-trap">
+      <div class="tag"><span>&#9612; ARCHETYPE 03 &middot; WRONG EXCEPTION</span><span>~16%</span></div>
+      <h3>A real exception, wrong fit.</h3>
+      <p>The distractor invokes a genuine exception that is adjacent to &mdash; but not &mdash; the one these facts trigger. Two exceptions that sound interchangeable until the controlling fact splits them apart.</p>
+      <div class="lpt-ex"><b>Evidence:</b> sliding a statement under "medical diagnosis" when only "then-existing condition" actually applies.</div>
+    </div>
+    <div class="lpt-trap">
+      <div class="tag"><span>&#9612; ARCHETYPE 04 &middot; DECISIONMAKER INVERSION</span><span>~11%</span></div>
+      <h3>Right rule, wrong actor.</h3>
+      <p>The answer correctly states the law but hands it to the wrong decisionmaker &mdash; judge vs. jury, question of law vs. question of fact, court vs. agency. The doctrine is flawless; the allocation is fatal.</p>
+      <div class="lpt-ex"><b>Civ Pro:</b> assigning a question of law to the jury when the judge decides it as a matter of law.</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- THEY REPEAT ACROSS SUBJECTS -->
+<section class="section alt"><div class="container">
+  <div class="section-rule"><span class="label">&#9612; The Same Shapes, Every Subject &middot; 02</span></div>
+  <div class="two-col" style="align-items:start;gap:64px;margin-bottom:40px">
+    <div>
+      <h2 class="display display-md" style="margin:0 0 20px;max-width:18ch">They don't respect <span style="color:var(--red);font-style:italic">subject lines.</span></h2>
+      <p class="body-lg">A Stale Rule trap in Crim Pro is the same cognitive move as a Stale Rule trap in Contracts. Once you can name the shape, it transfers across all seven subjects &mdash; which is exactly why learning four archetypes beats memorizing a thousand individual misses.</p>
+    </div>
+    <div>
+      <p class="body-lg">The heat below is illustrative of how the four archetypes spread across the MBE subjects in our focus-group data. No subject is immune. Every column is the same four shapes wearing different facts.</p>
+    </div>
+  </div>
+  <div class="lpt-subjects">
+    <div><div class="s">Crim Pro</div><div class="h">High</div></div>
+    <div><div class="s">Evidence</div><div class="h">High</div></div>
+    <div><div class="s">Contracts</div><div class="h">High</div></div>
+    <div><div class="s">Con Law</div><div class="h">Med</div></div>
+    <div><div class="s">Property</div><div class="h">Med</div></div>
+    <div><div class="s">Torts</div><div class="h">Med</div></div>
+    <div><div class="s">Civ Pro</div><div class="h">High</div></div>
+  </div>
+  <p style="font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-top:18px">&#9656; Illustrative trap density &middot; the four archetypes appear in all seven subjects</p>
+</div></section>
+
+<!-- MID-PAGE CTA -->
+<section class="section-tight" style="text-align:center"><div class="container">
+  <p style="font-family:var(--serif);font-style:italic;font-size:26px;line-height:1.35;margin:0 auto 24px;max-width:32ch">You can't memorize your way out of a shape you can't name.</p>
+  <a href="/checkout?lp=four-traps" class="btn btn-lg red">Map The Traps I Fall For <span class="arrow">&rarr;</span></a>
+</div></section>
+
+<!-- THE SYSTEM THAT CATALOGS THEM -->
+<section class="section"><div class="container">
+  <div class="section-rule"><span class="label">&#9612; The System Behind It &middot; 03</span></div>
+  <h2 class="display display-md" style="margin:0 0 12px;max-width:24ch">A catalog, not a <span style="color:var(--red);font-style:italic">flashcard deck.</span></h2>
+  <p class="body-lg" style="margin:0 0 40px">BarMatrix tags, measures, and drills the taxonomy &mdash; so the four archetypes become something you operate, not something you hope to remember.</p>
+  <div class="three-col">
+    <div class="method-step"><div class="num">&#9612; 01 &middot; TAG</div><h3>Every distractor labeled</h3><p>All 2,400 questions carry forensic and misconception tags pinning each wrong answer to its archetype and variant. Nothing is unlabeled.</p></div>
+    <div class="method-step"><div class="num">&#9612; 02 &middot; MEASURE</div><h3>Base rates from real data</h3><p>A 1,247-examinee focus group tells you how attractive each trap is &mdash; so you know which shapes are actually dangerous for you.</p></div>
+    <div class="method-step"><div class="num">&#9612; 03 &middot; DRILL</div><h3>Repair the shape, not the question</h3><p>Miss a Wrong-Timing trap and you get a drill of Wrong-Timing traps across subjects &mdash; until the shape stops working on you.</p></div>
+  </div>
+</div></section>
+
+<!-- PROOF BAND -->
+<section class="section alt"><div class="container">
+  <div class="stat-line" style="display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--ink);background:var(--paper);margin:0">
+    <div style="padding:24px 20px;border-right:1px solid var(--rule)"><div style="font-family:var(--serif);font-weight:700;font-size:44px;letter-spacing:-0.025em;line-height:1;margin-bottom:8px;color:var(--red)">4</div><div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase">archetypes behind it all</div></div>
+    <div style="padding:24px 20px;border-right:1px solid var(--rule)"><div style="font-family:var(--serif);font-weight:700;font-size:44px;letter-spacing:-0.025em;line-height:1;margin-bottom:8px">47</div><div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase">tagged variants in v1</div></div>
+    <div style="padding:24px 20px;border-right:1px solid var(--rule)"><div style="font-family:var(--serif);font-weight:700;font-size:44px;letter-spacing:-0.025em;line-height:1;margin-bottom:8px">&gt;90%</div><div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase">of attractive wrong answers</div></div>
+    <div style="padding:24px 20px"><div style="font-family:var(--serif);font-weight:700;font-size:44px;letter-spacing:-0.025em;line-height:1;margin-bottom:8px">7</div><div style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase">subjects, same shapes</div></div>
+  </div>
+</div></section>
+
+<!-- FINAL CTA -->
+<section class="section lpt-band"><div class="container">
+  <div class="eyebrow-red" style="margin-bottom:24px">&#9612; 12 QUESTIONS &middot; FREE</div>
+  <h2 class="display display-lg" style="color:#fff;margin:0 0 24px;max-width:24ch;margin-inline:auto">Learn the four. <span style="color:var(--red);font-style:italic">Stop falling for them.</span></h2>
+  <p style="font-size:19px;color:#c8c4ba;line-height:1.5;margin:0 auto 32px;max-width:50ch">A 12-question diagnostic shows you which archetypes pull you hardest. Then the system drills the shape until it loses its grip.</p>
+  <a href="/checkout?lp=four-traps" class="btn btn-lg red">See My Trap Map <span class="arrow">&rarr;</span></a>
+</div></section>
+
+<footer class="footer"><div class="container">
+  <div class="footer-grid">
+    <div>
+      <div class="brand" style="color:white;margin-bottom:16px"><span class="mark" style="background:white;color:#0a0a0a">B</span><span>BarMatrix<span class="dot"></span></span></div>
+      <p style="font-size:14px;color:#a39e93;max-width:40ch;margin:0;line-height:1.55">A multiple-choice-only MBE repair system. Diagnose recurring trap patterns. Repair what the test keeps reusing.</p>
+    </div>
+    <div><h5>Product</h5><ul>
+      <li><a href="/">How It Works</a></li>
+      <li><a href="/">Pricing</a></li>
+      <li><a href="/">Free Diagnostic</a></li>
+      <li><a href="/">Live Webinars</a></li>
+      <li><a href="/dashboard">Open App</a></li>
+    </ul></div>
+    <div><h5>Audience</h5><ul>
+      <li><a href="/pricing">California &middot; July 2026</a></li>
+      <li><a href="/pricing">Repeat Takers</a></li>
+      <li><a href="/pricing">Full-Course Companion</a></li>
+      <li><a href="/partners">Partners &amp; Tutors</a></li>
+    </ul></div>
+    <div><h5>Company</h5><ul>
+      <li><a href="/about">About</a></li>
+      <li><a href="/faq">Help</a></li>
+      <li><a href="/">Terms</a></li>
+      <li><a href="/">Privacy</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom"><span>&copy; 2026 BarMatrix LLC</span><span>BAR-MTX-V1 &middot; BUILD 06.24</span></div>
+  <p class="disclaimer">BarMatrix is an independent educational product. It is not affiliated with, endorsed by, sponsored by, or licensed by NCBE, the State Bar of California, or any bar authority. BarMatrix is multiple-choice only and does not replace essay preparation, performance-test preparation, legal advice, or official bar-admission guidance. No score, pass result, or exam outcome is guaranteed.</p>
+</div></footer>
+</body></html>

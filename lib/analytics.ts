@@ -226,6 +226,16 @@ export const ANALYTICS_EVENT_CATALOG = {
     required: ["slug"],
     optional: ["kinds", "question_count", "subject_distribution", "official", "session_id", "cohort_id"],
   },
+  trap_profile_viewed: {
+    area: "product",
+    required: [],
+    optional: ["distinct_traps", "total_falls", "session_id", "cohort_id"],
+  },
+  trap_history_viewed: {
+    area: "product",
+    required: ["slug"],
+    optional: ["fell_count", "session_id", "cohort_id"],
+  },
   tension_map_viewed: {
     area: "product",
     required: ["tension_count"],
@@ -1367,6 +1377,57 @@ export function trackTrapDetailViewedOnce({
       cohort_id: cleanToken(cohortId) || undefined,
     },
     { dedupeKey: `trap-detail:${cleanSlug}`, dedupeScope: "session" },
+  );
+}
+
+type TrapProfileViewedInput = {
+  distinctTraps?: number | null;
+  totalFalls?: number | null;
+  sessionId?: string | null;
+  cohortId?: string | null;
+};
+
+export function trackTrapProfileViewedOnce({
+  distinctTraps,
+  totalFalls,
+  sessionId,
+  cohortId,
+}: TrapProfileViewedInput): boolean {
+  return trackAnalyticsEvent(
+    "trap_profile_viewed",
+    {
+      distinct_traps: normalizeNonNegativeInteger(distinctTraps ?? undefined),
+      total_falls: normalizeNonNegativeInteger(totalFalls ?? undefined),
+      session_id: cleanToken(sessionId) || getAnalyticsSession().session_id,
+      cohort_id: cleanToken(cohortId) || undefined,
+    },
+    { dedupeKey: "trap-profile", dedupeScope: "session" },
+  );
+}
+
+type TrapHistoryViewedInput = {
+  slug: string;
+  fellCount?: number | null;
+  sessionId?: string | null;
+  cohortId?: string | null;
+};
+
+export function trackTrapHistoryViewedOnce({
+  slug,
+  fellCount,
+  sessionId,
+  cohortId,
+}: TrapHistoryViewedInput): boolean {
+  const cleanSlug = cleanToken(slug);
+  return trackAnalyticsEvent(
+    "trap_history_viewed",
+    {
+      slug: cleanSlug,
+      fell_count: normalizeNonNegativeInteger(fellCount ?? undefined),
+      session_id: cleanToken(sessionId) || getAnalyticsSession().session_id,
+      cohort_id: cleanToken(cohortId) || undefined,
+    },
+    { dedupeKey: `trap-history:${cleanSlug}`, dedupeScope: "session" },
   );
 }
 

@@ -6,7 +6,7 @@ import type { TensionExample } from "@/lib/api-client";
 import { TensionDetailAnalytics } from "../tension-analytics";
 import { TensionQuestionsClient } from "./tension-questions-client";
 
-export const revalidate = 60;
+export const revalidate = false;
 
 export async function generateMetadata({
   params,

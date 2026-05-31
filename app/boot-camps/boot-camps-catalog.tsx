@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api, ApiClientError, type BootCampSummary } from "@/lib/api-client";
 import { humanizeTag } from "@/lib/boot-camps";
+import GamificationStrip from "./gamification-strip";
 
 type State =
   | { phase: "loading" }
@@ -83,7 +84,9 @@ export default function BootCampCatalog() {
   }
 
   return (
-    <div className="grid gap-6">
+    <>
+      <GamificationStrip />
+      <div className="grid gap-6">
       {state.camps.map((camp) => (
         <article
           key={camp.slug}
@@ -119,6 +122,7 @@ export default function BootCampCatalog() {
         </article>
       ))}
     </div>
+    </>
   );
 }
 

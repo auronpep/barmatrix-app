@@ -335,6 +335,56 @@ export interface TrapQuestionsResponse {
   questions: TrapQuestionSummary[];
 }
 
+// --- Personal Trap Profile (Web Component 02 personalization) ---
+
+export interface MyTrapEntry {
+  slug: string;
+  name: string;
+  kind: TrapKind;
+  official: boolean;
+  fell_count: number;
+  confident_fell_count: number;
+  last_fell_at: string | null;
+}
+
+export interface MyTrapProfile {
+  enrolled: boolean;
+  student_id: string | null;
+  metrics: {
+    distinct_traps: number;
+    total_falls: number;
+    total_confident_falls: number;
+    top_trap_slug: string | null;
+  };
+  traps: MyTrapEntry[];
+}
+
+export interface MyTrapOccurrence {
+  attempt_id: string;
+  question_id: string;
+  external_id: string | null;
+  subject: string;
+  subtopic: string | null;
+  selected_letter: string;
+  confidence: number | null;
+  attempted_at: string;
+  why_attractive: string | null;
+  why_wrong: string | null;
+  future_cue: string | null;
+}
+
+export interface MyTrapHistory {
+  enrolled: boolean;
+  slug: string;
+  name: string;
+  official: boolean;
+  fell_count: number;
+  confident_fell_count: number;
+  first_fell_at: string | null;
+  last_fell_at: string | null;
+  recent: MyTrapOccurrence[];
+}
+
 // --- Tension Map (Web Component 01) — anonymous, read-only ---
 
 export interface TensionEntry {
@@ -762,13 +812,24 @@ export interface InProgressDrill {
   prescribed_at: string;
 }
 
+export interface PrescribedReview {
+  available_count: number;
+  suggested_size: number;
+}
+
 export interface PrescribedDrillsResponse {
   suggested: PrescribedDrillSuggestion[];
   in_progress: InProgressDrill[];
+  review?: PrescribedReview;
   message?: string;
 }
 
-export type DrillStartKind = "tension" | "trap" | "prescribed_red_zone";
+export type DrillStartKind =
+  | "tension"
+  | "trap"
+  | "prescribed_red_zone"
+  | "review"
+  | "retry";
 
 export interface DrillStartRequest {
   kind: DrillStartKind;
@@ -777,6 +838,9 @@ export interface DrillStartRequest {
   red_zone_tag?: string;
   size?: number;
   student_id?: string;
+  source_drill_id?: string;
+  subject?: string;
+  exclude_mastered?: boolean;
 }
 
 export interface DrillStartResponse {
@@ -1188,6 +1252,15 @@ export const api = {
       )}&tag=${encodeURIComponent(tag)}${
         includeHidden ? "&include_hidden=true" : ""
       }`,
+      token,
+    ),
+
+  getMyTraps: (token: string) =>
+    authedRequest<MyTrapProfile>("/api/me/traps", token),
+
+  getMyTrap: (slug: string, token: string) =>
+    authedRequest<MyTrapHistory>(
+      `/api/me/traps/${encodeURIComponent(slug)}`,
       token,
     ),
 

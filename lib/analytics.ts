@@ -2096,9 +2096,14 @@ function getAnalyticsEnvironment(): "production" | "staging" | "development" | "
 }
 
 function readCurrentAttribution(searchParams: URLSearchParams): Partial<StoredAttribution> {
+  const lpParam = searchParams.get("lp");
+  const campaign =
+    cleanToken(searchParams.get("utm_campaign") ?? searchParams.get("campaign")) ||
+    (lpParam ? `lp_${cleanToken(lpParam)}` : undefined);
+
   return {
     source: cleanToken(searchParams.get("utm_source") ?? searchParams.get("source")),
-    campaign: cleanToken(searchParams.get("utm_campaign") ?? searchParams.get("campaign")),
+    campaign,
     partner_id: cleanToken(searchParams.get("partner_id") ?? searchParams.get("ref")),
   };
 }

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getTrapDetail } from "@/lib/traps";
 import type { TrapExample, TrapKind } from "@/lib/api-client";
 import { TrapDetailAnalytics } from "../trap-analytics";
+import { YourTrapHistory } from "../your-trap-history";
 
 export const revalidate = 60;
 
@@ -118,6 +119,8 @@ export default async function TrapDetailPage({
           </ul>
         </div>
       )}
+
+      <YourTrapHistory slug={detail.slug} />
 
       <div className="mt-12">
         <div className="flex items-baseline justify-between border-b border-zinc-200 pb-2">

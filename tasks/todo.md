@@ -475,7 +475,7 @@
   - The question-state reset moved from a synchronous effect into the existing next-question event path.
 - Deployment:
   - API commit `21020f3` was pushed and its built `boot-camps` route artifact was copied to Hostinger, then the app was restarted.
-  - Frontend commit `26118b4` and lint cleanup commit `7f95cc3` were pushed.
+  - Frontend commit `6948e78` and lint cleanup commit `7f95cc3` were pushed.
   - Vercel production deployment `dpl_7KgW8i2RU3dpwMpsBa8LLT7B2MD9` is `READY` and aliased to `https://barmatrix.app`.
 - QA fixture cleanup completed:
   - Removed 14 temporary Method progress rows.

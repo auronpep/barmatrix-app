@@ -586,7 +586,7 @@ Expected behavior: production paid-subscriber flows should tolerate optional cer
   - Copied matching built route artifacts to Hostinger and restarted the Node app.
   - Verified remote `dist/routes/boot-camps.js` contains `answered_question_ids` and `correct_count`.
 - Frontend source and deploy:
-  - Pushed boot-camp mastery frontend commit `26118b4`.
+  - Pushed boot-camp mastery frontend commit `6948e78`.
   - Pushed diagnostic lint cleanup commit `7f95cc3`.
   - Vercel production deployment `dpl_7KgW8i2RU3dpwMpsBa8LLT7B2MD9` is `READY`, aliased to `https://barmatrix.app`, and `GET https://barmatrix.app` returned HTTP 200.
 - Commands:

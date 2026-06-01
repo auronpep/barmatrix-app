@@ -1018,6 +1018,88 @@ export interface FoundationsMarkResponse {
   progress?: FoundationsProgressSummary;
 }
 
+// --- C3 Placement Diagnostic (curated 18-question session) ---
+// POST /api/diagnostic/session/start → session_id + question_count
+// GET  /api/diagnostic/questions      → ordered list of 18 questions (no answer keys)
+// POST /api/diagnostic/session/:id/attempt → per-question score + feedback
+// GET  /api/diagnostic/session/:id/results → placement level + breakdown
+
+export interface PlacementSessionStartResponse {
+  session_id: string;
+  question_count: number;
+  placement_model: string;
+}
+
+export interface PlacementQuestion {
+  question_id: string;
+  external_id: string | null;
+  subject: string;
+  subtopic: string | null;
+  fact_pattern: string;
+  question_stem: string;
+  call_of_question: string | null;
+  choices: QuestionChoice[];
+}
+
+export interface PlacementQuestionsResponse {
+  questions: PlacementQuestion[];
+  question_count: number;
+}
+
+export type C3Mechanism =
+  | "CUT_MISSTATE"
+  | "CUT_WRONG_Q"
+  | "CLASH"
+  | "CALL"
+  | "ANCHOR"
+  | "FORK";
+
+export interface PlacementAttemptRequest {
+  question_id: string;
+  selected_letter: Letter;
+  confidence: number;
+  time_seconds: number;
+  mechanism: C3Mechanism;
+}
+
+export interface PlacementAttemptResponse {
+  is_correct: boolean;
+  correct_letter: Letter;
+  correct_text: string;
+  why_wrong_or_correct: string;
+  remediation_id: string | null;
+  legal_score: number;
+  mechanism_score: number;
+  calibration_score: number;
+  session_score_so_far: number;
+  attempts_so_far: number;
+}
+
+export interface PlacementSubjectAccuracy {
+  subject: string;
+  correct: number;
+  total: number;
+}
+
+export interface PlacementRemediationTarget {
+  subject: string;
+  label: string;
+}
+
+export interface PlacementResults {
+  placement_level: number;
+  placement_label: string;
+  placement_description: string;
+  entry_route: string[];
+  subject_accuracy: PlacementSubjectAccuracy[];
+  top_remediation_targets: PlacementRemediationTarget[];
+  total_score: number;
+  legal_score: number;
+  mechanism_score: number;
+  calibration_score: number;
+  attempts_so_far: number;
+}
+
 // GET /api/me/c3/next — C3 Coach adaptive item. Mirrors buildCoachPayload in
 // barmatrix-api/src/routes/c3-coach.ts.
 export interface CoachChoice { choice_id: string; letter: string; choice_text: string; }
@@ -1498,6 +1580,33 @@ export const api = {
   // Public list of C3 deck cards.
   listC3Deck: (init?: RequestInit) =>
     request<C3DeckResponse>("/api/c3/deck", init),
+
+  // --- C3 Placement Diagnostic (curated 18-question session) ---
+  startPlacementSession: () =>
+    request<PlacementSessionStartResponse>("/api/diagnostic/session/start", {
+      method: "POST",
+      body: JSON.stringify({}),
+    }),
+
+  getPlacementQuestions: (init?: RequestInit) =>
+    request<PlacementQuestionsResponse>("/api/diagnostic/questions", init),
+
+  submitPlacementAttempt: (
+    sessionId: string,
+    payload: PlacementAttemptRequest,
+  ) =>
+    request<PlacementAttemptResponse>(
+      `/api/diagnostic/session/${encodeURIComponent(sessionId)}/attempt`,
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+      },
+    ),
+
+  getPlacementResults: (sessionId: string) =>
+    request<PlacementResults>(
+      `/api/diagnostic/session/${encodeURIComponent(sessionId)}/results`,
+    ),
 
   // --- C3 Mastery Certification (Phase 4) — gated scorecard + runner ---
   // Outline (anonymous -> locked + zero progress; authed -> merged status).

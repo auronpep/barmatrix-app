@@ -323,3 +323,190 @@
 - Live paid-subscriber mutating flows were not exercised because they require a production subscriber session and would write live attempts/sessions.
 - Live mobile-width verification is not complete; the in-app browser did not expose a viewport resize capability in this session.
 - Public `/practice` answer submission was intentionally not clicked on live because it writes through `/api/attempts`.
+
+# Post-Push Deployment Pass
+
+## Review
+
+- Frontend fix commit `418e9452c70ad2e586cbcb88634c3a2044e2d4d1` was pushed to `auronpep/barmatrix-app` `main`.
+- API fix commit `c4fbdcf9529e5d7edd6689644ec25b6a20f9dfd2` was pushed to `auronpep/barmatrix-api` `main`.
+- Hostinger API auto-pulled `c4fbdcf`; remote `/home/u211961595/domains/barmatrix.app/nodejs` reports that exact SHA and built `dist` includes the DB wrapper, attempts fallback, boot-camp, and certification fixes.
+- Live API smoke after deploy passed:
+  - `GET https://api.barmatrix.app/health` returned HTTP 200 with DB up.
+  - `GET https://api.barmatrix.app/api/boot-camps` returned HTTP 200.
+  - `POST https://api.barmatrix.app/api/attempts` with a valid live Evidence question returned HTTP 200 and an `attempt_id`.
+  - `GET https://api.barmatrix.app/api/attempts/{attempt_id}/forensics` returned HTTP 200.
+- Vercel still reports frontend production on prior commit `2c52e920752ecf7207163f6d2aba050af8f64fb0`; no GitHub deployment/status exists for frontend commit `418e945`.
+- Local Vercel CLI is not authenticated/usable in this shell: `vercel whoami`, `vercel project ls --yes`, and `vercel deploy --prod --yes` all timed out without output. The Vercel connector can inspect deployments but its deploy tool only delegates to the CLI.
+- GitHub issue `auronpep/barmatrix-app#2` tracks the Vercel deployment blocker.
+
+## Verification
+
+- Before commit/push, the frontend staged set passed `node --test tests\*.test.ts`, `npm run lint`, `npm run build`, and `git diff --cached --check`.
+- Before commit/push, the API staged set was verified alone with unrelated admin work stashed out: `npm test`, `npm run typecheck`, `npm run build`, and `git diff --cached --check` all passed.
+- GitHub `origin/main` matches local `main` for both pushed commits.
+
+## Remaining Risk
+
+- Frontend fixes are pushed but not deployed to `https://barmatrix.app`; production is still serving Vercel deployment `dpl_8dwjftRNZg8g9domuuYKUDeShdvB` from commit `2c52e92`.
+- The frontend deployment path needs repair or an authenticated Vercel CLI/session before the web fixes can be live-verified.
+- API paid-subscriber flows are not fully production-verified; the live mutation proof used one anonymous attempt to minimize production data impact.
+- API repo still has local unstaged admin/complimentary-access work that was intentionally excluded from the fix commit.
+
+# Production Deployment Resolution
+
+## Review
+
+- Found a `VERCEL_TOKEN` entry in `C:\Users\wks2391\.env` by name/presence only; no token value was printed.
+- `vercel whoami` succeeded with that token as `sunnylwood-7609`.
+- `vercel deploy --prod --yes` succeeded for the linked local project and produced deployment `dpl_7KuTzneMWvjb1gt82fqB24AGxpG2`.
+- Vercel now reports latest production deployment `dpl_7KuTzneMWvjb1gt82fqB24AGxpG2`, `READY`, sourced from frontend commit `418e9452c70ad2e586cbcb88634c3a2044e2d4d1`.
+- `https://barmatrix.app` is aliased to the new deployment and returned HTTP 200.
+- GitHub issue `auronpep/barmatrix-app#2` was closed as completed with the production deployment evidence.
+- Live browser verification on production:
+  - `/practice` rendered the study bank.
+  - Evidence practice answer submission returned `Correct` and `Rule held`.
+  - Missed Evidence answers rendered `WRONG ANSWER FORENSICS` with correct-answer and failure explanation copy.
+  - `/drills/evidence` redirected to production sign-in when unauthenticated.
+  - Production page source contains a live Clerk public key marker and not a test-key marker.
+
+## Verification
+
+- Vercel production build completed successfully during deploy.
+- App `node --test tests\*.test.ts` passed: 25 tests, 25 pass.
+- App `npm run lint` passed.
+- App `npm run build` passed.
+- API `npm test` passed: 262 tests, 262 pass.
+- API `npm run typecheck` passed.
+- API `npm run build` passed.
+- Live API `GET https://api.barmatrix.app/health` returned `{"ok":true,"db":"up"}`.
+
+## Remaining Risk
+
+- Production paid-subscriber routes were verified locally with the signed-in paid session, but not fully re-exercised on the production domain because the browser did not have a production-domain subscriber session.
+- Production public practice verification wrote several live anonymous Evidence attempts while testing correct and missed-answer states.
+- Live mobile-width verification remains incomplete.
+- API repo still has local unstaged admin/complimentary-access work that was intentionally excluded from the live fix commit.
+
+# Production Paid And Mobile Verification
+
+## Review
+
+- Used the deployed Hostinger app context for a sanitized production data check:
+  - 13 students.
+  - 6 purchases.
+  - 6 active, non-refunded purchases.
+  - 3 boot camps.
+  - 3666 active questions.
+- Created a short-lived Clerk sign-in token for the active QA paid account only. The token URL was stored in a temp file, was not printed, and the temp file was deleted after browser sign-in.
+- In-app browser signed into production as the QA paid subscriber; production nav showed `Dashboard` and a user menu.
+- Production paid browser verification:
+  - `/dashboard` rendered paid dashboard state with Method progress, enrolled diagnostic CTA, C3 state, metrics, and next drill.
+  - `/account` rendered `Account active`, `Active`, and `Verified from signed-in account`.
+  - `/red-zones` rendered enrolled state, and after the paid drill attempt showed 3 active red zones.
+  - `/mastery` rendered authenticated C3 state (`Not yet measured`) without API errors.
+  - `/certification` rendered the expected Method gate for the QA account.
+  - `/certification/M1` rendered the direct-route Method CTA instead of raw API status text.
+  - `/drills/evidence` started a paid Evidence queue, submitted an answer, and rendered the live `Wrong Answer Forensics` rail.
+  - `/boot-camps/hearsay-trap-camp` started a production boot-camp session and loaded the session hub with Day 1 available.
+  - `/boot-camps/sessions/{session_id}/days/1` loaded the live 12-question Day 1 block.
+- Production mobile verification used the in-app browser viewport override at 390x844:
+  - No document-level horizontal overflow on `/dashboard`, `/account`, `/drills/evidence`, `/red-zones`, `/boot-camps`, or `/certification`.
+  - Mobile screenshot saved at `C:\Users\wks2391\AppData\Local\Temp\barmatrix-production-mobile-certification.png`.
+- Production browser log check after the paid/mobile pass returned zero `barmatrix.app` warning/error entries.
+
+## Verification
+
+- Runtime/UI verification was performed against `https://barmatrix.app` production, not localhost.
+- The temporary viewport override was reset after mobile testing.
+- The short-lived sign-in URL temp file was deleted after use.
+- App `node --test tests\*.test.ts` passed: 25 tests, 25 pass.
+- App `npm run lint` passed.
+- App `npm run build` passed.
+- API `npm test` passed: 262 tests, 262 pass.
+- API `npm run typecheck` passed.
+- API `npm run build` passed.
+- `git diff --check` passed in app and API repos; the app repo reported only existing LF-to-CRLF normalization warnings for `tasks/evidence.md` and `tasks/todo.md`.
+
+## Remaining Risk
+
+- Production certification submit was not exercised because the QA paid account has 0/14 Method lessons complete, so the locked Method gate is the correct production state for that account.
+- Production boot-camp Day 1 was opened but not completed; completing the full day would write 12 more live QA attempts.
+- Account billing portal was not opened because the QA paid purchase has no Stripe customer ID; testing that path safely requires a QA account with a Stripe-backed purchase or explicit approval to use a real customer-backed account.
+- API repo still has local unstaged admin/complimentary-access work that is outside this deployed audit fix.
+
+# Remaining Production Gap Closure
+
+## Scope
+
+- Close the remaining live-audit gaps using QA-only data where practical.
+- Do not use or impersonate a real customer-backed account.
+- Do not print Clerk, Stripe, database, or sign-in token secret values.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Inspect certification, billing portal, and boot-camp route requirements.
+- [x] Prepare reversible QA-only fixtures for Method completion and Stripe billing ownership.
+- [x] Verify production certification submit from the signed-in QA account.
+- [x] Verify production billing portal creation/redirect from the signed-in QA account.
+- [x] Verify production boot-camp day completion and mastery path where safe.
+- [x] Run relevant tests/lint/build and record evidence.
+
+## Review
+
+- Certification storage hardening was added in `C:\barmatrix-api`:
+  - Missing optional certification session storage now returns a non-persisted session response instead of API 500.
+  - Missing optional certification result storage now preserves the frontend grade response shape, including nested `result.conditions`.
+- Production certification verification used a reversible QA Method fixture:
+  - `/certification` unlocked for the QA paid subscriber.
+  - `/certification/M1` loaded, accepted 10 answers, submitted, and rendered `M1 · RESULTS`, `NOT YET`, item feedback, remediation links, and `(NOT SAVED — SYNC PENDING)` rather than an error boundary.
+- Production billing portal verification used a temporary QA Stripe customer:
+  - `/account` rendered `Update Payment Method`.
+  - Clicking the account control opened Stripe Billing Portal for the temporary QA customer.
+  - The portal URL and account identity were not recorded in task notes.
+- Production boot-camp verification completed the full Hearsay Trap Boot Camp for the QA account:
+  - Day 1 through Day 5 each completed through the UI.
+  - Mastery unlocked after Day 5.
+  - A reload during mastery resumed at `Question 19 of 24` after the resume fix, instead of restarting or staying in the fetch-error state.
+  - Remaining mastery answers completed through the UI and rendered `Camp complete`, `Mastery score 100%`, `24/24 correct`, `+440 XP`, `Camp Cleared`, and `Mastery Ace`.
+- A production-only lint blocker from the remote diagnostic feature was fixed after rebasing:
+  - `app/diagnostic/session/[sessionId]/page.tsx` no longer calls `Date.now()` during render.
+  - The question-state reset moved from a synchronous effect into the existing next-question event path.
+- Deployment:
+  - API commit `21020f3` was pushed and its built `boot-camps` route artifact was copied to Hostinger, then the app was restarted.
+  - Frontend commit `26118b4` and lint cleanup commit `7f95cc3` were pushed.
+  - Vercel production deployment `dpl_7KgW8i2RU3dpwMpsBa8LLT7B2MD9` is `READY` and aliased to `https://barmatrix.app`.
+- QA fixture cleanup completed:
+  - Removed 14 temporary Method progress rows.
+  - Deleted the temporary Stripe customer only after verifying audit-fixture metadata.
+  - Restored the QA purchase to no Stripe customer link.
+  - Browser check confirmed certification returned to `0 of 14 lessons complete`.
+
+## Verification
+
+- API:
+  - `npx tsx --test src/routes/certification.test.ts` passed after each certification fix.
+  - `npx tsx --test src/routes/boot-camps-auth.test.ts` passed for the mastery resume contract.
+  - `npm test` passed: 266 tests, 266 pass.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+  - `git diff --check` passed with only LF/CRLF normalization warnings.
+  - Live `GET https://api.barmatrix.app/health` returned `{"ok":true,"db":"up"}`.
+- App:
+  - `node --test tests\*.test.ts` passed: 26 tests, 26 pass.
+  - `npm run lint` passed after the diagnostic-page cleanup.
+  - `npm run build` passed locally and during Vercel production deploy.
+  - `git diff --check` passed with only LF/CRLF normalization warnings for audit-note files.
+- Browser:
+  - Production certification submit, billing portal redirect, boot-camp days 1-5, mastery resume, and mastery completion were exercised in the signed-in in-app browser.
+  - Production browser log filter found zero `barmatrix.app` warnings/errors after mastery completion and after QA fixture cleanup.
+  - Screenshot saved: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-production-mastery-complete.png`.
+
+## Remaining Risk
+
+- This was a broad audit of the currently targeted public, protected, certification, billing, mobile, drill, and boot-camp flows. It is not proof that every untested edge case in the full system is bug-free.
+- The boot-camp completion and anonymous practice checks intentionally wrote QA/audit attempts to production.
+- The API repo still has unrelated local admin/complimentary-access work that was intentionally excluded.
+- `tasks/lessons.md` is still missing.
+- The AM status command still fails because no AM session matches `C:\barmatrix-app`.

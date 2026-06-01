@@ -230,6 +230,33 @@ button {
   cursor: not-allowed;
 }
 
+.certification-method-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 16px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  background: var(--red);
+  color: white;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+  transition:
+    background 120ms,
+    transform 80ms;
+}
+
+.certification-method-cta:hover {
+  background: var(--red-deep);
+}
+
+.certification-method-cta:active {
+  transform: translateY(1px);
+}
+
 /* ====== LABELS / META ====== */
 .eyebrow {
   font-family: var(--mono);

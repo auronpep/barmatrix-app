@@ -53,10 +53,7 @@ export default function CertificationPage() {
             The certification unlocks once you finish all {data.lesson_count}{" "}
             lessons of The Method. Keep going — the gate opens automatically.
           </p>
-          <Link
-            href="/foundations"
-            className="mt-4 inline-block rounded-md bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-900"
-          >
+          <Link href="/foundations" className="certification-method-cta">
             Go to The Method →
           </Link>
         </div>

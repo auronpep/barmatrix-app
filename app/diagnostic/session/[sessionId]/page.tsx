@@ -107,7 +107,7 @@ export default function PlacementSessionPage({
   const [confidence, setConfidence] = useState(50);
   const [mechanism, setMechanism] = useState<C3Mechanism | null>(null);
   const [attemptResult, setAttemptResult] = useState<PlacementAttemptResponse | null>(null);
-  const startedAtRef = useRef<number>(Date.now());
+  const startedAtRef = useRef<number | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -137,17 +137,15 @@ export default function PlacementSessionPage({
     return () => {
       active = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
 
-  // Reset input state when question changes
-  useEffect(() => {
+  const resetQuestionState = () => {
     setSelected(null);
     setConfidence(50);
     setMechanism(null);
     setAttemptResult(null);
     startedAtRef.current = Date.now();
-  }, [currentIndex]);
+  };
 
   const question = questions[currentIndex] ?? null;
   const total = questions.length;
@@ -157,9 +155,10 @@ export default function PlacementSessionPage({
     if (!question || !selected || !mechanism) return;
     setPhase("submitting");
     setErrorMsg(null);
+    const startedAt = startedAtRef.current;
     const timeSeconds = Math.max(
       0,
-      Math.round((Date.now() - startedAtRef.current) / 1000),
+      startedAt === null ? 0 : Math.round((Date.now() - startedAt) / 1000),
     );
     try {
       const result = await api.submitPlacementAttempt(sessionId, {
@@ -187,6 +186,7 @@ export default function PlacementSessionPage({
     if (isLast) {
       router.push(`/diagnostic/session/${sessionId}/results`);
     } else {
+      resetQuestionState();
       setCurrentIndex((i) => i + 1);
       setPhase("presenting");
     }

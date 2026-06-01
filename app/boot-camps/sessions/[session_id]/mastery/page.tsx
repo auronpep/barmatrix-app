@@ -25,6 +25,7 @@ interface MasteryData {
   setId: string;
   questionIds: string[];
   answeredQuestionIds: string[];
+  initialCorrect: number;
   threshold: number;
 }
 
@@ -78,7 +79,8 @@ export default function BootCampMasteryPage({
             displayName: session.display_name,
             setId: masteryStart.set_id,
             questionIds: masteryStart.question_ids,
-            answeredQuestionIds: [],
+            answeredQuestionIds: masteryStart.answered_question_ids,
+            initialCorrect: masteryStart.correct_count,
             threshold: session.mastery_threshold,
           },
         });
@@ -212,6 +214,7 @@ export default function BootCampMasteryPage({
             questionIds={state.data.questionIds}
             setId={state.data.setId}
             answeredQuestionIds={state.data.answeredQuestionIds}
+            initialCorrect={state.data.initialCorrect}
             title="Mastery check"
             completeLabel={submitting ? "Scoring…" : "Submit mastery check"}
             onComplete={onComplete}

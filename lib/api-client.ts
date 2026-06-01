@@ -761,6 +761,8 @@ export interface BootCampMasteryStartResponse {
   session_id: string;
   set_id: string;
   question_ids: string[];
+  answered_question_ids: string[];
+  correct_count: number;
 }
 
 export interface BootCampRedZoneDelta {

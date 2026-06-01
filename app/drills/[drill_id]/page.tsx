@@ -37,18 +37,34 @@ export default function DrillRunnerPage({
   const [finishing, setFinishing] = useState(false);
   const router = useRouter();
   const [retrying, setRetrying] = useState(false);
+  const [retryError, setRetryError] = useState<string | null>(null);
 
   const onRetryMissed = async () => {
     if (retrying) return;
     setRetrying(true);
+    setRetryError(null);
     try {
-      const res = await api.startDrill({ kind: "retry", source_drill_id: drillId });
+      const token = await getToken();
+      if (!token) {
+        setRetryError("Sign in to retry missed questions.");
+        setRetrying(false);
+        return;
+      }
+      const res = await api.startDrill({ kind: "retry", source_drill_id: drillId }, token);
       if (res.drill_id) {
         router.push(`/drills/${res.drill_id}`);
         return;
       }
+      setRetryError("No missed questions were available to retry.");
       setRetrying(false);
-    } catch {
+    } catch (err) {
+      if (err instanceof ApiClientError && err.status === 401) {
+        setRetryError("Sign in to retry missed questions.");
+      } else if (err instanceof ApiClientError && err.status === 403) {
+        setRetryError("Enrollment required to retry missed questions.");
+      } else {
+        setRetryError("Could not build a retry drill.");
+      }
       setRetrying(false);
     }
   };
@@ -227,6 +243,7 @@ export default function DrillRunnerPage({
             result={state.result}
             onRetryMissed={onRetryMissed}
             retrying={retrying}
+            retryError={retryError}
           />
         )}
       </div>
@@ -246,11 +263,13 @@ function MasteryCard({
   result,
   onRetryMissed,
   retrying,
+  retryError,
 }: {
   detail: DrillDetail;
   result: DrillCompleteResponse;
   onRetryMissed: () => void;
   retrying: boolean;
+  retryError: string | null;
 }) {
   const pct =
     result.total > 0 ? Math.round((result.correct / result.total) * 100) : 0;
@@ -311,6 +330,11 @@ function MasteryCard({
           Open Red-Zone Map
         </Link>
       </div>
+      {retryError && (
+        <p className="mt-4 font-mono text-xs leading-6 text-red-700">
+          {retryError}
+        </p>
+      )}
     </div>
   );
 }

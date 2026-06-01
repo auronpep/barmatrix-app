@@ -22,6 +22,7 @@ import {
   trackRedZonePreviewViewedOnce,
 } from "@/lib/analytics";
 import { PRICING } from "@/lib/copy";
+import { useDashboard, type DashboardState } from "@/lib/use-dashboard";
 
 const DIMENSION_LABELS: Record<string, string> = {
   subject: "By subject",
@@ -60,6 +61,7 @@ export default function DiagnosticResultsPage({
   const completedEventRef = useRef<string | null>(null);
   const [results, setResults] = useState<DiagnosticResultsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const dashboard = useDashboard();
 
   useEffect(() => {
     let active = true;
@@ -136,7 +138,7 @@ export default function DiagnosticResultsPage({
           <SummaryCard results={results} />
           <TopTrapPatterns patterns={results.top_trap_patterns} />
           <DimensionBreakdown byDimension={results.red_zones.by_dimension} />
-          <EnrollCta />
+          <ResultsCta dashboard={dashboard} />
         </>
       )}
 
@@ -289,6 +291,91 @@ function DimensionBreakdown({
           </ul>
         </div>
       ))}
+    </div>
+  );
+}
+
+function ResultsCta({ dashboard }: { dashboard: DashboardState }) {
+  if (dashboard.data?.enrolled === true) {
+    return <EnrolledCta />;
+  }
+
+  if (dashboard.signedIn && dashboard.loading) {
+    return (
+      <div className="mt-10 rounded-lg border border-zinc-300 bg-white p-8">
+        <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
+          Next step · Account
+        </p>
+        <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
+          Checking your enrollment...
+        </h2>
+        <p className="mt-3 text-zinc-600">
+          Once your account status loads, this screen will point you to the right
+          repair path.
+        </p>
+      </div>
+    );
+  }
+
+  if (dashboard.signedIn && dashboard.error) {
+    return <AccountCta />;
+  }
+
+  return <EnrollCta />;
+}
+
+function EnrolledCta() {
+  return (
+    <div className="mt-10 rounded-lg border border-zinc-900 bg-zinc-900 p-8 text-white">
+      <p className="font-mono text-xs uppercase tracking-wider text-red-400">
+        Next step · Keep repairing
+      </p>
+      <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
+        Your diagnostic is ready. Keep working from your dashboard.
+      </h2>
+      <p className="mt-3 text-zinc-300">
+        Use your active BarMatrix access to turn this preview into saved red-zone
+        repair, assigned drills, and ongoing forensics.
+      </p>
+      <div className="mt-6 flex flex-wrap gap-3">
+        <Link href="/dashboard" className="btn red">
+          Open dashboard
+        </Link>
+        <Link
+          href="/red-zones"
+          className="btn ghost border-zinc-600 text-white"
+        >
+          Review red zones
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function AccountCta() {
+  return (
+    <div className="mt-10 rounded-lg border border-zinc-900 bg-zinc-900 p-8 text-white">
+      <p className="font-mono text-xs uppercase tracking-wider text-red-400">
+        Next step · Account
+      </p>
+      <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
+        Open your dashboard to continue.
+      </h2>
+      <p className="mt-3 text-zinc-300">
+        We could not confirm enrollment from this screen, but your signed-in
+        dashboard can route you to the right next step.
+      </p>
+      <div className="mt-6 flex flex-wrap gap-3">
+        <Link href="/dashboard" className="btn red">
+          Open dashboard
+        </Link>
+        <Link
+          href="/pricing"
+          className="btn ghost border-zinc-600 text-white"
+        >
+          View pricing
+        </Link>
+      </div>
     </div>
   );
 }

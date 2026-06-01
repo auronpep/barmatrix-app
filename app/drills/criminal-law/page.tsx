@@ -14,7 +14,7 @@ import {
 import { useSubmitAttempt } from "@/lib/use-attempts";
 import { BRAND } from "@/lib/copy";
 
-const SUBJECT = "Criminal Law";
+const SUBJECTS = ["Criminal Law", "Criminal Procedure"] as const;
 const SUBJECT_LABEL = "Criminal Law & Procedure";
 const DRILL_LIMIT = 6;
 
@@ -89,9 +89,9 @@ function normalizeQuestionRef(value: unknown): SubjectQuestionRef | null {
   };
 }
 
-function subjectEndpoint(): string {
+function subjectEndpoint(subject: (typeof SUBJECTS)[number]): string {
   const params = new URLSearchParams({
-    subject: SUBJECT,
+    subject,
     page: "1",
     limit: String(DRILL_LIMIT),
   });
@@ -108,8 +108,10 @@ async function readJson(response: Response): Promise<unknown> {
   }
 }
 
-async function fetchCriminalLawQueue(): Promise<SubjectQuestionRef[]> {
-  const response = await fetch(subjectEndpoint(), {
+async function fetchSubjectQueue(
+  subject: (typeof SUBJECTS)[number],
+): Promise<SubjectQuestionRef[]> {
+  const response = await fetch(subjectEndpoint(subject), {
     headers: { accept: "application/json" },
   });
   const payload = await readJson(response);
@@ -120,6 +122,13 @@ async function fetchCriminalLawQueue(): Promise<SubjectQuestionRef[]> {
   return pickArray(payload)
     .map(normalizeQuestionRef)
     .filter((question): question is SubjectQuestionRef => question !== null);
+}
+
+async function fetchCriminalLawQueue(): Promise<SubjectQuestionRef[]> {
+  const queues = await Promise.all(
+    SUBJECTS.map((subject) => fetchSubjectQueue(subject)),
+  );
+  return queues.flat();
 }
 
 function humanError(error: unknown): string {
@@ -190,7 +199,7 @@ export default function CriminalLawDrillPage() {
 
       if (nextQueue.length === 0) {
         setQuestion(null);
-        setError("The Criminal Law drill queue is empty.");
+        setError("The Criminal Law & Procedure drill queue is empty.");
         setPhase("error");
         return;
       }
@@ -264,7 +273,7 @@ export default function CriminalLawDrillPage() {
             same workflow.
           </h1>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-zinc-600">
-            Work a Criminal Law queue, submit an answer, and review the trap and assigned repair drill without leaving the page.
+            Work a Criminal Law &amp; Procedure queue, submit an answer, and review the trap and assigned repair drill without leaving the page.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <button
@@ -273,7 +282,7 @@ export default function CriminalLawDrillPage() {
               disabled={phase === "loading-bank" || phase === "loading-question"}
               className="btn btn-lg red"
             >
-              Start Criminal Law drill
+              Start Criminal Law &amp; Procedure drill
             </button>
             <Link
               href="/red-zones"
@@ -294,7 +303,7 @@ export default function CriminalLawDrillPage() {
           <p className="mt-2 text-sm text-zinc-600">
             {currentRef
               ? `${currentRef.external_id ?? currentRef.question_id.slice(0, 8)} - ${readableLabel(currentRef.subtopic)}`
-              : "Start the drill to sync the first Criminal Law queue."}
+              : "Start the drill to sync the Criminal Law and Procedure queues."}
           </p>
         </div>
       </div>

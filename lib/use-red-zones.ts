@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { api, ApiClientError, type RedZoneLibrary } from "@/lib/api-client";
+import { isAuthRejected } from "@/lib/auth-errors";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
 
 export interface RedZoneLibraryState {
@@ -14,6 +15,7 @@ export interface RedZoneLibraryState {
 interface FetchResult {
   data: RedZoneLibrary | null;
   error: string | null;
+  signedOut?: boolean;
 }
 
 // Single source of the signed-in student's Red Zone Library index. Resolves the
@@ -37,9 +39,13 @@ export function useRedZoneLibrary(): RedZoneLibraryState {
         if (!cancelled) setResult({ data, error: null });
       } catch (err) {
         if (cancelled) return;
+        if (isAuthRejected(err)) {
+          setResult({ data: null, error: null, signedOut: true });
+          return;
+        }
         const message =
           err instanceof ApiClientError
-            ? `API ${err.status}`
+            ? "request failed"
             : err instanceof Error
               ? err.message
               : "Unknown error";
@@ -60,6 +66,9 @@ export function useRedZoneLibrary(): RedZoneLibraryState {
   }
   if (result === null) {
     return { loading: true, signedIn: true, data: null, error: null };
+  }
+  if (result.signedOut === true) {
+    return { loading: false, signedIn: false, data: null, error: null };
   }
   return {
     loading: false,

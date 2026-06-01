@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { api, ApiClientError, type FoundationsOutline } from "@/lib/api-client";
+import { isAuthRejected } from "@/lib/auth-errors";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
 
 export interface FoundationsState {
@@ -15,6 +16,7 @@ export interface FoundationsState {
 interface FetchResult {
   data: FoundationsOutline | null;
   error: string | null;
+  signedOut?: boolean;
 }
 
 function messageFor(err: unknown): string {
@@ -50,6 +52,21 @@ export function useFoundations(): FoundationsState {
         }
         if (!cancelled) setResult({ data, error: null });
       } catch (err) {
+        if (isAuthRejected(err)) {
+          try {
+            const data = await api.listFoundations();
+            if (!cancelled) setResult({ data, error: null, signedOut: true });
+          } catch (fallbackErr) {
+            if (!cancelled) {
+              setResult({
+                data: null,
+                error: messageFor(fallbackErr),
+                signedOut: true,
+              });
+            }
+          }
+          return;
+        }
         if (!cancelled) setResult({ data: null, error: messageFor(err) });
       }
     })();
@@ -67,7 +84,7 @@ export function useFoundations(): FoundationsState {
   }
   return {
     loading: false,
-    signedIn: !!isSignedIn,
+    signedIn: !!isSignedIn && result.signedOut !== true,
     data: result.data,
     error: result.error,
     reload,

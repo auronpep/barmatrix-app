@@ -118,7 +118,7 @@ export default function RootLayout({
                     Sign in
                   </Link>
                 )}
-                <Link href="/diagnostic" className="btn btn-sm red">
+                <Link href="/diagnostic" className="btn btn-sm red hide-md">
                   Free Diagnostic <span className="arrow">→</span>
                 </Link>
               </div>

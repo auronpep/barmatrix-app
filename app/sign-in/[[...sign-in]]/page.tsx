@@ -1,4 +1,4 @@
-import { SignIn } from "@clerk/nextjs";
+import { AuthForm } from "@/app/auth-form";
 import { AuthUnavailable } from "@/app/auth-unavailable";
 
 export const metadata = { title: "Sign in · BarMatrix" };
@@ -10,15 +10,5 @@ export default function SignInPage() {
     return <AuthUnavailable mode="sign-in" />;
   }
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        padding: "64px 16px 96px",
-      }}
-    >
-      <SignIn />
-    </div>
-  );
+  return <AuthForm mode="sign-in" />;
 }

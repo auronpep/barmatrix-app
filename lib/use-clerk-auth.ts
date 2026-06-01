@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@clerk/nextjs";
+import { useEffect, useState } from "react";
 
 // Build-time-safe Clerk auth accessor.
 //
@@ -18,10 +19,26 @@ export interface ClerkAuthState {
 }
 
 const CLERK_ENABLED = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
+const AUTH_LOAD_TIMEOUT_MS = 3000;
 
 function useRealClerkAuth(): ClerkAuthState {
   const { isLoaded, isSignedIn, getToken } = useAuth();
-  return { isLoaded, isSignedIn: Boolean(isSignedIn), getToken };
+  const [authLoadTimedOut, setAuthLoadTimedOut] = useState(false);
+
+  useEffect(() => {
+    if (isLoaded || authLoadTimedOut) return;
+    const timeoutId = window.setTimeout(
+      () => setAuthLoadTimedOut(true),
+      AUTH_LOAD_TIMEOUT_MS,
+    );
+    return () => window.clearTimeout(timeoutId);
+  }, [authLoadTimedOut, isLoaded]);
+
+  return {
+    isLoaded: isLoaded || authLoadTimedOut,
+    isSignedIn: Boolean(isLoaded && isSignedIn),
+    getToken: isLoaded ? getToken : ANON_GET_TOKEN,
+  };
 }
 
 const ANON_GET_TOKEN = async (): Promise<string | null> => null;

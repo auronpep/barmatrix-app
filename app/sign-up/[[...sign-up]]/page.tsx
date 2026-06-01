@@ -1,4 +1,4 @@
-import { SignUp } from "@clerk/nextjs";
+import { AuthForm } from "@/app/auth-form";
 import { AuthUnavailable } from "@/app/auth-unavailable";
 
 export const metadata = { title: "Create account · BarMatrix" };
@@ -10,15 +10,5 @@ export default function SignUpPage() {
     return <AuthUnavailable mode="sign-up" />;
   }
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        padding: "64px 16px 96px",
-      }}
-    >
-      <SignUp />
-    </div>
-  );
+  return <AuthForm mode="sign-up" />;
 }

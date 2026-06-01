@@ -98,12 +98,24 @@ export default function CertificationRunnerPage() {
     );
   }
 
+  if (error === "locked") {
+    return (
+      <Shell>
+        <Back />
+        <Banner href="/foundations" cta="Go to The Method">
+          Finish The Method before taking this competency.
+        </Banner>
+      </Shell>
+    );
+  }
+
   if (error) {
     return (
       <Shell>
         <Back />
         <p className="mt-6 border border-amber-300 bg-amber-50 p-4 font-mono text-sm text-amber-900">
-          Couldn&apos;t load this competency: {error}
+          Couldn&apos;t load this competency. Try again from the certification
+          scorecard.
         </p>
       </Shell>
     );
@@ -546,7 +558,11 @@ function formatTime(iso: string): string {
 }
 
 function messageFor(err: unknown): string {
-  if (err instanceof ApiClientError) return `API ${err.status}`;
+  if (err instanceof ApiClientError) {
+    if (err.status === 401) return "signed_out";
+    if (err.status === 403) return "locked";
+    return `API ${err.status}`;
+  }
   if (err instanceof Error) return err.message;
   return "Unknown error";
 }

@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { WELCOME, ACCOUNT_PLACEHOLDER } from "@/lib/copy";
+import { WELCOME } from "@/lib/copy";
+import {
+  AccountAccessPanel,
+  AccountEntitlementPanel,
+} from "./account-status";
 import { BillingPortalButton } from "./billing-portal-button";
 import { EnrollmentRecoveryPanel } from "./enrollment-recovery";
 
@@ -28,12 +32,12 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
     <section className="mx-auto max-w-5xl px-6 py-16 sm:py-20">
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div>
-          {isWelcome ? <WelcomePanel /> : <AccountPlaceholder />}
+          {isWelcome ? <WelcomePanel /> : <AccountAccessPanel />}
           <EnrollmentRecoveryPanel checkoutSessionId={checkoutSessionId} />
           <BillingPanel checkoutSessionId={checkoutSessionId} />
         </div>
         <aside className="space-y-6">
-          <EntitlementPanel
+          <AccountEntitlementPanel
             isWelcome={isWelcome}
             checkoutSessionId={checkoutSessionId}
           />
@@ -75,23 +79,6 @@ function WelcomePanel() {
   );
 }
 
-function AccountPlaceholder() {
-  return (
-    <div className="rounded-lg border border-zinc-300 bg-white p-8 text-center shadow-sm sm:p-10">
-      <h1 className="font-serif text-2xl font-semibold tracking-tight">
-        {ACCOUNT_PLACEHOLDER.headline}
-      </h1>
-      <p className="mt-3 text-zinc-600">{ACCOUNT_PLACEHOLDER.body}</p>
-      <Link
-        href={ACCOUNT_PLACEHOLDER.cta.href}
-        className="mt-6 inline-block rounded-md border border-zinc-300 px-6 py-3 text-sm font-medium text-zinc-900 hover:border-zinc-500"
-      >
-        {ACCOUNT_PLACEHOLDER.cta.label}
-      </Link>
-    </div>
-  );
-}
-
 function BillingPanel({
   checkoutSessionId,
 }: {
@@ -125,52 +112,6 @@ function BillingPanel({
   );
 }
 
-function EntitlementPanel({
-  isWelcome,
-  checkoutSessionId,
-}: {
-  isWelcome: boolean;
-  checkoutSessionId: string | null;
-}) {
-  const hasCheckoutSession = checkoutSessionId !== null;
-  const isConfirmed = isWelcome || hasCheckoutSession;
-  const status = isConfirmed ? "Confirmed" : "Pending sign-in";
-  const statusTone = isConfirmed ? "text-emerald-700" : "text-amber-700";
-  const sessionLabel = checkoutSessionId
-    ? `Session attached - ending ${checkoutSessionId.slice(-8)}`
-    : "No checkout session attached";
-
-  return (
-    <div className="rounded-lg border border-zinc-300 bg-white p-6 shadow-sm">
-      <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-        Entitlement status
-      </p>
-      <div className="mt-4 flex items-start justify-between gap-4">
-        <div>
-          <h2 className="font-serif text-2xl font-semibold tracking-tight">
-            {WELCOME.flagshipLine}
-          </h2>
-          <p className="mt-2 text-sm leading-6 text-zinc-600">
-            Access is tied to the enrollment email and checkout session used at
-            purchase.
-          </p>
-        </div>
-        <span
-          className={`rounded border border-zinc-200 px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider ${statusTone}`}
-        >
-          {status}
-        </span>
-      </div>
-
-      <dl className="mt-6 space-y-4 border-t border-zinc-200 pt-5">
-        <StatusRow label="Cohort" value="July-cycle cohort" />
-        <StatusRow label="Access tier" value="Flagship" />
-        <StatusRow label="Checkout" value={sessionLabel} />
-      </dl>
-    </div>
-  );
-}
-
 function SettingsPanel() {
   return (
     <div className="rounded-lg border border-zinc-300 bg-zinc-50 p-6">
@@ -197,17 +138,6 @@ function SettingsPanel() {
       >
         Contact support
       </Link>
-    </div>
-  );
-}
-
-function StatusRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="grid gap-1 sm:grid-cols-[120px_1fr]">
-      <dt className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">
-        {label}
-      </dt>
-      <dd className="text-sm font-medium text-zinc-900">{value}</dd>
     </div>
   );
 }

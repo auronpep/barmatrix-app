@@ -75,6 +75,35 @@ function humanError(error: unknown): string {
   return "Unknown error";
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function asString(value: unknown): string | null {
+  return typeof value === "string" && value.trim().length > 0 ? value : null;
+}
+
+function pickQuestionArray(payload: unknown): unknown[] {
+  if (Array.isArray(payload)) return payload;
+  if (!isRecord(payload)) return [];
+
+  for (const key of ["questions", "items", "results", "data"]) {
+    const value = payload[key];
+    if (Array.isArray(value)) return value;
+    if (isRecord(value)) {
+      const nested = pickQuestionArray(value);
+      if (nested.length > 0) return nested;
+    }
+  }
+
+  return [];
+}
+
+function normalizeQuestionId(value: unknown): string | null {
+  if (!isRecord(value)) return null;
+  return asString(value.question_id) ?? asString(value.id);
+}
+
 function humanizeValue(value: string): string {
   const cleaned = value.replace(/[_-]+/g, " ").trim();
   if (!cleaned) return value;
@@ -100,13 +129,9 @@ async function fetchSubjectIds(subject: string): Promise<string[]> {
   if (!res.ok) {
     throw new Error(`API ${res.status}: ${JSON.stringify(payload)}`);
   }
-  const questions =
-    payload && typeof payload === "object" && "questions" in payload
-      ? (payload as { questions: Array<{ question_id?: string }> }).questions
-      : [];
-  const ids = questions
-    .map((q) => q?.question_id)
-    .filter((id): id is string => typeof id === "string");
+  const ids = pickQuestionArray(payload)
+    .map(normalizeQuestionId)
+    .filter((id): id is string => id !== null);
   // Shuffle and take the first SET_LIMIT to vary content across sessions.
   return shuffle([...ids]).slice(0, SET_LIMIT);
 }

@@ -989,6 +989,70 @@ export interface FoundationsOutline {
   progress: FoundationsProgressSummary;
 }
 
+// C3 interactive reflex-trainer types. The server grades; it strips every
+// answer-bearing field from items before sending, so the page source cannot leak
+// the key. Mirrors barmatrix-api/src/lib/c3-drill.ts (public shapes only).
+export type C3Status =
+  | "TRUE"
+  | "NOT_TRUE"
+  | "TRUE_BUT_NOT_RESPONSIVE"
+  | "SURVIVES";
+
+export type C3TaskType =
+  | "TRUTH_CHECK"
+  | "FILTER_BREAK"
+  | "SURVIVOR_PICK"
+  | "TRUE_VS_TRUE"
+  | "MIXED_CLASSIFICATION"
+  | "CALL_CHECK"
+  | "CHOICE_CLASSIFICATION";
+
+export type C3Skill = "EAR" | "ISSUE_SENSE" | "CUT" | "CLASH" | "CALL";
+export type C3MissedFilter = "NOT_TRUE" | "NOT_RESPONSIVE" | "SURVIVES";
+
+export interface C3Choice {
+  id: string;
+  text: string;
+}
+
+export interface C3DrillItemPublic {
+  id: string;
+  drill_id: string;
+  sequence: number;
+  task_type: C3TaskType;
+  stem?: string;
+  prompt: string;
+  choice_text?: string;
+  choices?: C3Choice[];
+  skill: C3Skill;
+  legal_review_status: "pending" | "approved" | "needs_revision";
+  source_status: "authored" | "legacy_candidate" | "licensed" | "unknown";
+  enabled: boolean;
+}
+
+export interface C3StudentResponse {
+  selected_status?: C3Status;
+  selected_choice_id?: string;
+  selected_choice_statuses?: Record<string, C3Status>;
+}
+
+export interface C3Explanation {
+  verdict: string;
+  why: string;
+  trap?: string;
+  say_the_break: string;
+}
+
+export interface C3GradeResult {
+  correct: boolean;
+  correct_status?: C3Status;
+  correct_choice_id?: string;
+  choice_statuses?: Record<string, C3Status>;
+  missed_filter: C3MissedFilter | null;
+  missed_skill: C3Skill | null;
+  explanation: C3Explanation;
+}
+
 export interface FoundationsDrill {
   id: string;
   title: string;
@@ -996,6 +1060,10 @@ export interface FoundationsDrill {
   items: string[];
   item_count: number;
   key_md: string;
+  // Present only when the drill runs in interactive mode (items parsed + legal
+  // gate passed). When absent, the drill renders in the reveal-key form.
+  task_type?: C3TaskType;
+  graded_items?: C3DrillItemPublic[];
 }
 
 export interface FoundationsLesson {
@@ -1040,6 +1108,21 @@ export interface FoundationsMarkResponse {
   status: FoundationsLessonStatus;
   drills_completed: string[];
   progress?: FoundationsProgressSummary;
+}
+
+export interface FoundationsAttemptRequest extends C3StudentResponse {
+  drill_id: string;
+  item_id: string;
+  attempt_number?: number;
+  time_ms?: number;
+  confidence?: number;
+  reflection_text?: string;
+}
+
+export interface FoundationsAttemptResponse {
+  graded: C3GradeResult;
+  persisted: boolean;
+  attempt_id: string | null;
 }
 
 // --- C3 Placement Diagnostic (curated 18-question session) ---
@@ -1607,6 +1690,22 @@ export const api = {
       `/api/me/foundations/${encodeURIComponent(slug)}`,
       token,
       { method: "POST", body: JSON.stringify(payload) },
+    ),
+
+  // Grade one interactive drill attempt. Optional auth: anonymous learners are
+  // graded (no persistence); a token attributes + records the attempt.
+  gradeFoundationsAttempt: (
+    slug: string,
+    payload: FoundationsAttemptRequest,
+    token?: string,
+  ) =>
+    request<FoundationsAttemptResponse>(
+      `/api/foundations/${encodeURIComponent(slug)}/attempts`,
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      },
     ),
 
   // --- C3 Mastery (flagship measurement surface) ---

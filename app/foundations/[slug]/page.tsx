@@ -12,6 +12,11 @@ import {
 import { useClerkAuth } from "@/lib/use-clerk-auth";
 import { Markdown } from "@/lib/markdown";
 import { userFacingResourceError } from "@/lib/user-facing-errors";
+import {
+  C3DrillRunner,
+  C3ReviewSummary,
+  type C3GradeLogEntry,
+} from "./c3-drill-runner";
 
 export default function FoundationsLessonPage() {
   const params = useParams<{ slug: string }>();
@@ -25,6 +30,10 @@ export default function FoundationsLessonPage() {
   const [completed, setCompleted] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveNote, setSaveNote] = useState<string | null>(null);
+  // Bearer token for attributing interactive drill attempts (null = anonymous).
+  const [token, setToken] = useState<string | null>(null);
+  // Accumulated grade results across the lesson's interactive drills.
+  const [gradeLog, setGradeLog] = useState<C3GradeLogEntry[]>([]);
 
   // Load public lesson content for everyone.
   useEffect(() => {
@@ -63,6 +72,7 @@ export default function FoundationsLessonPage() {
       try {
         const token = await getToken();
         if (!token) return;
+        if (!cancelled) setToken(token);
         const outline = await api.getMyFoundations(token);
         const entry = outline.lessons.find((l) => l.slug === slug);
         if (!cancelled && entry) setCompleted(entry.status === "completed");
@@ -130,6 +140,24 @@ export default function FoundationsLessonPage() {
     [persist, isSignedIn, completed],
   );
 
+  // Interactive drill finished → mark it complete (add-only) and persist.
+  const markDrillComplete = useCallback(
+    (id: string) => {
+      setChecked((prev) => {
+        if (prev.has(id)) return prev;
+        const next = new Set(prev);
+        next.add(id);
+        if (isSignedIn) void persist([...next], completed);
+        return next;
+      });
+    },
+    [persist, isSignedIn, completed],
+  );
+
+  const onItemGraded = useCallback((entry: C3GradeLogEntry) => {
+    setGradeLog((prev) => [...prev, entry]);
+  }, []);
+
   const onComplete = useCallback(async () => {
     setCompleted(true);
     const result = await persist([...checked], true);
@@ -160,6 +188,7 @@ export default function FoundationsLessonPage() {
   }
 
   const { lesson } = resp;
+  const hasInteractiveDrills = lesson.drills.some((d) => d.graded_items?.length);
 
   return (
     <article className="mx-auto max-w-3xl px-6 py-10 sm:py-14">
@@ -197,21 +226,34 @@ export default function FoundationsLessonPage() {
           Drills
         </h2>
         <p className="mt-2 text-sm leading-6 text-zinc-600">
-          Work each drill cold, then reveal the key and say the missed filter aloud —
-          the verbalization is the training. Check off each drill once you&apos;ve
-          self-marked it.
+          {hasInteractiveDrills
+            ? "Two filters. Three statuses. Name the break. Classify each item, then read why the filter broke — you can't pass by revealing a key."
+            : "Work each drill cold, then reveal the key and say the missed filter aloud — the verbalization is the training. Check off each drill once you've self-marked it."}
         </p>
         <div className="mt-6 space-y-6">
-          {lesson.drills.map((drill) => (
-            <DrillCard
-              key={drill.id}
-              drill={drill}
-              checked={checked.has(drill.id)}
-              onToggle={() => toggleDrill(drill.id)}
-            />
-          ))}
+          {lesson.drills.map((drill) =>
+            drill.graded_items?.length ? (
+              <C3DrillRunner
+                key={drill.id}
+                slug={slug}
+                drill={drill}
+                token={token}
+                onItemGraded={onItemGraded}
+                onDrillComplete={markDrillComplete}
+              />
+            ) : (
+              <DrillCard
+                key={drill.id}
+                drill={drill}
+                checked={checked.has(drill.id)}
+                onToggle={() => toggleDrill(drill.id)}
+              />
+            ),
+          )}
         </div>
       </section>
+
+      {gradeLog.length > 0 && <C3ReviewSummary log={gradeLog} />}
 
       {lesson.how_to_use_md && (
         <section className="mt-10 border border-zinc-200 bg-zinc-50 p-6">

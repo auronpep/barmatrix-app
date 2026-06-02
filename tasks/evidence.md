@@ -2683,3 +2683,27 @@ Expected behavior: BarMatrix production pages should emit an app-managed Content
   - `/`, `/account`, `/checkout`, and `/lp-four-traps.html` rendered meaningful content with no visible runtime text, no horizontal overflow in the tested viewport, and no fresh browser warning/error logs.
   - Local browser-observed origins were covered by CSP: local app origin, `https://daring-mammal-68.clerk.accounts.dev`, `https://img.clerk.com`, `https://us-assets.i.posthog.com`, `https://fonts.googleapis.com`, and `https://fonts.gstatic.com`.
   - Screenshot saved: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-csp-local-lp-four-traps.png`.
+- Deployment:
+  - Pushed commit `39b70d1` (`Add enforced content security policy`) to `main`.
+  - GitHub Actions run `26806093231` passed install, regression tests, lint, build, Vercel project pull, and production deploy.
+  - `vercel inspect https://barmatrix.app` reported a Ready production deployment created after the push, with aliases including `https://barmatrix.app` and `https://www.barmatrix.app`.
+- Live HTTP verification:
+  - `GET https://barmatrix.app/`, `/account`, `/checkout`, and `/lp-four-traps.html` returned HTTP 200 and emitted `Content-Security-Policy`.
+  - Live CSP contained the expected app/auth/telemetry/API/font directives and did not include `localhost`, `127.0.0.1`, or `ws://`.
+- Live in-app browser verification:
+  - `/` rendered `Master the finite universe of MBE traps.`
+  - `/account` rendered `Your BarMatrix access is active.` for the paid signed-in browser session.
+  - `/checkout` rendered `One step from your Red-Zone Map.`
+  - `/lp-four-traps.html` rendered `The 4 traps that write themselves into nearly every MBE question.`
+  - All four live pages had meaningful content, no visible runtime text, no horizontal overflow in the tested viewport, and no fresh browser warning/error logs.
+  - Live browser-observed origins were covered by CSP: `https://barmatrix.app`, `https://clerk.barmatrix.app`, `https://img.clerk.com`, `https://us-assets.i.posthog.com`, `https://fonts.googleapis.com`, and `https://fonts.gstatic.com`.
+  - Screenshot saved: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-csp-live-lp-four-traps.png`.
+- Production health/logs:
+  - `GET https://api.barmatrix.app/health?csp_verify=39b70d1` returned `{"ok":true,"db":"up"}`.
+  - `vercel logs https://barmatrix.app --since 10m` filtered for errors/CSP violations returned no matches after the live browser pass.
+  - Hostinger API `stderr.log` tail was empty.
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- The enforced CSP is verified across core app/auth/account/checkout/static-LP surfaces. Future third-party embeds or new payment-provider UI embeds will need explicit CSP entries before they are shipped.

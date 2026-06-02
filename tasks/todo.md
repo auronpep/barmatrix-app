@@ -1965,5 +1965,29 @@
 - [x] Add a focused failing regression for the missing CSP policy.
 - [x] Apply the smallest safe CSP header change.
 - [x] Run focused tests, full non-Red-Zone tests, lint, build, local production HTTP/browser verification.
-- [ ] Deploy and run live HTTP/browser/log verification.
-- [ ] Record review notes, evidence, and remaining risk.
+- [x] Deploy and run live HTTP/browser/log verification.
+- [x] Record review notes, evidence, and remaining risk.
+
+## Review
+
+- Added an enforced app-managed CSP in `next.config.ts` using the runtime origins observed in source, environment hostnames, live HTTP probes, and in-app browser checks.
+- Kept the policy no-nonce to preserve static generation and CDN caching for static routes.
+- Scoped local API/dev connect allowances behind `!process.env.VERCEL`; verified the live production CSP does not include `localhost`, `127.0.0.1`, or `ws://`.
+- Red Zone source and tests remain untouched because another session owns that review.
+
+## Verification
+
+- Red/green focused test: `node --test tests\security-headers.test.ts`.
+- Full non-Red-Zone app test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 53/53 tests.
+- `npm run lint` passed.
+- `npm run build` passed.
+- Local production HTTP/browser verification passed on `http://localhost:3014` for `/`, `/account`, `/checkout`, and `/lp-four-traps.html`.
+- Commit `39b70d1` deployed through GitHub Actions run `26806093231`; the deploy job passed tests, lint, build, Vercel pull, and production deploy.
+- Vercel reports the new production deployment Ready and aliased to `https://barmatrix.app`.
+- Live HTTP/browser verification passed for `/`, `/account`, `/checkout`, and `/lp-four-traps.html` with CSP present, no local-source leakage, meaningful rendered content, and no fresh browser warning/error logs.
+- Production health/log checks after live verification: API health returned `{"ok":true,"db":"up"}`, Vercel log filter found no CSP/error matches, and Hostinger API `stderr.log` was empty.
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- The enforced CSP was browser-verified across the core app/auth/account/checkout/static-LP surfaces; uncommon future third-party embeds or new payment-provider UI embeds will need explicit CSP additions before launch.

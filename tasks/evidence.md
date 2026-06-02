@@ -1120,9 +1120,9 @@ Expected behavior: checkout-return recovery on the production account page shoul
   - `npm run build` passed.
   - `git diff --check` passed with only existing LF/CRLF normalization warnings.
 - Vercel production:
-  - Deployment `dpl_EErUtCD15YD3r8GZ7UjNBYscftey` is `READY`.
+  - Deployment `dpl_8TpBf2t7BFSFPLCyRpphwP8PKufN` is `READY`.
   - Alias includes `https://barmatrix.app`.
-  - Git SHA: `61ba28f3d96a0a479fe652aa6e575c848f0c0e07`.
+  - Git SHA: `f8751f97fc21bd3cdc3ee5ebb90f7332f1c70d90`.
 - In-app Browser:
   - Opened `https://barmatrix.app/account?checkout_session_id=cs_test_missing_live_audit_final_*`.
   - Verified the page renders `Checkout recovery`, `Activation check available`, and `Recover enrollment`.

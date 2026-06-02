@@ -927,7 +927,7 @@
   - `npm run lint` passed.
   - `npm run build` passed.
   - `git diff --check` passed with only existing LF/CRLF normalization warnings.
-- Vercel production deployment `dpl_EErUtCD15YD3r8GZ7UjNBYscftey` is `READY`, aliased to `https://barmatrix.app`, and reports Git SHA `61ba28f3d96a0a479fe652aa6e575c848f0c0e07`.
+- Vercel production deployment `dpl_8TpBf2t7BFSFPLCyRpphwP8PKufN` is `READY`, aliased to `https://barmatrix.app`, and reports Git SHA `f8751f97fc21bd3cdc3ee5ebb90f7332f1c70d90`.
 - In-app Browser verified `https://barmatrix.app/account?checkout_session_id=cs_test_missing_live_audit_final_*` renders the recovery panel with corrected copy, no old misleading copy, no raw API error text, and no recent browser logs.
 - Production API `GET https://api.barmatrix.app/health` returned HTTP 200 with `{"ok":true,"db":"up"}`.
 - Hostinger API log tail after checkout recovery and billing actions showed only normal listener lines; `stderr.log` was empty.

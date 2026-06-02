@@ -775,5 +775,55 @@
 
 ## Remaining Risk
 
-- The source hardening is verified locally but not yet deployed in this pass. Production currently has the knowledge schema/content, so the live knowledge endpoint is not exhibiting this 500 path today.
+- The source hardening is verified and has been carried to Hostinger by the later API deploy. Production currently has the knowledge schema/content, so the live knowledge endpoint was not exhibiting this 500 path before the deploy.
 - The broader system is not fully proven bug-free; the next high-value audit area is authenticated paid-user browser coverage across boot-camp progress, prescribed drills, red-zone drills, account/billing, and checkout-return flows.
+
+# API Sentry Runtime Warning Audit
+
+## Scope
+
+- Investigate the fresh production API boot warning: `[Sentry] express is not instrumented`.
+- Fix the root cause using installed package/runtime evidence only.
+- Prove the fix locally, in tests, and against the Hostinger production runtime.
+
+## Plan
+
+- [x] Inspect production Hostinger logs after the knowledge-route deployment.
+- [x] Inspect local `@sentry/node` package docs/source for the expected Express instrumentation path.
+- [x] Add regression coverage for the API start command and Sentry initialization options.
+- [x] Implement the smallest startup-order fix.
+- [x] Run focused/full API checks and local production-start smoke.
+- [x] Deploy through Hostinger Git auto-deploy and verify live health/logs.
+
+## Review
+
+- Production log at `2026-06-02T01:30:44Z` and `2026-06-02T01:31:19Z` showed `[Sentry] express is not instrumented`.
+- Local installed Sentry README says ESM apps should initialize Sentry through a `--import` file before application modules load.
+- Local installed Sentry source showed `setupExpressErrorHandler()` calls `ensureIsWrapped(app.use, "express")`.
+- Root cause: the API initialized Sentry inside `src/index.ts` after importing Express. A generic `@sentry/node/preload` was not enough because `tracesSampleRate: 0` meant the default Express tracing integration was not installed.
+- Source fix:
+  - Added `src/sentry-init.ts`, preloaded by the production start command before `dist/index.js`.
+  - `initSentry()` now explicitly installs `Sentry.expressIntegration()` while keeping `tracesSampleRate: 0` and `sendDefaultPii: false`.
+  - `src/index.ts` now installs the Express error handler only when the SDK was already initialized by the preload entry.
+- Hostinger advanced to API commit `d9f5892`; `package.json` start command is `node --import ./dist/sentry-init.js dist/index.js`.
+
+## Verification
+
+- Focused Sentry test passed: `npx tsx --test src\sentry.test.ts` reported 6 tests, 6 pass.
+- API `npm test` passed: 275 tests, 275 pass.
+- API `npm run typecheck` passed.
+- API `npm run build` passed.
+- Local production-start smoke ran `node --import ./dist/sentry-init.js dist/index.js` on port `18081`; `/health` returned HTTP 200 and captured logs had `has_sentry_warning=false`.
+- Production Hostinger log after deploy showed only `barmatrix-api listening on :3000 (production) — 4 allowed origins`; no fresh Sentry Express warning was present.
+- Production `GET https://api.barmatrix.app/health` returned HTTP 200 with `{"ok":true,"db":"up"}`.
+- Post-deploy live API smoke confirmed:
+  - knowledge search returned HTTP 200 with `KO-SRC-0650-C2C-002`.
+  - tensions returned HTTP 200 with official entries.
+  - C3 deck returned HTTP 200 with `{"cards":[]}`.
+  - unauthenticated C3 coach returned HTTP 401.
+- In-app browser production `/drills` remained healthy and rendered `DRILL LIBRARY` with no relevant console/network error logs. Address-bar navigation through this browser wrapper did not work in this pass, so `/mastery` and boot-camp mastery were not reverified through the browser after the API-only Sentry change.
+
+## Remaining Risk
+
+- The API Sentry runtime warning is fixed and deployed, but this does not make the entire system fully tested.
+- Remaining high-value audit coverage is authenticated paid-user browser flows beyond `/drills`: boot-camp day progression, mastery start/submit, prescribed drills, red-zone detail/drill launch, account/billing portal, and checkout-return handling.

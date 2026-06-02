@@ -947,5 +947,72 @@ Expected behavior: optional knowledge storage should not turn public search into
 
 ## Remaining Risk
 
-- This change has not been deployed during this pass. Because production knowledge search is already returning content, there is no live knowledge outage to resolve before continuing the broader audit.
+- This change has been carried to Hostinger by the later API deploy. Because production knowledge search was already returning content, there was no live knowledge outage to resolve before continuing the broader audit.
 - The system is still not fully tested end to end; authenticated paid-user browser flows remain the next audit target.
+
+# API Sentry Runtime Warning Audit
+
+Expected behavior: production API startup should initialize Sentry before Express is loaded, install Express instrumentation, and boot without Sentry instrumentation warnings. Actual behavior found: production `console.log` showed `[Sentry] express is not instrumented` after the first API deployment in this pass.
+
+## Reproduction
+
+- Hostinger production log before the final fix:
+  - `2026-06-02T01:30:44.907Z` warned that Express was not instrumented.
+  - `2026-06-02T01:31:19.362Z` repeated the warning after the first preload-only attempt.
+- Installed local package evidence:
+  - `node_modules/@sentry/node/README.md` says ESM apps should use `node --import ./instrument.mjs app.mjs` so Sentry initializes before app modules are evaluated.
+  - `node_modules/@sentry/node/build/esm/integrations/tracing/express.js` shows `setupExpressErrorHandler()` validates that `app.use` was wrapped by Express instrumentation.
+- The first attempted start command, `node --import @sentry/node/preload dist/index.js`, did not remove the production warning because `tracesSampleRate: 0` kept the default Express tracing integration out of the init path.
+
+## Trace
+
+- Files changed:
+  - `C:\barmatrix-api\package.json`
+  - `C:\barmatrix-api\src\index.ts`
+  - `C:\barmatrix-api\src\sentry.ts`
+  - `C:\barmatrix-api\src\sentry-init.ts`
+  - `C:\barmatrix-api\src\sentry.test.ts`
+- Root cause:
+  - `src/index.ts` imported Express before calling `initSentry()`.
+  - The API also set `tracesSampleRate: 0`, so the default performance integration list did not include `expressIntegration()`.
+- Confidence: high.
+
+## Change
+
+- Added `src/sentry-init.ts`, which loads config/env and calls `initSentry()` before the app entry imports Express.
+- Changed production start to `node --import ./dist/sentry-init.js dist/index.js`.
+- Updated `initSentry()` to explicitly include `Sentry.expressIntegration()` while preserving `sendDefaultPii: false` and `tracesSampleRate: 0`.
+- Updated `src/index.ts` to install the error handler only when the SDK is already initialized.
+- Added Sentry tests for the explicit Express integration, initialized-state check, and production start command.
+
+## Verification
+
+- Focused Sentry test passed: `npx tsx --test src\sentry.test.ts` reported 6 tests, 6 pass.
+- API `npm test` passed: 275 tests, 275 pass.
+- API `npm run typecheck` passed.
+- API `npm run build` passed.
+- Local production-start smoke:
+  - ran `node --import ./dist/sentry-init.js dist/index.js` on port `18081`.
+  - `GET http://127.0.0.1:18081/health` returned HTTP 200 with `{"ok":true,"db":"up"}`.
+  - captured logs reported `has_sentry_warning=false`.
+- Hostinger production deployment:
+  - remote API checkout reached commit `d9f5892`.
+  - remote package start command is `node --import ./dist/sentry-init.js dist/index.js`.
+  - `tmp/restart.txt` timestamp updated to `2026-06-02 01:36`.
+  - fresh `console.log` tail showed only `barmatrix-api listening on :3000 (production) — 4 allowed origins`.
+  - `stderr.log` tail was empty.
+  - `GET https://api.barmatrix.app/health` returned HTTP 200 with `{"ok":true,"db":"up"}`.
+- Post-deploy live API smoke:
+  - knowledge search returned HTTP 200 and included `KO-SRC-0650-C2C-002`.
+  - tensions returned HTTP 200 with official tension entries.
+  - C3 deck returned HTTP 200 with `{"cards":[]}`.
+  - unauthenticated C3 coach next route returned HTTP 401.
+- In-app browser:
+  - production `/drills` rendered `DRILL LIBRARY`.
+  - no relevant console/network error logs were captured for `/drills`.
+  - the wrapper did not successfully navigate by address bar or CDP during this pass, so no post-Sentry browser claim is made for `/mastery` or boot-camp mastery.
+
+## Remaining Risk
+
+- This closes the reproduced API Sentry runtime warning. It does not prove the whole BarMatrix system is fully tested.
+- Continue the audit with authenticated browser flows: boot-camp day progression, boot-camp mastery start/submit, prescribed drill launch/submit, red-zone drill launch, account/billing, and checkout-return pages.

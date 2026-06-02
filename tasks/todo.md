@@ -3008,3 +3008,53 @@
 - No API source change was applied in this slice because `C:\barmatrix-api` has unrelated dirty billing/admin/tension changes and no GitHub deploy workflow; Hostinger SSH has also been timing out.
 - Filed `auronpep/barmatrix-api#4` to track adding `Vary: Origin` for dynamic CORS responses and verifying it live after deploy.
 - Browser route check on `/dashboard?api_boundary_browser=20260602a` rendered paid dashboard content with one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, and no relevant browser logs. The sandboxed browser-evaluate context did not expose `fetch`, so extra synthetic fetches were not available there.
+
+# Live Non-Red-Zone Account And Checkout Follow-Up
+
+## Scope
+
+- Continue the full live debug goal while Red Zone remains owned by another session.
+- Re-check the deployed audit receipt for commit `d46f081`.
+- Verify paid signed-in account and checkout-return surfaces without creating a new Stripe Checkout session.
+- Re-run local app/API checks with Red Zone tests excluded from the app sweep.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm current app/API dirty worktree state and Red Zone exclusion.
+- [x] Confirm the production deployment workflow for `d46f081`.
+- [x] Browser-smoke `/account` with the provided bogus checkout session id.
+- [x] Browser-smoke `/checkout/success`, `/pricing`, and `/checkout` without clicking payment-plan actions.
+- [x] Re-check open non-Red-Zone GitHub issues.
+- [x] Run non-Red-Zone app tests, lint, and build.
+- [x] Run API tests, typecheck, and build.
+
+## Review
+
+- Deploy Vercel Production run `26821615672` for commit `d46f081` completed successfully.
+- Live `/account?checkout_session_id=cs_test_missing_live_audit_final2_1780367857789` initially showed loading copy, then settled into the paid active-account state.
+- Final account state rendered `Your BarMatrix access is active.`, `Verified from signed-in account`, one H1, one `<main>`, no desktop overflow, no visible bogus checkout-session id, no raw API/runtime/CSP text, and no relevant live browser warning/error logs.
+- The account billing panel rendered `No Stripe billing portal.` from the signed-in dashboard billing capability. That matches the current app contract for active access without an attached Stripe portal.
+- Live `/checkout/success?checkout_session_id=cs_test_missing_live_audit_final2_1780367857789` rendered the pending activation state, hid the raw checkout id, and linked users to account recovery without raw API/runtime text.
+- Live `/pricing?checkout_account_audit=20260602a` and `/checkout?checkout_account_audit=20260602a` rendered their public enrollment surfaces without overflow or browser errors. No Stripe session was created.
+- Open non-Red-Zone issues remain:
+  - `auronpep/barmatrix-app#6` - production C3 Coach has no tagged question coverage.
+  - `auronpep/barmatrix-api#3` - backfill C3 annotations and answer-choice mold tags.
+  - `auronpep/barmatrix-api#4` - dynamic CORS responses omit `Vary: Origin`.
+
+## Verification
+
+- App non-Red-Zone test sweep passed 63/63:
+  - `node --test <all tests/*.test.ts except red-zone*>`
+- App `npm run lint` passed.
+- App `npm run build` passed.
+- API `npm test` passed 284/284 against the current local API worktree.
+- API `npm run typecheck` passed.
+- API `npm run build` passed.
+
+## Remaining Risk
+
+- Red Zone routes/source/tests remain out of scope by request because another session is reviewing/debugging them.
+- C3 Coach and C3 Mastery measured behavior remains blocked on authored C3 annotation and answer-choice mold-tag content.
+- API dynamic CORS still needs `Vary: Origin` added and live-verified.
+- The API repo still has unrelated dirty billing/admin/tension work; checks passed, but those backend changes were not staged or deployed in this pass.

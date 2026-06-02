@@ -3279,7 +3279,19 @@ Expected behavior: signed-in paid-user boot-camp routes should render meaningful
   - `git diff --check -- "app/boot-camps/sessions/[session_id]/days/[day]/page.tsx" "app/boot-camps/sessions/[session_id]/mastery/page.tsx" tests/boot-camp-runner-headings.test.ts tasks/todo.md tasks/evidence.md` passed with only normal CRLF warnings.
 - Local browser caveat:
   - Opening the patched localhost day URL rendered signed-out `Day unavailable`, so it did not exercise the authenticated active runner branch.
-  - Production post-deploy browser verification is still pending for the active runner branch.
+- Deployment:
+  - Pushed app commit `f46af99` to `origin/main`.
+  - GitHub Actions production deploy run `26812106019` completed successfully for head SHA `f46af9984eabbc0f23aef9949dcfa980a367b597`.
+  - Vercel production deployment `barmatrix-p7gj4kndv-sunnylee.vercel.app` completed, was Ready, and was aliased to `https://barmatrix.app`.
+- Live post-deploy browser verification:
+  - Opened `https://barmatrix.app/boot-camps/sessions/f5cb4b5d-dddb-4794-8685-c5a1cd4f4bb7/days/1?post_deploy_bootcamp_heading=f46af99`.
+  - Rendered question `DAY 1 · QUESTION 2 OF 12`, four answer choices, and `Submit answer`.
+  - Verified `h1Count=1`, `h1Text="Boot Camp Day 1"`, `mainCount=1`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh production browser warning/error logs.
+  - Selected answer `B. The $1,500 removal expense...` without submitting. The answer was selected, `Submit answer` became enabled, the page kept the new H1 and single main, and no fresh production browser warnings/errors were logged.
+- Production health/log checks:
+  - `GET https://api.barmatrix.app/health?bootcamp_heading_audit=f46af99` returned `{"ok":true,"db":"up"}`.
+  - Vercel logs around the post-deploy window showed normal 200 rows for the boot-camp day/session routes; captured error/CSP filtering returned `NO_ERROR_OR_CSP_MATCHES`.
+  - Hostinger API `stderr.log` was empty.
 - Screenshot evidence:
   - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-boot-camps-catalog-live-20260602.png`
   - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-boot-camp-detail-live-20260602.png`
@@ -3287,8 +3299,9 @@ Expected behavior: signed-in paid-user boot-camp routes should render meaningful
   - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-boot-camp-day-live-20260602.png`
   - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-boot-camp-mastery-locked-live-20260602.png`
   - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-boot-camp-day-local-heading-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-boot-camp-day-live-postdeploy-f46af99.png`
 
 ## Remaining Risk
 
 - Red Zone routes/source remain out of scope for this pass.
-- The authenticated active day-runner heading has not yet been verified on production after deployment.
+- This slice did not complete the boot-camp day or unlock the mastery check; it verified the catalog/detail/session/day route surfaces and source/test coverage for the mastery running branch.

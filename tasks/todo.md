@@ -2294,8 +2294,8 @@
 - [x] Navigate into a day route or mastery route where exposed by the UI and verify state.
 - [x] Trace and fix any reproduced non-Red-Zone root cause with focused regression coverage where practical.
 - [x] Run relevant local tests, lint, build, and diff hygiene checks.
-- [ ] Deploy and verify the day-route heading on production.
-- [ ] Run production health/log checks and record final evidence.
+- [x] Deploy and verify the day-route heading on production.
+- [x] Run production health/log checks and record final evidence.
 
 ## Review
 
@@ -2305,6 +2305,9 @@
 - Root cause: boot-camp day/mastery runner pages delegate the visible title/progress to `QuestionRunner`, whose route title is rendered as a paragraph. The root layout owns the only `<main>`, so runner routes still need their own stable page-level heading.
 - Added `sr-only` route headings for boot-camp day and mastery running/loading states without changing the visible layout.
 - Added `tests/boot-camp-runner-headings.test.ts` to lock the heading contract.
+- Pushed commit `f46af99` (`Add boot camp runner headings`) to `main`; GitHub Actions run `26812106019` passed install, regression tests, lint, build, Vercel pull, and production deploy.
+- Vercel production deployment `barmatrix-p7gj4kndv-sunnylee.vercel.app` was Ready and aliased to `https://barmatrix.app`.
+- Live post-deploy browser verification of the Day 1 route showed `h1Count=1`, `h1Text="Boot Camp Day 1"`, one `<main>`, the expected question runner, four answer choices, enabled submit after selecting answer `B`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh production browser warnings/errors.
 
 ## Verification
 
@@ -2314,9 +2317,14 @@
 - `npm run lint` passed.
 - `npm run build` passed.
 - `git diff --check -- "app/boot-camps/sessions/[session_id]/days/[day]/page.tsx" "app/boot-camps/sessions/[session_id]/mastery/page.tsx" tests/boot-camp-runner-headings.test.ts tasks/todo.md tasks/evidence.md` passed with only normal CRLF warnings.
-- Production deployment and post-deploy browser verification are pending for this slice.
+- GitHub Actions production deploy run `26812106019` passed.
+- Production API health returned `{"ok":true,"db":"up"}` for `https://api.barmatrix.app/health?bootcamp_heading_audit=f46af99`.
+- Vercel log capture for the post-deploy window had `NO_ERROR_OR_CSP_MATCHES`; visible rows around the route were normal 200s.
+- Hostinger API `stderr.log` was empty.
+- Screenshot evidence: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-boot-camp-day-live-postdeploy-f46af99.png`.
 
 ## Remaining Risk
 
 - Red Zone routes/source remain out of scope for this pass.
-- A localhost browser check of the patched day URL fell into the signed-out `Day unavailable` state, so the active patched runner branch still needs production post-deploy browser verification.
+- A localhost browser check of the patched day URL fell into the signed-out `Day unavailable` state, so active-runner rendered verification used production after deployment.
+- This slice did not complete the boot-camp day or unlock the mastery check; it verified the catalog/detail/session/day route surfaces and source/test coverage for the mastery running branch.

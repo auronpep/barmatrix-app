@@ -2587,9 +2587,20 @@ Expected behavior: all transactional checkout surfaces should be marked `noindex
   - In-app browser `/checkout?local_checkout_audit=ready` rendered `Checkout - BarMatrix | BarMatrix`, H1 `One step from your Red-Zone Map.`, one `<main>`, two checkout buttons, `noindex, nofollow`, no runtime error text, no desktop overflow, and no fresh browser warning/error logs.
   - In-app browser `/checkout?capacity=reached&local_checkout_audit=capacity` rendered the capacity panel and waitlist link, zero checkout buttons, `noindex, nofollow`, no runtime error text, no desktop overflow, and no fresh browser warning/error logs.
   - The local production server was stopped after verification.
+- Deployment:
+  - Commit `5b608eb` (`Noindex checkout entrypoint`) pushed and deployed successfully, but the workflow still emitted a warning that `actions/checkout@v4` and `actions/setup-node@v4` target Node 20 and were being forced to Node 24.
+  - Verified `v5` tags exist for both `actions/checkout` and `actions/setup-node`, then pushed commit `654377e` (`Use Node 24 GitHub actions`).
+  - GitHub Actions run `26805196406` passed install, regression tests, lint, build, Vercel pull, and production deploy; `gh run watch` and `gh run view` printed no annotations for the run.
+  - `vercel inspect https://barmatrix.app` reported a Ready production deployment created after `654377e`, with aliases including `https://barmatrix.app`.
+- Live verification:
+  - `GET https://barmatrix.app/checkout?live_checkout_audit=654377e` returned HTTP 200, `Checkout - BarMatrix | BarMatrix`, `noindex, nofollow`, defensive headers, and expected checkout content.
+  - In-app browser `/checkout?live_checkout_audit=654377e_ready` rendered H1 `One step from your Red-Zone Map.`, one `<main>`, two checkout buttons, `noindex, nofollow`, no wrong canonical, no visible runtime error text, no desktop overflow, and no fresh browser warning/error logs.
+  - In-app browser `/checkout?capacity=reached&live_checkout_audit=654377e_capacity` rendered the capacity panel and waitlist link, zero checkout buttons, `noindex, nofollow`, no visible runtime error text, no desktop overflow, and no fresh browser warning/error logs.
+  - Vercel production error logs for the last 10 minutes returned no rows.
+  - `GET https://api.barmatrix.app/health?checkout_indexing_verify=654377e` returned `{"ok":true,"db":"up"}`.
+  - Hostinger API `stderr.log` tail was empty.
 
 ## Remaining Risk
 
-- Live post-deploy verification is still pending for this slice.
 - Red Zone routes/source remain out of scope for this pass.
 - CSP remains a separate security-hardening task.

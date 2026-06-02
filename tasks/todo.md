@@ -1905,8 +1905,8 @@
 - [x] Reproduce the checkout noindex and workflow runtime-warning gaps with focused tests.
 - [x] Apply the smallest clean source/workflow changes.
 - [x] Run focused tests, full non-Red-Zone tests, lint, build, local browser verification, and diff hygiene.
-- [ ] Deploy and run live HTTP/browser verification.
-- [ ] Record review notes, evidence, and remaining risk.
+- [x] Deploy and run live HTTP/browser verification.
+- [x] Record review notes, evidence, and remaining risk.
 
 ## Review
 
@@ -1934,9 +1934,16 @@
 - Local production browser verification on `http://localhost:3013`:
   - `/checkout?local_checkout_audit=ready` rendered title `Checkout - BarMatrix | BarMatrix`, H1 `One step from your Red-Zone Map.`, one `<main>`, two checkout buttons, `noindex, nofollow`, no runtime error text, no desktop overflow, and no fresh browser warning/error logs.
   - `/checkout?capacity=reached&local_checkout_audit=capacity` rendered the capacity panel and waitlist link, zero checkout buttons, `noindex, nofollow`, no runtime error text, no desktop overflow, and no fresh browser warning/error logs.
+- Deployment and live verification:
+  - Commit `5b608eb` deployed successfully but still produced the forced-runtime Node 20 warning, proving the env-only workflow change incomplete.
+  - Commit `654377e` updated `actions/checkout` and `actions/setup-node` to v5; production workflow run `26805196406` passed regression tests, lint, build, Vercel pull, and production deploy with no annotations printed by `gh run watch` / `gh run view`.
+  - `vercel inspect https://barmatrix.app` reported a Ready production deployment created after `654377e`, aliased to `https://barmatrix.app`.
+  - Live HTTP `/checkout?live_checkout_audit=654377e` returned 200, `Checkout - BarMatrix | BarMatrix`, `noindex, nofollow`, defensive headers, and expected checkout content.
+  - Live in-app browser `/checkout?live_checkout_audit=654377e_ready` rendered one `<main>`, two checkout buttons, `noindex, nofollow`, no wrong canonical, no visible runtime error text, no desktop overflow, and no fresh browser warning/error logs.
+  - Live in-app browser `/checkout?capacity=reached&live_checkout_audit=654377e_capacity` rendered the capacity panel and waitlist link, zero checkout buttons, `noindex, nofollow`, no visible runtime error text, no desktop overflow, and no fresh browser warning/error logs.
+  - Vercel production error logs for the last 10 minutes returned no rows, API health returned `{"ok":true,"db":"up"}`, and Hostinger API `stderr.log` tail was empty.
 
 ## Remaining Risk
 
-- Live post-deploy verification is still pending for this slice.
 - Red Zone routes/source remain out of scope for this pass.
 - CSP remains a separate security-hardening task.

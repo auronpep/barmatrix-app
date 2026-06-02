@@ -15,6 +15,8 @@ export default function MasteryPage() {
   if (!data || error) return <Shell><Banner href="/dashboard" cta="Dashboard">Couldn&apos;t load mastery{error ? `: ${error}` : ""}.</Banner></Shell>;
 
   const measured = data.readiness.score !== null;
+  const coveragePending =
+    data.coverage.total_attempts > 0 && data.coverage.measured_attempts === 0;
   return (
     <Shell>
       <p className="font-mono text-xs uppercase tracking-wider text-red-700">C3 Mastery</p>
@@ -26,9 +28,17 @@ export default function MasteryPage() {
 
       {!measured ? (
         <div className="mt-8 border-2 border-zinc-900 bg-zinc-950 p-6 text-white">
-          <p className="font-serif text-2xl font-semibold">Not yet measured</p>
-          <p className="mt-2 text-sm text-zinc-200">Finish The Method, then work questions or the diagnostic — your mastery lights up after {data.readiness.mold_floor} exposures per skill.</p>
-          <Link href="/foundations" className="mt-4 inline-block rounded-md bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-900">Go to The Method →</Link>
+          <p className="font-serif text-2xl font-semibold">
+            {coveragePending ? "Tagged coverage pending" : "Not yet measured"}
+          </p>
+          <p className="mt-2 text-sm text-zinc-200">
+            {coveragePending
+              ? "Your attempts are recorded, but C3-tagged question coverage is still being populated. Work practice questions or the diagnostic while the bank is being tagged."
+              : `Finish The Method first, then work questions or the diagnostic — your mastery lights up after ${data.readiness.mold_floor} exposures per skill.`}
+          </p>
+          <Link href={coveragePending ? "/practice" : "/foundations"} className="mt-4 inline-block rounded-md bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-900">
+            {coveragePending ? "Practice the bank →" : "Go to The Method →"}
+          </Link>
         </div>
       ) : (
         <section className="mt-8 grid gap-4 md:grid-cols-3">

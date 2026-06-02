@@ -2822,3 +2822,97 @@
 
 - Red Zone routes/source/tests remain out of scope for this pass.
 - If authored misconception taxonomy content is later added, the column will reappear automatically when `/api/traps` returns non-zero `totals.misconception_count`.
+
+# Live Non-Red-Zone Completion Sweep
+
+## Scope
+
+- Continue the live environment audit while another session owns Red Zone review/debugging.
+- Exclude `/red-zones`, `app/red-zones/**`, and Red Zone regression files.
+- Verify representative public, paid, study, certification, drill, boot-camp, Trap, and Tension surfaces from the rendered production UI.
+- Correlate UI state with production API health, fail-closed protected endpoint behavior, Hostinger API stderr, Vercel logs, and local non-Red-Zone regression checks.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone app work remains separate and untouched.
+- [x] Browser-smoke representative production routes outside Red Zone.
+- [x] Exercise the non-Red-Zone Coach start interaction.
+- [x] Probe representative production API endpoints and protected unauthenticated behavior.
+- [x] Check Hostinger API stderr, Vercel logs, and open non-Red-Zone GitHub issues.
+- [x] Run local non-Red-Zone app tests plus relevant API tests, lint, typecheck, and builds.
+- [x] Record sweep outcome and remaining blockers.
+
+## Review
+
+- Production Browser route smoke passed for 25 non-Red-Zone routes: `/`, `/pricing`, `/how-it-works`, `/about`, `/faq`, `/privacy`, `/terms`, `/partners`, `/waitlist`, `/dashboard`, `/account`, `/foundations`, `/mastery`, `/coach`, `/certification`, `/certification/M2`, `/drills`, `/drills/evidence`, `/practice`, `/timed-sets`, `/boot-camps`, `/traps`, `/traps/legally_true_but_irrelevant`, `/tensions`, and `/tensions/cp_diversity_amount_vs_supplemental_jurisdiction`.
+- Each smoked route rendered one H1, one `<main>`, meaningful body content, no desktop horizontal overflow, no raw runtime/API/CSP text, and no relevant production browser warning/error logs.
+- Coach `Start coaching` still fails soft into `Coach coverage pending`; no question runner renders because C3 tagging coverage is still absent.
+- Public production API probes returned HTTP 200 for health, Traps, Tensions, C3 deck, C3 card `CIV-01`, Evidence questions, drills catalog, and boot camps.
+- Protected direct API probes without auth returned HTTP 401 for `/api/me/c3` and `/api/me/c3/next`, which is the expected fail-closed behavior.
+- No new non-Red-Zone code defect was reproduced in this sweep, so no source patch or new regression test was added.
+
+## Verification
+
+- App test sweep excluding Red Zone tests passed 60/60:
+  - `node --test <all tests/*.test.ts except red-zone*>`
+- API focused checks passed 17/17:
+  - `npx --no-install tsx --test src\routes\c3-coach.test.ts src\routes\c3.test.ts src\lib\c3-queries.test.ts src\routes\certification.test.ts`
+- App `npm run lint` passed.
+- App `npm run build` passed.
+- API `npm run typecheck` passed.
+- API `npm run build` passed.
+- `GET https://api.barmatrix.app/health?nonred_sweep=736dec5` returned `{"ok":true,"db":"up"}`.
+- Hostinger API `stderr.log` was empty.
+- Vercel logs showed normal 200/304 route traffic for the audited pages and no matching error/CSP/500 signals.
+- Open non-Red-Zone issues remain limited to the C3 content blocker pair:
+  - `auronpep/barmatrix-app#6` - production C3 Coach has no tagged question coverage.
+  - `auronpep/barmatrix-api#3` - backfill C3 annotations and answer-choice mold tags.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-nonred-coach-coverage-live-736dec5.png`
+
+## Remaining Risk
+
+- Red Zone routes/source/tests remain out of scope for this pass because another session is reviewing/debugging them.
+- C3 Coach and C3 Mastery still cannot become measured until authored C3 annotations and per-choice mold tags are populated and pass QA.
+- The AM dashboard check-in failed again because no AM session matched `C:\barmatrix-app`.
+
+# Live C3 Coverage Remediation Investigation
+
+## Scope
+
+- Continue the live environment audit outside Red Zone.
+- Determine whether the remaining C3 Coach/Mastery blocker can be resolved from authoritative local source, database, or engineering assets.
+- Do not invent C3 classifications or legal/instructional labels.
+- Leave unrelated dirty app/API work untouched.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm current app/API worktree state and Red Zone exclusion.
+- [x] Re-trace C3 Coach/Mastery API requirements and app behavior.
+- [x] Search local app/API/BMO assets for authoritative C3 annotation or answer-choice mold-tag data.
+- [x] Re-check live production C3 schema/counts and candidate rows.
+- [x] Apply a smallest safe fix only if an authoritative backfill/provisioning source exists.
+- [ ] Verify with Browser, API checks, tests/builds/logs, and update task evidence.
+
+## Review
+
+- No authoritative local C3 backfill artifact was found. The remaining measured Coach/Mastery blocker is still missing authored `c3_annotations` rows and `answer_choices.c3_mold_code` tags, not a safe source-code backfill task.
+- A separate frontend defect was reproduced on live `/mastery`: a Method-complete paid user with recorded attempts but zero measured C3-tagged attempts was told to finish The Method again.
+- Root cause: `app/mastery/page.tsx` treated every unmeasured state the same and hard-coded the "Finish The Method" copy whenever `data.readiness.score === null`.
+- Added `coveragePending = data.coverage.total_attempts > 0 && data.coverage.measured_attempts === 0` and changed the unmeasured panel to send coverage-pending users to practice instead of Foundations.
+- Added `tests/mastery-coverage-pending-copy.test.ts`; it failed before the page change and passed after the page change.
+
+## Verification So Far
+
+- App non-Red-Zone test sweep passed 61/61 with Red Zone tests excluded:
+  - `node --test <all tests/*.test.ts except red-zone*>`
+- API focused C3/certification checks passed 17/17:
+  - `npx --no-install tsx --test src\routes\c3-coach.test.ts src\routes\c3.test.ts src\lib\c3-queries.test.ts src\routes\certification.test.ts`
+- App `npm run lint` passed.
+- App `npm run build` passed.
+- API `npm run typecheck` passed.
+- API `npm run build` passed.
+- Local Browser verification of patched `/mastery` could not reach the paid state because the localhost Clerk session is currently signed out; it rendered the signed-out fallback instead.
+- Production Browser verification is pending deployment of the app patch.

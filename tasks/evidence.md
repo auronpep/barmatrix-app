@@ -3387,3 +3387,88 @@ Expected behavior: signed-in paid-user Foundations/Method and C3 Coach routes sh
 
 - Red Zone routes/source remain out of scope for this pass.
 - This slice did not mark a Foundations lesson complete, toggle signed-in drill self-check persistence, submit a Coach answer, or force Method completion for Coach question availability. It verified the current live paid-account state and safe non-submitting controls.
+
+# Live Subject And Drill Entry Evidence
+
+## Issue
+
+Expected behavior: signed-in paid-user subject bank pages and drill entry pages should render meaningful production states with one page-level `<main>`, stable headings, no raw runtime/API/CSP text, no desktop overflow, fresh console health, and live by-subject/catalog data for every MBE subject. Actual behavior: no non-Red-Zone defect reproduced in this slice. Affected domain: non-Red-Zone subject and drill entry surfaces.
+
+## Reproduction
+
+- Reproduced failure: no.
+- Browser route matrix covered:
+  - `/drills`
+  - `/drills/civil-procedure`
+  - `/drills/constitutional-law`
+  - `/drills/contracts`
+  - `/drills/criminal-law`
+  - `/drills/evidence`
+  - `/drills/real-property`
+  - `/drills/torts`
+  - `/subjects/civil-procedure`
+  - `/subjects/constitutional-law`
+  - `/subjects/contracts`
+  - `/subjects/criminal-law`
+  - `/subjects/evidence`
+  - `/subjects/real-property`
+  - `/subjects/torts`
+- Result: all 15 signed-in production routes rendered one `<main>`, one H1, meaningful content, no desktop horizontal overflow at the current in-app browser viewport, no raw runtime/API/CSP text, no framework overlay, no stale loading state, and no fresh `barmatrix.app` browser warning/error logs.
+- Harmless interaction proof: `/drills` tab buttons were unique in the DOM. Clicking `Catalog` selected the catalog tab and showed catalog cards; clicking `Prescribed for you` restored the review/resume state. No drill was started.
+
+## Trace
+
+- Files inspected:
+  - `app/drills/page.tsx`
+  - `app/drills/evidence/page.tsx`
+  - `app/drills/criminal-law/page.tsx`
+  - `app/drills/contracts/page.tsx`
+  - neighboring quick-drill pages under `app/drills/`
+  - representative subject pages under `app/subjects/`
+  - `tests/api-client-drills.test.ts`
+  - `tests/criminal-law-drill-subjects.test.ts`
+  - `tests/mobile-content-overflow.test.ts`
+  - `tests/practice-subject-response.test.ts`
+  - `tests/sitemap-static-surface.test.ts`
+- Verified facts:
+  - `/drills` uses the drill catalog/prescribed-drill client path and rendered both `Prescribed for you` and `Catalog` tabs for the signed-in paid account.
+  - Quick-drill pages fetch live by-subject data and render ready states without starting the queue.
+  - Criminal Law quick-drill coverage intentionally includes both Criminal Law and Criminal Procedure.
+  - Subject bank pages either render returned live items immediately or expose a non-persistent sync action before practice start.
+  - Live by-subject API probes returned HTTP 200 and nonzero totals: Evidence 809, Criminal Law 285, Criminal Procedure 280, Contracts 602, Civil Procedure 410, Constitutional Law 380, Real Property 400, Torts 500.
+  - Live drill catalog returned HTTP 200 with 50 tensions and 50 traps.
+- Suspected root cause: none confirmed.
+- Confidence: high for the audited signed-in desktop entry states, safe drill-catalog tab interaction, and live API contracts.
+
+## Change
+
+- No implementation change was made because no non-Red-Zone source defect was reproduced.
+- Changed files in this slice are audit ledgers only:
+  - `tasks/todo.md`
+  - `tasks/evidence.md`
+
+## Verification
+
+- Browser verification:
+  - 15 signed-in production subject/drill entry routes passed page identity/content, one-main, one-H1, no-overlay, no-raw-error, no-overflow, and fresh console-health checks.
+  - `/drills` tab switching passed without starting or resuming a drill.
+- Live API/production checks:
+  - All eight by-subject probes returned HTTP 200 with three returned questions for `page=1&limit=3` and nonzero totals.
+  - `GET https://api.barmatrix.app/api/drills/catalog?subject_drill_audit=20260602shape` returned HTTP 200 with 50 tensions and 50 traps.
+  - `GET https://api.barmatrix.app/health?subject_drill_audit=20260602a` returned `{"ok":true,"db":"up"}`.
+  - Vercel log filter returned `NO_ERROR_CSP_OR_AUDIT_MATCHES`.
+  - Hostinger API `stderr.log` was empty.
+- Local checks:
+  - `node --test tests\api-client-drills.test.ts tests\criminal-law-drill-subjects.test.ts tests\mobile-content-overflow.test.ts tests\practice-subject-response.test.ts tests\sitemap-static-surface.test.ts` passed 9/9.
+  - Full non-Red-Zone test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 57/57.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-drill-catalog-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-drill-evidence-entry-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-subject-evidence-live-20260602.png`
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- This slice did not start a new production drill/practice queue, resume an existing drill, or submit a production answer. It verified entry rendering, safe catalog tab state, and live data contracts.

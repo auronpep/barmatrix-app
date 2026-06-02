@@ -2380,3 +2380,49 @@
 
 - Red Zone routes/source remain out of scope for this pass.
 - This slice did not mark a Foundations lesson complete, toggle signed-in drill self-check persistence, submit a Coach answer, or force Method completion for Coach question availability. It verified the current live paid-account state and safe non-submitting controls.
+
+# Live Subject And Drill Entry Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones.
+- Verify the signed-in paid-user drill catalog, seven subject quick-drill landing pages, and seven subject bank pages from the rendered UI.
+- Avoid starting extra drill/practice queues or submitting production attempts unless a concrete defect requires deeper reproduction.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Inspect subject/drill source and existing tests to understand expected UI/API behavior.
+- [x] Browser-verify `/drills` and all `/drills/<subject>` quick-drill landing pages on production.
+- [x] Browser-verify all `/subjects/<subject>` bank pages on production.
+- [x] Probe live API subject and drill catalog contracts across all MBE subjects.
+- [x] Trace and fix any reproduced non-Red-Zone root cause with focused regression coverage where practical.
+- [x] Run relevant tests, lint/build as needed, production health/log checks, and record final evidence.
+
+## Review
+
+- Live signed-in browser verification covered 15 non-Red-Zone subject/drill routes: `/drills`, seven quick-drill entries, and seven subject bank pages.
+- Every route rendered one `<main>`, one H1, meaningful body content, no desktop horizontal overflow at the current in-app browser viewport, no raw runtime/API/CSP text, no framework overlay, and no stale loading state.
+- The `/drills` catalog tabs were exercised without starting a drill: `Catalog` selected the catalog cards and removed the prescribed review-misses list; `Prescribed for you` restored the review/resume state. No fresh browser warning/error logs appeared.
+- Live API probes returned HTTP 200 for Evidence, Criminal Law, Criminal Procedure, Contracts, Civil Procedure, Constitutional Law, Real Property, and Torts by-subject endpoints with nonzero totals. The drill catalog returned HTTP 200 with 50 tensions and 50 traps. API health returned `{"ok":true,"db":"up"}`.
+- No non-Red-Zone source defect was reproduced in this slice, so no implementation patch or new regression test was added.
+
+## Verification
+
+- Focused local checks passed 9/9:
+  - `node --test tests\api-client-drills.test.ts tests\criminal-law-drill-subjects.test.ts tests\mobile-content-overflow.test.ts tests\practice-subject-response.test.ts tests\sitemap-static-surface.test.ts`
+- Full local non-Red-Zone test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 57/57.
+- `npm run lint` passed.
+- `npm run build` passed.
+- Production Vercel log filter returned `NO_ERROR_CSP_OR_AUDIT_MATCHES`.
+- Hostinger API `stderr.log` was empty.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-drill-catalog-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-drill-evidence-entry-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-subject-evidence-live-20260602.png`
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- This slice did not start a new production drill/practice queue or submit any production answer. It verified entry states, safe drill catalog tab switching, live API contracts, and current paid-account rendering.

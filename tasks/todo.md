@@ -687,7 +687,7 @@
 - [x] Inspect sanitized production env/config presence without exposing values.
 - [x] Browser-verify production integration-touching pages for runtime and console health.
 - [x] Fix only reproduced code defects with regression coverage.
-- [ ] Run relevant tests/lint/build, deploy, and record live evidence.
+- [x] Run relevant tests/lint/build, deploy, and record live evidence.
 
 ## Review
 
@@ -710,19 +710,27 @@
   - Production frontend had PostHog env names in Vercel, but `window.posthog` was absent on `/checkout`, `/checkout/success`, `/account`, and `/privacy`.
 - Root cause for missing PostHog: `instrumentation-client.ts` passed the default `process.env` object into `initializePostHogClient`. The local Next.js docs state browser env values are inlined from direct `process.env.NAME` references and env-object/destructuring patterns do not work reliably.
 - Source fix: `instrumentation-client.ts` now passes a small explicit object containing direct `process.env.NEXT_PUBLIC_POSTHOG_*` references into the PostHog initializer.
+- Follow-up hardening: `initializePostHogClient` now exposes the SDK on the browser global whenever valid public config exists, even if the SDK was already loaded, while still avoiding duplicate `init` calls.
+- Post-deploy browser verification on the signed-in production `/drills` page rendered `DRILL LIBRARY`, observed PostHog config/surveys assets plus `/e/` event requests, and found no current relevant warning/error logs.
+- The in-app browser's read-only evaluation context still reported `window.posthog` as absent and did not expose normal DOM mutation methods, so that isolated-world probe is not treated as authoritative for the page's main-world globals.
 - Regression coverage:
   - `tests/posthog-client.test.ts` now locks the direct public-env references.
+  - `tests/posthog-client.test.ts` now covers already-loaded SDK global exposure.
   - `tests/sentry-wiring.test.ts` was updated to preserve the Sentry/PostHog source contract with the explicit env object.
 
 ## Verification
 
 - Red check: `node --test tests\posthog-client.test.ts` failed before the source fix because `instrumentation-client.ts` called `initializePostHogClient(posthog)` with no explicit env object.
-- Green focused check: `node --test tests\posthog-client.test.ts` passed: 4 tests, 4 pass.
-- App `node --test tests\*.test.ts` passed: 29 tests, 29 pass.
+- Red check: `node --test tests\posthog-client.test.ts` failed before the global-exposure hardening because an already-loaded SDK was not assigned to `window.posthog`.
+- Green focused check: `node --test tests\posthog-client.test.ts` passed: 5 tests, 5 pass.
+- App `node --test tests\*.test.ts` passed: 30 tests, 30 pass.
 - App `npm run lint` passed.
 - App `npm run build` passed.
 - Live API `GET https://api.barmatrix.app/health` returned HTTP 200 with `{"ok":true,"db":"up"}` after the Hostinger restart marker was touched.
+- Vercel production deployment `dpl_Cw9BNcvBXxHBsM1g5S2jmc2G6cv5` is `Ready` and aliased to `https://barmatrix.app`.
+- Deployed bundle probe on `/checkout` found 15 scripts and PostHog chunks containing the global assignment and loaded guard.
 
 ## Remaining Risk
 
-- Production frontend redeploy and browser verification of `window.posthog` are still pending for this pass.
+- This closes the reproduced live telemetry initialization/configuration gaps, but it does not prove every possible operational edge case is bug-free.
+- The in-app browser can observe rendered state and network assets, but its isolated evaluation context cannot directly prove page main-world `window` expandos.

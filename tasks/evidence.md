@@ -823,7 +823,7 @@ Expected behavior: if `/api/c3/deck` is intended as a live public C3 deck endpoi
 
 ## Issue
 
-Expected behavior: live operational integrations should fail closed where appropriate and configured monitoring/analytics should initialize without blocking the app. Actual behavior found: production API Sentry DSN and frontend Sentry DSN were not configured, and production PostHog did not initialize in the browser even though Vercel had PostHog env names. Affected domain: live telemetry/observability, not core study rendering.
+Expected behavior: live operational integrations should fail closed where appropriate and configured monitoring/analytics should initialize without blocking the app. Actual behavior found: production API Sentry DSN and frontend Sentry DSN were not configured, and production PostHog initially did not receive directly inlined browser env values even though Vercel had PostHog env names. Affected domain: live telemetry/observability, not core study rendering.
 
 ## Reproduction
 
@@ -841,6 +841,8 @@ Expected behavior: live operational integrations should fail closed where approp
 - Browser checks:
   - Production `/checkout`, `/checkout/success?checkout_session_id=cs_test_missing`, `/account?checkout_session_id=cs_test_missing`, and `/privacy` rendered without raw API status text, loading hangs, error boundaries, or relevant console warnings/errors.
   - `window.posthog` was absent on all four pages.
+  - After the direct-env fix was deployed, signed-in production `/drills` rendered normally and the in-app browser observed PostHog config/surveys assets plus `/e/` event requests.
+  - The in-app browser's read-only evaluation context continued to report `window.posthog` as absent and did not expose normal DOM mutation methods, so that isolated-world probe is not authoritative for page main-world globals.
 
 ## Trace
 
@@ -861,18 +863,25 @@ Expected behavior: live operational integrations should fail closed where approp
   - The deployed frontend chunks contained PostHog code, but the live browser had no `window.posthog`.
   - `instrumentation-client.ts` called `initializePostHogClient(posthog)`, which lets the helper read `process.env` as an object.
   - Local Next.js docs state client env values are inlined from direct `process.env.NAME` references and env-object/destructuring patterns do not work reliably.
-- Root cause: PostHog was not initialized because the client bundle did not receive directly referenced public env values.
+- Follow-up source review showed the helper coupled browser-global exposure to a fresh SDK initialization, so an already-loaded SDK would not be re-exposed for app analytics.
+- Root causes:
+  - PostHog initialization did not receive directly referenced public env values.
+  - The SDK exposure helper returned early for already-loaded clients before assigning the browser global.
 - Confidence: high.
 
 ## Test
 
 - Added a failing source-contract regression to `tests/posthog-client.test.ts` requiring `instrumentation-client.ts` to pass direct `process.env.NEXT_PUBLIC_POSTHOG_*` references.
 - The focused test failed before the implementation change for the expected reason.
+- Added a failing regression requiring an already-loaded PostHog SDK to still be exposed on the browser global.
+- The focused test failed before the helper hardening because `browserWindow.posthog` remained undefined.
 
 ## Change
 
 - `instrumentation-client.ts` now passes an explicit public-env object to `initializePostHogClient`.
+- `lib/posthog-client.ts` now exposes the client on the browser global whenever valid public config exists, while still preventing duplicate `init` calls.
 - `tests/posthog-client.test.ts` now covers the direct-env contract.
+- `tests/posthog-client.test.ts` now covers the already-loaded SDK exposure contract.
 - `tests/sentry-wiring.test.ts` now expects the explicit PostHog env object while preserving Sentry privacy defaults.
 - Added `NEXT_PUBLIC_SENTRY_DSN` to Vercel production from the secure local env.
 - Added `BARMATRIX_API_SENTRY_DSN` to the persistent Hostinger API env file from the secure local env and touched the Node restart marker.
@@ -880,12 +889,17 @@ Expected behavior: live operational integrations should fail closed where approp
 ## Verification
 
 - Red check: `node --test tests\posthog-client.test.ts` failed before the source fix.
-- Green focused check: `node --test tests\posthog-client.test.ts` passed: 4 tests, 4 pass.
-- App `node --test tests\*.test.ts` passed: 29 tests, 29 pass.
+- Red check: `node --test tests\posthog-client.test.ts` failed before the global-exposure hardening.
+- Green focused check: `node --test tests\posthog-client.test.ts` passed: 5 tests, 5 pass.
+- App `node --test tests\*.test.ts` passed: 30 tests, 30 pass.
 - App `npm run lint` passed.
 - App `npm run build` passed.
 - Live API `GET https://api.barmatrix.app/health` returned HTTP 200 with `{"ok":true,"db":"up"}` after touching the Hostinger restart marker.
+- Vercel production deployment `dpl_Cw9BNcvBXxHBsM1g5S2jmc2G6cv5` is `Ready` and aliased to `https://barmatrix.app`.
+- In-app browser production `/drills?telemetry_check=...` rendered `DRILL LIBRARY`, observed PostHog config/surveys assets and `/e/` event requests, and returned no current relevant warning/error logs.
+- Deployed bundle probe on `/checkout` found 15 scripts and PostHog chunks containing the global assignment and loaded guard.
 
 ## Remaining Risk
 
-- Production frontend redeploy and browser verification of `window.posthog` are still pending for this pass.
+- The live telemetry initialization/configuration gaps reproduced in this pass are closed, but this does not prove every possible operational edge case is bug-free.
+- The in-app browser can observe rendered state and network assets, but its isolated evaluation context cannot directly prove page main-world `window` expandos.

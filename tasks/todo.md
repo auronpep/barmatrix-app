@@ -1916,6 +1916,7 @@
   - `app/checkout/page.tsx`: Server Component route wrapper with title/description and `robots: { index: false, follow: false }`.
   - `app/checkout/checkout-client.tsx`: existing interactive checkout UI and Stripe-session startup behavior.
 - Added the GitHub Actions Node 24 runtime opt-in at workflow scope.
+- First deploy after the opt-in passed, but GitHub still emitted a warning that `actions/checkout@v4` and `actions/setup-node@v4` target Node 20 and were being forced to Node 24. Verified `v5` tags exist for both actions and updated the workflow to `actions/checkout@v5` and `actions/setup-node@v5`.
 
 ## Verification
 
@@ -1925,6 +1926,7 @@
 - Green checks after implementation:
   - `node --test tests\noindex-transactional-pages.test.ts` passed.
   - `node --test tests\vercel-workflow-runtime.test.ts` passed.
+  - After the first deployment proved the env-only fix incomplete, `tests\vercel-workflow-runtime.test.ts` was tightened to require `actions/checkout@v5`, `actions/setup-node@v5`, and no v4 checkout/setup-node actions.
   - Full non-Red-Zone app test sweep passed with the unrelated Red Zone test excluded: 52/52.
   - `npm run lint` passed.
   - `npm run build` passed and kept `/checkout` static.

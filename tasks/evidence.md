@@ -2547,8 +2547,8 @@ Expected behavior: all transactional checkout surfaces should be marked `noindex
   - The deploy workflow already uses app Node `24`, but the GitHub annotation is about the action runtime for `actions/checkout@v4` and `actions/setup-node@v4`.
 - Root cause hypothesis:
   - `/checkout` needs a Server Component route file that exports metadata and delegates interactive behavior to a child Client Component.
-  - The workflow needs an explicit action-runtime opt-in while GitHub's action runtime default is transitioning.
-- Confidence: high; the failures were reproduced by focused tests and the implementation path follows the local Next 16 Server Component metadata rule.
+  - The workflow needs current action major versions, not just the explicit runtime opt-in, because `actions/checkout@v4` and `actions/setup-node@v4` still target Node 20.
+- Confidence: high; the failures were reproduced by focused tests, the implementation path follows the local Next 16 Server Component metadata rule, and the first workflow deploy proved the env-only hypothesis incomplete by still emitting a forced-runtime warning.
 
 ## Change
 
@@ -2563,9 +2563,10 @@ Expected behavior: all transactional checkout surfaces should be marked `noindex
   - Replaced `app/checkout/page.tsx` with a Server Component wrapper that exports checkout metadata and renders the client checkout UI.
   - Added `robots: { index: false, follow: false }` to `/checkout`.
   - Added `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` at workflow scope.
+  - Updated `actions/checkout` and `actions/setup-node` from v4 to v5 after verifying v5 tags exist for both action repositories.
 - Smallest safe fix rationale:
   - The checkout UI and payment-start logic were not rewritten; only the client boundary moved so metadata can live in the route file.
-  - The workflow change follows the warning's own opt-in mechanism and leaves deployment steps unchanged.
+  - The workflow keeps the same deploy steps and only changes the action runtime compatibility layer.
   - Red Zone files were not touched.
 
 ## Verification
@@ -2576,6 +2577,7 @@ Expected behavior: all transactional checkout surfaces should be marked `noindex
 - Green checks after implementation:
   - `node --test tests\noindex-transactional-pages.test.ts` passed.
   - `node --test tests\vercel-workflow-runtime.test.ts` passed.
+  - After the first pushed workflow passed but still warned that v4 actions target Node 20, `tests\vercel-workflow-runtime.test.ts` was tightened and passed with assertions for `actions/checkout@v5`, `actions/setup-node@v5`, and no v4 checkout/setup-node actions.
   - Full non-Red-Zone app test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 52/52 tests.
   - `npm run lint` passed.
   - `npm run build` passed and listed `/checkout` as static.

@@ -2124,3 +2124,50 @@
 - Red Zone routes/source remain out of scope for this pass.
 - Signed-in browser checks for `/sign-in` and `/sign-up` redirect to home because the browser session is already authenticated; unauthenticated HTTP checks still returned the auth pages with `noindex, nofollow`.
 - C3 Coach/Mastery measurement remains limited by missing authored C3 annotation/tagging content tracked separately in `auronpep/barmatrix-api#3`.
+
+# Live Dashboard Utility Routes Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones.
+- Verify signed-in dashboard utility routes that combine live dashboard data with client-only state: `/dashboard/final-sprint` and `/dashboard/mastery`.
+- Exercise only safe interactions; avoid Red Zone route navigation/source and production mutations beyond local browser storage.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Browser-verify `/dashboard/final-sprint` on production for meaningful content, one `<main>`, no overflow, no raw runtime/API/CSP text, and fresh console health.
+- [x] Exercise the Final Sprint exam-date control and verify the plan state updates without runtime errors.
+- [x] Browser-verify `/dashboard/mastery` on production for meaningful content, one `<main>`, no overflow, no raw runtime/API/CSP text, and fresh console health.
+- [x] Trace and fix any reproduced non-Red-Zone root cause with focused regression coverage where practical.
+- [x] Run relevant tests, lint, build, and production health/log checks.
+- [x] Record review notes, verification evidence, and remaining risk.
+
+## Review
+
+- Live signed-in browser verification passed for `/dashboard/final-sprint`: meaningful H1/content, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh `barmatrix.app` warning/error logs.
+- The Final Sprint page's own `Use preview date` button changed the plan to `Sprint active with 10 days left.`, set the input to `2026-06-12`, removed the missing-date prompt, kept one `<main>`, and produced no fresh browser warning/error logs.
+- Direct synthetic filling of the native date input changed the DOM input value but did not advance visible React state in the Browser runtime. The page-owned button path passed, and no real user-facing source defect was confirmed from that synthetic-only signal.
+- Live signed-in browser verification passed for `/dashboard/mastery`: meaningful H1/content, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh `barmatrix.app` warning/error logs.
+- Mastery's `Refresh with diagnostic` link navigated to `/diagnostic`, rendered `Don't guess. Diagnose.`, kept one `<main>`, and produced no fresh browser warning/error logs.
+- No non-Red-Zone source defect was reproduced in this slice, so no implementation patch or new regression test was added.
+
+## Verification
+
+- Focused local check: `node --test tests\page-main-landmarks.test.ts` passed 1/1.
+- Full local non-Red-Zone test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 55/55.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `git diff --check -- tasks\todo.md tasks\evidence.md` passed with only normal CRLF warnings.
+- Production unauthenticated HTTP probes for `/dashboard/final-sprint` and `/dashboard/mastery` returned expected 307 redirects to `/sign-in?...` with CSP present.
+- Production health/log checks passed: API health returned `{"ok":true,"db":"up"}`, Vercel logs showed normal info request rows for the dashboard routes and no filtered error/CSP entries, and Hostinger API `stderr.log` was empty.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-dashboard-final-sprint-preview-button-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-dashboard-mastery-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-dashboard-mastery-diagnostic-nav-live-20260602.png`
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- The in-app Browser tab did not expose a viewport-resize capability, so this slice used the current desktop viewport (`873x912`) rather than a separate mobile browser pass.

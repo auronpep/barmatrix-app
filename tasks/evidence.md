@@ -2945,3 +2945,81 @@ Expected behavior: representative public, transactional, auth, static landing, a
 - Red Zone routes/source remain out of scope for this pass.
 - Signed-in browser checks for `/sign-in` and `/sign-up` redirect to home because the browser session is already authenticated; unauthenticated HTTP checks returned auth pages with `noindex, nofollow`.
 - C3 Coach/Mastery measurement remains limited by missing authored C3 annotation/tagging content tracked separately in `auronpep/barmatrix-api#3`.
+
+# Live Dashboard Utility Routes Evidence
+
+## Issue
+
+Expected behavior: signed-in dashboard utility routes outside Red Zones should render meaningful production states with one page-level `<main>`, no raw runtime/API/CSP text, no desktop overflow, fresh console health, and safe controls that update visible state without runtime errors. Actual behavior found in this slice: no confirmed non-Red-Zone source defect; both audited routes passed live browser verification. Affected domain: `/dashboard/final-sprint` and `/dashboard/mastery`.
+
+## Reproduction
+
+- Reproduced: no non-Red-Zone defect reproduced.
+- Setup:
+  - In-app browser signed in as the current paid subscriber.
+  - Dirty Red Zone source/test files intentionally untouched.
+  - Browser viewport during this slice: `873x912`.
+- Live browser evidence for `/dashboard/final-sprint?nonred_dashboard_audit=20260602b`:
+  - Rendered H1 `The last two weeks become a daily repair plan.`, body length `6385`, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh `barmatrix.app` warning/error logs.
+  - Initial state showed the missing-date prompt and live dashboard target data including weakest zones and assigned repair drills.
+- Final Sprint interaction evidence:
+  - The page's own `Use preview date` button was present exactly once.
+  - Clicking it set the visible input to `2026-06-12`, rendered `Sprint active with 10 days left.`, removed the missing-date prompt, kept one `<main>`, and produced no fresh browser warning/error logs.
+  - A direct synthetic fill of the native date input changed the DOM value but did not advance visible React state in this Browser runtime; because the page-owned button path passed, this was treated as a tool/input simulation caveat rather than a confirmed app defect.
+- Live browser evidence for `/dashboard/mastery?nonred_dashboard_audit=20260602b`:
+  - Rendered H1 `Your weakest patterns, ranked by dimension.`, body length `2414`, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh `barmatrix.app` warning/error logs.
+  - Rendered live mastery data with five visible rows and grouped dimension cards.
+- Mastery interaction evidence:
+  - `Refresh with diagnostic` was present exactly once.
+  - Clicking it navigated to `https://barmatrix.app/diagnostic`, rendered H1 `Don't guess. Diagnose.`, kept one `<main>`, had no desktop overflow, and produced no fresh browser warning/error logs.
+
+## Trace
+
+- Files inspected:
+  - `app/dashboard/final-sprint/page.tsx`
+  - `app/dashboard/mastery/page.tsx`
+  - `tests/page-main-landmarks.test.ts`
+  - `package.json`
+- Verified facts:
+  - Both pages are client components that render beneath the root layout `<main>`.
+  - `FinalSprintPathPage` defers date/localStorage reads until mount to avoid date-based hydration mismatches.
+  - `PatternMasteryBoardPage` derives grouped mastery rows from `useDashboard()` data and exposes a diagnostic navigation CTA.
+  - Existing landmark regression coverage asserts app page files do not add nested `<main>` landmarks.
+- Root cause: none confirmed in this slice.
+- Confidence: high for the audited desktop/signed-in states.
+
+## Change
+
+- No implementation change was made because no non-Red-Zone source defect was reproduced.
+- Changed files in this slice are audit ledgers only:
+  - `tasks/todo.md`
+  - `tasks/evidence.md`
+
+## Verification
+
+- Browser verification:
+  - `/dashboard/final-sprint?nonred_dashboard_audit=20260602b` passed page identity/content, one-main, no-overlay, no-raw-error, no-overflow, and fresh console-health checks.
+  - Final Sprint `Use preview date` interaction rendered `Sprint active with 10 days left.` and no fresh browser warnings/errors.
+  - `/dashboard/mastery?nonred_dashboard_audit=20260602b` passed page identity/content, one-main, no-overlay, no-raw-error, no-overflow, and fresh console-health checks.
+  - Mastery `Refresh with diagnostic` interaction navigated to `/diagnostic` and rendered a clean diagnostic page.
+- Local checks:
+  - `node --test tests\page-main-landmarks.test.ts` passed 1/1.
+  - Full non-Red-Zone test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 55/55.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `git diff --check -- tasks\todo.md tasks\evidence.md` passed with only normal CRLF warnings.
+- Production HTTP/health/log checks:
+  - Unauthenticated HTTP probes for `/dashboard/final-sprint` and `/dashboard/mastery` returned expected 307 redirects to `/sign-in?...` with CSP present.
+  - `GET https://api.barmatrix.app/health?dashboard_utilities_audit=20260602` returned `{"ok":true,"db":"up"}`.
+  - Vercel logs for the check window showed normal info rows for `/dashboard/final-sprint`, `/dashboard/mastery`, and `/diagnostic`; the error/CSP filter found no actionable entries.
+  - Hostinger API `stderr.log` tail was empty.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-dashboard-final-sprint-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-dashboard-final-sprint-preview-button-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-dashboard-mastery-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-dashboard-mastery-diagnostic-nav-live-20260602.png`
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- The in-app Browser tab did not expose viewport resizing, so this slice did not run a separate mobile live-browser pass.

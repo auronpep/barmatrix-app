@@ -2976,3 +2976,35 @@
 - Live signed-in Browser verification of `/dashboard?live_env_csp_verify=2b4a5f2` rendered the paid dashboard, one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no sign-in fallback, and no fresh `barmatrix.app` browser warning/error logs.
 - `GET https://api.barmatrix.app/health?live_env_csp_verify=2b4a5f2` returned `{"ok":true,"db":"up"}`.
 - Deploy log for run `26820889447` showed the new CSP tests passing and no actionable error/failure/CSP rows.
+
+# Live API Boundary Audit
+
+## Scope
+
+- Continue the full live debug goal outside Red Zone while Red Zone remains owned by another session.
+- Verify API boundary behavior that protects or enables the web study program: production-origin CORS, hostile-origin CORS, preflight handling, unauthenticated protected routes, and safe headers.
+- Treat `C:\barmatrix-api` as read-only unless local/runtime evidence reproduces a backend source defect, because that repo currently has unrelated dirty billing/admin/tension work.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm current app/API worktree state and open issue state.
+- [x] Probe live API CORS and preflight from `https://barmatrix.app` and a hostile origin.
+- [x] Inspect API CORS/auth/header source and tests.
+- [x] Add or update a regression only if a backend source defect is reproduced.
+- [x] Run relevant checks and record evidence.
+
+## Review
+
+- Live API CORS allows `https://barmatrix.app` and withholds CORS grants from `https://evil.example`.
+- Live allowed-origin `GET /health` returned HTTP 200 with `Access-Control-Allow-Origin: https://barmatrix.app` and `Access-Control-Allow-Credentials: true`.
+- Live hostile-origin `GET /health` returned HTTP 200 with no CORS grant.
+- Live allowed-origin preflight to `/api/attempts` returned HTTP 204 with credentialed CORS headers and requested headers allowed.
+- Live hostile-origin preflight to `/api/attempts` returned HTTP 404 with no CORS grant.
+- Live allowed-origin `GET /api/me/c3` without auth returned HTTP 401, credentialed CORS headers, and `{"error":"not authenticated"}`.
+- Live hostile-origin `GET /api/me/c3` without auth returned HTTP 401 with no CORS grant.
+- Source trace: `C:\barmatrix-api\src\index.ts` uses dynamic `cors({ origin: ..., credentials: true })` after `helmet()`.
+- Reproduced hardening gap: allowed-origin GET/401 and OPTIONS/204 responses do not emit `Vary: Origin`, even though `Access-Control-Allow-Origin` varies by request origin.
+- No API source change was applied in this slice because `C:\barmatrix-api` has unrelated dirty billing/admin/tension changes and no GitHub deploy workflow; Hostinger SSH has also been timing out.
+- Filed `auronpep/barmatrix-api#4` to track adding `Vary: Origin` for dynamic CORS responses and verifying it live after deploy.
+- Browser route check on `/dashboard?api_boundary_browser=20260602a` rendered paid dashboard content with one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, and no relevant browser logs. The sandboxed browser-evaluate context did not expose `fetch`, so extra synthetic fetches were not available there.

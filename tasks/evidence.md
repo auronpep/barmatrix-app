@@ -4324,3 +4324,59 @@ Expected behavior: production CSP for `barmatrix.app` should allow only the Cler
 - Production logs:
   - Deploy log for run `26820889447` showed the new CSP tests passing and no actionable error/failure/CSP rows.
   - Hostinger API stderr remained unavailable because SSH timed out.
+
+# Live API Boundary Evidence
+
+## Issue
+
+Expected behavior: the production API should allow credentialed CORS for `https://barmatrix.app`, deny CORS grants to unrelated origins, keep protected routes fail-closed, and include cache variance headers when CORS varies by request origin. Actual behavior: the live origin allow/deny and protected-route behavior work, but allowed-origin dynamic CORS responses omit `Vary: Origin`. Affected domain: backend API boundary for the live web study program.
+
+## Reproduction
+
+- Reproduced: partial hardening gap, not a live app break.
+- Live allowed-origin probes:
+  - `GET https://api.barmatrix.app/health?api_boundary_audit=20260602a` with `Origin: https://barmatrix.app` returned HTTP 200, `{"ok":true,"db":"up"}`, `Access-Control-Allow-Origin: https://barmatrix.app`, and `Access-Control-Allow-Credentials: true`.
+  - `OPTIONS https://api.barmatrix.app/api/attempts?api_boundary_audit=20260602a` with `Origin: https://barmatrix.app`, `Access-Control-Request-Method: POST`, and `Access-Control-Request-Headers: authorization,content-type` returned HTTP 204 with credentialed CORS allow headers.
+  - `GET https://api.barmatrix.app/api/me/c3?api_boundary_audit=20260602c` with `Origin: https://barmatrix.app` returned HTTP 401, `{"error":"not authenticated"}`, and credentialed CORS allow headers.
+- Live hostile-origin probes:
+  - `GET /health` with `Origin: https://evil.example` returned HTTP 200 with no CORS grant.
+  - `OPTIONS /api/attempts` with `Origin: https://evil.example` returned HTTP 404 with no CORS grant.
+  - `GET /api/me/c3` with `Origin: https://evil.example` returned HTTP 401 with no CORS grant.
+- Reproduced gap:
+  - Allowed-origin GET/401 and OPTIONS/204 responses did not include `Vary: Origin`, even though `Access-Control-Allow-Origin` depends on request `Origin`.
+
+## Trace
+
+- Files/source inspected:
+  - `C:\barmatrix-api\src\index.ts`
+  - `C:\barmatrix-api\src\config.ts`
+  - API test inventory under `C:\barmatrix-api\src\**\*.test.ts`
+- Verified facts:
+  - API uses `helmet()` before `cors()`.
+  - API uses dynamic `cors({ origin: (origin, callback) => { ... }, credentials: true })`.
+  - `config.allowedOrigins` is built from default local origins and `ALLOWED_ORIGINS`.
+  - `C:\barmatrix-api` currently has unrelated dirty billing/admin/tension changes.
+  - The API repo has no GitHub Actions deploy workflow in `.github/workflows`.
+  - Hostinger SSH stderr/deploy access has been timing out in recent slices.
+- Root cause: live API does not emit `Vary: Origin` for dynamic CORS responses. The likely source fix is a tiny middleware such as `res.vary("Origin")` before CORS or equivalent CORS configuration, but no backend change was applied because deployment and staging are not safe from the current dirty API state.
+- Confidence: high for the live header gap; no evidence of immediate browser break for the production app origin.
+
+## Change
+
+- No source change was applied in this slice.
+- Created GitHub issue:
+  - `https://github.com/auronpep/barmatrix-api/issues/4`
+- Smallest safe action rationale: live CORS allow/deny behavior is working, but cache variance needs backend follow-up. Editing/deploying the API would risk entangling unrelated dirty backend changes without a safe deploy path in this slice.
+
+## Verification
+
+- Browser:
+  - Live signed-in `/dashboard?api_boundary_browser=20260602a` rendered paid dashboard content, one H1, one `<main>`, no desktop horizontal overflow, no raw runtime/API/CSP text, and no relevant browser warning/error logs.
+  - The browser-evaluate sandbox did not expose `fetch`, so extra synthetic API fetches from that context were unavailable.
+- Live API:
+  - Allowed app-origin health/protected/preflight probes behaved as expected except for missing `Vary: Origin`.
+  - Hostile-origin health/protected/preflight probes did not receive CORS grants.
+- Remaining risk:
+  - `auronpep/barmatrix-api#4` remains open until backend emits and live-verifies `Vary: Origin`.
+  - Red Zone remains out of scope by request/parallel session.
+  - C3 measured Coach/Mastery still needs authored C3 annotations and answer-choice mold tags.

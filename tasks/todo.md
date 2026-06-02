@@ -2030,3 +2030,35 @@
 
 - Red Zone routes/source remain out of scope for this pass.
 - This slice verified one live study mutation in Evidence. It did not submit every boot-camp, certification, timed-set, coach, or diagnostic workflow again after CSP because those longer workflows were covered in earlier audit slices and would create extra production attempts.
+
+# Account Checkout-Return Billing Capability Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones.
+- Reproduce and repair the account billing CTA regression seen on `https://barmatrix.app/account?checkout_session_id=cs_test_missing_live_audit_final2_1780367857789`.
+- Keep the existing dirty Red Zone source/test files untouched.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Reproduce the account checkout-return billing state in the in-app browser.
+- [x] Compare the checkout-return branch against plain `/account`.
+- [x] Trace the branch to local source and add a failing regression test.
+- [x] Apply the smallest source change.
+- [ ] Run focused tests, full non-Red-Zone tests, lint, build, browser verification, and production log checks.
+- [ ] Deploy if verification remains green, then run live browser verification.
+- [ ] Record final review notes and remaining risk.
+
+## Review
+
+- Live browser reproduction found that plain `/account` correctly settles to `No Stripe billing portal` for the current active account, but `/account?checkout_session_id=cs_test_missing_live_audit_final2_1780367857789` rendered `Update Payment Method`.
+- Root cause: `app/account/billing-portal-button.tsx` skipped the dashboard billing capability check when a checkout-session id was present.
+- Added a regression in `tests/api-client-billing-portal.test.ts` proving checkout-return URLs must not bypass dashboard billing capability.
+- Changed only the billing button capability gate so signed-in account pages wait for and honor dashboard billing capability with or without `checkoutSessionId`.
+
+## Verification
+
+- Red check before implementation: `node --test tests\api-client-billing-portal.test.ts` failed on `!checkoutSessionId` in `needsDashboardBillingCheck`.
+- Green focused check after implementation: `node --test tests\api-client-billing-portal.test.ts` passed 8/8.

@@ -2779,3 +2779,58 @@ Expected behavior: after the enforced CSP deployment, live signed-in non-Red-Zon
 
 - Red Zone routes/source remain out of scope for this pass.
 - This slice submitted one Evidence answer. It did not re-submit every longer boot-camp, certification, timed-set, coach, or diagnostic workflow after CSP because earlier audit slices already covered those workflows and repeating all of them would add extra production attempts.
+
+# Account Checkout-Return Billing Capability Evidence
+
+## Issue
+
+Expected behavior: an active signed-in account whose dashboard billing capability says no Stripe portal is available should see the handled `No Stripe billing portal` state even when the URL contains a missing checkout-session id. Actual behavior: `https://barmatrix.app/account?checkout_session_id=cs_test_missing_live_audit_final2_1780367857789` rendered both `Recover enrollment` and `Update Payment Method`, while plain `/account` correctly rendered no payment-method CTA after auth hydration. Affected domain: account/billing UX outside Red Zones.
+
+## Reproduction
+
+- Reproduced: yes.
+- Setup:
+  - In-app browser signed in as the current paid subscriber.
+  - Dirty Red Zone source/test files intentionally untouched.
+- Live browser evidence:
+  - `/account?checkout_session_id=cs_test_missing_live_audit_final2_1780367857789` rendered `Your BarMatrix access is active.`, `Activation check available`, `Recover enrollment`, and `Update Payment Method`.
+  - The page had one `<main>`, no horizontal overflow, and no visible raw API/runtime/CSP error text.
+  - Plain `/account?plain_account_compare=1` initially showed auth hydration, then settled to `Your BarMatrix access is active.` and `No Stripe billing portal. This account has active access, but no Stripe billing portal is available for this enrollment...` with no payment-method button.
+
+## Trace
+
+- Files inspected:
+  - `app/account/page.tsx`
+  - `app/account/billing-portal-button.tsx`
+  - `app/account/enrollment-recovery.tsx`
+  - `lib/api-client.ts`
+  - `tests/api-client-billing-portal.test.ts`
+  - `node_modules\next\dist\docs\01-app\03-api-reference\03-file-conventions\page.md`
+- Verified facts:
+  - `AccountPage` passes `checkoutSessionId` from either `checkout_session_id` or `session_id`.
+  - `BillingPortalButton` reads the signed-in dashboard `billing_portal` capability through `useDashboard()`.
+  - Before the change, both `needsDashboardBillingCheck` and `portalKnownUnavailable` required `!checkoutSessionId`, so checkout-return URLs bypassed the same billing capability that hid the CTA on plain `/account`.
+- Root cause: a query-param-specific bypass in the client billing button capability gate.
+- Confidence: high.
+
+## Change
+
+- Changed files:
+  - `app/account/billing-portal-button.tsx`
+  - `tests/api-client-billing-portal.test.ts`
+  - `tasks/todo.md`
+  - `tasks/evidence.md`
+- Diff summary:
+  - Removed `!checkoutSessionId` from the signed-in dashboard loading and portal-unavailable checks.
+  - Added a regression that asserts checkout-return URLs do not bypass dashboard billing capability.
+- Smallest safe fix rationale:
+  - The enrollment recovery panel and portal creation API contract are unchanged.
+  - Only the pre-click capability gate that controls the misleading CTA was changed.
+  - Red Zone files were not touched.
+
+## Verification
+
+- Red check before implementation:
+  - `node --test tests\api-client-billing-portal.test.ts` failed on `!checkoutSessionId` in `needsDashboardBillingCheck`.
+- Green focused check after implementation:
+  - `node --test tests\api-client-billing-portal.test.ts` passed 8/8.

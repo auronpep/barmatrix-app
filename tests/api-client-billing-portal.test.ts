@@ -160,4 +160,21 @@ describe("BillingPortalButton unavailable-state copy", () => {
     assert.match(button, /No Stripe billing portal/);
     assert.match(button, /Checking billing/);
   });
+
+  it("does not bypass dashboard billing capability on checkout-return URLs", () => {
+    const button = readFileSync(
+      new URL("../app/account/billing-portal-button.tsx", import.meta.url),
+      "utf8",
+    );
+
+    const dashboardCheck = button.match(
+      /const needsDashboardBillingCheck =([\s\S]*?);/,
+    )?.[1] ?? "";
+    const unavailableCheck = button.match(
+      /const portalKnownUnavailable =([\s\S]*?);/,
+    )?.[1] ?? "";
+
+    assert.doesNotMatch(dashboardCheck, /!checkoutSessionId/);
+    assert.doesNotMatch(unavailableCheck, /!checkoutSessionId/);
+  });
 });

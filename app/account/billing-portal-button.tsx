@@ -21,11 +21,10 @@ export function BillingPortalButton({
   const [error, setError] = useState<string | null>(null);
   const billingPortal = dash.data?.billing_portal;
   const needsDashboardBillingCheck =
-    isLoaded && isSignedIn && !checkoutSessionId && dash.loading;
+    isLoaded && isSignedIn && dash.loading;
   const portalKnownUnavailable =
     isLoaded &&
     isSignedIn &&
-    !checkoutSessionId &&
     billingPortal?.portal_available === false;
 
   const openPortal = async () => {

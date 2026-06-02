@@ -709,3 +709,56 @@ Expected behavior: production paid-subscriber flows should tolerate optional cer
 - The API repo still has unrelated admin/complimentary-access work outside this audit.
 - `tasks/lessons.md` is missing, so there were no project lesson rules to apply beyond `AGENTS.md`.
 - The AM status helper still cannot find a session for `C:\barmatrix-app`.
+
+# Production Route Matrix Audit
+
+## Scope
+
+- Continue the live-environment audit after the diagnostic placement fix.
+- Cover lower-traffic public/static frontend routes, subject pages, checkout/referral edges, dashboard subpages, public API reads, CORS, and protected API fail-closed behavior.
+- Avoid mutating production state during this pass.
+
+## Route Inventory
+
+- App route inventory was built from `app/**/page.tsx`; current production pages include public marketing/legal pages, checkout/success, app/dashboard/account surfaces, foundations, certification, boot camps, practice/timed sets, drills/subjects, red zones, traps, tensions, and both diagnostic flows.
+- API route inventory was built from `app.get/post/delete` registrations under `C:\barmatrix-api\src`.
+
+## Verification
+
+- Public frontend/API HTTP smoke:
+  - 64 checks run against `https://barmatrix.app` and `https://api.barmatrix.app`.
+  - 64 passed.
+  - Covered public frontend routes, public API reads, representative trap/tension details and question lists, all subject question reads, diagnostic placement start/questions, public red-zone read, knowledge search, and CORS preflight for placement start.
+- Protected API auth-boundary smoke:
+  - 22 checks run.
+  - 22 passed.
+  - Unauthenticated paid/me/drill/boot-camp/certification/billing routes failed closed with expected 401/403 behavior.
+  - `GET /api/certification` returned HTTP 200 by expected contract because it serves an anonymous preview outline; protected certification content/mutations still returned 401.
+- In-app browser:
+  - 49 production routes traversed with route-specific rendered markers.
+  - No marker failures.
+  - No framework/error overlays.
+  - No stuck loading states.
+  - Browser log filter returned zero `barmatrix.app` warning/error entries.
+  - A follow-up `/dashboard/mastery` wait check confirmed the page rendered the full Pattern Mastery Board with real rows rather than remaining in the loading state.
+- Deployment state:
+  - App local `main` and `origin/main`: `f60972e`.
+  - API local `main`, `origin/main`, and Hostinger checkout: `f5fbf11`.
+  - Hostinger `dist/index.js` registers `registerPlacementDiagnosticRoutes`.
+  - Hostinger `dist/routes/placement-diagnostic.js` contains the hydrated placement start response.
+  - `vercel inspect https://barmatrix.app` reported production deployment `dpl_2TieeN83t3J36QGHR1Szk3sCxyrp`, status `Ready`, aliased to `https://barmatrix.app` and `https://www.barmatrix.app`.
+
+## Observations
+
+- `GET /api/c3/deck` returned HTTP 200 with an empty `cards` array. The current app code does not consume `listC3Deck`, and the API route intentionally degrades missing C3 storage to an empty deck, so this is a content/schema provisioning gap rather than a reproduced UI bug.
+- No source-code defect was reproduced in this pass.
+- No production study/payment/account mutations were performed in this pass.
+
+## Remaining Risk
+
+- The production route matrix broadens live coverage but still cannot prove every possible user/data edge case is bug-free.
+- If the C3 deck is meant to become user-facing, the live environment needs deck content/schema provisioning.
+- Source tests/lint/build were not rerun in this pass because no source code changed; runtime checks were the relevant verification.
+- The API repo still has unrelated admin/complimentary-access work outside this audit.
+- `tasks/lessons.md` is missing, so there were no project lesson rules to apply beyond `AGENTS.md`.
+- The AM status helper still cannot find a session for `C:\barmatrix-app`.

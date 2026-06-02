@@ -569,3 +569,52 @@
 - The API repo still has unrelated local admin/complimentary-access work that was intentionally excluded.
 - `tasks/lessons.md` is still missing.
 - The AM status command still fails because no AM session matches `C:\barmatrix-app`.
+
+# Production Route Matrix Audit
+
+## Scope
+
+- Continue the full live-environment audit by covering lower-traffic public/static routes, subject pages, checkout/referral edges, and dashboard subpages not proven by the last focused pass.
+- Run production HTTP smoke checks for public frontend routes and API reads.
+- Use the signed-in in-app browser for representative app routes that need session state.
+- Fix only reproduced root causes with regression coverage where practical.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm app/API working-tree state and prior audit evidence.
+- [x] Build a current route/API matrix from local source.
+- [x] Run production HTTP smoke checks for public frontend pages and API endpoints.
+- [x] Browser-verify representative signed-in pages and console health.
+- [x] Triage/fix any reproduced defects and rerun relevant checks.
+- [x] Record evidence and remaining risk.
+
+## Review
+
+- Built the current route inventory from `app/**/page.tsx` and the API route registrations.
+- Production HTTP smoke checked 64 public frontend/API routes with zero failures.
+- Production auth-boundary smoke checked 22 protected or preview API routes with zero failures after correcting the expected contract for anonymous certification outline preview.
+- Broad in-app browser traversal checked 49 production frontend routes with route-specific rendered markers, no framework/error overlays, no stuck loading states, and zero `barmatrix.app` warning/error console entries.
+- Deployment-state check confirmed:
+  - App local `main` and `origin/main` are `f60972e`.
+  - API local `main`, `origin/main`, and Hostinger checkout are `f5fbf11`.
+  - Hostinger `dist/index.js` registers placement diagnostic routes and `dist/routes/placement-diagnostic.js` contains hydrated placement start.
+  - Vercel alias `https://barmatrix.app` points to production deployment `dpl_2TieeN83t3J36QGHR1Szk3sCxyrp`, status `Ready`.
+- No source-code defect was reproduced in this pass.
+
+## Verification
+
+- HTTP smoke: 64/64 public frontend/API checks passed.
+- API auth smoke: 22/22 protected or preview checks matched expected 401/403/200 contracts.
+- Browser smoke: 49/49 route markers rendered with no app console warnings/errors.
+- Follow-up `/dashboard/mastery` check after an 8-second wait rendered the full board, not a stuck loading state.
+- C3 deck observation: `GET /api/c3/deck` returned HTTP 200 with an empty `cards` array. Current app code does not consume `listC3Deck`, and the API route intentionally degrades missing C3 storage to an empty deck, so this was recorded as a content/schema gap rather than a live UI defect.
+
+## Remaining Risk
+
+- The production matrix significantly broadens route coverage, but it still does not prove every possible user/data edge case is bug-free.
+- The C3 deck public endpoint is healthy but empty; if the deck is meant to be user-facing, it needs content/schema provisioning rather than an app bugfix.
+- No source code changed in this pass, so source tests/lint/build were not rerun for this documentation-only update.
+- The API repo still has unrelated local admin/complimentary-access work that was intentionally excluded.
+- `tasks/lessons.md` is still missing.
+- The AM status command still fails because no AM session matches `C:\barmatrix-app`.

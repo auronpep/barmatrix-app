@@ -2514,3 +2514,80 @@ Expected behavior: public and transactional BarMatrix web surfaces should emit a
 - Red Zone routes/source remain out of scope for this pass.
 - `app/checkout/page.tsx` remains a client component without page metadata; adding noindex there should be a separate wrapper refactor if needed.
 - CSP remains a separate security-hardening task because third-party scripts and connect destinations need careful policy coverage.
+
+# Checkout Indexing And Deploy Runtime Evidence
+
+## Issue
+
+Expected behavior: all transactional checkout surfaces should be marked `noindex, nofollow`, and the production deploy workflow should run without the GitHub Actions Node 20 action-runtime deprecation warning. Actual behavior found in this slice: `/checkout` is still a client-only page with no page-level robots metadata, and the latest production workflow run reported the Node 20 actions deprecation annotation even though the application Node version is set to 24. Affected domain: live web indexing/trust and production deploy operations outside Red Zones.
+
+## Reproduction
+
+- Reproduced: yes.
+- Setup:
+  - Current repo state has unrelated dirty Red Zone files; they are intentionally excluded.
+  - Local Next 16 docs state that `metadata` exports are only supported in Server Components, so the current `"use client"` checkout page cannot directly export robots metadata.
+- Failure targets:
+  - `app/checkout/page.tsx` lacks `robots: { index: false, follow: false }`.
+  - `.github/workflows/deploy-vercel.yml` lacks the explicit `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24` opt-in while the latest workflow annotation reports Node 20 actions deprecation.
+- Red test output:
+  - `node --test tests\noindex-transactional-pages.test.ts` failed because `app/checkout/page.tsx` did not match the transactional robots metadata assertion.
+  - `node --test tests\vercel-workflow-runtime.test.ts` failed because `.github/workflows/deploy-vercel.yml` did not match `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24:\s*true`.
+
+## Trace
+
+- Files inspected:
+  - `app/checkout/page.tsx`
+  - `app/checkout/success/page.tsx`
+  - `.github/workflows/deploy-vercel.yml`
+  - `node_modules\next\dist\docs\01-app\01-getting-started\14-metadata-and-og-images.md`
+- Verified facts:
+  - The checkout page owns interactive state/effects and browser navigation, so it needs a Client Component boundary.
+  - Next 16 metadata exports are only supported in Server Components.
+  - The deploy workflow already uses app Node `24`, but the GitHub annotation is about the action runtime for `actions/checkout@v4` and `actions/setup-node@v4`.
+- Root cause hypothesis:
+  - `/checkout` needs a Server Component route file that exports metadata and delegates interactive behavior to a child Client Component.
+  - The workflow needs an explicit action-runtime opt-in while GitHub's action runtime default is transitioning.
+- Confidence: high; the failures were reproduced by focused tests and the implementation path follows the local Next 16 Server Component metadata rule.
+
+## Change
+
+- Changed files:
+  - `.github/workflows/deploy-vercel.yml`
+  - `app/checkout/page.tsx`
+  - `app/checkout/checkout-client.tsx`
+  - `tests/noindex-transactional-pages.test.ts`
+  - `tests/vercel-workflow-runtime.test.ts`
+- Diff summary:
+  - Moved the existing interactive checkout implementation into `app/checkout/checkout-client.tsx` and kept it as a Client Component.
+  - Replaced `app/checkout/page.tsx` with a Server Component wrapper that exports checkout metadata and renders the client checkout UI.
+  - Added `robots: { index: false, follow: false }` to `/checkout`.
+  - Added `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` at workflow scope.
+- Smallest safe fix rationale:
+  - The checkout UI and payment-start logic were not rewritten; only the client boundary moved so metadata can live in the route file.
+  - The workflow change follows the warning's own opt-in mechanism and leaves deployment steps unchanged.
+  - Red Zone files were not touched.
+
+## Verification
+
+- Red checks before implementation:
+  - `node --test tests\noindex-transactional-pages.test.ts` failed on missing checkout robots metadata.
+  - `node --test tests\vercel-workflow-runtime.test.ts` failed on missing `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24`.
+- Green checks after implementation:
+  - `node --test tests\noindex-transactional-pages.test.ts` passed.
+  - `node --test tests\vercel-workflow-runtime.test.ts` passed.
+  - Full non-Red-Zone app test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 52/52 tests.
+  - `npm run lint` passed.
+  - `npm run build` passed and listed `/checkout` as static.
+  - `git diff --check` passed with only normal CRLF warnings.
+- Local production verification:
+  - Started `next start` on `http://localhost:3013` after `npm run build`.
+  - In-app browser `/checkout?local_checkout_audit=ready` rendered `Checkout - BarMatrix | BarMatrix`, H1 `One step from your Red-Zone Map.`, one `<main>`, two checkout buttons, `noindex, nofollow`, no runtime error text, no desktop overflow, and no fresh browser warning/error logs.
+  - In-app browser `/checkout?capacity=reached&local_checkout_audit=capacity` rendered the capacity panel and waitlist link, zero checkout buttons, `noindex, nofollow`, no runtime error text, no desktop overflow, and no fresh browser warning/error logs.
+  - The local production server was stopped after verification.
+
+## Remaining Risk
+
+- Live post-deploy verification is still pending for this slice.
+- Red Zone routes/source remain out of scope for this pass.
+- CSP remains a separate security-hardening task.

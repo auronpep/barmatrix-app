@@ -1887,3 +1887,54 @@
 - Red Zone routes and source remain out of scope for this pass.
 - `app/checkout/page.tsx` still lacks a page-level noindex export because it is a client component; changing that would require a broader server/client wrapper refactor.
 - CSP was intentionally not added in this smallest-change pass because Clerk, Stripe, PostHog, and Sentry need a carefully tested policy.
+
+# Checkout Indexing And Deploy Runtime Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones.
+- Close the remaining transactional `/checkout` indexing gap from the static-surface audit.
+- Remove the production workflow's GitHub Actions Node 20 runtime deprecation warning without changing app behavior.
+- Keep dirty Red Zone source/test files untouched.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Read local Next 16 metadata guidance for the client/server page boundary.
+- [x] Reproduce the checkout noindex and workflow runtime-warning gaps with focused tests.
+- [x] Apply the smallest clean source/workflow changes.
+- [x] Run focused tests, full non-Red-Zone tests, lint, build, local browser verification, and diff hygiene.
+- [ ] Deploy and run live HTTP/browser verification.
+- [ ] Record review notes, evidence, and remaining risk.
+
+## Review
+
+- Added a red regression to include `app/checkout/page.tsx` in transactional noindex coverage; it failed because the current page was a Client Component without robots metadata.
+- Added a red regression for `.github/workflows/deploy-vercel.yml`; it failed because the workflow did not set `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24`.
+- Split `/checkout` into:
+  - `app/checkout/page.tsx`: Server Component route wrapper with title/description and `robots: { index: false, follow: false }`.
+  - `app/checkout/checkout-client.tsx`: existing interactive checkout UI and Stripe-session startup behavior.
+- Added the GitHub Actions Node 24 runtime opt-in at workflow scope.
+
+## Verification
+
+- Red checks before implementation:
+  - `node --test tests\noindex-transactional-pages.test.ts` failed on missing checkout robots metadata.
+  - `node --test tests\vercel-workflow-runtime.test.ts` failed on missing `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24`.
+- Green checks after implementation:
+  - `node --test tests\noindex-transactional-pages.test.ts` passed.
+  - `node --test tests\vercel-workflow-runtime.test.ts` passed.
+  - Full non-Red-Zone app test sweep passed with the unrelated Red Zone test excluded: 52/52.
+  - `npm run lint` passed.
+  - `npm run build` passed and kept `/checkout` static.
+  - `git diff --check` passed with only normal CRLF warnings.
+- Local production browser verification on `http://localhost:3013`:
+  - `/checkout?local_checkout_audit=ready` rendered title `Checkout - BarMatrix | BarMatrix`, H1 `One step from your Red-Zone Map.`, one `<main>`, two checkout buttons, `noindex, nofollow`, no runtime error text, no desktop overflow, and no fresh browser warning/error logs.
+  - `/checkout?capacity=reached&local_checkout_audit=capacity` rendered the capacity panel and waitlist link, zero checkout buttons, `noindex, nofollow`, no runtime error text, no desktop overflow, and no fresh browser warning/error logs.
+
+## Remaining Risk
+
+- Live post-deploy verification is still pending for this slice.
+- Red Zone routes/source remain out of scope for this pass.
+- CSP remains a separate security-hardening task.

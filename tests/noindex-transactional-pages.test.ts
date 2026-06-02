@@ -9,6 +9,7 @@ function readProjectFile(path: string): string {
 describe("transactional and auth page indexing", () => {
   it("marks checkout return and auth pages as noindex", () => {
     const pages = [
+      "app/checkout/page.tsx",
       "app/checkout/success/page.tsx",
       "app/sign-in/[[...sign-in]]/page.tsx",
       "app/sign-up/[[...sign-up]]/page.tsx",

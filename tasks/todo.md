@@ -898,9 +898,9 @@
 - [x] Inspect billing, checkout-return, and boot-camp mastery source contracts.
 - [x] Connect to the in-app browser with the current paid production session.
 - [x] Browser-test account/billing, checkout-return, and boot-camp mastery surfaces.
-- [ ] Inspect production API/runtime logs after the browser actions.
-- [ ] If defects are reproduced, trace source, add/update regression coverage, fix, deploy, and reverify.
-- [ ] Run relevant checks and update evidence.
+- [x] Inspect production API/runtime logs after the browser actions.
+- [x] If defects are reproduced, trace source, add/update regression coverage, fix, deploy, and reverify.
+- [x] Run relevant checks and update evidence.
 
 ## Review
 
@@ -909,6 +909,9 @@
 - Live backend probe confirmed `https://api.barmatrix.app/api/checkout/cs_test_missing_live_audit/status` returns HTTP 200 with `{"fulfilled":false}`.
 - Root cause: `app/account/enrollment-recovery.tsx` bypassed the shared API client and called relative `/api/checkout/...` endpoints, so production hit the Vercel frontend origin instead of the Hostinger API origin.
 - Source fix: checkout status/recovery helpers now live in `lib/api-client.ts`, and the account recovery panel uses those helpers.
+- Follow-up browser verification exposed misleading recovery copy for arbitrary unfulfilled checkout IDs; the panel now says `Checkout recovery` / `Activation check available` and no longer claims the checkout session is confirmed.
+- Billing portal handoff on the active paid account returned the handled state `No local purchase with a billing customer was found for this account.` Production API logs had no crash output and `stderr.log` remained empty.
+- Sanitized production data check showed 6 active non-refunded purchases, with 5 missing `stripe_customer_id` and 1 containing `stripe_customer_id`; tracked as `auronpep/barmatrix-api#2`.
 
 ## Verification
 
@@ -918,7 +921,47 @@
 - App `npm run lint` passed.
 - App `npm run build` passed.
 - App `git diff --check` passed with only existing LF/CRLF normalization warnings.
-- Live deployment and browser re-verification are pending.
+- Red/green copy regression was added after the deployed behavior surfaced the misleading recovery copy; final focused check passed with 5 tests.
+- Final app checks after the copy change passed:
+  - `node --test tests\*.test.ts`: 34 tests, 34 pass.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `git diff --check` passed with only existing LF/CRLF normalization warnings.
+- Vercel production deployment `dpl_EErUtCD15YD3r8GZ7UjNBYscftey` is `READY`, aliased to `https://barmatrix.app`, and reports Git SHA `61ba28f3d96a0a479fe652aa6e575c848f0c0e07`.
+- In-app Browser verified `https://barmatrix.app/account?checkout_session_id=cs_test_missing_live_audit_final_*` renders the recovery panel with corrected copy, no old misleading copy, no raw API error text, and no recent browser logs.
+- Production API `GET https://api.barmatrix.app/health` returned HTTP 200 with `{"ok":true,"db":"up"}`.
+- Hostinger API log tail after checkout recovery and billing actions showed only normal listener lines; `stderr.log` was empty.
+
+## Remaining Risk
+
+- Checkout-return recovery is fixed and verified on the live site.
+- Billing portal handoff is not fully green for this paid account because production purchase records largely lack `stripe_customer_id`; this is now tracked in `auronpep/barmatrix-api#2` for data/backfill or UI/API classification follow-up.
+- The broader system still cannot be called exhaustively bug-free; the next audit section remains the logged-in Red Zones path sweep.
+
+# Red Zones Logged-In Path Audit
+
+## Scope
+
+- Use the current logged-in BarMatrix program state to audit `/red-zones` and every user-facing path reachable from the Red Zones area.
+- Verify each path renders meaningful content, does not show raw API errors or blank/loading-only states, and that primary controls navigate or mutate as intended.
+- Fix only reproduced root causes with focused regression coverage where practical.
+
+## Plan
+
+- [ ] Map Red Zones routes, links, API calls, and existing tests.
+- [ ] Run logged-in browser verification across every Red Zones path and capture UI/console/API evidence.
+- [ ] Trace any reproduced defect to the owning source and compare against similar working flows.
+- [ ] Add failing focused regression tests or repro checks before implementation where practical.
+- [ ] Implement scoped fixes and re-run focused plus full relevant checks.
+- [ ] Record review notes, verification commands, browser evidence, and remaining risk.
+
+## Review
+
+- Pending.
+
+## Verification
+
+- Pending.
 
 ## Remaining Risk
 

@@ -1073,3 +1073,72 @@ Expected behavior: paid users should be able to navigate study surfaces, complet
 
 - This pass verifies representative paid production flows and closes the reproduced background log defect. It does not prove every paid-user edge case is bug-free.
 - Boot-camp mastery submit, billing portal handoff, and checkout-return mutation flows remain good follow-up coverage targets.
+
+# Live Paid Integration Edge Audit
+
+## Issue
+
+Expected behavior: checkout-return recovery on the production account page should call the Hostinger API and show a useful recovery state when the local purchase has not been fulfilled. Actual behavior found: the page called same-origin `/api/checkout/...` on the Vercel frontend, which returned a Next.js 404 HTML page and left the recovery panel hidden.
+
+## Reproduction
+
+- Browser session: paid subscriber on `https://barmatrix.app`.
+- Opened `/account?checkout_session_id=cs_test_missing_live_audit`.
+- Live same-origin frontend probe: `https://barmatrix.app/api/checkout/cs_test_missing_live_audit/status` returned HTTP 404.
+- Live backend probe: `https://api.barmatrix.app/api/checkout/cs_test_missing_live_audit/status` returned HTTP 200 with `{"fulfilled":false}`.
+
+## Trace
+
+- `app/account/enrollment-recovery.tsx` used direct relative fetches for checkout status and recovery.
+- `lib/api-client.ts` already centralizes production API origin resolution through `NEXT_PUBLIC_API_URL` with `https://api.barmatrix.app` fallback.
+- Root cause: account recovery bypassed the shared API client and hit the wrong production origin.
+
+## Change
+
+- Changed files in `C:\barmatrix-app`:
+  - `app\account\enrollment-recovery.tsx`
+  - `lib\api-client.ts`
+  - `tests\api-client-billing-portal.test.ts`
+  - `tasks\todo.md`
+  - `tasks\evidence.md`
+- Added `api.getCheckoutStatus()` and `api.recoverCheckoutEnrollment()`.
+- Routed the account recovery panel through those helpers.
+- Updated recovery copy so an unfulfilled local status no longer claims a checkout session is confirmed.
+- Committed and pushed app commits:
+  - `5dbd99d Route checkout recovery through API client`
+  - `61ba28f Clarify checkout recovery copy`
+
+## Verification
+
+- Red checks:
+  - `node --test tests\api-client-billing-portal.test.ts` failed before implementation because checkout recovery helpers were missing and the account component still used same-origin fetches.
+  - The focused test also failed before the copy change because the panel claimed `checkout session is confirmed`.
+- Green checks:
+  - `node --test tests\api-client-billing-portal.test.ts` passed: 5 tests.
+  - `node --test tests\*.test.ts` passed: 34 tests, 34 pass.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `git diff --check` passed with only existing LF/CRLF normalization warnings.
+- Vercel production:
+  - Deployment `dpl_EErUtCD15YD3r8GZ7UjNBYscftey` is `READY`.
+  - Alias includes `https://barmatrix.app`.
+  - Git SHA: `61ba28f3d96a0a479fe652aa6e575c848f0c0e07`.
+- In-app Browser:
+  - Opened `https://barmatrix.app/account?checkout_session_id=cs_test_missing_live_audit_final_*`.
+  - Verified the page renders `Checkout recovery`, `Activation check available`, and `Recover enrollment`.
+  - Verified the old misleading copy is absent, no raw API 404/500 text is visible, and recent browser logs are empty.
+- Production API:
+  - `GET https://api.barmatrix.app/health` returned HTTP 200 with `{"ok":true,"db":"up"}`.
+  - Hostinger `console.log` tail showed only normal listener lines.
+  - Hostinger `stderr.log` tail was empty.
+
+## Follow-Up
+
+- Billing portal handoff did not redirect to Stripe for the current active account; it returned the handled no-billing-customer message.
+- Sanitized production data check showed 6 active non-refunded purchases, 5 missing `stripe_customer_id`, and 1 with `stripe_customer_id`.
+- Tracked backend/data follow-up as `auronpep/barmatrix-api#2`.
+
+## Remaining Risk
+
+- Checkout-return recovery is fixed and verified on the live site.
+- Billing portal availability still depends on reconciling active purchases that lack Stripe customer IDs or adjusting account UI/API classification for non-Stripe/manual access.

@@ -3755,3 +3755,100 @@ Expected behavior: the Trap Taxonomy data layer should either populate the Misco
 - Red Zone routes/source remain out of scope for this pass.
 - API repo has unrelated dirty work; do not overwrite or revert it.
 - Production currently has no authored misconception taxonomy content in `answer_choices.misconception_tags`; a separate content/data pipeline pass is needed if the Misconception column is expected to be populated.
+
+# Live Foundations Certification Mutation Evidence
+
+## Issue
+
+Expected behavior: signed-in paid-user Foundations progress controls should persist self-check and lesson-complete mutations; completing The Method should unlock the C3 Certification scorecard; a Certification competency runner should start, submit, and render a graded result without exposing keys before submission; and Coach should explain the true unavailable reason after Method completion. Actual behavior found in this slice: Foundations progress persisted and Certification unlocked, but production Certification result storage is not provisioned, so graded M1 results are not saved and the scorecard remains `attempts 0`; Coach also rendered stale `Finish The Method` copy even though the paid test subscriber had completed all 14 Method lessons. Affected domain: non-Red-Zone Foundations, Certification, and C3 Coach gating/provisioning.
+
+## Reproduction
+
+- Reproduced: yes.
+- Live UI evidence:
+  - `/foundations?found_cert_audit=pre_20260602` showed `0/14 lessons · 0%`.
+  - `/certification?found_cert_audit=pre_20260602` showed the locked `Finish The Method first` state.
+  - `/foundations/lesson-01?found_cert_audit=mutate_20260602` saved a self-check and displayed `Progress saved.`
+  - Completing the Method lessons from the rendered UI returned to `/foundations?found_cert_audit=post_complete_20260602`, which showed `14/14 lessons · 100%`.
+  - `/certification?found_cert_audit=post_complete_20260602` unlocked the C3 Mastery scorecard with all ten competencies at `attempts 0`.
+  - `/certification/M1?found_cert_audit=runner_20260602` rendered M1 key-free before submit, accepted radio selections, and rendered item-by-item grading after submit.
+  - `/certification/M1?found_cert_audit=not_saved_verify_20260602` reproduced the graded result with `(NOT SAVED — SYNC PENDING)`.
+  - `/certification?found_cert_audit=post_submit_20260602` still showed `M1 ... attempts 0`.
+  - `/coach?found_cert_audit=post_method_20260602` rendered unavailable Coach copy that still told the completed-Method user to finish The Method.
+
+## Trace
+
+- Files inspected:
+  - `app/foundations/[slug]/page.tsx`
+  - `app/coach/page.tsx`
+  - `app/coach/coach-client.tsx`
+  - `app/certification/page.tsx`
+  - `app/certification/[competencyId]/page.tsx`
+  - `lib/use-foundations.ts`
+  - `lib/use-coach.ts`
+  - `lib/use-certification.ts`
+  - `lib/api-client.ts`
+  - `C:\barmatrix-api\src\routes\foundations.ts`
+  - `C:\barmatrix-api\src\routes\certification.ts`
+  - `C:\barmatrix-api\src\routes\c3-coach.ts`
+  - `C:\barmatrix-api\src\lib\foundations.test.ts`
+  - `C:\barmatrix-api\src\routes\certification.test.ts`
+- Verified facts:
+  - App Red Zone files remain dirty and out of scope.
+  - Foundations lesson UI persists self-check and completion via `api.markFoundationsLesson`.
+  - Foundations API upserts `foundations_progress` and returns `persisted:false` rather than 500 if the table is missing.
+  - Certification API fails closed until 14 completed Foundations lessons are visible for the signed-in student.
+  - Certification competency content is key-free before submission; grading response is the first place item keys appear.
+  - Production `foundations_progress` has 14 completed lesson rows for one student after the live UI mutation.
+  - Production `cert_competency_results` does not exist; result persistence therefore returns `persisted:false`, which the runner displays as `(not saved — sync pending)`.
+  - Production `answer_choices.c3_mold_code` exists but has 0 populated choices across 14,736 active/diagnostic choices.
+  - C3 Coach API returns unavailable reasons such as `no_tagged_items` and `c3_not_provisioned`.
+  - `app/coach/coach-client.tsx` previously ignored `current.reason` and rendered the Method-completion explanation for every unavailable Coach state.
+- Root causes:
+  - Frontend code defect: Coach unavailable copy ignored the API reason, producing misleading post-Method copy.
+  - Production provisioning gap: Certification result storage table is absent. Tracked as GitHub issue #5.
+  - Production content/data gap: C3-tagged question coverage is absent. Tracked as GitHub issue #6.
+- Confidence: high.
+
+## Change
+
+- Changed files:
+  - `app/coach/coach-client.tsx`
+  - `tests/coach-unavailable-reason-copy.test.ts`
+- Diff summary:
+  - Added `getCoachUnavailableState(reason)` to branch on C3 Coach unavailable reasons.
+  - `not_enrolled` now shows account-access copy.
+  - `no_tagged_items` and `c3_not_provisioned` now show `Coach coverage pending` and a tagged-question-coverage explanation.
+  - Unknown unavailable reasons keep the old Method/diagnostic fallback copy.
+- Smallest safe fix rationale: the confirmed frontend defect was isolated to user-facing Coach copy; Certification persistence and C3 coverage are production provisioning/content gaps, so they were tracked instead of patched in the frontend.
+
+## Verification
+
+- Red regression:
+  - `node --test tests\coach-unavailable-reason-copy.test.ts` failed before implementation and passed after the Coach client change.
+- Local app/API checks:
+  - `node --test tests\coach-unavailable-reason-copy.test.ts tests\coach-main-landmark.test.ts tests\certification-runner-locked-state.test.ts tests\certification-cta.test.ts` passed 6/6.
+  - Full non-Red-Zone app test sweep passed 59/59 with `tests\red-zone-detail-params.test.ts` excluded.
+  - `npx --no-install tsx --test src/routes/c3-coach.test.ts src/routes/certification.test.ts` in `C:\barmatrix-api` passed 11/11.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `git diff --check -- app\coach\coach-client.tsx tests\coach-unavailable-reason-copy.test.ts` passed with only normal CRLF warnings.
+- Production deploy/runtime checks:
+  - GitHub Actions deploy run `26817049631` completed successfully for commit `a7cd6835688a9b4ceae3924dc1552c5ae060c25a`.
+  - Live Browser verification of `/coach?coach_reason_fix=a7cd683b` passed after clicking `Start coaching`: `Coach coverage pending` and `C3 Coach is waiting on tagged question coverage` rendered, `Finish The Method` was absent, one H1 and one `<main>` rendered, no desktop overflow was present, no raw runtime/API/CSP text appeared, and no relevant browser warning/error logs were present.
+  - `GET https://api.barmatrix.app/health?coach_reason_fix=a7cd683` returned `{"ok":true,"db":"up"}`.
+  - Vercel production error log filter returned no logs for the deploy window.
+  - Hostinger API `stderr.log` was empty.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-foundations-complete-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-certification-unlocked-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-certification-m1-graded-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-certification-scorecard-after-m1-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-coach-coverage-pending-live-postdeploy-a7cd683.png`
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- Production Certification attempts will not persist until issue #5 provisions `cert_competency_results`.
+- Production C3 Coach cannot serve adaptive questions until issue #6 populates C3-tagged question coverage.
+- This slice intentionally completed the paid test subscriber's Method progress and submitted M1 grading attempts; those M1 attempts were not persisted because the production certification-results table is absent.

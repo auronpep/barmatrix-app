@@ -2595,3 +2595,61 @@
 - Red Zone routes/source/tests remain out of scope for this pass.
 - The production app currently has no authored misconception taxonomy content in `answer_choices.misconception_tags`; populating that column is a content/data pipeline task, not a frontend/API bug fix from the evidence gathered here.
 - The API repo still has unrelated dirty billing/admin/tension work and is behind `origin/main` by 5 commits; it was inspected and tested but not modified.
+
+# Live Foundations Certification Mutation Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones.
+- Verify signed-in paid-user Foundations progress persistence, including self-check and lesson-complete mutations from the rendered UI.
+- Verify the C3 Certification gate after Method completion and exercise one Certification runner submission if the gate unlocks.
+- Use the paid test subscriber state intentionally; record any progress/certification side effects.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone app work remains separate and untouched.
+- [x] Inspect Foundations, Coach, and Certification source/API behavior.
+- [x] Browser-verify current Foundations and Certification state before mutation.
+- [x] Exercise Foundations self-check and lesson completion from the live UI.
+- [x] Complete remaining Method lessons if needed to verify Certification unlock.
+- [x] Exercise one Certification competency start/submit flow if unlocked.
+- [x] Trace and fix any reproduced non-Red-Zone root cause with focused regression coverage where practical.
+- [x] Run relevant app/API tests, lint/build, production health/log checks, and record final evidence.
+
+## Review
+
+- Live Foundations pre-state showed `0/14 lessons`; the signed-in paid test subscriber then completed all 14 Method lessons from the rendered UI, and `/foundations` showed `14/14 lessons · 100%`.
+- Live Certification unlocked after Method completion. M1 rendered key-free before submit, accepted radio selections, and rendered item-by-item grading after submit.
+- Certification persistence is blocked by production schema provisioning: `cert_competency_results` does not exist, so the runner correctly shows `(NOT SAVED — SYNC PENDING)` and the scorecard remains `attempts 0`. Tracked as GitHub issue #5.
+- Production C3 Coach has no tagged question coverage: `answer_choices.c3_mold_code` exists but has 0 populated active/diagnostic choices. Tracked as GitHub issue #6.
+- Fixed the confirmed frontend copy bug: Coach now branches on API unavailable reasons and says `Coach coverage pending` for `no_tagged_items` / `c3_not_provisioned` instead of telling a completed-Method user to finish The Method.
+
+## Verification
+
+- Red regression: `node --test tests\coach-unavailable-reason-copy.test.ts` failed before the Coach client change and passed after it.
+- Focused app checks passed 6/6:
+  - `node --test tests\coach-unavailable-reason-copy.test.ts tests\coach-main-landmark.test.ts tests\certification-runner-locked-state.test.ts tests\certification-cta.test.ts`
+- Full local non-Red-Zone app sweep passed 59/59 with `tests\red-zone-detail-params.test.ts` excluded.
+- Relevant API checks passed 11/11:
+  - `npx --no-install tsx --test src/routes/c3-coach.test.ts src/routes/certification.test.ts`
+- `npm run lint` passed.
+- `npm run build` passed.
+- Production deploy run `26817049631` completed successfully for commit `a7cd6835688a9b4ceae3924dc1552c5ae060c25a`.
+- Live post-deploy Browser verification of `/coach?coach_reason_fix=a7cd683b` passed: after `Start coaching`, the page rendered `Coach coverage pending`, included `C3 Coach is waiting on tagged question coverage`, did not render `Finish The Method`, had one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, and no relevant browser warning/error logs.
+- Production API health returned `{"ok":true,"db":"up"}`.
+- Vercel production error log filter returned no logs for the deploy window.
+- Hostinger API `stderr.log` was empty.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-foundations-complete-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-certification-unlocked-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-certification-m1-graded-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-certification-scorecard-after-m1-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-coach-coverage-pending-live-postdeploy-a7cd683.png`
+
+## Remaining Risk
+
+- Red Zone routes/source/tests remain out of scope for this pass.
+- Production Certification attempts will not persist until issue #5 provisions `cert_competency_results`.
+- Production C3 Coach cannot serve adaptive questions until issue #6 populates C3-tagged question coverage.
+- This slice intentionally completed the paid test subscriber's Method progress and submitted M1 grading attempts; those M1 attempts were not persisted because the production certification-results table is absent.

@@ -1947,3 +1947,23 @@
 
 - Red Zone routes/source remain out of scope for this pass.
 - CSP remains a separate security-hardening task.
+
+# CSP Header Audit
+
+## Scope
+
+- Continue the live/static security audit outside Red Zones.
+- Add the smallest app-managed Content Security Policy that does not break the current Next.js static rendering model, Clerk auth shell, PostHog/Sentry telemetry wiring, API calls, or static landing-page fonts.
+- Use only local source/runtime and live browser/HTTP evidence. Keep dirty Red Zone files untouched.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Read local Next 16 CSP/header docs before editing config.
+- [x] Map current live headers and rendered third-party origins.
+- [x] Add a focused failing regression for the missing CSP policy.
+- [x] Apply the smallest safe CSP header change.
+- [x] Run focused tests, full non-Red-Zone tests, lint, build, local production HTTP/browser verification.
+- [ ] Deploy and run live HTTP/browser/log verification.
+- [ ] Record review notes, evidence, and remaining risk.

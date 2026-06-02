@@ -2604,3 +2604,82 @@ Expected behavior: all transactional checkout surfaces should be marked `noindex
 
 - Red Zone routes/source remain out of scope for this pass.
 - CSP remains a separate security-hardening task.
+
+# CSP Header Audit Evidence
+
+## Issue
+
+Expected behavior: BarMatrix production pages should emit an app-managed Content Security Policy that constrains scripts, styles, frames, images, fonts, API/telemetry connections, and embedding without breaking Clerk auth, PostHog/Sentry telemetry, API calls, or static LP font loading. Actual behavior: live `/`, `/sign-in`, `/account`, and `/lp-four-traps.html` responses have no `Content-Security-Policy` and no `Content-Security-Policy-Report-Only` header. Affected domain: live web security posture outside Red Zones.
+
+## Reproduction
+
+- Reproduced: yes.
+- Setup:
+  - Dirty Red Zone source/test files were left untouched because another session owns that review.
+  - Read local Next 16 CSP/header docs under `node_modules/next/dist/docs/`.
+  - Probed live routes with PowerShell HTTP requests and the in-app browser.
+- Failure evidence:
+  - `HEAD https://barmatrix.app/`, `/sign-in`, `/account`, and `/lp-four-traps.html` returned baseline defensive headers but no CSP header.
+  - `next.config.ts` defines `SECURITY_HEADERS` for `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`, and `Permissions-Policy`, but no CSP.
+
+## Trace
+
+- Files inspected:
+  - `next.config.ts`
+  - `app/layout.tsx`
+  - `proxy.ts`
+  - `instrumentation-client.ts`
+  - `lib/posthog-client.ts`
+  - `lib/api-client.ts`
+  - `public/lp-four-traps.html`
+  - local environment hostnames, with secret values redacted
+- Runtime/source origins found:
+  - Same-origin app assets: `https://barmatrix.app`
+  - API: `https://api.barmatrix.app`
+  - Local API during development: `http://localhost`
+  - Clerk live custom domain: `https://clerk.barmatrix.app`
+  - Clerk local/test frontend API: `https://*.clerk.accounts.dev`
+  - Clerk images: `https://img.clerk.com`
+  - PostHog ingest: `https://us.i.posthog.com`
+  - PostHog asset loader: `https://us-assets.i.posthog.com`
+  - Sentry ingest: `https://o4511480415584256.ingest.us.sentry.io`
+  - Static LP fonts: `https://fonts.googleapis.com` and `https://fonts.gstatic.com`
+- Root cause:
+  - The previous static security-header pass added baseline headers but intentionally deferred CSP. No code path currently emits either an enforced or report-only CSP.
+- Confidence: high.
+
+## Change
+
+- Changed files:
+  - `next.config.ts`
+  - `tests/security-headers.test.ts`
+  - `tasks/todo.md`
+  - `tasks/evidence.md`
+- Diff summary:
+  - Added a no-nonce enforced `Content-Security-Policy` to the existing global `SECURITY_HEADERS`.
+  - Allowed only the observed app/auth/analytics/error-reporting/API/font surfaces: same-origin app assets, `api.barmatrix.app`, Clerk live/test domains, Clerk images, PostHog ingest/assets, Sentry ingest, and Google Fonts for static LPs.
+  - Added local-only `localhost`/`127.0.0.1` HTTP and websocket connect allowances behind `ALLOW_LOCAL_CONNECT = !process.env.VERCEL`, so Vercel production does not emit local connect sources.
+  - Avoided nonce-based CSP so static App Router pages remain static/cached.
+- Smallest safe fix rationale:
+  - The missing behavior is an app header policy, so the source change is constrained to `next.config.ts`.
+  - No route/component behavior or Red Zone source was changed.
+
+## Verification
+
+- Red check before implementation:
+  - `node --test tests\security-headers.test.ts` failed on missing `Content-Security-Policy`.
+- Green focused check after implementation:
+  - `node --test tests\security-headers.test.ts` passed: 2/2 tests.
+- Broader local checks:
+  - Full non-Red-Zone app test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 53/53 tests.
+  - `npm run lint` passed.
+  - `npm run build` passed and preserved static generation for static routes.
+  - `git diff --check -- next.config.ts tests\security-headers.test.ts tasks\todo.md tasks\evidence.md` passed with only normal CRLF warnings.
+- Local production HTTP verification:
+  - Started `next start` on `http://localhost:3014`.
+  - `GET /`, `/account`, `/checkout`, and `/lp-four-traps.html` returned HTTP 200 and emitted `Content-Security-Policy`.
+  - Local non-Vercel CSP included `http://localhost:8080`, `http://localhost:*`, `http://127.0.0.1:*`, `ws://localhost:*`, and `ws://127.0.0.1:*` for local API/dev connectivity.
+- Local in-app browser verification:
+  - `/`, `/account`, `/checkout`, and `/lp-four-traps.html` rendered meaningful content with no visible runtime text, no horizontal overflow in the tested viewport, and no fresh browser warning/error logs.
+  - Local browser-observed origins were covered by CSP: local app origin, `https://daring-mammal-68.clerk.accounts.dev`, `https://img.clerk.com`, `https://us-assets.i.posthog.com`, `https://fonts.googleapis.com`, and `https://fonts.gstatic.com`.
+  - Screenshot saved: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-csp-local-lp-four-traps.png`.

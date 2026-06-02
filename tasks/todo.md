@@ -2075,3 +2075,40 @@
 
 - Red Zone routes/source remain out of scope for this pass.
 - The checkout recovery panel still appears for the fake checkout-session id, as intended for the recovery workflow; this pass only removed the misleading Stripe portal CTA from accounts whose dashboard capability says no portal is available.
+
+# Live Public Transactional Navigation Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones after the account checkout-return deploy.
+- Verify representative public, transactional, auth, static landing, and non-Red-Zone catalog entry points still render meaningful states with current metadata/security headers and safe navigation targets.
+- Avoid payment-provider mutations, waitlist submissions, sign-out/sign-in state changes, and Red Zone routes/source handled elsewhere.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Probe the current production deployment and live HTTP status/header/metadata signals for representative routes.
+- [x] Use the in-app browser to verify rendered page identity, one `<main>`, no raw runtime/API/CSP text, no desktop overflow, and fresh console health.
+- [x] Exercise safe navigation/CTA targets without creating checkout sessions or submitting forms.
+- [x] Trace and fix any reproduced source defect with focused regression coverage.
+- [ ] Record review notes, verification evidence, and remaining risk.
+
+## Review
+
+- Live HTTP matrix returned HTTP 200 for representative public, transactional, auth, catalog, study, static LP, robots, sitemap, and manifest routes, with CSP present and no broad raw-error markers.
+- Live signed-in browser matrix found app-rendered routes had one `<main>`, no desktop overflow, no visible raw runtime/API/CSP text, and no fresh `barmatrix.app` warning/error logs.
+- Found a concrete non-Red-Zone static LP defect: `/lp-four-traps.html`, `/lp-priced-right.html`, `/lp-failed-by-6.html`, and `/lp-wrong-answers.html` rendered `mainCount=0`.
+- Root cause: static LPs are plain `public/` HTML and do not inherit the App Router root `<main>`.
+- Added one `<main>` wrapper around non-footer content on each non-Red-Zone LP and regression coverage in `tests/static-landing-pages.test.ts`.
+
+## Verification
+
+- Red check before implementation: `node --test tests\static-landing-pages.test.ts` failed on missing `<main>`.
+- Green focused check after implementation: `node --test tests\static-landing-pages.test.ts` passed 3/3.
+- Full non-Red-Zone app test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 55/55.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `git diff --check -- public\lp-four-traps.html public\lp-priced-right.html public\lp-failed-by-6.html public\lp-wrong-answers.html tests\static-landing-pages.test.ts tasks\todo.md tasks\evidence.md` passed with only normal CRLF warnings.
+- Local production browser verification on `http://localhost:3016` passed for the four changed LPs: each had `mainCount=1`, meaningful H1/title, no desktop overflow, no visible raw runtime/API/CSP text, and no fresh browser warning/error logs.
+- Local screenshot evidence: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-lp-main-local.png`.

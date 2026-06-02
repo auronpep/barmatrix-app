@@ -31,4 +31,17 @@ describe("static landing page shell", () => {
       assert.doesNotMatch(source, /iOS|ANDROID/, path);
     }
   });
+
+  it("wraps non-footer page content in one main landmark", () => {
+    for (const { path, source } of readLandingPages()) {
+      const openMainCount = (source.match(/<main[\s>]/g) ?? []).length;
+      const closeMainCount = (source.match(/<\/main>/g) ?? []).length;
+      const mainIndex = source.indexOf("<main");
+      const footerIndex = source.indexOf("<footer");
+
+      assert.equal(openMainCount, 1, path);
+      assert.equal(closeMainCount, 1, path);
+      assert.ok(mainIndex > -1 && footerIndex > mainIndex, path);
+    }
+  });
 });

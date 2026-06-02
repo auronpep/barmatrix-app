@@ -1837,7 +1837,7 @@
 - [x] Trace any reproduced issue to root cause before editing.
 - [x] Add focused regression coverage and apply the smallest clean fix if a source defect is found.
 - [x] Run relevant local checks and browser verification.
-- [ ] Deploy and run live post-deploy verification.
+- [x] Deploy and run live post-deploy verification.
 - [x] Record review notes, evidence, and remaining risk.
 
 ## Review
@@ -1857,6 +1857,7 @@
   - Added `app/manifest.ts`.
   - Cleaned stale links/mobile claims in `public/lp-failed-by-6.html`, `public/lp-four-traps.html`, `public/lp-priced-right.html`, and `public/lp-wrong-answers.html`.
 - Red Zone source, tests, and LP behavior remain excluded because another session owns that area.
+- Pushed app commit `5ac3a8f` (`Harden static metadata surface`) to `main`; the Vercel production deployment completed successfully and `https://barmatrix.app` aliases a Ready deployment created after that push.
 
 ## Verification
 
@@ -1873,10 +1874,16 @@
 - `npm run build` passed and emitted `/manifest.webmanifest`.
 - Local production verification on `http://localhost:3012` passed for `/`, `/pricing`, `/terms`, `/checkout/success`, `/sign-in`, `/sitemap.xml`, `/robots.txt`, `/manifest.webmanifest`, `/lp-four-traps.html`, and `/lp-priced-right.html`.
 - In-app browser verification passed for local `/pricing`, `/checkout/success`, and `/lp-four-traps.html`: intended page identity, meaningful content, no framework overlay/runtime text, no desktop overflow, expected canonical/robots/manifest signals, expected cleaned LP links, and no fresh browser warning/error logs.
+- Live HTTP verification passed for `https://barmatrix.app/`, `/pricing`, `/terms`, `/checkout/success`, `/sign-in`, `/sitemap.xml`, `/robots.txt`, `/manifest.webmanifest`, `/lp-four-traps.html`, and `/lp-priced-right.html`: HTTP 200, new defensive headers present, home canonical only on `/`, noindex/nofollow on checkout success and sign-in, manifest served as `application/manifest+json`, stable sitemap `lastmod`, and expected sitemap route coverage.
+- Live static LP verification passed for `lp-four-traps`, `lp-priced-right`, `lp-failed-by-6`, and `lp-wrong-answers`: Pricing anchors point to `/pricing`, expected footer/product links are present, stale `/dashboard` links are absent, and stale iOS/Android claims are absent.
+- Live in-app browser verification passed for `/pricing?audit=static_audit_5ac3a8f_*`, `/checkout/success?audit=static_audit_5ac3a8f_*`, and `/lp-four-traps.html?audit=static_audit_5ac3a8f_*`: expected titles/H1s, metadata, cleaned links, no visible runtime errors, no desktop overflow, and no fresh browser warning/error logs.
+- Production health/log checks after live probes:
+  - Vercel production error logs for the last 15 minutes returned no rows.
+  - `GET https://api.barmatrix.app/health?static_surface_verify=5ac3a8f` returned `{"ok":true,"db":"up"}`.
+  - Hostinger API `stderr.log` tail was empty.
 
 ## Remaining Risk
 
-- Live post-deploy verification is still pending for this slice.
 - Red Zone routes and source remain out of scope for this pass.
 - `app/checkout/page.tsx` still lacks a page-level noindex export because it is a client component; changing that would require a broader server/client wrapper refactor.
 - CSP was intentionally not added in this smallest-change pass because Clerk, Stripe, PostHog, and Sentry need a carefully tested policy.

@@ -2488,10 +2488,29 @@ Expected behavior: public and transactional BarMatrix web surfaces should emit a
   - `/pricing?static_audit=local` rendered the expected page title/H1, had one `<main>`, linked the manifest, had no wrong canonical, had no runtime error text, had no desktop overflow, and produced no fresh browser warning/error logs.
   - `/checkout/success?static_audit=local` rendered with `noindex, nofollow`, one `<main>`, no wrong canonical, no runtime error text, no stale mobile claim, and expected links.
   - `/lp-four-traps.html?static_audit=local` rendered with cleaned links, no stale mobile claim, no runtime error text, and no fresh browser warning/error logs.
+- Deployment:
+  - Pushed app commit `5ac3a8f` (`Harden static metadata surface`) to `main`.
+  - GitHub Actions run `26804193758` passed the Vercel production workflow: install dependencies, regression tests, lint, build, pull Vercel settings, and deploy to production.
+  - `vercel inspect https://barmatrix.app` reported a Ready production deployment created after the push, with aliases including `https://barmatrix.app` and `https://www.barmatrix.app`.
+- Live HTTP verification:
+  - `https://barmatrix.app/`, `/pricing`, `/terms`, `/checkout/success`, `/sign-in`, `/sitemap.xml`, `/robots.txt`, `/manifest.webmanifest`, `/lp-four-traps.html`, and `/lp-priced-right.html` returned HTTP 200.
+  - Probed live pages emitted `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: SAMEORIGIN`, and a `Permissions-Policy` header.
+  - `/` emitted canonical `https://barmatrix.app`; `/pricing` and `/terms` did not emit the wrong home canonical.
+  - `/checkout/success` and `/sign-in` emitted `noindex, nofollow`.
+  - `/manifest.webmanifest` returned `application/manifest+json`.
+  - `/sitemap.xml` included stable `2026-06-02T00:00:00.000Z` values and public route coverage including `/app`, `/subjects/evidence`, `/traps`, and `/tensions`.
+  - Live non-Red-Zone LP checks confirmed Pricing anchors point to `/pricing`, expected `/how-it-works`, `/diagnostic`, `/boot-camps`, `/app`, `/terms`, and `/privacy` links are present, stale `/dashboard` links are absent, and stale iOS/Android claims are absent.
+- Live in-app browser verification:
+  - `/pricing?audit=static_audit_5ac3a8f_*` rendered title `Pricing - BarMatrix Flagship $999 | BarMatrix`, H1 `One price. One cohort. Full repair access.`, one `<main>`, manifest link `/manifest.webmanifest`, no wrong canonical, `index, follow`, no stale mobile claim, no runtime error text, no desktop overflow, and no fresh browser warning/error logs.
+  - `/checkout/success?audit=static_audit_5ac3a8f_*` rendered title `Checkout Complete - BarMatrix | BarMatrix`, H1 `Open your account to confirm access.`, one `<main>`, manifest link `/manifest.webmanifest`, no wrong canonical, `noindex, nofollow`, no stale mobile claim, no runtime error text, no desktop overflow, and no fresh browser warning/error logs.
+  - `/lp-four-traps.html?audit=static_audit_5ac3a8f_*` rendered the expected static LP title/H1, cleaned links, no stale mobile claim, no runtime error text, no desktop overflow, and no fresh browser warning/error logs.
+- Production health/logs:
+  - Vercel production error logs for the last 15 minutes returned no rows after the live probes.
+  - `GET https://api.barmatrix.app/health?static_surface_verify=5ac3a8f` returned `{"ok":true,"db":"up"}`.
+  - Hostinger API `stderr.log` tail was empty.
 
 ## Remaining Risk
 
-- Live post-deploy verification is still pending for this static-surface slice.
 - Red Zone routes/source remain out of scope for this pass.
 - `app/checkout/page.tsx` remains a client component without page metadata; adding noindex there should be a separate wrapper refactor if needed.
 - CSP remains a separate security-hardening task because third-party scripts and connect destinations need careful policy coverage.

@@ -567,6 +567,14 @@ export interface DashboardData {
   status: string | null;
   refunded: boolean;
   student_id: string | null;
+  billing_portal: {
+    portal_available: boolean;
+    unavailable_reason:
+      | "not_enrolled"
+      | "manual_or_complimentary"
+      | "stripe_customer_missing"
+      | null;
+  };
   metrics: {
     repair_progress_pct: number;
     active_red_zones: number;

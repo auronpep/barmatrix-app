@@ -93,9 +93,9 @@ function BillingPanel({
         Payment method
       </h2>
       <p className="mt-3 text-zinc-600">
-        Open Stripe&apos;s secure customer portal to update the card used for
-        payment-plan retries or receipt billing. BarMatrix never receives full
-        card numbers.
+        Manage Stripe billing when a portal is available, or contact support
+        for manual and complimentary access. BarMatrix never receives full card
+        numbers.
       </p>
       <BillingPortalButton checkoutSessionId={checkoutSessionId} />
       <p className="mt-4 text-sm text-zinc-500">
@@ -125,7 +125,7 @@ function SettingsPanel() {
         />
         <SettingsRow
           title="Billing"
-          body="Payment method updates run through Stripe's secure customer portal."
+          body="Stripe-backed payment method updates use Stripe's secure customer portal."
         />
         <SettingsRow
           title="Support"

@@ -143,4 +143,21 @@ describe("BillingPortalButton unavailable-state copy", () => {
     assert.match(source, /no Stripe billing portal/i);
     assert.match(source, /manual/i);
   });
+
+  it("uses dashboard billing capability before showing the payment-method CTA", () => {
+    const button = readFileSync(
+      new URL("../app/account/billing-portal-button.tsx", import.meta.url),
+      "utf8",
+    );
+    const client = readFileSync(
+      new URL("../lib/api-client.ts", import.meta.url),
+      "utf8",
+    );
+
+    assert.match(client, /billing_portal/);
+    assert.match(button, /useDashboard\(\)/);
+    assert.match(button, /billingPortal\?\.portal_available === false/);
+    assert.match(button, /No Stripe billing portal/);
+    assert.match(button, /Checking billing/);
+  });
 });

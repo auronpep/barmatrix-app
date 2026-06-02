@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { api, ApiClientError } from "@/lib/api-client";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
+import { useDashboard } from "@/lib/use-dashboard";
 
 type PortalPhase = "ready" | "redirecting" | "error";
 
@@ -15,8 +16,17 @@ export function BillingPortalButton({
   checkoutSessionId,
 }: BillingPortalButtonProps) {
   const { isLoaded, isSignedIn, getToken } = useClerkAuth();
+  const dash = useDashboard();
   const [phase, setPhase] = useState<PortalPhase>("ready");
   const [error, setError] = useState<string | null>(null);
+  const billingPortal = dash.data?.billing_portal;
+  const needsDashboardBillingCheck =
+    isLoaded && isSignedIn && !checkoutSessionId && dash.loading;
+  const portalKnownUnavailable =
+    isLoaded &&
+    isSignedIn &&
+    !checkoutSessionId &&
+    billingPortal?.portal_available === false;
 
   const openPortal = async () => {
     if (!isLoaded || phase === "redirecting") return;
@@ -66,6 +76,39 @@ export function BillingPortalButton({
           Use the same account tied to the checkout purchase before opening the
           billing portal.
         </p>
+      </div>
+    );
+  }
+
+  if (needsDashboardBillingCheck) {
+    return (
+      <div className="mt-6">
+        <button
+          type="button"
+          disabled
+          className="rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white opacity-60"
+        >
+          Checking billing...
+        </button>
+      </div>
+    );
+  }
+
+  if (portalKnownUnavailable) {
+    return (
+      <div className="mt-6">
+        <p className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
+          <span className="font-semibold">No Stripe billing portal.</span>{" "}
+          {billingPortal?.unavailable_reason === "not_enrolled"
+            ? "This signed-in account does not have an active BarMatrix enrollment available for Stripe billing management."
+            : "This account has active access, but no Stripe billing portal is available for this enrollment. If your access was granted manually or you expected an active payment plan, contact support."}
+        </p>
+        <Link
+          href="mailto:support@barmatrix.app"
+          className="mt-4 inline-flex rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-900 hover:border-zinc-500"
+        >
+          Contact support
+        </Link>
       </div>
     );
   }

@@ -4065,4 +4065,15 @@ Expected behavior: when live production has no authored Misconception taxonomy r
   - Full non-Red-Zone app sweep with `tests\red-zone-detail-params.test.ts` excluded passed 60/60.
   - `npm run lint` passed.
   - `npm run build` passed.
-- Live deploy/browser verification pending.
+- Production deploy/browser verification:
+  - Pushed commit `18df351` to `main`; Deploy Vercel Production run `26818686043` passed.
+  - Live `/traps?misconception_retire_verify=18df351` rendered one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, and no relevant browser warning/error logs.
+  - The live page retained `Wrong-answer architecture`.
+  - The live page no longer rendered the `Misconception` heading, `misconception_tags` caption, `misconceptions they prey on` copy, or `No traps in this column for the current filter.`
+  - `GET https://api.barmatrix.app/health?misconception_retire_verify=18df351` returned `{"ok":true,"db":"up"}`.
+  - Hostinger API `stderr.log` was empty.
+  - Vercel logs showed normal `/traps` HTTP 200 rows and no matching error/CSP/500 signals.
+- GitHub:
+  - Closed `auronpep/barmatrix-app#4` with the verification receipt.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-traps-misconception-retired-live-18df351.png`

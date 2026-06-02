@@ -2784,8 +2784,8 @@
 - [x] Add a failing regression for conditional Misconception column rendering.
 - [x] Apply the smallest page change to hide the empty dimension without hiding future content.
 - [x] Run focused tests, lint/build, and local build checks.
-- [ ] Deploy, run live browser verification, production health/log checks.
-- [ ] Record final evidence and update/close issue #4 if verified.
+- [x] Deploy, run live browser verification, production health/log checks.
+- [x] Record final evidence and update/close issue #4 if verified.
 
 ## Review
 
@@ -2805,3 +2805,20 @@
   - Full non-Red-Zone app sweep with `tests\red-zone-detail-params.test.ts` excluded passed 60/60.
   - `npm run lint` passed.
   - `npm run build` passed.
+
+## Production Verification
+
+- Pushed commit `18df351` to `main`; Deploy Vercel Production run `26818686043` passed.
+- Live Browser verification of `/traps?misconception_retire_verify=18df351` passed: the page rendered one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, and no relevant browser warnings/errors.
+- The verified live page retained `Wrong-answer architecture` and no longer rendered the `Misconception` heading, `misconception_tags` caption, `misconceptions they prey on` copy, or `No traps in this column for the current filter.`
+- `GET https://api.barmatrix.app/health?misconception_retire_verify=18df351` returned `{"ok":true,"db":"up"}`.
+- Hostinger API `stderr.log` was empty.
+- Vercel logs showed normal `/traps` HTTP 200 rows and no matching error/CSP/500 signals.
+- Closed `auronpep/barmatrix-app#4` with the verification receipt.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-traps-misconception-retired-live-18df351.png`
+
+## Remaining Risk
+
+- Red Zone routes/source/tests remain out of scope for this pass.
+- If authored misconception taxonomy content is later added, the column will reappear automatically when `/api/traps` returns non-zero `totals.misconception_count`.

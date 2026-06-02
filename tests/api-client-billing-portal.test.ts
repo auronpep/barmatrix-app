@@ -119,4 +119,15 @@ describe("EnrollmentRecoveryPanel checkout routing", () => {
     assert.match(source, /api\.recoverCheckoutEnrollment\(checkoutSessionId\)/);
     assert.doesNotMatch(source, /fetch\(`\/api\/checkout/);
   });
+
+  it("does not claim an unfulfilled checkout status proves confirmation", () => {
+    const source = readFileSync(
+      new URL("../app/account/enrollment-recovery.tsx", import.meta.url),
+      "utf8",
+    );
+
+    assert.doesNotMatch(source, /Enrollment Not Yet Activated/);
+    assert.doesNotMatch(source, /checkout session is confirmed/i);
+    assert.match(source, /Checkout recovery/);
+  });
 });

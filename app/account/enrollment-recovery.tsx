@@ -74,15 +74,15 @@ export function EnrollmentRecoveryPanel({
   return (
     <div className="mt-6 rounded-lg border-2 border-amber-200 bg-amber-50 p-6 sm:p-8">
       <p className="font-mono text-xs uppercase tracking-wider text-amber-700">
-        Enrollment Not Yet Activated
+        Checkout recovery
       </p>
       <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-amber-900">
-        Recovery available
+        Activation check available
       </h2>
       <p className="mt-3 text-zinc-700">
-        Your checkout session is confirmed, but the enrollment hasn&apos;t been
-        activated yet. This sometimes happens if there&apos;s a slight delay in
-        processing. Click &quot;Recover enrollment&quot; to complete your setup.
+        We could not find a completed local activation for this checkout
+        session yet. If this is the Stripe session from your recent purchase,
+        click &quot;Recover enrollment&quot; to complete setup.
       </p>
 
       {error && (

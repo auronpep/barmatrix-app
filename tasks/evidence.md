@@ -618,3 +618,94 @@ Expected behavior: production paid-subscriber flows should tolerate optional cer
 - The API repo still has unrelated admin/complimentary-access work outside this audit.
 - `tasks/lessons.md` is missing, so there were no project lesson rules to apply beyond `AGENTS.md`.
 - The AM status helper still cannot find a session for `C:\barmatrix-app`.
+
+# Live Diagnostic Session Audit
+
+## Reproduction
+
+- Production entry route: `https://barmatrix.app/diagnostic/session`.
+- Initial live API checks:
+  - `POST https://api.barmatrix.app/api/diagnostic/session/start` returned `404 {"error":"not found"}`.
+  - `GET https://api.barmatrix.app/api/diagnostic/questions` returned `404 {"error":"not found"}`.
+  - Existing `POST https://api.barmatrix.app/api/diagnostic/start` still returned HTTP 200.
+- In-app browser reproduction:
+  - Opened `/diagnostic/session`.
+  - Clicked `Start Assessment`.
+  - Page rendered `COULDN'T START` with `API 404: "not found"`.
+  - Browser log filter for `barmatrix.app` warnings/errors returned zero entries.
+
+## Trace
+
+- Frontend `C:\barmatrix-app\lib\api-client.ts` had added placement methods expecting:
+  - `/api/diagnostic/session/start`
+  - `/api/diagnostic/questions`
+  - `/api/diagnostic/session/:id/attempt`
+  - `/api/diagnostic/session/:id/results`
+- API `C:\barmatrix-api\src\index.ts` only registered the older diagnostic endpoints:
+  - `/api/diagnostic/start`
+  - `/api/diagnostic/:id/results`
+- After adding/registering the API routes, production started a real session but stayed on `Loading placement assessment`.
+- The second root cause was the session page's post-navigation hydration path: it cached only IDs, then loaded 18 separate `api.getQuestion(id)` requests before rendering the first question.
+- The final contract now returns and caches the exact hydrated questions selected by `/api/diagnostic/session/start`, so the session page renders from the pinned payload without a client-side 18-request fan-out.
+
+## Test
+
+- API regression coverage:
+  - `C:\barmatrix-api\src\routes\placement-diagnostic.test.ts`
+  - Covers the 18-question contract, start response with hydrated questions, confidence band mapping, scoring without `c3_mold_code`, and result shaping.
+- App regression coverage:
+  - `C:\barmatrix-app\tests\placement-diagnostic-contract.test.ts`
+  - Covers caching hydrated placement questions before navigation and avoiding `api.getQuestion` / `api.getPlacementQuestions()` in the session-page load path.
+
+## Change
+
+- `C:\barmatrix-api\src\routes\placement-diagnostic.ts`
+  - Added production placement start, questions, attempt, and results endpoints.
+  - Start response now includes `question_ids` and hydrated `questions`.
+  - Attempt scoring tolerates the live DB state where optional C3 mold storage is not provisioned.
+- `C:\barmatrix-api\src\index.ts`
+  - Registered the placement diagnostic routes.
+- `C:\barmatrix-app\lib\api-client.ts`
+  - Updated placement start/question types for hydrated questions.
+- `C:\barmatrix-app\app\diagnostic\session\placement-entry-client.tsx`
+  - Caches the selected hydrated questions before route navigation.
+- `C:\barmatrix-app\app\diagnostic\session\[sessionId]\page.tsx`
+  - Reads cached hydrated questions, renders from that cache, and shows restart UI for stale ID-only cache entries.
+
+## Verification
+
+- API:
+  - `npx tsx --test src/routes/placement-diagnostic.test.ts` passed.
+  - `npm test` passed: 271 tests, 271 pass.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+  - Live start response returned HTTP 200 with `question_count=18`, 18 `question_ids`, and 18 hydrated `questions`.
+- App:
+  - `node --test tests\placement-diagnostic-contract.test.ts` passed.
+  - `node --test tests\*.test.ts` passed: 28 tests, 28 pass.
+  - `npm run lint` passed.
+  - `npm run build` passed locally and during production deploy.
+- Deployment:
+  - API commits `e54f1b2` and `f5fbf11` were pushed.
+  - App commits `b6b4694` and `ad3d10f` were pushed.
+  - Hostinger route artifact was deployed and restarted.
+  - Vercel production deployment `dpl_2TieeN83t3J36QGHR1Szk3sCxyrp` is `READY` and aliased to `https://barmatrix.app`.
+- Production browser:
+  - Started a fresh placement session from `/diagnostic/session`.
+  - Reached a real `Question 1 of 18`.
+  - Submitted all 18 questions through the UI.
+  - Reached `/diagnostic/session/eabecfeb-146c-4b60-9dc4-4ec37bb7b3a2/results`.
+  - Results rendered `Placement complete`, `Your C3 Starting Level`, legal/mechanism/calibration score breakdowns, subject breakdown, remediation targets, and next-step CTAs.
+  - Browser log filter returned zero `barmatrix.app` warning/error entries after results.
+  - Screenshot: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-production-placement-results.png`.
+- Fixture cleanup:
+  - Deleted production audit data for the verified session only.
+  - Cleanup reported `attemptsDeleted: 18` and `studentsDeleted: 1`.
+
+## Remaining Risk
+
+- The newly found diagnostic placement regression is fixed and verified in production.
+- This audit still cannot prove every possible untested BarMatrix edge case is bug-free.
+- The API repo still has unrelated admin/complimentary-access work outside this audit.
+- `tasks/lessons.md` is missing, so there were no project lesson rules to apply beyond `AGENTS.md`.
+- The AM status helper still cannot find a session for `C:\barmatrix-app`.

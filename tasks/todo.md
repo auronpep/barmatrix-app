@@ -522,8 +522,50 @@
 ## Plan
 
 - [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
-- [ ] Inspect diagnostic session pages, API client methods, and matching API endpoints.
-- [ ] Verify live route/API behavior from the signed-in in-app browser.
-- [ ] If a defect is reproduced, trace root cause before editing and add focused regression coverage where practical.
-- [ ] Run relevant app/API tests, lint, build, and live browser verification.
-- [ ] Record evidence and remaining risk.
+- [x] Inspect diagnostic session pages, API client methods, and matching API endpoints.
+- [x] Verify live route/API behavior from the signed-in in-app browser.
+- [x] If a defect is reproduced, trace root cause before editing and add focused regression coverage where practical.
+- [x] Run relevant app/API tests, lint, build, and live browser verification.
+- [x] Record evidence and remaining risk.
+
+## Review
+
+- Production `/diagnostic/session` initially failed at the entry CTA with `API 404: "not found"` because the frontend expected placement routes that the API had not registered.
+- Added API placement routes for start, question payloads, attempt submit, and results, with fallback behavior for the live DB where `answer_choices.c3_mold_code` is not provisioned.
+- Production then started a real session but remained on `Loading placement assessment`; the session page was hydrating 18 individual questions client-side after navigation.
+- Fixed the contract so `/api/diagnostic/session/start` returns the exact hydrated 18-question payload it selected, and the frontend caches that payload before navigating.
+- Production browser verification completed all 18 placement questions, rendered the C3 starting level results page, and reported zero `barmatrix.app` warning/error console entries.
+- Cleanup removed the 18 anonymous audit attempts and the synthetic anonymous placement student for the verified session.
+
+## Verification
+
+- API:
+  - `npx tsx --test src/routes/placement-diagnostic.test.ts` passed.
+  - `npm test` passed: 271 tests, 271 pass.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+  - `git diff --check` passed with only LF/CRLF normalization warnings.
+  - Live `POST https://api.barmatrix.app/api/diagnostic/session/start` returned HTTP 200 with 18 question IDs and 18 hydrated questions.
+- App:
+  - `node --test tests\placement-diagnostic-contract.test.ts` passed.
+  - `node --test tests\*.test.ts` passed: 28 tests, 28 pass.
+  - `npm run lint` passed.
+  - `npm run build` passed locally and during Vercel production deploy.
+  - `git diff --check` passed with only LF/CRLF normalization warnings.
+- Deployment:
+  - API commits `e54f1b2` and `f5fbf11` were pushed; the placement route artifact was copied to Hostinger and the Node app restarted.
+  - Frontend commits `b6b4694` and `ad3d10f` were pushed.
+  - Vercel production deployment `dpl_2TieeN83t3J36QGHR1Szk3sCxyrp` is `READY` and aliased to `https://barmatrix.app`.
+- Browser:
+  - In-app browser verified `https://barmatrix.app/diagnostic/session` -> `Start Assessment` -> real `Question 1 of 18`.
+  - Submitted all 18 questions through the UI and reached `/diagnostic/session/eabecfeb-146c-4b60-9dc4-4ec37bb7b3a2/results`.
+  - Results showed `Placement complete`, `Your C3 Starting Level`, legal/mechanism/calibration score breakdowns, subject breakdown, and next-step CTAs.
+  - Screenshot saved: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-production-placement-results.png`.
+
+## Remaining Risk
+
+- This closes the newly found `/diagnostic/session` production regression, but it is not proof that every future edge case in the system is bug-free.
+- The verified placement session wrote 18 anonymous audit attempts before cleanup; cleanup reported `attemptsDeleted: 18` and `studentsDeleted: 1`.
+- The API repo still has unrelated local admin/complimentary-access work that was intentionally excluded.
+- `tasks/lessons.md` is still missing.
+- The AM status command still fails because no AM session matches `C:\barmatrix-app`.

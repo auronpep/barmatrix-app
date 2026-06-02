@@ -882,3 +882,44 @@
 - The API repo still has unrelated local admin/complimentary-access changes that were intentionally not staged or deployed.
 - `tasks/lessons.md` is still missing.
 - The AM status helper still cannot find a session for `C:\barmatrix-app`.
+
+# Live Paid Integration Edge Audit
+
+## Scope
+
+- Continue from the paid-subscriber production audit by targeting remaining high-value live edges.
+- Cover safe billing/account portal behavior, checkout-return status pages, boot-camp mastery readiness or submit flow when available, and production logs after those actions.
+- Avoid paid-provider mutations unless the UI flow itself requires a safe session creation, and do not expose secrets.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm app/API worktree state and isolate unrelated API admin changes.
+- [x] Inspect billing, checkout-return, and boot-camp mastery source contracts.
+- [x] Connect to the in-app browser with the current paid production session.
+- [x] Browser-test account/billing, checkout-return, and boot-camp mastery surfaces.
+- [ ] Inspect production API/runtime logs after the browser actions.
+- [ ] If defects are reproduced, trace source, add/update regression coverage, fix, deploy, and reverify.
+- [ ] Run relevant checks and update evidence.
+
+## Review
+
+- Production `/account?checkout_session_id=cs_test_missing_live_audit` rendered the active paid account state but did not surface checkout recovery.
+- Live same-origin frontend probe confirmed `https://barmatrix.app/api/checkout/cs_test_missing_live_audit/status` returns a Next.js 404 page.
+- Live backend probe confirmed `https://api.barmatrix.app/api/checkout/cs_test_missing_live_audit/status` returns HTTP 200 with `{"fulfilled":false}`.
+- Root cause: `app/account/enrollment-recovery.tsx` bypassed the shared API client and called relative `/api/checkout/...` endpoints, so production hit the Vercel frontend origin instead of the Hostinger API origin.
+- Source fix: checkout status/recovery helpers now live in `lib/api-client.ts`, and the account recovery panel uses those helpers.
+
+## Verification
+
+- Red check: `node --test tests\api-client-billing-portal.test.ts` failed before implementation because checkout recovery helpers were missing and the account component still used same-origin fetches.
+- Green focused check: `node --test tests\api-client-billing-portal.test.ts` passed after implementation.
+- App `node --test tests\*.test.ts` passed: 33 tests, 33 pass.
+- App `npm run lint` passed.
+- App `npm run build` passed.
+- App `git diff --check` passed with only existing LF/CRLF normalization warnings.
+- Live deployment and browser re-verification are pending.
+
+## Remaining Risk
+
+- Pending.

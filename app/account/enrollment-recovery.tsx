@@ -2,18 +2,14 @@
 
 import { useEffect, useState } from "react";
 
-interface CheckoutStatus {
-  fulfilled: boolean;
-  purchaseId?: string;
-  status?: string;
-}
+import { api, type CheckoutStatusResponse } from "@/lib/api-client";
 
 export function EnrollmentRecoveryPanel({
   checkoutSessionId,
 }: {
   checkoutSessionId: string | null;
 }) {
-  const [status, setStatus] = useState<CheckoutStatus | null>(null);
+  const [status, setStatus] = useState<CheckoutStatusResponse | null>(null);
   const [recovering, setRecovering] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,8 +19,7 @@ export function EnrollmentRecoveryPanel({
 
     const checkStatus = async () => {
       try {
-        const res = await fetch(`/api/checkout/${checkoutSessionId}/status`);
-        const data = (await res.json()) as CheckoutStatus;
+        const data = await api.getCheckoutStatus(checkoutSessionId);
         setStatus(data);
       } catch (err) {
         console.error("[enrollment recovery] check failed:", err);
@@ -55,16 +50,7 @@ export function EnrollmentRecoveryPanel({
     setError(null);
 
     try {
-      const res = await fetch(`/api/checkout/${checkoutSessionId}/recover`, {
-        method: "POST",
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || "Recovery failed");
-        setRecovering(false);
-        return;
-      }
+      const data = await api.recoverCheckoutEnrollment(checkoutSessionId);
 
       // Recovery successful - refresh status
       setStatus({ fulfilled: true, purchaseId: data.purchaseId });

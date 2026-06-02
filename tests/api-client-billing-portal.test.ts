@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { afterEach, describe, it } from "node:test";
 
 process.env.NEXT_PUBLIC_API_URL = "https://api.test";
@@ -53,5 +54,69 @@ describe("api.createCustomerPortalSession", () => {
       checkout_session_id: "cs_test_owned",
       return_url: "https://barmatrix.app/account",
     });
+  });
+});
+
+describe("api checkout recovery helpers", () => {
+  it("checks checkout status on the configured API host", async () => {
+    const calls: Array<{ input: RequestInfo | URL; init?: RequestInit }> = [];
+    globalThis.fetch = async (input, init) => {
+      calls.push({ input, init });
+      return new Response(JSON.stringify({ fulfilled: false }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    };
+
+    const { api } = await importApiClient();
+
+    const status = await api.getCheckoutStatus("cs_test_missing live");
+
+    assert.deepEqual(status, { fulfilled: false });
+    assert.equal(calls.length, 1);
+    assert.equal(
+      String(calls[0]?.input),
+      "https://api.test/api/checkout/cs_test_missing%20live/status",
+    );
+  });
+
+  it("posts checkout recovery on the configured API host", async () => {
+    const calls: Array<{ input: RequestInfo | URL; init?: RequestInit }> = [];
+    globalThis.fetch = async (input, init) => {
+      calls.push({ input, init });
+      return new Response(
+        JSON.stringify({ status: "recovered", purchaseId: "purchase_test" }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    };
+
+    const { api } = await importApiClient();
+
+    const recovered = await api.recoverCheckoutEnrollment("cs_test_recover");
+
+    assert.deepEqual(recovered, {
+      status: "recovered",
+      purchaseId: "purchase_test",
+    });
+    assert.equal(calls.length, 1);
+    assert.equal(
+      String(calls[0]?.input),
+      "https://api.test/api/checkout/cs_test_recover/recover",
+    );
+    assert.equal(calls[0]?.init?.method, "POST");
+  });
+});
+
+describe("EnrollmentRecoveryPanel checkout routing", () => {
+  it("uses the shared API client instead of same-origin checkout fetches", () => {
+    const source = readFileSync(
+      new URL("../app/account/enrollment-recovery.tsx", import.meta.url),
+      "utf8",
+    );
+
+    assert.match(source, /import \{[^}]*\bapi\b[^}]*\} from "@\/lib\/api-client";/);
+    assert.match(source, /api\.getCheckoutStatus\(checkoutSessionId\)/);
+    assert.match(source, /api\.recoverCheckoutEnrollment\(checkoutSessionId\)/);
+    assert.doesNotMatch(source, /fetch\(`\/api\/checkout/);
   });
 });

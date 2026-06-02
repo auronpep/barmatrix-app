@@ -57,6 +57,20 @@ export interface CheckoutSessionRequest {
   cancel_url?: string;
 }
 
+export interface CheckoutStatusResponse {
+  fulfilled: boolean;
+  purchaseId?: string;
+  status?: string;
+}
+
+export interface CheckoutRecoveryResponse {
+  status: string;
+  purchaseId?: string;
+  studentId?: string;
+  seatNumber?: number;
+  message?: string;
+}
+
 export interface CustomerPortalSessionRequest {
   checkout_session_id?: string | null;
   return_url: string;
@@ -1315,6 +1329,17 @@ export const api = {
       method: "POST",
       body: JSON.stringify(payload),
     }),
+
+  getCheckoutStatus: (sessionId: string) =>
+    request<CheckoutStatusResponse>(
+      `/api/checkout/${encodeURIComponent(sessionId)}/status`,
+    ),
+
+  recoverCheckoutEnrollment: (sessionId: string) =>
+    request<CheckoutRecoveryResponse>(
+      `/api/checkout/${encodeURIComponent(sessionId)}/recover`,
+      { method: "POST", body: JSON.stringify({}) },
+    ),
 
   createCustomerPortalSession: (
     payload: CustomerPortalSessionRequest,

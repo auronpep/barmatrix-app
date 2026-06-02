@@ -2834,3 +2834,28 @@ Expected behavior: an active signed-in account whose dashboard billing capabilit
   - `node --test tests\api-client-billing-portal.test.ts` failed on `!checkoutSessionId` in `needsDashboardBillingCheck`.
 - Green focused check after implementation:
   - `node --test tests\api-client-billing-portal.test.ts` passed 8/8.
+- Broader local checks:
+  - Full non-Red-Zone app test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 54/54.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `git diff --check -- app\account\billing-portal-button.tsx tests\api-client-billing-portal.test.ts tasks\todo.md tasks\evidence.md` passed with only normal CRLF warnings.
+- Local production browser check:
+  - Started `next start` on `http://localhost:3015`; the account route rendered, but the local auth/API context could not reproduce the live paid-dashboard branch and showed `Account status unavailable`, so this was not used as final UI proof.
+  - The temporary local server was stopped after verification.
+- Deployment:
+  - Pushed commit `be0a3ad` (`Honor billing capability on checkout return`) to `main`.
+  - GitHub Actions run `26807478692` passed install, regression tests, lint, build, Vercel pull, and production deploy.
+  - `vercel inspect https://barmatrix.app` reported production deployment `dpl_6bLKobZ7kBdjGss1tyD4vMms8Sv7` Ready and aliased to `https://barmatrix.app`.
+- Live browser verification:
+  - `/account?checkout_session_id=cs_test_missing_live_audit_final2_1780367857789&live_account_return_verify=be0a3ad` rendered `Your BarMatrix access is active.`, `Activation check available`, `Recover enrollment`, `No Stripe billing portal`, and `Contact support`.
+  - The fixed live page had no `Update Payment Method` button, one `<main>`, no desktop overflow, no visible raw runtime/API/CSP text, and no fresh live browser warnings/errors; the only returned warnings were stale localhost Clerk warnings from an earlier local session.
+  - Screenshot evidence: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-account-return-billing-be0a3ad.png`.
+- Production health/logs:
+  - `GET https://api.barmatrix.app/health?account_return_verify=be0a3ad` returned `{"ok":true,"db":"up"}`.
+  - Vercel logs for the check window showed only normal info request rows, including the account route.
+  - Hostinger API `stderr.log` tail was empty.
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- The checkout recovery panel still appears for the fake checkout-session id, as intended for the recovery workflow; this fix only removes the misleading billing-portal CTA when the signed-in dashboard capability says no Stripe portal exists.

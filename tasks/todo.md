@@ -2047,9 +2047,9 @@
 - [x] Compare the checkout-return branch against plain `/account`.
 - [x] Trace the branch to local source and add a failing regression test.
 - [x] Apply the smallest source change.
-- [ ] Run focused tests, full non-Red-Zone tests, lint, build, browser verification, and production log checks.
-- [ ] Deploy if verification remains green, then run live browser verification.
-- [ ] Record final review notes and remaining risk.
+- [x] Run focused tests, full non-Red-Zone tests, lint, build, browser verification, and production log checks.
+- [x] Deploy if verification remains green, then run live browser verification.
+- [x] Record final review notes and remaining risk.
 
 ## Review
 
@@ -2057,8 +2057,21 @@
 - Root cause: `app/account/billing-portal-button.tsx` skipped the dashboard billing capability check when a checkout-session id was present.
 - Added a regression in `tests/api-client-billing-portal.test.ts` proving checkout-return URLs must not bypass dashboard billing capability.
 - Changed only the billing button capability gate so signed-in account pages wait for and honor dashboard billing capability with or without `checkoutSessionId`.
+- Pushed commit `be0a3ad` (`Honor billing capability on checkout return`) to `main`; Vercel production deployment `dpl_6bLKobZ7kBdjGss1tyD4vMms8Sv7` is Ready and aliased to `https://barmatrix.app`.
 
 ## Verification
 
 - Red check before implementation: `node --test tests\api-client-billing-portal.test.ts` failed on `!checkoutSessionId` in `needsDashboardBillingCheck`.
 - Green focused check after implementation: `node --test tests\api-client-billing-portal.test.ts` passed 8/8.
+- Full non-Red-Zone app test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 54/54.
+- `npm run lint` passed.
+- `npm run build` passed.
+- Local production build started on `http://localhost:3015`; the route rendered, but local auth/API did not reproduce the live paid-dashboard branch, so final UI proof used production.
+- Live in-app browser verification of `/account?checkout_session_id=cs_test_missing_live_audit_final2_1780367857789&live_account_return_verify=be0a3ad` rendered active access, checkout recovery, `No Stripe billing portal`, no `Update Payment Method`, one `<main>`, no desktop overflow, and no visible raw runtime/API/CSP text.
+- Screenshot evidence: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-account-return-billing-be0a3ad.png`.
+- Production health/log checks passed: API health returned `{"ok":true,"db":"up"}`, Vercel logs showed only normal info request rows in the check window, and Hostinger API `stderr.log` was empty.
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- The checkout recovery panel still appears for the fake checkout-session id, as intended for the recovery workflow; this pass only removed the misleading Stripe portal CTA from accounts whose dashboard capability says no portal is available.

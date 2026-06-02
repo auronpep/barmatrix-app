@@ -518,6 +518,7 @@ function QuestionList({ questions }: { questions: SubjectQuestion[] }) {
             border: "1px solid var(--rule-soft)",
             background: "var(--paper)",
             padding: 20,
+            minWidth: 0,
           }}
         >
           <div
@@ -526,14 +527,19 @@ function QuestionList({ questions }: { questions: SubjectQuestion[] }) {
               gap: 12,
               alignItems: "center",
               justifyContent: "space-between",
+              flexWrap: "wrap",
+              minWidth: 0,
               marginBottom: 12,
             }}
           >
-            <div className="eyebrow-strong">
+            <div className="eyebrow-strong break-anywhere">
               {String(index + 1).padStart(2, "0")} /{" "}
               {question.external_id ?? question.question_id.slice(0, 8)}
             </div>
-            <div className="mono" style={{ color: "var(--muted)", fontSize: 12 }}>
+            <div
+              className="mono break-anywhere"
+              style={{ color: "var(--muted)", fontSize: 12, minWidth: 0 }}
+            >
               {question.subject ?? "Criminal Law"}
             </div>
           </div>
@@ -601,13 +607,14 @@ function SummaryBlock({ title, items }: { title: string; items: TopicSummary[] }
 function Chip({ children }: { children: React.ReactNode }) {
   return (
     <span
-      className="mono"
+      className="mono break-anywhere"
       style={{
         border: "1px solid var(--rule-soft)",
         color: "var(--muted)",
         fontSize: 11,
         padding: "5px 8px",
         textTransform: "uppercase",
+        maxWidth: "100%",
       }}
     >
       {children}

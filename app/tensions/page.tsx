@@ -175,18 +175,18 @@ function TensionSubjectGroup({
   tensions: TensionEntry[];
 }) {
   return (
-    <div>
-      <div className="flex items-baseline justify-between border-b border-zinc-200 pb-2">
-        <h2 className="font-serif text-xl font-semibold text-zinc-950">
+    <div className="min-w-0">
+      <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-zinc-200 pb-2">
+        <h2 className="min-w-0 font-serif text-xl font-semibold text-zinc-950">
           {subject}
         </h2>
         <span className="font-mono text-xs uppercase tracking-wider text-zinc-500">
           {tensions.length} {tensions.length === 1 ? "tension" : "tensions"}
         </span>
       </div>
-      <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+      <ul className="mt-4 grid min-w-0 gap-2 sm:grid-cols-2">
         {tensions.map((tension) => (
-          <li key={`${tension.slug}-${tension.tension_point_id ?? "obs"}`}>
+          <li key={`${tension.slug}-${tension.tension_point_id ?? "obs"}`} className="min-w-0">
             <TensionRow tension={tension} />
           </li>
         ))}
@@ -199,11 +199,11 @@ function TensionRow({ tension }: { tension: TensionEntry }) {
   return (
     <Link
       href={`/tensions/${encodeURIComponent(tension.slug)}`}
-      className="flex h-full items-center justify-between gap-4 rounded-lg border border-zinc-200 bg-white px-4 py-3 hover:border-zinc-400 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+      className="flex min-w-0 w-full flex-col items-start gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-3 hover:border-zinc-400 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900 sm:h-full sm:flex-row sm:items-center sm:justify-between sm:gap-4"
     >
       <span className="min-w-0">
-        <span className="flex items-center gap-2">
-          <span className="truncate font-medium text-zinc-900">
+        <span className="flex min-w-0 flex-wrap items-center gap-2">
+          <span className="min-w-0 break-words font-medium text-zinc-900">
             {tension.name}
           </span>
           {tension.official && (
@@ -218,7 +218,7 @@ function TensionRow({ tension }: { tension: TensionEntry }) {
           </span>
         )}
       </span>
-      <span className="shrink-0 text-right font-mono text-xs text-zinc-500">
+      <span className="shrink-0 self-end text-right font-mono text-xs text-zinc-500 sm:self-auto">
         {tension.question_count} q
       </span>
     </Link>

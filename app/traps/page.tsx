@@ -134,7 +134,7 @@ export default async function TrapsPage({
 
       {!isEmpty && !filteredEmpty && (
         <TrapProfileProvider>
-          <div className="mt-10 grid gap-8 lg:grid-cols-2">
+          <div className="mt-10 grid min-w-0 gap-8 lg:grid-cols-2">
             <TrapColumn
               title="Wrong-answer architecture"
               caption="How the distractor is built (forensic_tags)"
@@ -198,9 +198,9 @@ function TrapColumn({
   total: number;
 }) {
   return (
-    <div>
-      <div className="flex items-baseline justify-between border-b border-zinc-200 pb-2">
-        <h2 className="font-serif text-xl font-semibold text-zinc-950">{title}</h2>
+    <div className="min-w-0">
+      <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-zinc-200 pb-2">
+        <h2 className="min-w-0 font-serif text-xl font-semibold text-zinc-950">{title}</h2>
         <span className="font-mono text-xs uppercase tracking-wider text-zinc-500">
           {total} {total === 1 ? "trap" : "traps"}
         </span>
@@ -211,9 +211,9 @@ function TrapColumn({
           No traps in this column for the current filter.
         </p>
       ) : (
-        <ul className="mt-4 space-y-2">
+        <ul className="mt-4 min-w-0 space-y-2">
           {traps.map((trap) => (
-            <li key={trap.slug}>
+            <li key={trap.slug} className="min-w-0">
               <TrapRow trap={trap} />
             </li>
           ))}
@@ -227,11 +227,13 @@ function TrapRow({ trap }: { trap: TrapEntry }) {
   return (
     <Link
       href={`/traps/${encodeURIComponent(trap.slug)}`}
-      className="flex items-center justify-between gap-4 rounded-lg border border-zinc-200 bg-white px-4 py-3 hover:border-zinc-400 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+      className="flex min-w-0 w-full flex-col items-start gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-3 hover:border-zinc-400 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
     >
       <span className="min-w-0">
-        <span className="flex items-center gap-2">
-          <span className="truncate font-medium text-zinc-900">{trap.name}</span>
+        <span className="flex min-w-0 flex-wrap items-center gap-2">
+          <span className="min-w-0 break-words font-medium text-zinc-900">
+            {trap.name}
+          </span>
           {trap.official && (
             <span className="shrink-0 rounded-full border border-emerald-300 bg-emerald-50 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-emerald-700">
               Official
@@ -239,11 +241,11 @@ function TrapRow({ trap }: { trap: TrapEntry }) {
           )}
           <PersonalTrapBadge slug={trap.slug} />
         </span>
-        <span className="mt-0.5 block font-mono text-[11px] text-zinc-400">
+        <span className="mt-0.5 block break-all font-mono text-[11px] text-zinc-400">
           {trap.slug}
         </span>
       </span>
-      <span className="shrink-0 text-right font-mono text-xs text-zinc-500">
+      <span className="shrink-0 self-end text-right font-mono text-xs text-zinc-500 sm:self-auto">
         {trap.question_count} q · {trap.choice_count}{" "}
         {trap.choice_count === 1 ? "choice" : "choices"}
       </span>

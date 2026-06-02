@@ -282,6 +282,11 @@ button {
   color: var(--red);
   font-weight: 600;
 }
+.break-anywhere {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
 .section-rule {
   display: flex;
   align-items: center;

@@ -2894,7 +2894,7 @@
 - [x] Search local app/API/BMO assets for authoritative C3 annotation or answer-choice mold-tag data.
 - [x] Re-check live production C3 schema/counts and candidate rows.
 - [x] Apply a smallest safe fix only if an authoritative backfill/provisioning source exists.
-- [ ] Verify with Browser, API checks, tests/builds/logs, and update task evidence.
+- [x] Verify with Browser, API checks, tests/builds/logs, and update task evidence.
 
 ## Review
 
@@ -2915,4 +2915,14 @@
 - API `npm run typecheck` passed.
 - API `npm run build` passed.
 - Local Browser verification of patched `/mastery` could not reach the paid state because the localhost Clerk session is currently signed out; it rendered the signed-out fallback instead.
-- Production Browser verification is pending deployment of the app patch.
+- Pushed app commit `4476d1c` to `main`; Deploy Vercel Production run `26820039185` completed successfully.
+- Production Browser verification of `/mastery?c3_mastery_copy_fix=4476d1c` passed for the paid user:
+  - Rendered `Measured on 0 of your 107 attempts (0% C3-tagged)`.
+  - Rendered `Tagged coverage pending`.
+  - Rendered the C3 coverage-pending explanation and `Practice the bank` CTA.
+  - Did not render the old `Finish The Method, then work questions` copy.
+  - Had one H1, one `<main>`, no desktop horizontal overflow, no raw runtime/API/CSP text, and no relevant live `barmatrix.app` browser warning/error logs.
+- `GET https://api.barmatrix.app/health?c3_mastery_copy_fix=4476d1c` returned `{"ok":true,"db":"up"}`.
+- Hostinger API stderr could not be checked in this slice because both SSH attempts timed out.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-c3-mastery-coverage-pending-live-viewport-4476d1c.png`

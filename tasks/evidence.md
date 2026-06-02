@@ -4233,7 +4233,18 @@ Expected behavior: a Method-complete paid user whose attempts are recorded but n
   - API `npm run build` passed.
 - Browser verification:
   - Local `/mastery?c3_mastery_copy_local=20260602` rendered the signed-out fallback because the localhost Clerk session is not signed in, so it did not exercise the paid coverage-pending branch.
-  - Production browser verification is pending deployment of the app patch.
+  - Pushed commit `4476d1c` to `main`; Deploy Vercel Production run `26820039185` completed successfully.
+  - Live `/mastery?c3_mastery_copy_fix=4476d1c` rendered one H1, one `<main>`, no desktop horizontal overflow, no raw runtime/API/CSP text, and no relevant live `barmatrix.app` browser warning/error logs.
+  - The live page rendered `Measured on 0 of your 107 attempts (0% C3-tagged)`.
+  - The live page rendered `Tagged coverage pending`.
+  - The live page rendered the C3-tagged coverage-pending explanation and `Practice the bank` CTA.
+  - The live page did not render the old `Finish The Method, then work questions` copy.
+- Production checks:
+  - `GET https://api.barmatrix.app/health?c3_mastery_copy_fix=4476d1c` returned `{"ok":true,"db":"up"}`.
+  - Deploy workflow `26820039185` completed with conclusion `success`.
+  - Hostinger API stderr could not be checked because two SSH attempts timed out.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-c3-mastery-coverage-pending-live-viewport-4476d1c.png`
 - Remaining uncertainty:
   - Red Zone remains out of scope by request.
   - C3 measured Mastery still requires authored C3 annotation and answer-choice mold-tag content.

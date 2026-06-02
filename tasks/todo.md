@@ -510,3 +510,20 @@
 - The API repo still has unrelated local admin/complimentary-access work that was intentionally excluded.
 - `tasks/lessons.md` is still missing.
 - The AM status command still fails because no AM session matches `C:\barmatrix-app`.
+
+# Live Diagnostic Session Audit
+
+## Scope
+
+- Audit the new `/diagnostic/session` production flow that landed after the earlier live audit.
+- Verify the entry route, session route, question submit path, results route, browser logs, and live API support.
+- Use only local code/runtime and live production evidence; do not expose tokens or QA identity details.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [ ] Inspect diagnostic session pages, API client methods, and matching API endpoints.
+- [ ] Verify live route/API behavior from the signed-in in-app browser.
+- [ ] If a defect is reproduced, trace root cause before editing and add focused regression coverage where practical.
+- [ ] Run relevant app/API tests, lint, build, and live browser verification.
+- [ ] Record evidence and remaining risk.

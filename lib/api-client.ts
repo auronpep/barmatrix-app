@@ -1029,6 +1029,7 @@ export interface FoundationsMarkResponse {
 export interface PlacementSessionStartResponse {
   session_id: string;
   question_count: number;
+  question_ids: string[];
   placement_model: string;
 }
 
@@ -1036,7 +1037,9 @@ export interface PlacementQuestion {
   question_id: string;
   external_id: string | null;
   subject: string;
+  topic: string | null;
   subtopic: string | null;
+  tension_point: string | null;
   fact_pattern: string;
   question_stem: string;
   call_of_question: string | null;

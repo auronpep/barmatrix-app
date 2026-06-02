@@ -111,19 +111,35 @@ export default function PlacementSessionPage({
 
   useEffect(() => {
     let active = true;
-
-    api
-      .getPlacementQuestions()
-      .then((resp) => {
+    const cached = readSessionCache(sessionId);
+    if (!cached || cached.question_ids.length === 0) {
+      queueMicrotask(() => {
         if (!active) return;
-        const ids = resp.questions.map((q) => q.question_id);
-        const cached = readSessionCache(sessionId);
-        const resumeIndex = cached ? cached.completed_count : 0;
+        setErrorMsg("Placement session cache missing. Restart placement to open a fresh question sequence.");
+        setPhase("error");
+      });
+      return () => {
+        active = false;
+      };
+    }
+
+    Promise.all(cached.question_ids.map((id) => api.getQuestion(id)))
+      .then((questions) => {
+        if (!active) return;
+        const resumeIndex = Math.min(cached.completed_count, questions.length);
+        if (resumeIndex >= questions.length) {
+          router.replace(`/diagnostic/session/${sessionId}/results`);
+          return;
+        }
 
         // Store question list for resumption
-        cacheSession({ session_id: sessionId, question_ids: ids, completed_count: resumeIndex });
+        cacheSession({
+          session_id: sessionId,
+          question_ids: cached.question_ids,
+          completed_count: resumeIndex,
+        });
 
-        setQuestions(resp.questions);
+        setQuestions(questions);
         setCurrentIndex(resumeIndex);
         setPhase("presenting");
         startedAtRef.current = Date.now();
@@ -137,7 +153,7 @@ export default function PlacementSessionPage({
     return () => {
       active = false;
     };
-  }, [sessionId]);
+  }, [router, sessionId]);
 
   const resetQuestionState = () => {
     setSelected(null);

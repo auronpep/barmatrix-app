@@ -3,9 +3,25 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { api, ApiClientError } from "@/lib/api-client";
+import { api, ApiClientError, type PlacementSessionStartResponse } from "@/lib/api-client";
 
 type Phase = "intro" | "starting" | "error";
+
+function cachePlacementSession(result: PlacementSessionStartResponse): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(
+      `barmatrix.placement.${result.session_id}`,
+      JSON.stringify({
+        session_id: result.session_id,
+        question_ids: result.question_ids,
+        completed_count: 0,
+      }),
+    );
+  } catch {
+    // If sessionStorage is unavailable, the session page will show recovery UI.
+  }
+}
 
 export function PlacementEntryClient() {
   const router = useRouter();
@@ -17,6 +33,7 @@ export function PlacementEntryClient() {
     setError(null);
     try {
       const result = await api.startPlacementSession();
+      cachePlacementSession(result);
       router.push(`/diagnostic/session/${result.session_id}`);
     } catch (err) {
       const message =

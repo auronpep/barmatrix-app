@@ -1991,3 +1991,42 @@
 
 - Red Zone routes/source remain out of scope for this pass.
 - The enforced CSP was browser-verified across the core app/auth/account/checkout/static-LP surfaces; uncommon future third-party embeds or new payment-provider UI embeds will need explicit CSP additions before launch.
+
+# Live Post-CSP Study Flow Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones after the enforced CSP deployment.
+- Verify signed-in, API-backed study surfaces still render and interact under CSP.
+- Avoid payment-provider side effects and skip Red Zone routes/source because another session owns that review.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Verify live CSP headers on representative protected study routes.
+- [x] Browser-smoke signed-in dashboard/study routes under CSP.
+- [x] Exercise one harmless live API-backed study interaction.
+- [x] Check production frontend/API logs and live API health after the smoke.
+- [x] Trace and fix any reproduced non-Red-Zone root cause with regression coverage where practical.
+- [x] Record review notes, evidence, and remaining risk.
+
+## Review
+
+- Live HTTP probes confirmed CSP on `/dashboard`, `/drills/evidence`, `/practice`, `/timed-sets`, `/boot-camps`, `/certification`, `/coach`, `/foundations`, `/mastery`, `/traps`, and `/tensions`, with no `localhost`, `127.0.0.1`, or `ws://` leakage.
+- In-app browser signed-in smoke covered dashboard, Evidence drill, practice, timed sets, boot camps, certification, coach, foundations, mastery, traps, and tensions under the live enforced CSP.
+- Traps/tensions initially tripped a broad text heuristic, but exact-match inspection showed ordinary legal catalog content (`Violation Equals Suppression`, `statutory violation`), not raw API/CSP errors.
+- Evidence drill interaction loaded a real live question, selected answer `A`, submitted it, and rendered forensics/next-question state with no fresh browser warning/error logs.
+- No non-Red-Zone source defect was reproduced in this slice, so no code change or regression test was added.
+
+## Verification
+
+- Live route header probe passed for 11 representative non-Red-Zone study routes.
+- Live browser smoke found meaningful content, one `<main>`, no desktop overflow in the tested viewport, and no fresh browser warning/error logs on each route.
+- Live Evidence drill submit rendered result/forensics state and `Next Evidence question`.
+- Production health/log checks after the smoke: API health returned `{"ok":true,"db":"up"}`, Vercel log filter found no CSP/error matches, and Hostinger API `stderr.log` was empty.
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- This slice verified one live study mutation in Evidence. It did not submit every boot-camp, certification, timed-set, coach, or diagnostic workflow again after CSP because those longer workflows were covered in earlier audit slices and would create extra production attempts.

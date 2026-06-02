@@ -2707,3 +2707,75 @@ Expected behavior: BarMatrix production pages should emit an app-managed Content
 
 - Red Zone routes/source remain out of scope for this pass.
 - The enforced CSP is verified across core app/auth/account/checkout/static-LP surfaces. Future third-party embeds or new payment-provider UI embeds will need explicit CSP entries before they are shipped.
+
+# Live Post-CSP Study Flow Evidence
+
+## Issue
+
+Expected behavior: after the enforced CSP deployment, live signed-in non-Red-Zone study routes should still render meaningful states and complete API-backed interactions without CSP violations, browser runtime errors, or production log errors. Actual behavior: this protected study workflow surface has not yet been audited after CSP enforcement. Affected domain: live BarMatrix study program outside Red Zones.
+
+## Reproduction
+
+- Reproduced: no source defect reproduced in this slice.
+- Setup:
+  - Dirty Red Zone source/test files remain out of scope for this slice.
+  - In-app browser is signed in as a paid subscriber.
+  - Live production deployment is current after commits `39b70d1` and `91ca64b`.
+- Live HTTP route checks:
+  - `/dashboard`, `/drills/evidence`, `/practice`, `/timed-sets`, `/boot-camps`, `/certification`, `/coach`, `/foundations`, `/mastery`, `/traps`, and `/tensions` returned HTTP 200 and emitted `Content-Security-Policy`.
+  - None of those live CSP headers contained `localhost`, `127.0.0.1`, or `ws://`.
+- Live in-app browser route smoke:
+  - `/dashboard` rendered `Progress, next drill, and recent wrong-answer forensics.`
+  - `/drills/evidence` rendered `Evidence questions with wrong-answer forensics in the same drill.`
+  - `/practice` rendered `Practice the bank`.
+  - `/timed-sets` rendered `Run a timed mixed set, then review the traps that surfaced under pressure.`
+  - `/boot-camps` rendered `Boot camps organize repeated misses into short repair sequences.`
+  - `/certification` rendered `Finish The Method first`.
+  - `/coach` rendered `The C3 Coach`.
+  - `/foundations` rendered `The Method: Cut → Clash → Call — the BarMatrix wrong-answer method`.
+  - `/mastery` rendered `How well you run the method`.
+  - `/traps` rendered `The finite universe of MBE traps`.
+  - `/tensions` rendered `The recurring legal tension points`.
+  - Each route had one `<main>`, meaningful content, no desktop overflow in the tested viewport, and no fresh browser warning/error logs.
+- False-positive check:
+  - The broad raw-error heuristic flagged `/traps` and `/tensions`.
+  - Exact context inspection showed ordinary catalog/legal text (`Violation Equals Suppression`, `statutory violation`), not API status or CSP failure text.
+- Interaction proof:
+  - Live `/drills/evidence` loaded a real queue question: `presentation_questions_batch_023_E4_conviction_of_crime::r4::Q03 - E4`.
+  - Selected answer `A. Admit the conviction because all felony convictions of testifying defendants are automatically admissible.`
+  - Clicked `Submit answer`.
+  - The UI rendered forensics/result state and `Next Evidence question` with no visible runtime text and no fresh browser warning/error logs.
+  - Screenshot saved: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-post-csp-evidence-submit.png`.
+
+## Trace
+
+- Files/runtime areas inspected:
+  - `tasks/todo.md`
+  - `tasks/evidence.md`
+  - Live HTTP response headers
+  - Live in-app browser DOM snapshots/logs
+  - Live API health
+  - Vercel frontend logs
+  - Hostinger API `stderr.log`
+- Root cause:
+  - No post-CSP non-Red-Zone study-flow defect was reproduced.
+- Confidence: medium-high for the tested route set and Evidence interaction; this does not prove every possible workflow branch.
+
+## Change
+
+- No app/API source changes were made in this slice.
+- Task ledgers were updated with the audit scope and evidence.
+
+## Verification
+
+- Live route header probe passed for 11 representative non-Red-Zone study routes.
+- Live signed-in browser smoke passed for dashboard, Evidence drill, practice, timed sets, boot camps, certification, coach, foundations, mastery, traps, and tensions.
+- Live Evidence drill answer submission rendered forensics/next-question state.
+- `GET https://api.barmatrix.app/health?post_csp_study_verify=1` returned `{"ok":true,"db":"up"}`.
+- `vercel logs https://barmatrix.app --since 10m` filtered for errors/CSP violations returned no matches.
+- Hostinger API `stderr.log` tail was empty.
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- This slice submitted one Evidence answer. It did not re-submit every longer boot-camp, certification, timed-set, coach, or diagnostic workflow after CSP because earlier audit slices already covered those workflows and repeating all of them would add extra production attempts.

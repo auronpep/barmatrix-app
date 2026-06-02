@@ -27,13 +27,19 @@ const SENTRY_INGEST_ORIGIN =
   "https://o4511480415584256.ingest.us.sentry.io";
 const CLERK_LIVE_ORIGIN = "https://clerk.barmatrix.app";
 const CLERK_TEST_ORIGIN = "https://*.clerk.accounts.dev";
+const CLERK_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "";
+const ALLOW_CLERK_TEST_ORIGIN =
+  IS_DEV || CLERK_PUBLISHABLE_KEY.startsWith("pk_test_");
+const CLERK_ORIGINS = unique([
+  CLERK_LIVE_ORIGIN,
+  ALLOW_CLERK_TEST_ORIGIN ? CLERK_TEST_ORIGIN : undefined,
+]);
 
 const SCRIPT_SOURCES = unique([
   "'self'",
   "'unsafe-inline'",
   IS_DEV ? "'unsafe-eval'" : undefined,
-  CLERK_LIVE_ORIGIN,
-  CLERK_TEST_ORIGIN,
+  ...CLERK_ORIGINS,
   POSTHOG_ASSET_ORIGIN,
 ]);
 
@@ -41,8 +47,7 @@ const CONNECT_SOURCES = unique([
   "'self'",
   "https://api.barmatrix.app",
   API_ORIGIN,
-  CLERK_LIVE_ORIGIN,
-  CLERK_TEST_ORIGIN,
+  ...CLERK_ORIGINS,
   POSTHOG_ORIGIN,
   POSTHOG_ASSET_ORIGIN,
   SENTRY_INGEST_ORIGIN,
@@ -60,8 +65,8 @@ const CSP_DIRECTIVES = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https://fonts.gstatic.com",
   `connect-src ${CONNECT_SOURCES.join(" ")}`,
-  `frame-src 'self' ${CLERK_LIVE_ORIGIN} ${CLERK_TEST_ORIGIN}`,
-  `form-action 'self' ${CLERK_LIVE_ORIGIN} ${CLERK_TEST_ORIGIN}`,
+  `frame-src 'self' ${CLERK_ORIGINS.join(" ")}`,
+  `form-action 'self' ${CLERK_ORIGINS.join(" ")}`,
   "media-src 'self' blob:",
   "worker-src 'self' blob:",
   "manifest-src 'self'",

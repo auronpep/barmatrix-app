@@ -2922,7 +2922,47 @@
   - Rendered the C3 coverage-pending explanation and `Practice the bank` CTA.
   - Did not render the old `Finish The Method, then work questions` copy.
   - Had one H1, one `<main>`, no desktop horizontal overflow, no raw runtime/API/CSP text, and no relevant live `barmatrix.app` browser warning/error logs.
-- `GET https://api.barmatrix.app/health?c3_mastery_copy_fix=4476d1c` returned `{"ok":true,"db":"up"}`.
-- Hostinger API stderr could not be checked in this slice because both SSH attempts timed out.
-- Screenshot evidence:
-  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-c3-mastery-coverage-pending-live-viewport-4476d1c.png`
+  - `GET https://api.barmatrix.app/health?c3_mastery_copy_fix=4476d1c` returned `{"ok":true,"db":"up"}`.
+  - Hostinger API stderr could not be checked in this slice because both SSH attempts timed out.
+  - Screenshot evidence:
+    - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-c3-mastery-coverage-pending-live-viewport-4476d1c.png`
+
+# Live Environment Config Sweep
+
+## Scope
+
+- Continue the full live debug goal outside Red Zone while Red Zone remains owned by another session.
+- Verify production environment signals that can break the study program without a page-specific source bug: auth key class, security headers, API health/CORS, deploy logs, and browser console output.
+- Do not print secrets. Only record key classes/prefixes and pass/fail signals.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm current worktree and open issue state.
+- [x] Inspect live browser/runtime auth key class without exposing the key.
+- [x] Inspect production response headers and CSP for app and API.
+- [x] Check current production deploy logs for error-class signals.
+- [x] Retry Hostinger API stderr access if available.
+- [ ] Record findings, fixes, or remaining gaps.
+
+## Review
+
+- Live HTML for `/dashboard?live_env_config_sweep=20260602a` contains a live Clerk public-key marker, does not contain a test-key marker, uses `clerk.barmatrix.app`, and does not contain development-key warning text.
+- Live Browser dashboard check rendered paid dashboard content with one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, and no fresh `barmatrix.app` warning/error logs.
+- Production app CSP had the expected security header set, no localhost/127/ws leakage, and no test key marker, but it still allowed `https://*.clerk.accounts.dev` in `script-src`, `connect-src`, `frame-src`, and `form-action` despite the live key/domain.
+- Added a failing regression proving live-key production CSP should exclude Clerk test origins while test-key/development CSP still allows them.
+- Changed `next.config.ts` to derive Clerk CSP origins from `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`: always allow `https://clerk.barmatrix.app`, and allow `https://*.clerk.accounts.dev` only in development or when the configured public key starts with `pk_test_`.
+- API health returned `{"ok":true,"db":"up"}` and API headers retained JSON content type, credentials support, `nosniff`, `SAMEORIGIN`, and HSTS.
+- The latest deploy log filter showed no actionable error/failure/CSP rows; only routine Node/module warnings and successful regression rows.
+- Hostinger API stderr could not be checked because SSH timed out again.
+
+## Verification So Far
+
+- Red regression:
+  - `node --test tests\security-headers.test.ts` failed before the config change because live-key production CSP still contained `clerk.accounts.dev`.
+- Local green checks:
+  - `node --test tests\security-headers.test.ts` passed 4/4.
+  - Full app non-Red-Zone test sweep with Red Zone tests excluded passed 63/63.
+  - App `npm run lint` passed.
+  - App `npm run build` passed.
+- Production deployment and live post-deploy header/browser verification are pending.

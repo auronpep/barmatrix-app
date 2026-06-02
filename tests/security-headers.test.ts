@@ -16,6 +16,45 @@ async function readConfiguredHeaders(): Promise<ResponseHeader[]> {
   return rules.flatMap((rule) => rule.headers);
 }
 
+async function readConfiguredHeadersForEnv(env: {
+  clerkPublishableKey?: string;
+  nodeEnv?: string;
+}): Promise<ResponseHeader[]> {
+  const previousClerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  const previousNodeEnv = process.env.NODE_ENV;
+
+  if (env.clerkPublishableKey === undefined) {
+    delete process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  } else {
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = env.clerkPublishableKey;
+  }
+
+  if (env.nodeEnv === undefined) {
+    delete process.env.NODE_ENV;
+  } else {
+    process.env.NODE_ENV = env.nodeEnv;
+  }
+
+  try {
+    const config = await import(`../next.config.ts?case=${Date.now()}-${Math.random()}`);
+    const rules = (await config.default.headers()) as HeaderRule[];
+
+    return rules.flatMap((rule) => rule.headers);
+  } finally {
+    if (previousClerkKey === undefined) {
+      delete process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+    } else {
+      process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = previousClerkKey;
+    }
+
+    if (previousNodeEnv === undefined) {
+      delete process.env.NODE_ENV;
+    } else {
+      process.env.NODE_ENV = previousNodeEnv;
+    }
+  }
+}
+
 function getHeader(headers: ResponseHeader[], key: string): string {
   const header = headers.find((candidate) => candidate.key === key);
 
@@ -49,7 +88,6 @@ describe("security response headers", () => {
     assert.match(csp, /default-src 'self'/);
     assert.match(csp, /script-src[^;]*'self'[^;]*'unsafe-inline'/);
     assert.match(csp, /script-src[^;]*https:\/\/clerk\.barmatrix\.app/);
-    assert.match(csp, /script-src[^;]*https:\/\/\*\.clerk\.accounts\.dev/);
     assert.match(csp, /script-src[^;]*https:\/\/us-assets\.i\.posthog\.com/);
     assert.match(csp, /connect-src[^;]*https:\/\/api\.barmatrix\.app/);
     assert.match(csp, /connect-src[^;]*https:\/\/us\.i\.posthog\.com/);
@@ -61,5 +99,36 @@ describe("security response headers", () => {
     assert.match(csp, /base-uri 'self'/);
     assert.match(csp, /frame-ancestors 'self'/);
     assert.match(config, /ALLOW_LOCAL_CONNECT/);
+  });
+
+  it("keeps Clerk test origins out of production CSP when the live key is configured", async () => {
+    const headers = await readConfiguredHeadersForEnv({
+      clerkPublishableKey: "pk_live_placeholder",
+      nodeEnv: "production",
+    });
+    const csp = getHeader(headers, "Content-Security-Policy");
+
+    assert.match(csp, /script-src[^;]*https:\/\/clerk\.barmatrix\.app/);
+    assert.doesNotMatch(csp, /clerk\.accounts\.dev/);
+  });
+
+  it("allows Clerk test origins for test-key and development builds", async () => {
+    const testKeyHeaders = await readConfiguredHeadersForEnv({
+      clerkPublishableKey: "pk_test_placeholder",
+      nodeEnv: "production",
+    });
+    const developmentHeaders = await readConfiguredHeadersForEnv({
+      clerkPublishableKey: undefined,
+      nodeEnv: "development",
+    });
+
+    assert.match(
+      getHeader(testKeyHeaders, "Content-Security-Policy"),
+      /script-src[^;]*https:\/\/\*\.clerk\.accounts\.dev/,
+    );
+    assert.match(
+      getHeader(developmentHeaders, "Content-Security-Policy"),
+      /script-src[^;]*https:\/\/\*\.clerk\.accounts\.dev/,
+    );
   });
 });

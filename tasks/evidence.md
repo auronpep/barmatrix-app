@@ -4248,3 +4248,68 @@ Expected behavior: a Method-complete paid user whose attempts are recorded but n
 - Remaining uncertainty:
   - Red Zone remains out of scope by request.
   - C3 measured Mastery still requires authored C3 annotation and answer-choice mold-tag content.
+
+# Live Environment CSP Clerk-Origin Evidence
+
+## Issue
+
+Expected behavior: production CSP for `barmatrix.app` should allow only the Clerk origin needed by the configured live Clerk key while still allowing Clerk test origins for local development or test-key builds. Actual behavior: production uses a live Clerk key/domain, but the app CSP also whitelisted Clerk's `*.clerk.accounts.dev` test origin in script, connect, frame, and form directives. Affected domain: live environment security headers outside Red Zone.
+
+## Reproduction
+
+- Reproduced: yes.
+- Live HTML/runtime evidence:
+  - `GET https://barmatrix.app/dashboard?live_env_config_sweep=20260602a` returned HTML containing a live Clerk public-key marker and no test-key marker.
+  - The same HTML contained `clerk.barmatrix.app`, did not contain `clerk.accounts.dev`, and did not contain Clerk development-key warning text.
+  - Live Browser dashboard check rendered paid dashboard content with one H1, one `<main>`, no desktop horizontal overflow, no raw runtime/API/CSP text, and no fresh `barmatrix.app` warning/error logs.
+- Header evidence:
+  - `GET https://barmatrix.app/dashboard?live_env_headers=20260602a` returned HTTP 200 with CSP, `X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`, HSTS, and `Referrer-Policy: strict-origin-when-cross-origin`.
+  - The production CSP contained `https://clerk.barmatrix.app`.
+  - The production CSP also contained `https://*.clerk.accounts.dev` in `script-src`, `connect-src`, `frame-src`, and `form-action`.
+- Test reproduction:
+  - `node --test tests\security-headers.test.ts` failed before the config change because live-key production CSP still matched `clerk.accounts.dev`.
+
+## Trace
+
+- Files/source inspected:
+  - `next.config.ts`
+  - `tests/security-headers.test.ts`
+  - Next local docs:
+    - `node_modules\next\dist\docs\01-app\02-guides\content-security-policy.md`
+    - `node_modules\next\dist\docs\01-app\03-api-reference\05-config\01-next-config-js\headers.md`
+- Verified facts:
+  - `next.config.ts` previously included `CLERK_TEST_ORIGIN` unconditionally in script, connect, frame, and form CSP directives.
+  - Production live HTML uses the live Clerk key class and live custom Clerk domain.
+  - Test-key/development builds still need the Clerk accounts-dev origin.
+- Root cause: CSP origin list did not branch on Clerk public-key class or development mode.
+- Confidence: high.
+
+## Change
+
+- Changed files:
+  - `next.config.ts`
+  - `tests/security-headers.test.ts`
+- Diff summary:
+  - Added `CLERK_PUBLISHABLE_KEY`, `ALLOW_CLERK_TEST_ORIGIN`, and `CLERK_ORIGINS`.
+  - Kept `https://clerk.barmatrix.app` in all Clerk CSP directives.
+  - Includes `https://*.clerk.accounts.dev` only when `NODE_ENV === "development"` or `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` starts with `pk_test_`.
+  - Added regression coverage for live-key production exclusion and test-key/development inclusion.
+- Smallest safe fix rationale: only the Clerk CSP origin derivation changed; no auth provider, route, or API behavior changed.
+
+## Verification
+
+- Red regression:
+  - `node --test tests\security-headers.test.ts` failed before implementation: 3/4 pass, live-key production CSP still contained `clerk.accounts.dev`.
+- Local green checks:
+  - `node --test tests\security-headers.test.ts` passed 4/4.
+  - Full app non-Red-Zone test sweep with Red Zone tests excluded passed 63/63.
+  - App `npm run lint` passed.
+  - App `npm run build` passed.
+- Live environment checks before deployment:
+  - `GET https://api.barmatrix.app/health?live_env_headers=20260602a` returned `{"ok":true,"db":"up"}`.
+  - API headers retained JSON content type, credential support, `nosniff`, `SAMEORIGIN`, and HSTS.
+  - Deploy log filter for the current production run showed no actionable error/failure/CSP rows.
+  - Hostinger API stderr could not be checked because SSH timed out.
+- Remaining verification:
+  - Deploy the app CSP change.
+  - Verify live production CSP no longer contains `clerk.accounts.dev` while the signed-in dashboard still renders and browser logs stay clean.

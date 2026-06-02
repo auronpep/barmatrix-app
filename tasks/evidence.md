@@ -3195,3 +3195,100 @@ Expected behavior: the diagnostic session flow should render meaningful producti
 
 - Red Zone routes/source remain out of scope for this pass.
 - Local `npx next start` on ports `3017` and `3018` accepted sockets but did not answer HTTP requests. The existing authenticated `localhost:3000` app server and the successful production build were used for local rendered verification instead.
+
+# Live Boot Camp Session Routes Evidence
+
+## Issue
+
+Expected behavior: signed-in paid-user boot-camp routes should render meaningful production states with one page-level `<main>`, a stable page-level heading, no raw runtime/API/CSP text, no desktop overflow, fresh console health, and navigation from list/detail into session/day/mastery states without runtime errors. Actual behavior: the live list/detail/session routes rendered correctly, but the active boot-camp day runner had no `<h1>`. Affected domain: non-Red-Zone boot-camp study surfaces.
+
+## Reproduction
+
+- Setup:
+  - In-app browser signed in as the current paid subscriber.
+  - Dirty Red Zone source/test files intentionally untouched.
+- Live production catalog `/boot-camps?bootcamp_audit=20260602a`:
+  - Rendered H1 `Boot camps organize repeated misses into short repair sequences.`, three camp cards, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+- Live production detail route:
+  - Clicking `View camp ->` opened `/boot-camps/contract-formation-timing`.
+  - Rendered H1 `Contract Formation Timing Boot Camp`, one `Start camp` button, visible day plan, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+- Live production session hub:
+  - Clicking `Start camp` reused/created session `f5cb4b5d-dddb-4794-8685-c5a1cd4f4bb7`.
+  - `/boot-camps/sessions/f5cb4b5d-dddb-4794-8685-c5a1cd4f4bb7` rendered H1 `Contract Formation Timing Boot Camp`, `0 OF 5 DAYS COMPLETE`, Day 1 progress `1/12`, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+- Live production day route:
+  - Clicking `Resume day` opened `/boot-camps/sessions/f5cb4b5d-dddb-4794-8685-c5a1cd4f4bb7/days/1`.
+  - Rendered the question runner with `DAY 1 · QUESTION 2 OF 12`, answer choices, and `Submit answer`.
+  - Defect reproduced: `h1Count=0` and `h1Text=""` while the route otherwise kept one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+- Live production mastery route:
+  - Direct locked-state check opened `/boot-camps/sessions/f5cb4b5d-dddb-4794-8685-c5a1cd4f4bb7/mastery?bootcamp_mastery_locked_audit=20260602a`.
+  - Rendered H1 `Mastery check is locked`, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, and no framework overlay.
+  - One Clerk dev-key warning in the Browser log was from a stale `localhost:3000` tab, not from the `barmatrix.app` production route.
+
+## Trace
+
+- Files inspected:
+  - `app/boot-camps/page.tsx`
+  - `app/boot-camps/boot-camps-catalog.tsx`
+  - `app/boot-camps/[slug]/page.tsx`
+  - `app/boot-camps/sessions/[session_id]/page.tsx`
+  - `app/boot-camps/sessions/[session_id]/days/[day]/page.tsx`
+  - `app/boot-camps/sessions/[session_id]/mastery/page.tsx`
+  - `components/question-runner.tsx`
+  - `tests/boot-camp-mastery-resume.test.ts`
+  - `tests/api-client-drills.test.ts`
+  - `tests/page-main-landmarks.test.ts`
+  - `tests/malformed-route-errors.test.ts`
+  - Next page file-convention docs at `node_modules\next\dist\docs\01-app\03-api-reference\03-file-conventions\page.md`
+- Verified facts:
+  - The root layout owns the single page-level `<main>`.
+  - `QuestionRunner` renders runner title/progress text as a paragraph, not a heading.
+  - Neighboring runner routes such as `/drills/[drill_id]` and `/coach` provide route-level H1s outside `QuestionRunner`.
+  - Boot-camp day and mastery runner branches did not provide route-level H1s before this change.
+- Root cause:
+  - `app/boot-camps/sessions/[session_id]/days/[day]/page.tsx` delegated all visible question-runner identity to `QuestionRunner`, leaving the active runner state without a page-level heading.
+  - `app/boot-camps/sessions/[session_id]/mastery/page.tsx` had the same gap for the mastery running/loading branch, although the audited live mastery state was locked and already had a visible H1.
+- Confidence: high for the audited day-route defect and source-level mastery runner gap.
+
+## Change
+
+- Changed files:
+  - `app/boot-camps/sessions/[session_id]/days/[day]/page.tsx`
+  - `app/boot-camps/sessions/[session_id]/mastery/page.tsx`
+  - `tests/boot-camp-runner-headings.test.ts`
+  - `tasks/todo.md`
+  - `tasks/evidence.md`
+- Diff summary:
+  - Added `sr-only` H1 `Boot Camp Day {day}` while the day route is loading or running a non-empty question queue.
+  - Added `sr-only` H1 `Boot Camp Mastery Check` while the mastery route is loading or running a non-empty question queue.
+  - Added a focused regression test that checks both boot-camp question-runner route files expose those headings.
+- Smallest safe fix rationale:
+  - Keeps the root layout's single `<main>`.
+  - Does not alter `QuestionRunner` globally or change visible boot-camp layout.
+  - Avoids adding duplicate headings to empty/completed/locked error states that already render visible route-level H1s.
+
+## Verification
+
+- Red regression:
+  - `node --test tests\boot-camp-runner-headings.test.ts` failed before the source change because the boot-camp day runner page had no H1.
+- Focused local checks:
+  - `node --test tests\boot-camp-runner-headings.test.ts tests\boot-camp-mastery-resume.test.ts tests\api-client-drills.test.ts tests\malformed-route-errors.test.ts tests\page-main-landmarks.test.ts` passed 7/7.
+- Full local checks:
+  - Full non-Red-Zone test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 57/57.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `git diff --check -- "app/boot-camps/sessions/[session_id]/days/[day]/page.tsx" "app/boot-camps/sessions/[session_id]/mastery/page.tsx" tests/boot-camp-runner-headings.test.ts tasks/todo.md tasks/evidence.md` passed with only normal CRLF warnings.
+- Local browser caveat:
+  - Opening the patched localhost day URL rendered signed-out `Day unavailable`, so it did not exercise the authenticated active runner branch.
+  - Production post-deploy browser verification is still pending for the active runner branch.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-boot-camps-catalog-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-boot-camp-detail-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-boot-camp-session-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-boot-camp-day-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-boot-camp-mastery-locked-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-boot-camp-day-local-heading-20260602.png`
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- The authenticated active day-runner heading has not yet been verified on production after deployment.

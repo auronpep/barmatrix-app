@@ -2274,3 +2274,49 @@
 
 - Red Zone routes/source remain out of scope for this pass.
 - A separate local `npx next start` attempt on ports `3017` and `3018` accepted sockets but did not answer HTTP requests. The existing authenticated `localhost:3000` app server and the successful production build were used for local browser/source verification instead.
+
+# Live Boot Camp Session Routes Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones.
+- Verify signed-in paid-user boot-camp surfaces from the rendered UI: `/boot-camps`, a boot-camp detail route, a live session route, a day route when available, and the mastery route.
+- Exercise safe navigation and one low-impact interaction where available; avoid completing large workflows or changing Red Zone state.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Inspect boot-camp source and existing tests to understand expected UI/API behavior.
+- [x] Browser-verify `/boot-camps` on production for meaningful content, one `<main>`, no overflow, no raw runtime/API/CSP text, and fresh console health.
+- [x] Navigate into a boot-camp detail route and verify state.
+- [x] Navigate into a live boot-camp session route and verify state.
+- [x] Navigate into a day route or mastery route where exposed by the UI and verify state.
+- [x] Trace and fix any reproduced non-Red-Zone root cause with focused regression coverage where practical.
+- [x] Run relevant local tests, lint, build, and diff hygiene checks.
+- [ ] Deploy and verify the day-route heading on production.
+- [ ] Run production health/log checks and record final evidence.
+
+## Review
+
+- Live signed-in browser verification passed for `/boot-camps`, a boot-camp detail page, and a live session hub: each rendered meaningful content, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh `barmatrix.app` warning/error logs.
+- Starting the first boot camp reused/created session `f5cb4b5d-dddb-4794-8685-c5a1cd4f4bb7` and exposed Day 1 through the session hub.
+- The Day 1 runner loaded a real question state with answer choices and submit controls, but the route rendered `h1Count=0`.
+- Root cause: boot-camp day/mastery runner pages delegate the visible title/progress to `QuestionRunner`, whose route title is rendered as a paragraph. The root layout owns the only `<main>`, so runner routes still need their own stable page-level heading.
+- Added `sr-only` route headings for boot-camp day and mastery running/loading states without changing the visible layout.
+- Added `tests/boot-camp-runner-headings.test.ts` to lock the heading contract.
+
+## Verification
+
+- Red regression: `node --test tests\boot-camp-runner-headings.test.ts` failed before the source change because the boot-camp day runner page had no route-level H1.
+- Focused local checks: `node --test tests\boot-camp-runner-headings.test.ts tests\boot-camp-mastery-resume.test.ts tests\api-client-drills.test.ts tests\malformed-route-errors.test.ts tests\page-main-landmarks.test.ts` passed 7/7.
+- Full local non-Red-Zone test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 57/57.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `git diff --check -- "app/boot-camps/sessions/[session_id]/days/[day]/page.tsx" "app/boot-camps/sessions/[session_id]/mastery/page.tsx" tests/boot-camp-runner-headings.test.ts tasks/todo.md tasks/evidence.md` passed with only normal CRLF warnings.
+- Production deployment and post-deploy browser verification are pending for this slice.
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- A localhost browser check of the patched day URL fell into the signed-out `Day unavailable` state, so the active patched runner branch still needs production post-deploy browser verification.

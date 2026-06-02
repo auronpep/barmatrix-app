@@ -152,6 +152,10 @@ export default function BootCampMasteryPage({
     }
   };
 
+  const shouldRenderRunnerHeading =
+    state.phase === "loading" ||
+    (state.phase === "running" && state.data.questionIds.length > 0);
+
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
       <Link
@@ -160,6 +164,10 @@ export default function BootCampMasteryPage({
       >
         &larr; Session hub
       </Link>
+
+      {shouldRenderRunnerHeading && (
+        <h1 className="sr-only">Boot Camp Mastery Check</h1>
+      )}
 
       <div className="mt-6">
         {state.phase === "loading" && (

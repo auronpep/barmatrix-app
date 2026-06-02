@@ -167,6 +167,10 @@ export default function BootCampDayPage({
     }
   };
 
+  const shouldRenderRunnerHeading =
+    state.phase === "loading" ||
+    (state.phase === "ready" && state.data.questionIds.length > 0);
+
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
       <Link
@@ -175,6 +179,10 @@ export default function BootCampDayPage({
       >
         &larr; Session hub
       </Link>
+
+      {shouldRenderRunnerHeading && (
+        <h1 className="sr-only">Boot Camp Day {day}</h1>
+      )}
 
       <div className="mt-6">
         {state.phase === "loading" && (

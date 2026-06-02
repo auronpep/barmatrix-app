@@ -12,11 +12,12 @@ function cachePlacementSession(result: PlacementSessionStartResponse): void {
   try {
     sessionStorage.setItem(
       `barmatrix.placement.${result.session_id}`,
-      JSON.stringify({
-        session_id: result.session_id,
-        question_ids: result.question_ids,
-        completed_count: 0,
-      }),
+        JSON.stringify({
+          session_id: result.session_id,
+          question_ids: result.questions.map((question) => question.question_id),
+          questions: result.questions,
+          completed_count: 0,
+        }),
     );
   } catch {
     // If sessionStorage is unavailable, the session page will show recovery UI.

@@ -65,6 +65,7 @@ const MECHANISM_OPTIONS: Array<{ value: C3Mechanism; label: string; description:
 interface StoredSession {
   session_id: string;
   question_ids: string[];
+  questions: PlacementQuestion[];
   completed_count: number;
 }
 
@@ -85,7 +86,18 @@ function readSessionCache(sessionId: string): StoredSession | null {
   try {
     const raw = window.sessionStorage.getItem(`barmatrix.placement.${sessionId}`);
     if (!raw) return null;
-    return JSON.parse(raw) as StoredSession;
+    const parsed = JSON.parse(raw) as Partial<StoredSession>;
+    const questions = Array.isArray(parsed.questions) ? parsed.questions : [];
+    const questionIds = Array.isArray(parsed.question_ids)
+      ? parsed.question_ids
+      : questions.map((question) => question.question_id);
+    return {
+      session_id: typeof parsed.session_id === "string" ? parsed.session_id : sessionId,
+      question_ids: questionIds,
+      questions,
+      completed_count:
+        typeof parsed.completed_count === "number" ? parsed.completed_count : 0,
+    };
   } catch {
     return null;
   }
@@ -112,7 +124,7 @@ export default function PlacementSessionPage({
   useEffect(() => {
     let active = true;
     const cached = readSessionCache(sessionId);
-    if (!cached || cached.question_ids.length === 0) {
+    if (!cached || cached.questions.length === 0) {
       queueMicrotask(() => {
         if (!active) return;
         setErrorMsg("Placement session cache missing. Restart placement to open a fresh question sequence.");
@@ -123,9 +135,10 @@ export default function PlacementSessionPage({
       };
     }
 
-    Promise.all(cached.question_ids.map((id) => api.getQuestion(id)))
-      .then((questions) => {
+    Promise.resolve()
+      .then(() => {
         if (!active) return;
+        const questions = cached.questions;
         const resumeIndex = Math.min(cached.completed_count, questions.length);
         if (resumeIndex >= questions.length) {
           router.replace(`/diagnostic/session/${sessionId}/results`);
@@ -135,7 +148,8 @@ export default function PlacementSessionPage({
         // Store question list for resumption
         cacheSession({
           session_id: sessionId,
-          question_ids: cached.question_ids,
+          question_ids: questions.map((question) => question.question_id),
+          questions,
           completed_count: resumeIndex,
         });
 
@@ -189,6 +203,7 @@ export default function PlacementSessionPage({
       cacheSession({
         session_id: sessionId,
         question_ids: questions.map((q) => q.question_id),
+        questions,
         completed_count: currentIndex + 1,
       });
       setPhase("result_overlay");

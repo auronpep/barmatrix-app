@@ -1030,6 +1030,7 @@ export interface PlacementSessionStartResponse {
   session_id: string;
   question_count: number;
   question_ids: string[];
+  questions: PlacementQuestion[];
   placement_model: string;
 }
 

@@ -131,3 +131,16 @@ describe("EnrollmentRecoveryPanel checkout routing", () => {
     assert.match(source, /Checkout recovery/);
   });
 });
+
+describe("BillingPortalButton unavailable-state copy", () => {
+  it("does not tell active non-Stripe accounts that no local purchase exists", () => {
+    const source = readFileSync(
+      new URL("../app/account/billing-portal-button.tsx", import.meta.url),
+      "utf8",
+    );
+
+    assert.doesNotMatch(source, /No local purchase with a billing customer/);
+    assert.match(source, /no Stripe billing portal/i);
+    assert.match(source, /manual/i);
+  });
+});

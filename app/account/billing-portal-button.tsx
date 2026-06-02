@@ -48,7 +48,7 @@ export function BillingPortalButton({
 
       window.location.assign(portalUrl);
     } catch (err) {
-      setError(portalErrorMessage(err));
+      setError(portalErrorMessage(err, checkoutSessionId));
       setPhase("error");
     }
   };
@@ -94,7 +94,10 @@ export function BillingPortalButton({
   );
 }
 
-function portalErrorMessage(err: unknown): string {
+function portalErrorMessage(
+  err: unknown,
+  checkoutSessionId?: string | null,
+): string {
   if (err instanceof ApiClientError) {
     if (err.status === 401) {
       return "Sign in with the account used at checkout to manage billing.";
@@ -103,7 +106,10 @@ function portalErrorMessage(err: unknown): string {
       return "This signed-in account does not own the local purchase for that billing portal.";
     }
     if (err.status === 404) {
-      return "No local purchase with a billing customer was found for this account.";
+      if (checkoutSessionId) {
+        return "That checkout session is not connected to a Stripe billing portal for this account.";
+      }
+      return "This account has active access, but no Stripe billing portal is available for this enrollment. If your access was granted manually or you expected an active payment plan, contact support.";
     }
     return `Billing portal unavailable (API ${err.status}).`;
   }

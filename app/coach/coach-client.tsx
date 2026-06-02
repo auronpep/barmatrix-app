@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useCoach } from "@/lib/use-coach";
 import QuestionRunner from "@/components/question-runner";
@@ -40,13 +40,12 @@ export default function CoachClient() {
   if (!current || !sessionId) return null;
 
   if (!current.available) {
+    const unavailable = getCoachUnavailableState(current.reason);
+
     return (
       <section className="mt-6 rounded-lg border border-zinc-200 p-5">
-        <h2 className="font-medium">Not measurable yet</h2>
-        <p className="mt-1 text-sm text-zinc-600">
-          Finish <Link className="underline" href="/foundations">The Method</Link>, then work questions or a{" "}
-          <Link className="underline" href="/diagnostic">diagnostic</Link> so the Coach can find your weak C3 break.
-        </p>
+        <h2 className="font-medium">{unavailable.title}</h2>
+        <p className="mt-1 text-sm text-zinc-600">{unavailable.body}</p>
       </section>
     );
   }
@@ -80,4 +79,44 @@ export default function CoachClient() {
       />
     </div>
   );
+}
+
+function getCoachUnavailableState(reason: string): {
+  title: string;
+  body: ReactNode;
+} {
+  if (reason === "not_enrolled") {
+    return {
+      title: "Account access needed",
+      body: (
+        <>
+          Activate your BarMatrix access from <Link className="underline" href="/account">Account</Link> before
+          starting coaching.
+        </>
+      ),
+    };
+  }
+
+  if (reason === "no_tagged_items" || reason === "c3_not_provisioned") {
+    return {
+      title: "Coach coverage pending",
+      body: (
+        <>
+          C3 Coach is waiting on tagged question coverage. Work{" "}
+          <Link className="underline" href="/practice">practice questions</Link> or a{" "}
+          <Link className="underline" href="/diagnostic">diagnostic</Link> while the bank is being tagged.
+        </>
+      ),
+    };
+  }
+
+  return {
+    title: "Not measurable yet",
+    body: (
+      <>
+        Finish <Link className="underline" href="/foundations">The Method</Link>, then work questions or a{" "}
+        <Link className="underline" href="/diagnostic">diagnostic</Link> so the Coach can find your weak C3 break.
+      </>
+    ),
+  };
 }

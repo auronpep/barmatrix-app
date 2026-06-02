@@ -2534,3 +2534,64 @@
 - Red Zone routes/source remain out of scope for this pass.
 - This slice did not submit production answers or start practice from the Tension/Trap detail CTAs.
 - The live Traps data currently reports `misconception_count: 0`; the UI handles this state, but authored misconception taxonomy content remains a data/content question rather than a reproduced frontend defect.
+
+# Live Trap Misconception Taxonomy Data Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones.
+- Follow up on the live Trap Taxonomy data gap where `/api/traps` reports `misconception_count: 0` while the UI exposes a dedicated Misconception column.
+- Use local project/runtime evidence only to determine whether this is an API/query defect, schema/content provisioning gap, or expected current data state.
+- Avoid touching unrelated dirty API billing/admin/tension work unless the root cause requires a tightly scoped patch in a clean write path.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone app work remains separate and untouched.
+- [x] Confirm API repo instructions/status before relying on or editing backend code.
+- [x] Reproduce the zero-misconception condition from live UI/API and production runtime evidence.
+- [x] Inspect app/API Trap Taxonomy source, tests, and local data assumptions.
+- [x] Trace production data shape from safe aggregate queries without exposing secrets.
+- [x] If a code defect is confirmed, add/update a failing regression test and make the smallest clean fix in a safe write path.
+- [x] Run relevant app/API tests, lint/build, browser verification, production health/log checks, and record final evidence.
+
+## Review
+
+- Live signed-in Browser verification reproduced the zero-misconception state on `/traps?misconception_audit=20260602b`: the page rendered `The finite universe of MBE traps`, one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and the Misconception column was present with no trap rows.
+- The safe `Official only` interaction navigated to `/traps?official=1`; the architecture column narrowed to 17 traps, the Misconception column reported `0 TRAPS`, and the empty-column copy rendered once.
+- Direct live API evidence matched the UI: `GET https://api.barmatrix.app/api/traps?misconception_audit=20260602b` returned 1,363 architecture traps, 0 misconception traps, and 17 official traps.
+- Production aggregate evidence classified the root cause as content/data provisioning, not frontend rendering or API query logic: all 10,998 active wrong choices have valid `misconception_tags` JSON, but 0 active wrong choices have a non-empty `misconception_tags` array. Diagnostic rows also have 0 non-empty misconception arrays.
+- The API query helpers already unnest `answer_choices.misconception_tags`, shape misconception rows correctly, and include misconception tags in detail/profile/history lookups. No alternate live `question_tags` trap/misconception dimension was found.
+- No source patch or new regression test was added because encoding "zero misconception rows" as a failing application test would be testing missing authored data, not a code defect.
+
+## Verification
+
+- Browser verification:
+  - `/traps?misconception_audit=20260602b` rendered one H1, one `<main>`, `Wrong-answer architecture`, `Misconception`, no overflow, no raw runtime text, no framework overlay, and no live misconception trap links.
+  - `/traps?official=1` rendered `Official only` as the active filter, 17 architecture traps, `0 TRAPS` for Misconception, and `No traps in this column for the current filter.` once.
+  - Clean production tab for `/traps?misconception_clean_console=20260602b` rendered one H1, one `<main>`, no overflow, and the empty Misconception column message. The only Browser warning object was inherited/stale and pointed at a localhost chunk URL, not the production Trap route.
+- Live API/data checks:
+  - `GET https://api.barmatrix.app/api/traps?misconception_audit=20260602b` returned 1,363 architecture traps, 0 misconception traps, and 17 official traps.
+  - Production aggregate: active rows have 3,666 questions, 14,664 answer choices, and 10,998 wrong choices.
+  - Production aggregate: active wrong choices have 10,368 non-empty `forensic_tags` arrays and 0 non-empty `misconception_tags` arrays.
+  - Production aggregate: JSON_TABLE over active wrong-choice `forensic_tags` returned 10,368 tag rows and 2,983 distinct slugs; JSON_TABLE over `misconception_tags` returned 0 tag rows and 0 distinct slugs.
+  - Production aggregate: no active `question_tags` dimensions matching trap/misconception/forensic/wrong were found.
+  - Production status aggregate: active and diagnostic question statuses both have 0 wrong choices with non-empty `misconception_tags`.
+  - `GET https://api.barmatrix.app/health?trap_misconception_audit=20260602b` returned `{"ok":true,"db":"up"}`.
+  - Vercel log filter returned `NO_ERROR_CSP_OR_500_MATCHES`.
+  - Hostinger API `stderr.log` was empty.
+- Local checks:
+  - `node --test tests\mobile-content-overflow.test.ts tests\sitemap-static-surface.test.ts tests\page-main-landmarks.test.ts tests\static-landing-pages.test.ts` passed 8/8.
+  - `npx --no-install tsx --test src/lib/traps.test.ts src/lib/me-traps.test.ts` in `C:\barmatrix-api` passed 30/30.
+  - `npm run lint` in `C:\barmatrix-app` passed.
+  - `npm run build` in `C:\barmatrix-api` passed.
+  - `npm run build` in `C:\barmatrix-app` passed.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-traps-misconception-data-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-traps-misconception-official-live-20260602.png`
+
+## Remaining Risk
+
+- Red Zone routes/source/tests remain out of scope for this pass.
+- The production app currently has no authored misconception taxonomy content in `answer_choices.misconception_tags`; populating that column is a content/data pipeline task, not a frontend/API bug fix from the evidence gathered here.
+- The API repo still has unrelated dirty billing/admin/tension work and is behind `origin/main` by 5 commits; it was inspected and tested but not modified.

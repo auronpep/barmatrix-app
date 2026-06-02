@@ -3670,3 +3670,88 @@ Expected behavior: signed-in paid-user Tensions and Traps catalog/detail surface
 - Red Zone routes/source remain out of scope for this pass.
 - This slice did not submit production answers or start practice from the Tension/Trap detail CTAs.
 - Live Trap data currently reports `misconception_count: 0`; the UI handles the empty column, but content provisioning is outside this frontend slice unless the next audit scope treats that as a product/data defect.
+
+# Live Trap Misconception Taxonomy Data Evidence
+
+## Issue
+
+Expected behavior: the Trap Taxonomy data layer should either populate the Misconception column when live question/choice data contains misconception tags, or the audit should prove the current zero-misconception state is a data/content provisioning state rather than an API/query defect. Actual behavior: live `/api/traps` reported `misconception_count: 0` in the prior Trap Taxonomy UI pass. Affected domain: non-Red-Zone Trap Taxonomy data/API and live content provisioning.
+
+## Reproduction
+
+- Reproduced: yes. The zero-misconception state is live and consistent across UI, API, and production data aggregates.
+- Browser evidence:
+  - `/traps?misconception_audit=20260602b` rendered `The finite universe of MBE traps`, one H1, one `<main>`, `Wrong-answer architecture`, `Misconception`, no desktop overflow, no raw runtime/API/CSP text, and no framework overlay.
+  - The first Trap catalog page rendered 60 architecture links; Misconception heading/caption were present, but no misconception trap links were present.
+  - Clicking `Official only` navigated to `/traps?official=1`; the active filter changed, architecture trap links narrowed to 18 rendered links / 17 official-count state, Misconception reported `0 TRAPS`, and `No traps in this column for the current filter.` rendered once.
+  - A clean production tab for `/traps?misconception_clean_console=20260602b` rendered one H1, one `<main>`, no overflow, and the empty Misconception column message.
+- Direct API evidence:
+  - `GET https://api.barmatrix.app/api/traps?misconception_audit=20260602b` returned 1,363 architecture traps, 0 misconception traps, and 17 official traps.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-traps-misconception-data-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-traps-misconception-official-live-20260602.png`
+
+## Trace
+
+- Files inspected:
+  - `app/traps/page.tsx`
+  - `lib/traps.ts`
+  - `lib/api-client.ts`
+  - `tests/mobile-content-overflow.test.ts`
+  - `C:\barmatrix-api\src\db.ts`
+  - `C:\barmatrix-api\src\routes\traps.ts`
+  - `C:\barmatrix-api\src\lib\traps.ts`
+  - `C:\barmatrix-api\src\lib\traps.test.ts`
+  - `C:\barmatrix-api\src\lib\me-traps.ts`
+  - `C:\barmatrix-api\src\routes\attempts.ts`
+  - `C:\barmatrix-api\src\routes\drills.ts`
+- Verified facts:
+  - App Red Zone files remain dirty and out of scope.
+  - API repo is dirty with unrelated billing/admin/tension work and is behind `origin/main` by 5 commits, so any backend edit needs a clean write strategy.
+  - Frontend Trap catalog rendering is presentational: `app/traps/page.tsx` splits `catalog.architecture` and `catalog.misconception`, paginates both columns, and renders an explicit empty-column message when a column total is 0.
+  - App `lib/traps.ts` calls API `listTraps`; failures degrade to an empty catalog, but the live API call returned a normal populated catalog, not an app fetch failure.
+  - API `buildTrapListQuery(false)` unnests active wrong-choice `answer_choices.forensic_tags` as `kind='forensic'` and active wrong-choice `answer_choices.misconception_tags` as `kind='misconception'`.
+  - API `shapeTrapList` splits rows by `row.kind === "misconception"` and unit tests already cover non-empty misconception shaping.
+  - API detail/profile/history/drill paths include `misconception_tags` in containment checks; the current zero catalog is not caused by the list route ignoring the column.
+  - Production aggregate: active rows have 3,666 questions, 14,664 answer choices, and 10,998 wrong choices.
+  - Production aggregate: all 10,998 active wrong choices have valid `misconception_tags` JSON, but 0 active wrong choices have a non-empty `misconception_tags` array.
+  - Production aggregate: active wrong-choice `forensic_tags` have 10,368 JSON_TABLE tag rows and 2,983 distinct slugs; active wrong-choice `misconception_tags` have 0 JSON_TABLE tag rows and 0 distinct slugs.
+  - Production aggregate: no active `question_tags` dimensions matching trap/misconception/forensic/wrong were found.
+  - Production status aggregate: `active` and `diagnostic` statuses both have 0 wrong choices with non-empty `misconception_tags`.
+- Suspected root cause: content/data provisioning gap. The production question bank currently stores empty arrays in `answer_choices.misconception_tags`; the API and UI are accurately reflecting that data state.
+- Confidence: high for the live zero-count cause being missing authored data rather than a frontend/API query defect.
+
+## Change
+
+- No implementation change was made because no code defect was reproduced.
+- Changed files in this slice are audit ledgers only:
+  - `tasks/todo.md`
+  - `tasks/evidence.md`
+- Regression test decision:
+  - No new failing regression test was added. The existing API unit tests already prove the query/shaper will publish misconception rows when `misconception_tags` rows exist.
+  - A failing test for the current production state would encode a content backfill expectation, not an application behavior bug.
+
+## Verification
+
+- Browser/API verification:
+  - Live `/traps?misconception_audit=20260602b` and `/traps?official=1` checks matched API totals and rendered coherent empty-column UI.
+  - Clean production tab check for `/traps?misconception_clean_console=20260602b` rendered the same empty-column state with one H1, one `<main>`, no overflow, and no raw runtime text.
+  - Browser log caveat: the only warning object in the reused Browser log stream pointed at `http://localhost:3000/_next/...` with the same timestamp across tabs, so it was treated as inherited Browser history rather than a fresh production Trap route error.
+- Live API/data checks:
+  - `GET https://api.barmatrix.app/api/traps?misconception_audit=20260602b` returned 1,363 architecture traps, 0 misconception traps, and 17 official traps.
+  - Safe production aggregate query through the deployed API DB wrapper exited 0 and confirmed 0 non-empty `misconception_tags` arrays across active and diagnostic wrong choices.
+  - `GET https://api.barmatrix.app/health?trap_misconception_audit=20260602b` returned `{"ok":true,"db":"up"}`.
+  - Vercel log filter returned `NO_ERROR_CSP_OR_500_MATCHES`.
+  - Hostinger API `stderr.log` was empty.
+- Local checks:
+  - `node --test tests\mobile-content-overflow.test.ts tests\sitemap-static-surface.test.ts tests\page-main-landmarks.test.ts tests\static-landing-pages.test.ts` passed 8/8.
+  - `npx --no-install tsx --test src/lib/traps.test.ts src/lib/me-traps.test.ts` in `C:\barmatrix-api` passed 30/30.
+  - `npm run lint` in `C:\barmatrix-app` passed.
+  - `npm run build` in `C:\barmatrix-api` passed.
+  - `npm run build` in `C:\barmatrix-app` passed.
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- API repo has unrelated dirty work; do not overwrite or revert it.
+- Production currently has no authored misconception taxonomy content in `answer_choices.misconception_tags`; a separate content/data pipeline pass is needed if the Misconception column is expected to be populated.

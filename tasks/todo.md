@@ -3058,3 +3058,51 @@
 - C3 Coach and C3 Mastery measured behavior remains blocked on authored C3 annotation and answer-choice mold-tag content.
 - API dynamic CORS still needs `Vary: Origin` added and live-verified.
 - The API repo still has unrelated dirty billing/admin/tension work; checks passed, but those backend changes were not staged or deployed in this pass.
+
+# Live API CORS Cache Mitigation
+
+## Scope
+
+- Continue the live API boundary audit outside Red Zone.
+- Fix and deploy the dynamic-CORS cache hardening gap without touching unrelated dirty API work.
+- Verify production behavior from the live edge and from the signed-in account UI.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Use the isolated API worktree for the CORS cache change.
+- [x] Add/verify regression coverage for source-level `Vary: Origin` and no-store cache behavior.
+- [x] Run API tests, typecheck, build, and diff checks.
+- [x] Push API `main`, deploy Hostinger runtime, and restart Passenger.
+- [x] Probe live allowed/hostile CORS, preflight, and protected unauthenticated paths.
+- [x] Browser-smoke the paid account surface after the API restart.
+- [x] Update `auronpep/barmatrix-api#4` without closing it.
+
+## Review
+
+- API commit `e940a71` added `res.vary("Origin")` before dynamic CORS; API commit `467bdfe` added `Cache-Control: no-store` before dynamic CORS.
+- Hostinger production runtime was updated to detached `467bdfe`; `dist/index.js` contains both `Cache-Control: no-store` and `vary("Origin")`.
+- Remote GitHub fetch was blocked by noninteractive GitHub credentials, so the deployed commit was transferred with a verified local git bundle over the working Hostinger SSH connection.
+- Temporary `.htaccess` header experiments were removed; production `Cache-Control: no-store` still survives from app source.
+- Live hcdn still strips or overwrites `Vary: Origin`, surfacing `Vary: Accept-Encoding` or no `Vary` depending on route/status.
+- `auronpep/barmatrix-api#4` was updated with the live evidence and remains open for provider/CDN remediation.
+
+## Verification
+
+- API `npm test` passed 288/288 in `C:\barmatrix-api\.worktrees\api-cors-vary`.
+- API `npm run typecheck` passed.
+- API `npm run build` passed.
+- `git diff --check` passed with only Git CRLF normalization warnings.
+- Live allowed-origin `GET /health?cors_nostore_verify=467bdfe` returned HTTP 200, credentialed CORS, `Cache-Control: no-store`, and `Vary: Accept-Encoding`.
+- Live hostile-origin `GET /health?cors_nostore_verify=467bdfe` returned HTTP 200 with no CORS grant and `Cache-Control: no-store`.
+- Live allowed-origin `GET /api/me/c3?cors_nostore_verify=467bdfe` returned HTTP 401 fail-closed with credentialed CORS and `Cache-Control: no-store`.
+- Live hostile-origin `GET /api/me/c3?cors_nostore_verify=467bdfe` returned HTTP 401 fail-closed with no CORS grant and `Cache-Control: no-store`.
+- Live allowed preflight to `/api/attempts?cors_nostore_verify=467bdfe` returned HTTP 204 with credentialed CORS and `Cache-Control: no-store`.
+- Live hostile preflight to `/api/attempts?cors_nostore_verify=467bdfe` returned HTTP 404 with no CORS grant.
+- In-app Browser verified `https://barmatrix.app/account?api_cors_nostore_verify=467bdfe`: paid active-account copy, one H1, one `<main>`, no desktop overflow, no raw API/runtime text, and no relevant browser warning/error logs.
+
+## Remaining Risk
+
+- `Vary: Origin` is not live-verified because Hostinger/hcdn strips or overwrites it at the edge. The verified mitigation is `Cache-Control: no-store` on API responses.
+- Red Zone remains out of scope by request because another session is reviewing/debugging it.
+- C3 Coach/Mastery measured behavior remains blocked on authored C3 annotations and answer-choice mold tags.

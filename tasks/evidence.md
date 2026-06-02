@@ -3932,3 +3932,137 @@ Expected behavior: once The Method is complete, a paid signed-in user's Certific
 - Red Zone routes/source/tests remain out of scope for this pass.
 - This pass created one live M2 Certification attempt for the paid test subscriber; it did not attempt to pass all ten competencies.
 - Production C3 Coach remains unavailable until C3-tagged question coverage is populated; tracked by issue #6.
+
+# Live C3 Coach Tagged Coverage Evidence
+
+## Issue
+
+Expected behavior: after The Method is complete, C3 Coach should start an adaptive coaching session when production has tagged question coverage. Actual behavior from the prior live audit: Coach reported `Coach coverage pending` because production answer choices had no populated C3 mold tags. Affected domain: non-Red-Zone C3 Coach data/API/content provisioning.
+
+## Reproduction
+
+- Reproduced: yes.
+- Steps:
+  - Rechecked live C3 deck and production C3 aggregate counts from the Hostinger app context.
+  - Opened paid production `/coach?coach_coverage_audit=20260602c` in the in-app browser.
+  - Clicked `Start coaching`.
+- Failure/current-state output:
+  - Live DB: `c3_annotations=0` and `answer_choices.c3_mold_code=0` across 14,736 active/diagnostic choices.
+  - Browser: `/coach` rendered `Coach coverage pending` and no question runner.
+
+## Trace
+
+- Files/source inspected:
+  - `C:\barmatrix-api\src\lib\c3-coach-queries.ts`
+  - `C:\barmatrix-api\src\lib\c3-queries.ts`
+  - `C:\barmatrix-api\src\routes\c3-coach.ts`
+  - `C:\barmatrix-api\src\routes\c3.ts`
+  - `C:\barmatrix-api\src\routes\c3-coach.test.ts`
+  - `C:\barmatrix-api\src\routes\c3.test.ts`
+  - `C:\barmatrix-api\src\lib\c3-queries.test.ts`
+  - `C:\BMO\BARMATRIX\engineering\SCHEMA_C3_MYSQL.sql`
+  - `C:\BMO\BARMATRIX\engineering\SEED_C3_DECK_MYSQL.sql`
+  - `C:\BMO\BARMATRIX\engineering\SEED_C3_REFERENCE_MYSQL.sql`
+  - `C:\BMO\BARMATRIX\engineering\C3_QA_GATE.sql`
+  - GitHub issues `auronpep/barmatrix-app#6` and `auronpep/barmatrix-api#3`
+- Verified facts:
+  - App Red Zone route/test files are dirty from another session and remain out of scope.
+  - API repo is behind and dirty with unrelated billing/admin/tension work, so backend source edits need a clean, narrowly justified path.
+  - C3 Coach candidate selection requires `c3_annotations` with `PASS`/`FORK_OR_SPLIT` and tagged answer choices carrying `c3_mold_code`.
+  - Production C3 deck/reference tables are provisioned, but live annotation/tag columns are empty.
+  - Local app/API repos and local engineering assets do not contain an authoritative C3 annotation or answer-choice mold-tag backfill.
+  - `auronpep/barmatrix-api#3` remains the open owner for the missing authored tagging content.
+- Root cause: missing authored/validated C3 tagging content, not a confirmed app/API source defect.
+- Confidence: high.
+
+## Change
+
+- No source or production data change was applied.
+- Reason: the smallest clean fix would be to apply validated C3 annotations and per-choice mold tags, but no authoritative local backfill artifact exists. Inventing tags would create unverified instructional/legal content.
+- Updated `auronpep/barmatrix-app#6` with the refreshed verification receipt and linked the remaining actionable content work to `auronpep/barmatrix-api#3`.
+
+## Verification
+
+- Live API:
+  - `GET https://api.barmatrix.app/api/c3/deck?coach_coverage_audit=20260602c` returned HTTP 200 with 135 cards.
+  - `GET https://api.barmatrix.app/health?coach_coverage_audit=20260602c` returned `{"ok":true,"db":"up"}`.
+- Production DB aggregate:
+  - `c3_cards=135`
+  - `c3_molds=13`
+  - `c3_annotations=0`
+  - `answer_choices.c3_mold_code` populated rows: `0` across 14,736 active/diagnostic choices
+  - `answer_choices.c3_architecture` populated rows: `0`
+  - `answer_choices.c3_filter_broken` populated rows: `0`
+  - `student_c3_srs=0`
+  - orphan mold tags: `0`
+- Browser verification:
+  - `/coach?coach_coverage_audit=20260602c` rendered one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, and no relevant browser warning/error logs.
+  - After `Start coaching`, the page rendered `Coach coverage pending`, did not render `Finish The Method`, and did not render a question runner.
+- Local checks:
+  - App `node --test tests\coach-unavailable-reason-copy.test.ts tests\coach-main-landmark.test.ts` passed 2/2.
+  - API `npx --no-install tsx --test src\routes\c3-coach.test.ts src\routes\c3.test.ts src\lib\c3-queries.test.ts` passed 10/10.
+  - App `npm run lint` passed.
+  - App `npm run build` passed.
+  - API `npm run build` passed.
+- Production logs:
+  - Vercel logs showed normal `/coach` HTTP 200 rows and no matching error/CSP/500 signals.
+  - Hostinger API `stderr.log` was empty.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-c3-coach-coverage-pending-live-20260602c.png`
+
+# Live Trap Misconception Column Retirement Evidence
+
+## Issue
+
+Expected behavior: when live production has no authored Misconception taxonomy rows, `/traps` should not visually promise or render an empty Misconception column. Actual behavior: production `/traps` renders Misconception copy and a dedicated column with only empty-column text even though `/api/traps` reports `misconception_count=0`. Affected domain: non-Red-Zone Trap Taxonomy catalog UX.
+
+## Reproduction
+
+- Reproduced: yes.
+- API evidence:
+  - `GET https://api.barmatrix.app/api/traps?misconception_retire_audit=20260602d` returned `architecture_count=1363`, `misconception_count=0`, `official_count=17`.
+  - Production aggregate: 11,052 active/diagnostic wrong choices have valid `misconception_tags` JSON, but 0 have non-empty arrays; JSON_TABLE returned 0 tag rows and 0 distinct slugs.
+- Browser evidence:
+  - `/traps?misconception_retire_audit=20260602d` rendered the H1 `The finite universe of MBE traps`, the copy `the misconceptions they prey on`, the H2 `Misconception`, and `No traps in this column for the current filter.`
+  - The page otherwise rendered one H1, one `<main>`, no desktop overflow, no raw API/runtime text, and no relevant browser warning/error logs.
+
+## Trace
+
+- Files/source inspected:
+  - `app/traps/page.tsx`
+  - `lib/traps.ts`
+  - `tests/mobile-content-overflow.test.ts`
+  - `tests/sitemap-static-surface.test.ts`
+  - `tests/page-main-landmarks.test.ts`
+  - Next.js local docs for pages/search params, Server Components, and server-side data fetching.
+  - GitHub issue `auronpep/barmatrix-app#4`.
+- Verified facts:
+  - The API correctly returns zero misconception rows when production data has empty `answer_choices.misconception_tags` arrays.
+  - `app/traps/page.tsx` renders both Trap columns unconditionally whenever total traps are non-empty.
+  - Issue #4 acceptance criteria allow retiring the dimension if it is intentionally not part of v1.
+- Suspected root cause: frontend catalog rendering treats the Misconception dimension as always available instead of feature-gating it on non-zero misconception content.
+- Confidence: high.
+
+## Change
+
+- Changed files:
+  - `app/traps/page.tsx`
+  - `tests/trap-misconception-column.test.ts`
+- Diff summary:
+  - Added `hasMisconceptionDimension = catalog.totals.misconception_count > 0`.
+  - The `/traps` intro copy now omits Misconception promises when the API has zero misconception rows.
+  - The Misconception column renders only when `hasMisconceptionDimension` is true.
+  - Pagination uses only visible columns, so the architecture-only state does not paginate against a hidden empty dimension.
+- Smallest safe fix rationale: no API/data content source exists for misconception tags, and issue #4 allows retiring the dimension. The UI now hides the empty dimension only while API totals prove it has no authored rows; future populated data restores it automatically.
+
+## Verification
+
+- Red regression:
+  - `node --test tests\trap-misconception-column.test.ts` failed before implementation because there was no `misconception_count` gate.
+- Local green checks:
+  - `node --test tests\trap-misconception-column.test.ts` passed 1/1.
+  - `node --test tests\mobile-content-overflow.test.ts tests\sitemap-static-surface.test.ts tests\page-main-landmarks.test.ts` passed 5/5.
+  - Full non-Red-Zone app sweep with `tests\red-zone-detail-params.test.ts` excluded passed 60/60.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+- Live deploy/browser verification pending.

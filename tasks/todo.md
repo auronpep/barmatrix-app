@@ -2703,3 +2703,105 @@
 - Red Zone routes/source/tests remain out of scope for this pass.
 - This slice added one live M2 Certification attempt for the paid test subscriber; it intentionally did not pass all ten competencies.
 - Production C3 Coach still cannot serve adaptive questions until issue #6 populates C3-tagged question coverage.
+
+# Live C3 Coach Tagged Coverage Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones.
+- Investigate the production C3 Coach tagged-question coverage gap tracked by issue #6.
+- Use only local source/runtime evidence to decide whether this is a code defect, schema issue, or content/data provisioning gap.
+- Apply a live/content fix only if an authoritative local C3 tagging source exists; do not guess classifications.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone app work remains separate and untouched.
+- [x] Inspect C3 Coach API/app source, query helpers, tests, and local C3 content assets.
+- [x] Query live production C3 schema/data aggregates safely.
+- [x] Determine whether an authoritative C3 tagging/backfill source exists locally.
+- [x] Decide whether a safe provisioning change exists and verify the current Coach behavior.
+- [x] Run relevant app/API tests, lint/build as needed, production health/log/browser checks, and record evidence.
+
+## Review
+
+- Skipped Red Zones per the user's instruction; existing Red Zone route/test changes remain untouched.
+- API source behavior requires both `c3_annotations` rows with `PASS`/`FORK_OR_SPLIT` and active questions with answer choices carrying `c3_mold_code` before Coach can choose a candidate.
+- Production still has the C3 deck/reference layer (`c3_cards=135`, `c3_molds=13`) but no measurement/tagging layer: `c3_annotations=0`, `answer_choices.c3_mold_code=0`, `answer_choices.c3_architecture=0`, `answer_choices.c3_filter_broken=0`, and `student_c3_srs=0`.
+- The local engineering asset search found schema/reference/deck/QA-gate files only. It did not find validated `c3_annotations` rows or `answer_choices.c3_mold_code` backfill content.
+- No source-code root cause or safe local data fix was found. The blocker remains missing authored/validated C3 tagging content, tracked in `auronpep/barmatrix-api#3`.
+- Live paid Browser verification confirmed `/coach` fails soft: after `Start coaching`, it renders `Coach coverage pending` and no question runner.
+- Updated `auronpep/barmatrix-app#6` with the refreshed production counts, browser verification, checks run, and pointer to the API content-backfill owner issue.
+
+## Verification
+
+- Live API:
+  - `GET https://api.barmatrix.app/api/c3/deck?coach_coverage_audit=20260602c` returned HTTP 200 with 135 cards.
+  - `GET https://api.barmatrix.app/health?coach_coverage_audit=20260602c` returned `{"ok":true,"db":"up"}`.
+- Production DB aggregate from Hostinger app context:
+  - `c3_cards=135`
+  - `c3_molds=13`
+  - `c3_annotations=0`
+  - `answer_choices.c3_mold_code` populated rows: `0` across 14,736 active/diagnostic choices
+  - `answer_choices.c3_architecture` populated rows: `0`
+  - `answer_choices.c3_filter_broken` populated rows: `0`
+  - `student_c3_srs=0`
+  - orphan mold tags: `0`
+- Browser verification:
+  - `/coach?coach_coverage_audit=20260602c` rendered one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, and no relevant browser warning/error logs.
+  - After clicking `Start coaching`, the page rendered `Coach coverage pending`, omitted `Finish The Method`, and did not render a question runner.
+- Local checks:
+  - App `node --test tests\coach-unavailable-reason-copy.test.ts tests\coach-main-landmark.test.ts` passed 2/2.
+  - API `npx --no-install tsx --test src\routes\c3-coach.test.ts src\routes\c3.test.ts src\lib\c3-queries.test.ts` passed 10/10.
+  - App `npm run lint` passed.
+  - App `npm run build` passed.
+  - API `npm run build` passed.
+- Production logs:
+  - Vercel logs showed normal `/coach` HTTP 200 rows and no matching error/CSP/500 signals.
+  - Hostinger API `stderr.log` was empty.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-c3-coach-coverage-pending-live-20260602c.png`
+
+## Remaining Risk
+
+- Red Zone routes/source/tests remain out of scope for this pass.
+- C3 Coach and C3 Mastery cannot become measured until authored C3 annotation and per-choice mold-tag content exists and passes the QA gate.
+
+# Live Trap Misconception Column Retirement Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones.
+- Resolve `auronpep/barmatrix-app#4` by retiring the visible empty Misconception taxonomy column when production has no authored misconception rows.
+- Preserve future behavior: if `misconception_count` becomes non-zero, the Misconception column should render again.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone app work remains separate and untouched.
+- [x] Inspect issue #4, Trap source/tests, and relevant local Next.js docs.
+- [x] Reproduce the live zero-misconception UI/API state.
+- [x] Add a failing regression for conditional Misconception column rendering.
+- [x] Apply the smallest page change to hide the empty dimension without hiding future content.
+- [x] Run focused tests, lint/build, and local build checks.
+- [ ] Deploy, run live browser verification, production health/log checks.
+- [ ] Record final evidence and update/close issue #4 if verified.
+
+## Review
+
+- Live production reproduction confirmed `/traps` rendered a Misconception H2 and empty-column copy even though the live API returned `misconception_count=0`.
+- Production DB aggregate confirmed the source data state: 11,052 active/diagnostic wrong choices have valid `misconception_tags` JSON, but 0 have non-empty arrays.
+- Added `tests/trap-misconception-column.test.ts`; it failed before the page change because there was no API-total gate for the Misconception dimension.
+- Changed `app/traps/page.tsx` so the Misconception dimension is shown only when `catalog.totals.misconception_count > 0`. The intro copy no longer mentions misconceptions when that dimension has no rows.
+- The change preserves future content behavior: if the API starts returning non-zero misconception totals, the Misconception column and copy render again.
+
+## Verification So Far
+
+- Red regression:
+  - `node --test tests\trap-misconception-column.test.ts` failed before the page change.
+- Local green checks:
+  - `node --test tests\trap-misconception-column.test.ts` passed 1/1.
+  - `node --test tests\mobile-content-overflow.test.ts tests\sitemap-static-surface.test.ts tests\page-main-landmarks.test.ts` passed 5/5.
+  - Full non-Red-Zone app sweep with `tests\red-zone-detail-params.test.ts` excluded passed 60/60.
+  - `npm run lint` passed.
+  - `npm run build` passed.

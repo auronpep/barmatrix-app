@@ -33,17 +33,27 @@ export default async function TrapsPage({
   const misconception = officialOnly
     ? catalog.misconception.filter((trap) => trap.official)
     : catalog.misconception;
+  const hasMisconceptionDimension =
+    catalog.totals.misconception_count > 0;
+  const visibleMisconception = hasMisconceptionDimension ? misconception : [];
 
   const totalTraps =
-    catalog.totals.architecture_count + catalog.totals.misconception_count;
+    catalog.totals.architecture_count +
+    (hasMisconceptionDimension ? catalog.totals.misconception_count : 0);
   const isEmpty = totalTraps === 0;
   const filteredEmpty =
-    !isEmpty && architecture.length === 0 && misconception.length === 0;
+    !isEmpty && architecture.length === 0 && visibleMisconception.length === 0;
+  const catalogDescription = hasMisconceptionDimension
+    ? "Every wrong answer the MBE writes is built on purpose. Browse the wrong-answer architectures the test reuses and the misconceptions they prey on, then open one to see the questions that deploy it as a distractor."
+    : "Every wrong answer the MBE writes is built on purpose. Browse the wrong-answer architectures the test reuses, then open one to see the questions that deploy it as a distractor.";
 
-  // Paginate both columns with one shared page, driven by the longer column.
+  // Paginate visible columns with one shared page, driven by the longer column.
   const pageCount = Math.max(
     1,
-    Math.ceil(Math.max(architecture.length, misconception.length) / TRAPS_PER_PAGE),
+    Math.ceil(
+      Math.max(architecture.length, visibleMisconception.length) /
+        TRAPS_PER_PAGE,
+    ),
   );
   const requestedPage = Number.parseInt(page ?? "1", 10);
   const currentPage = Math.min(
@@ -52,7 +62,13 @@ export default async function TrapsPage({
   );
   const sliceStart = (currentPage - 1) * TRAPS_PER_PAGE;
   const architecturePage = architecture.slice(sliceStart, sliceStart + TRAPS_PER_PAGE);
-  const misconceptionPage = misconception.slice(sliceStart, sliceStart + TRAPS_PER_PAGE);
+  const misconceptionPage = visibleMisconception.slice(
+    sliceStart,
+    sliceStart + TRAPS_PER_PAGE,
+  );
+  const columnsClassName = hasMisconceptionDimension
+    ? "mt-10 grid min-w-0 gap-8 lg:grid-cols-2"
+    : "mt-10 grid min-w-0 gap-8";
 
   return (
     <section className="mx-auto max-w-6xl px-6 py-16">
@@ -77,9 +93,7 @@ export default async function TrapsPage({
         The finite universe of MBE traps
       </h1>
       <p className="mt-4 max-w-2xl text-lg text-zinc-600">
-        Every wrong answer the MBE writes is built on purpose. Browse the
-        wrong-answer architectures the test reuses and the misconceptions they prey
-        on, then open one to see the questions that deploy it as a distractor.
+        {catalogDescription}
       </p>
 
       <div
@@ -134,19 +148,21 @@ export default async function TrapsPage({
 
       {!isEmpty && !filteredEmpty && (
         <TrapProfileProvider>
-          <div className="mt-10 grid min-w-0 gap-8 lg:grid-cols-2">
+          <div className={columnsClassName}>
             <TrapColumn
               title="Wrong-answer architecture"
               caption="How the distractor is built (forensic_tags)"
               traps={architecturePage}
               total={architecture.length}
             />
-            <TrapColumn
-              title="Misconception"
-              caption="The student error it preys on (misconception_tags)"
-              traps={misconceptionPage}
-              total={misconception.length}
-            />
+            {hasMisconceptionDimension && (
+              <TrapColumn
+                title="Misconception"
+                caption="The student error it preys on (misconception_tags)"
+                traps={misconceptionPage}
+                total={visibleMisconception.length}
+              />
+            )}
           </div>
           {pageCount > 1 && (
             <TrapPagination

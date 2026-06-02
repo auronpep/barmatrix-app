@@ -7,6 +7,7 @@ import { PurchaseSuccessTracker } from "./purchase-success-tracker";
 export const metadata = {
   title: "Checkout Complete - BarMatrix",
   description: "Your BarMatrix checkout is complete.",
+  robots: { index: false, follow: false },
 };
 
 interface CheckoutSuccessPageProps {

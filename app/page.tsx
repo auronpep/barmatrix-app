@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { HERO, PRICING, PROOF_CARD } from "@/lib/copy";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+};
 
 const stats = [
   { num: "2,400", red: ".", lbl: "Questions · fully tagged" },

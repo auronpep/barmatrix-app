@@ -46,9 +46,6 @@ export const metadata: Metadata = {
     "bar exam repeat takers",
     "California bar exam",
   ],
-  alternates: {
-    canonical: "/",
-  },
   robots: {
     index: true,
     follow: true,

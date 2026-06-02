@@ -948,21 +948,935 @@
 
 ## Plan
 
-- [ ] Map Red Zones routes, links, API calls, and existing tests.
-- [ ] Run logged-in browser verification across every Red Zones path and capture UI/console/API evidence.
-- [ ] Trace any reproduced defect to the owning source and compare against similar working flows.
-- [ ] Add failing focused regression tests or repro checks before implementation where practical.
-- [ ] Implement scoped fixes and re-run focused plus full relevant checks.
-- [ ] Record review notes, verification commands, browser evidence, and remaining risk.
+- [x] Map Red Zones routes, links, API calls, and existing tests.
+- [x] Run logged-in browser verification across every Red Zones path and capture UI/console/API evidence.
+- [x] Trace any reproduced defect to the owning source and compare against similar working flows.
+- [x] Add failing focused regression tests or repro checks before implementation where practical.
+- [x] Implement scoped fixes and re-run focused plus full relevant checks.
+- [x] Record review notes, verification commands, browser evidence, and remaining risk.
 
 ## Review
 
-- Pending.
+- Paid production `/red-zones` rendered the signed-in library with 51 unique detail links, metrics, no raw API text, no loading stall, and no browser warning/error logs.
+- Reproduced a real bug before the fix: encoded detail paths such as `/red-zones/subject/Civil%20Procedure`, `/red-zones/subtopic/II.A%20%2F%20II.C.1`, and `/red-zones/tension_point/Fact%20of%20consequence%20%2B%20weak%20proof%2Falternative%20cause` rendered no zone status and `Questions in this zone · 0` even though the index advertised real question counts.
+- Root cause: `app/red-zones/[dimension]/[tag]/page.tsx` sent the URL-encoded route params directly to `api.getMyRedZoneDetail()`, so API lookups used values like `Civil%20Procedure` and `II.A%20%2F%20II.C.1` instead of the stored tag values.
+- Source fix: decode dynamic route params once in the detail route before building the route key and API request, and render the normalized tag without double-decoding.
+- Deployed frontend production deployment `dpl_3MmSey3qXQPT1tTNDupKpQiHvLJk`; Vercel reports `Ready` and aliases `https://barmatrix.app` plus `https://www.barmatrix.app`.
 
 ## Verification
 
-- Pending.
+- Red check: `node --test tests\red-zone-detail-params.test.ts` failed before implementation because the detail route did not decode params and double-decoded the heading.
+- Green checks:
+  - `node --test tests\red-zone-detail-params.test.ts` passed: 2 tests.
+  - `node --test tests\*.test.ts` passed: 36 tests, 36 pass.
+  - `npm run lint` passed.
+  - `npm run build` passed locally and during Vercel production deploy.
+  - `git diff --check` passed with only the existing LF/CRLF normalization warning.
+- Production in-app Browser sweep:
+  - `/red-zones` rendered 51 unique detail links and no relevant console logs.
+  - All 51 `/red-zones/{dimension}/{tag}` detail paths loaded without signed-out states, loading stalls, raw API text, or framework overlays.
+  - Every detail page's `Questions in this zone` count matched the count advertised on the index.
+  - Unique repair-drill targets `/drills/civil-procedure`, `/drills/contracts`, `/drills/evidence`, and `/drills/real-property` all rendered valid drill pages without raw API text or console warnings/errors.
+  - Detail-page `Red Zone Library` and `Back to dashboard` controls navigated to the expected pages.
+- Production API health returned `{"ok":true,"db":"up"}`; Hostinger API `console.log` tail showed only normal listener lines and `stderr.log` was empty.
 
 ## Remaining Risk
 
-- Pending.
+- The logged-in Red Zones area and all current reachable Red Zones detail/repair-drill paths are verified green for the current paid QA account.
+- Future `user_red_zones.dimension` values outside the API whitelist (`subject`, `subtopic`, `tension_point`) could still produce invalid detail routes if such data is introduced.
+- Detail-route stale-auth handling still formats generic API statuses for non-logged-in/stale-session cases; this was not reproduced in the logged-in path sweep.
+- AM status check-in still failed because no AM session matched `C:\barmatrix-app`.
+
+# Billing Portal Missing Customer Audit
+
+## Scope
+
+- Continue the live audit outside Red Zones.
+- Investigate the production account billing portal failure where an active paid account sees `No local purchase with a billing customer was found for this account.`
+- Preserve unrelated API admin/complimentary-access work already present in `C:\barmatrix-api`.
+
+## Plan
+
+- [x] Skip Red Zones paths and leave existing Red Zones worktree changes untouched.
+- [x] Reproduce the billing portal failure in the paid production browser session.
+- [x] Inspect sanitized production purchase state and API log health.
+- [x] Add a focused failing regression for owned active purchases missing `stripe_customer_id`.
+- [x] Implement the smallest backend repair path that still proves local purchase ownership before touching Stripe.
+- [x] Harden historical Stripe checkout-session 404s so they remain a handled missing-customer state.
+- [x] Run focused and non-Red-Zone API checks.
+- [x] Deploy API source changes and browser-verify the live account behavior/log health.
+
+## Review
+
+- Billing portal recovery now looks up the latest active owned purchase even when `stripe_customer_id` is blank, then recovers the customer from the stored checkout session only after local purchase ownership is proven.
+- Synthetic/manual access is intentionally not recovered: `comp_` checkout-session IDs and blank sessions return the existing missing-customer state instead of touching Stripe.
+- Production had one active missing-customer `cs_` checkout session; Stripe returned `resource_missing` 404 for that historical session, so the helper now treats that narrow case as unrecoverable instead of bubbling a server error.
+- API commits pushed to `auronpep/barmatrix-api`: `bed8c99 Repair billing portal customer recovery` and `b8ba193 Handle unrecoverable billing checkout sessions`.
+- Hostinger GitHub fetch was unavailable from the remote checkout, so the pushed source files were copied directly, built on Hostinger through `node node_modules/typescript/bin/tsc -p tsconfig.json`, and the restart marker was touched.
+- Browser verification on the current paid account still does not redirect to Stripe; it remains on `/account` with `No local purchase with a billing customer was found for this account.` This is a verified data/classification limitation for that account, not a crash.
+- GitHub issue `auronpep/barmatrix-api#2` remains open and was updated with the production evidence.
+
+## Verification
+
+- Red focused check: `npx tsx --test src\billing-portal.test.ts` fails because `resolveOwnedBillingPortalCustomer()` returns `missing_customer` for an active owned purchase with a checkout session but no stored Stripe customer.
+- Red focused check: `npx tsx --test src\billing-portal-recovery.test.ts` fails before the 404 hardening because a Stripe `resource_missing` checkout-session lookup bubbles out of recovery.
+- Green focused check: `npx tsx --test src\billing-portal.test.ts src\billing-portal-recovery.test.ts` passed: 9 tests.
+- Green non-Red-Zone API check: `npx tsx --test <all src/**/*.test.ts excluding red-zones>` passed: 262 tests.
+- API `npm run typecheck` passed.
+- API `npm run build` passed.
+- API `git diff --check` passed with only LF/CRLF normalization warnings.
+- Live `GET https://api.barmatrix.app/health` returned `{"ok":true,"db":"up"}` after deploy.
+- In-app Browser `/account` click after deploy showed the handled missing-customer copy, no raw API status text, no browser warning/error logs, and Hostinger `stderr.log` was empty.
+- Full API `npm test` was not used as the acceptance check because the user asked this session to skip Red Zones and the Red Zone integration suite is failing setup on the remote DB user.
+
+## Remaining Risk
+
+- The deployed code repairs the recoverable missing-customer path, but the current browser account still has no recoverable Stripe billing customer.
+- Sanitized production state after the recovery attempt: 6 active non-refunded purchases, 1 with a Stripe customer, 5 missing; the only missing `cs_` session returns Stripe 404, and the rest are synthetic `comp_` or blank-session records.
+- Follow-up is data/backfill/manual-access classification or account-page copy/visibility for non-Stripe active access.
+
+# Billing Portal Non-Stripe Access UX Audit
+
+## Scope
+
+- Continue outside Red Zones.
+- Tighten account billing UX for active paid/manual/complimentary access that cannot open a Stripe billing portal.
+- Preserve the API contract: `POST /api/billing/create-portal-session` may return `404` when the customer or checkout session cannot be matched to a BarMatrix enrollment.
+
+## Plan
+
+- [x] Re-read project instructions and confirm `tasks/lessons.md` status.
+- [x] Read relevant local Next.js client-component/mutation docs before app code changes.
+- [x] Inspect the billing API contract, app button copy, and current live account behavior.
+- [x] Add a failing regression that rejects the misleading "No local purchase" billing copy.
+- [x] Apply the smallest account-copy change for non-Stripe/manual access.
+- [x] Run focused app checks, lint/build, and push the source change.
+- [x] Track the production deployment blocker.
+- [x] Re-run live browser verification after production deploy advances past `42fc533`.
+- [x] Record final evidence and remaining risk.
+
+## Review
+
+- Root cause: the app mapped every billing-portal `404` to "No local purchase with a billing customer...", but the live account evidence proves an active account can have local access and still lack a Stripe billing portal because its access is manual/complimentary or its historical checkout session is unrecoverable.
+- Source fix: `app/account/billing-portal-button.tsx` now gives distinct `404` copy for checkout-session-specific failures versus active-access/no-portal failures.
+- Pushed app commit `a735241 Clarify unavailable billing portal copy`.
+- Production initially had not advanced to this commit. Vercel still pointed at `42fc533`, GitHub had no deployment/check run for `a735241`, and the CLI had no saved credentials for this Windows user.
+- The Vercel CLI device login completed during the current audit, so a clean local clone checked out at `a735241` was used for deployment. This avoided the dirty main worktree and skipped unrelated Red Zone files.
+- `vercel build --prod` in the clean clone failed in the local prebuilt packaging path with `Unable to find lambda for route: /dashboard/final-sprint`, even though `npm run build` passed. Standard `vercel deploy --prod --yes` from the same clean clone succeeded.
+- Production deployment `dpl_Hq38gL8dhHgJNukcW24Pkwt63act` is `READY`, aliased to `https://barmatrix.app`, and reports Git SHA `a7352418dca0f9712c6ef79ed8d975ba95c778e9`.
+- The deployment drift issue remains tracked as `auronpep/barmatrix-app#3` for automatic Git/CI deploy wiring, because the successful deploy was manual CLI source `cli`, not a GitHub push-triggered deployment.
+
+## Verification
+
+- Red check: `node --test tests\api-client-billing-portal.test.ts` failed before the copy change because the button still contained `No local purchase with a billing customer`.
+- Green focused check: `node --test tests\api-client-billing-portal.test.ts` passed: 6 tests.
+- App `node --test tests\*.test.ts` passed: 37 tests.
+- App `npm run lint` passed.
+- App `npm run build` passed with Next.js 16.2.6.
+- App `git diff --check` passed with only LF/CRLF normalization warnings.
+- Clean-clone checks before deploy:
+  - `npm ci` succeeded.
+  - `node --test tests\api-client-billing-portal.test.ts` passed: 6 tests.
+  - `node --test tests\*.test.ts` passed: 35 tests.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `git diff --check` passed.
+- Live browser verification after deploy:
+  - Before deploy, clicking `Update Payment Method` still showed `No local purchase with a billing customer was found for this account.`
+  - After deploy, clicking the same button showed `This account has active access, but no Stripe billing portal is available for this enrollment...`
+  - The old copy was absent, no raw API status text appeared, and browser warning/error logs were empty.
+- Post-deploy checks:
+  - Vercel project latest deployment is `dpl_Hq38gL8dhHgJNukcW24Pkwt63act`.
+  - `GET https://api.barmatrix.app/health` returned `{"ok":true,"db":"up"}`.
+  - Vercel error log query for the new deployment returned no error rows.
+  - Hostinger API `stderr.log` was empty.
+
+## Remaining Risk
+
+- The account-copy issue is now live-verified for the current paid account.
+- Automatic Vercel deploy wiring is still not proven: the repo still has no enabled GitHub Actions workflow, no repo secrets, and no GitHub webhooks. Future pushes may still need manual CLI deploy until `auronpep/barmatrix-app#3` is resolved.
+
+# Non-Red-Zone C3 Deck Audit
+
+## Scope
+
+- Continue the live audit outside Red Zones while another session owns Red Zone review/debugging.
+- Investigate why the live C3 deck endpoint returns an empty deck and determine whether the root cause is source code, schema provisioning, or missing authoritative content.
+- Do not invent C3 card/mold content; only apply a fix if local project/runtime evidence identifies a clean source-level or provisioning root cause.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm the app worktree contains unrelated Red Zone changes and leave them untouched.
+- [x] Reproduce the live C3 deck behavior through API/browser-accessible evidence.
+- [x] Search local app/API source, migrations, tests, and docs for C3 schema and authoritative deck/mold content.
+- [x] Inspect sanitized live schema/counts for C3 tables and optional mold columns.
+- [x] Classify the root cause and add a focused regression/provisioning check if practical.
+- [x] Apply the smallest safe fix only if authoritative schema/content exists locally.
+- [x] Run relevant non-Red-Zone checks and browser/API verification.
+- [x] Record findings, remaining blockers, and any GitHub follow-up.
+
+## Review
+
+- Skipped Red Zones per the user's instruction; existing Red Zone worktree changes were not touched.
+- Reproduced the live C3 deck issue: `GET https://api.barmatrix.app/api/c3/deck` returned HTTP 200 with `cards: []`.
+- Production schema probe before the fix showed no `c3_cards`, `c3_molds`, `c3_tension_points`, `c3_splits`, `c3_annotations`, or `student_c3_srs` tables, and no `answer_choices.c3_*` columns.
+- Local authoritative assets exist outside the app/API repos under `C:\BMO\BARMATRIX\engineering`: `SCHEMA_C3_MYSQL.sql`, `SEED_C3_DECK_MYSQL.sql`, and `SEED_C3_REFERENCE_MYSQL.sql`.
+- Applied only those existing idempotent SQL assets to the live Hostinger DB. No source route changes were needed.
+- Post-provision live state: `c3_cards=135`, `c3_molds=13`, `c3_tension_points=28`, `c3_splits=14`, `c3_annotations=0`, `student_c3_srs=0`, and `answer_choices` now has `c3_architecture`, `c3_filter_broken`, and `c3_mold_code`.
+- The C3 deck API now returns 135 cards; `GET /api/c3/deck/PHIL-01` returns the expected philosophy card.
+- Paid browser verification confirmed `/mastery` renders a clean not-yet-measured state and `/coach` Start coaching renders `Not measurable yet`, both with no raw API status text or browser warning/error logs.
+
+## Verification
+
+- Live API:
+  - `GET https://api.barmatrix.app/api/c3/deck` returned 135 cards.
+  - `GET https://api.barmatrix.app/api/c3/deck/PHIL-01` returned `The One Idea`.
+  - `GET https://api.barmatrix.app/health` returned `{"ok":true,"db":"up"}`.
+  - Hostinger `stderr.log` was empty after the provisioning and verification checks.
+- API automated checks in `C:\barmatrix-api-billing-work`:
+  - `npx tsx --test src\routes\c3.test.ts src\routes\c3-coach.test.ts src\lib\c3-queries.test.ts src\lib\c3-bandit.test.ts src\lib\c3-scoring.test.ts src\lib\c3-srs.test.ts` passed: 28 tests.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+  - `git diff --check` passed.
+- GitHub follow-up:
+  - Closed `auronpep/barmatrix-api#1` after live deck provisioning was verified.
+  - Created `auronpep/barmatrix-api#3` for C3 annotations and answer-choice mold-tag backfill.
+
+## Remaining Risk
+
+- The public C3 deck/reference layer is now provisioned and live-verified.
+- C3 mastery remains `not_yet_measured` for the current paid account because live `c3_annotations` has zero rows and no answer choices are tagged with mold codes yet. That content-tagging/backfill follow-up is tracked as `auronpep/barmatrix-api#3`.
+- The existing production deployment drift issue for the app billing-copy commit remains open and unchanged.
+
+# Vercel Automatic Deploy Wiring Audit
+
+## Scope
+
+- Continue outside Red Zones.
+- Resolve the app production deployment drift follow-up by adding a verified automatic GitHub-to-Vercel deployment path for `main`.
+- Do not include unrelated dirty Red Zone work in the deployment commit.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm current dirty worktree and skip Red Zone files.
+- [x] Verify GitHub/Vercel wiring state: repo secrets, workflows, webhooks, project metadata, latest deployments.
+- [x] Validate available Vercel credentials without printing token values.
+- [x] Add the smallest enabled GitHub Actions workflow for production deploys.
+- [x] Verify the committed tree in a clean clone before push.
+- [x] Push to `main` and wait for the push-triggered workflow.
+- [x] Verify Vercel production deployment, API health, and paid browser account behavior.
+- [x] Update GitHub tracking.
+
+## Review
+
+- GitHub initially had no Actions secrets, no enabled workflows, and no repo webhooks.
+- Vercel project metadata showed the billing-copy production deploy was manual `cli` source, not a GitHub-triggered deployment.
+- Vercel rejected minting a new token from the locally saved CLI credential (`Only user authentication tokens can be used to create new tokens.`).
+- Existing `VERCEL_TOKEN` in `C:\Users\wks2391\.env` validated with `vercel whoami` and `vercel project inspect` without printing the token.
+- Added GitHub Actions secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID`.
+- Added `.github/workflows/deploy-vercel.yml` and pushed commit `aa75e22 Add Vercel production deploy workflow`.
+- The workflow uses the standard remote Vercel deploy path, not prebuilt deploy, because local `vercel build --prod` previously failed in prebuilt packaging while standard `vercel deploy --prod --yes` worked.
+- Dirty Red Zone work and Red Zone test files were left unstaged and were not included in the deploy commit.
+
+## Verification
+
+- Clean clone at committed tree `aa75e22` passed:
+  - `npm ci`
+  - `node --test tests/*.test.ts`: 35 tests passed
+  - `npm run lint`
+  - `npm run build`
+  - `git diff --check`
+  - `npx --yes vercel@54.6.1 pull --yes --environment=production --token "$VERCEL_TOKEN"`
+- Push-triggered GitHub Actions workflow succeeded:
+  - Run: `https://github.com/auronpep/barmatrix-app/actions/runs/26797511802`
+  - Commit: `aa75e2206597d82b7f1d4ee176ab727b2406f51a`
+  - Job: `deploy`, conclusion `success`
+- Vercel production deployment:
+  - Deployment: `dpl_Ffa8JkUxwHos9t9rx59ixwCxpCfC`
+  - URL: `https://barmatrix-r3fsaq677-sunnylee.vercel.app`
+  - Aliases: `https://barmatrix.app`, `https://www.barmatrix.app`
+  - Git metadata: SHA `aa75e2206597d82b7f1d4ee176ab727b2406f51a`, repo `auronpep/barmatrix-app`, ref `main`
+  - `vercel logs ... --level error` returned no error rows
+- Live API `GET https://api.barmatrix.app/health` returned `{"ok":true,"db":"up"}`.
+- In-app Browser verification on `https://barmatrix.app/account?deploy_auto_verify=1780373040`:
+  - Account page rendered active paid state and `Update Payment Method`.
+  - Clicking `Update Payment Method` rendered the new active-access/no-Stripe-portal copy.
+  - Old `No local purchase with a billing customer...` copy was absent.
+  - No raw API status text appeared and browser warning/error logs were empty.
+  - Screenshot saved: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-auto-deploy-account-billing.png`.
+
+## Remaining Risk
+
+- The automatic app production deploy path is verified for pushes to `main`.
+- The workflow uses CLI remote deployment, so Vercel deployment `source` still reports `cli`; the GitHub Actions check and deployment metadata prove it was push-triggered.
+- The known local prebuilt packaging issue (`Unable to find lambda for route: /dashboard/final-sprint`) remains, but this workflow intentionally avoids the prebuilt path.
+
+# Non-Red-Zone C3 Tagging Backfill Audit
+
+## Scope
+
+- Continue outside Red Zones.
+- Investigate `auronpep/barmatrix-api#3`: production C3 deck/reference data exists, but C3 mastery and coach remain unmeasured because live question/choice tagging is empty.
+- Do not invent C3 annotations or per-answer mold tags; only apply a data/source fix if local authoritative content exists.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone files remain separate and skip them.
+- [x] Reproduce current live C3 measurement state through production API/DB/browser evidence.
+- [x] Search local engineering assets, seed files, API source, and app source for authoritative C3 annotation or mold-tag backfill content.
+- [x] Run the C3 QA-gate-equivalent aggregate checks against production from the Hostinger app context.
+- [x] Browser-verify paid `/mastery` and `/coach` current behavior.
+- [x] Classify whether a safe fix exists in local evidence.
+- [x] Update audit notes and GitHub issue tracking.
+
+## Review
+
+- Production C3 reference/deck provisioning is still present: `GET https://api.barmatrix.app/api/c3/deck` returns 135 cards, and `GET /api/c3/deck/PHIL-01` returns a card.
+- Production DB aggregate counts from the Hostinger app context:
+  - `c3_cards=135`
+  - `c3_molds=13`
+  - `c3_annotations=0`
+  - `answer_choices.c3_mold_code` populated rows: `0`
+  - `answer_choices.c3_architecture` populated rows: `0`
+  - `answer_choices.c3_filter_broken` populated rows: `0`
+  - `student_c3_srs=0`
+  - orphan mold tags: `0`
+  - QA half-truth/wrong-element subject frequency rows: `[]`
+  - active questions: 3,466 total across Civil Procedure, Constitutional Law, Contracts, Criminal Law, Criminal Procedure, Evidence, Real Property, and Torts.
+- Local authoritative assets under `C:\BMO\BARMATRIX\engineering` include schema/reference/deck/QA-gate files, but no file containing `INSERT INTO c3_annotations`, `c3_mold_code` updates, `deciding_phase` content, or validated annotation rows.
+- The subject bank JSONL samples contain normal question, diagnostic, tension, and forensics fields, but no C3 annotation/mold-tag keys.
+- `SEED_CRIMINAL_REBALANCE_PROD_UPDATE.sql` updates answer correctness only; it is not a C3 tag backfill.
+- API source behavior is consistent with the content gap: C3 mastery queries count only `c3_annotations` rows with `PASS`/`FORK_OR_SPLIT` and choices carrying `c3_mold_code`; coach candidates also require tagged choices.
+- No source-code root cause or safe local data fix was found. The blocker is missing authored/validated C3 tagging content.
+
+## Verification
+
+- Live API:
+  - `GET https://api.barmatrix.app/api/c3/deck` returned 135 cards.
+  - `GET https://api.barmatrix.app/api/c3/deck/PHIL-01` returned `PHIL-01`.
+- Hostinger production aggregate query exited successfully and printed only sanitized counts.
+- In-app Browser paid `/mastery` verification:
+  - Rendered `Measured on 0 of your 99 attempts (0% C3-tagged).`
+  - Rendered `Not yet measured`.
+  - No raw API status text and browser warning/error logs were empty.
+- In-app Browser paid `/coach` verification:
+  - Page rendered a single `Start coaching` control.
+  - DOM click rendered `Not measurable yet` with Method/diagnostic next steps.
+  - No raw API status text and browser warning/error logs were empty.
+- Local asset search found no authoritative C3 annotation or mold-tag backfill file beyond `SCHEMA_C3_MYSQL.sql`, `SEED_C3_DECK_MYSQL.sql`, `SEED_C3_REFERENCE_MYSQL.sql`, and `C3_QA_GATE.sql`.
+
+## Remaining Risk
+
+- `auronpep/barmatrix-api#3` remains open because the acceptance criteria require authored C3 annotations and mold tags that are not present in local project evidence.
+- Paid C3 Mastery and Coach fail soft, but they cannot produce measured C3 skill coverage or coached C3 items until validated tagging content exists.
+- A separate accessibility cleanup candidate was observed: `/coach` currently has two `<main>` regions with duplicate text in the DOM. It did not cause a visible product failure in this pass.
+
+# Coach Main Landmark Fix
+
+## Scope
+
+- Fix the concrete non-Red-Zone accessibility/DOM defect found during the C3 browser audit: `/coach` rendered duplicate `<main>` landmarks because the root layout already wraps pages in `<main>` and `app/coach/page.tsx` rendered another one.
+- Keep the C3 fail-soft behavior unchanged.
+
+## Plan
+
+- [x] Read local Next.js layout/page docs before app code changes.
+- [x] Reproduce duplicate main landmarks in the paid production browser session.
+- [x] Trace the owning files and root cause.
+- [x] Add a focused failing regression test.
+- [x] Apply the smallest markup fix.
+- [x] Run focused and broader tracked app checks.
+- [x] Push and verify the automatic production deployment.
+- [x] Browser-verify live `/coach` after deployment.
+
+## Review
+
+- Root cause: `app/layout.tsx` wraps all routes in `<main>{children}</main>`, while `app/coach/page.tsx` returned its own `<main className="mx-auto max-w-3xl px-4 py-8">`.
+- Source fix: changed the coach page wrapper to `<section aria-labelledby="coach-title">` and added `id="coach-title"` to the `h1`.
+- Added `tests/coach-main-landmark.test.ts` to lock that the root layout owns the main landmark and the coach page does not nest a second one.
+- Pushed app commit `4bf93c1 Fix coach main landmark nesting`.
+- The existing GitHub Actions/Vercel workflow deployed the commit successfully.
+
+## Verification
+
+- Red check before implementation: `node --test tests\coach-main-landmark.test.ts` failed because `app/coach/page.tsx` contained `<main>`.
+- Green checks:
+  - `node --test tests\coach-main-landmark.test.ts` passed.
+  - Tracked app tests plus the new test passed: 36 tests.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `git diff --check -- app/coach/page.tsx tests/coach-main-landmark.test.ts` passed with only the usual LF/CRLF warning.
+- Deployment:
+  - GitHub Actions run `https://github.com/auronpep/barmatrix-app/actions/runs/26798142796` succeeded for commit `4bf93c1cda658e164bf6a877c72b28be4d356540`.
+  - Vercel production deployment `dpl_4C3YAmLDv9dkQTNyCB1ncRkemRzP` is `READY`, aliased to `https://barmatrix.app`, and reports Git SHA `4bf93c1cda658e164bf6a877c72b28be4d356540`.
+  - Vercel error-log query for the deployment returned no error rows.
+  - Live API health returned `{"ok":true,"db":"up"}`.
+- In-app Browser live verification:
+  - `https://barmatrix.app/coach?main_landmark_verify=1780374200` rendered exactly one `<main>` region.
+  - The route still rendered `The C3 Coach` and `Start coaching`.
+  - Clicking `Start coaching` rendered the expected `Not measurable yet` fail-soft state.
+  - No raw API status text appeared and browser warning/error logs were empty.
+
+## Remaining Risk
+
+- Coach landmark nesting is fixed and live-verified.
+- C3 Coach remains not measurable because the live C3 annotation/tagging content is absent; that is tracked separately in `auronpep/barmatrix-api#3`.
+
+# Account Billing Capability Pre-Click Audit
+
+## Scope
+
+- Continue outside Red Zones; another session owns Red Zone review/debugging.
+- Fix the live account billing UX gap where active non-Stripe/manual access still sees a normal `Update Payment Method` CTA before the app knows a Stripe billing portal is available.
+- Use the clean API worktree at `C:\barmatrix-api-billing-work` for backend changes; leave dirty Red Zone app files and dirty `C:\barmatrix-api` files untouched.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` is absent.
+- [x] Reproduce current paid account behavior in the in-app browser.
+- [x] Inspect sanitized production purchase categories without printing IDs, emails, tokens, or customer IDs.
+- [x] Trace account UI, dashboard data, and billing portal ownership code.
+- [x] Add failing API/app regression tests for pre-click billing capability classification.
+- [x] Expose a small dashboard billing capability field from the API.
+- [x] Use that field in the account billing UI to avoid showing a payment-method CTA for active access without a Stripe portal.
+- [x] Run focused tests, full relevant checks, lint/build, and browser verification.
+- [x] Record final review notes and remaining risk.
+
+## Review
+
+- API commit `1807a3b Expose billing portal capability on dashboard` was pushed to `auronpep/barmatrix-api`.
+- App commit `ef05f22 Classify account billing portal availability` was pushed to `auronpep/barmatrix-app`.
+- The API dashboard payload now includes `billing_portal.portal_available` plus an unavailable reason derived from the active purchase row selected with the same customer-first ordering as the portal ownership path.
+- The account billing panel now waits for dashboard billing state and renders `No Stripe billing portal` plus support contact for active access that cannot use Stripe, instead of showing `Update Payment Method`.
+- The static billing copy no longer promises Stripe before capability is known.
+- Red Zone files and the untracked Red Zone test were left untouched and unstaged.
+
+## Verification
+
+- Red checks failed before implementation:
+  - API `npx tsx --test src\me-dashboard-billing.test.ts`
+  - App `node --test tests\api-client-billing-portal.test.ts`
+- Green checks:
+  - API `npx tsx --test src\me-dashboard-billing.test.ts` passed.
+  - API `npm test` passed with placeholder test env: 282 tests.
+  - API `npm run typecheck` passed.
+  - API `npm run build` passed.
+  - App tracked tests passed: 37 tests. Untracked Red Zone test from the other session was intentionally excluded.
+  - App `npm run lint` passed.
+  - App `npm run build` passed.
+  - `git diff --check` passed in both repos with only LF/CRLF warnings.
+- Deployment:
+  - API Hostinger app directory is at `1807a3b`; compiled `dist/routes/me.js` contains `billing_portal`.
+  - App GitHub Actions run `26798801470` succeeded for `ef05f22`.
+  - Live API `GET https://api.barmatrix.app/health` returned `{"ok":true,"db":"up"}`.
+  - Vercel error logs and Hostinger `stderr.log` checks returned no rows.
+- Live browser verification:
+  - `https://barmatrix.app/account?billing_capability_verify=1780375550` rendered active account state.
+  - Billing panel rendered `No Stripe billing portal...`.
+  - `Update Payment Method` was absent.
+  - Old `No local purchase with a billing customer...` copy was absent.
+  - No raw `API ###` text appeared, `<main>` count was 1, and browser warning/error logs were empty.
+  - Browser screenshot capture timed out in the in-app runtime; DOM and console evidence were captured.
+
+## Remaining Risk
+
+- Active non-Stripe/manual accounts are now classified before the payment-method CTA is shown.
+- Stripe-backed accounts should still see the portal CTA when `billing_portal.portal_available` is true; this was covered by source/build checks, but the current paid browser account is a no-portal account, so a Stripe-backed browser account was not available for live positive-path re-verification in this pass.
+
+# Live Non-Red-Zone Smoke Audit
+
+## Scope
+
+- Continue the live production audit while another session owns Red Zone review/debugging.
+- Exclude Red Zone routes and Red Zone source/test files from this pass.
+- Verify paid-user non-Red-Zone study surfaces, account surfaces, production logs, and open non-Red-Zone follow-ups.
+- Fix only concrete root causes reproduced from local/runtime evidence.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work is present and leave it untouched.
+- [x] Run live in-app-browser smoke on non-Red-Zone paid routes.
+- [x] Check browser console/runtime health for raw API statuses, duplicate main landmarks, and visible broken states.
+- [x] Check production API/frontend logs after browser smoke.
+- [x] Review open non-Red-Zone GitHub follow-ups for current blockers already evidenced locally.
+- [x] Triage any reproduced issue to root cause before editing source.
+- [x] Add focused regression coverage and apply the smallest clean fix if a source defect is found.
+- [x] Run relevant tests/lint/build/deploy verification for any changes.
+- [x] Record review notes, evidence, and remaining risk.
+
+## Review
+
+- Skipped Red Zones per the user's instruction and left the existing dirty Red Zone page/test untouched.
+- Live paid smoke covered `/dashboard`, `/account`, `/foundations`, `/mastery`, `/coach`, `/certification`, `/certification/M1`, `/boot-camps`, `/practice`, `/timed-sets`, `/traps`, `/tensions`, `/drills/evidence`, `/drills/criminal-law`, and `/diagnostic`.
+- The paid account hooks can take a few seconds to settle; after waiting, `/account` rendered active access and the no-portal billing state.
+- The live smoke found no raw API error text, no horizontal overflow at the tested desktop width, and no fresh browser warning/error logs.
+- Reproduced a non-Red-Zone accessibility defect: `/boot-camps` rendered two `<main>` landmarks because the root layout already wraps all pages in `<main>` while several route pages also declared `<main>`.
+- Fixed the source-wide root cause by converting route-local page `<main>` wrappers to neutral `<div>` wrappers, preserving layout classes and leaving `app/layout.tsx` as the single page landmark owner.
+- Added `tests/page-main-landmarks.test.ts` to lock the convention across `app/**/page.tsx`.
+- App commit `aa397e9 Fix nested page main landmarks` was pushed to `auronpep/barmatrix-app`.
+- Red Zone files and local audit notes remained unstaged after the commit.
+
+## Verification
+
+- Red check before implementation: `node --test tests\page-main-landmarks.test.ts` failed and listed 19 route page files with local `<main>` wrappers.
+- Green checks:
+  - `node --test tests\page-main-landmarks.test.ts tests\coach-main-landmark.test.ts` passed.
+  - App tests excluding the untracked Red Zone test passed: 38 tests.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `git diff --check` and `git diff --cached --check` passed with only normal LF/CRLF warnings.
+- Local in-app browser verification on representative affected routes (`/boot-camps`, `/about`, `/subjects/evidence`, `/dashboard/final-sprint`, `/privacy`, `/terms`, `/waitlist`) showed exactly one `<main>`, no raw API text, and no browser warning/error logs.
+- GitHub Actions deploy run `26799377427` succeeded for `aa397e9`.
+- Vercel production deployment `dpl_GzinokCxGXJ6oqJaKZskrg4HrWUv` is `Ready` and aliased to `https://barmatrix.app`.
+- Live in-app browser verification on the same representative routes showed exactly one `<main>`, no raw API text, no horizontal overflow, and no fresh browser warning/error logs.
+- Vercel error logs for the post-deploy window returned no rows.
+- `GET https://api.barmatrix.app/health` returned `{"ok":true,"db":"up"}` and Hostinger `stderr.log` was empty.
+- Open issue check: `auronpep/barmatrix-app` has no open issues; `auronpep/barmatrix-api` still has only the known C3 content backfill issue `#3`.
+
+## Remaining Risk
+
+- Red Zone routes remain explicitly out of scope for this pass.
+- C3 Mastery/Coach remain limited by missing authored C3 annotation and mold-tag content, tracked in `auronpep/barmatrix-api#3`.
+- Some public routes briefly show signed-out nav while Clerk/account state settles, then account-aware routes update; no broken state persisted after the wait used in verification.
+
+# Live Public And Dynamic Route Audit
+
+## Scope
+
+- Continue the live production audit outside Red Zones.
+- Cover public/static marketing routes, dynamic non-Red-Zone detail pages, SEO endpoints, and production logs.
+- Avoid destructive checkout, diagnostic, or study-attempt mutations unless a concrete failure requires them.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Derive representative public, dynamic, and SEO routes from local app/API evidence.
+- [x] Browser-smoke those live routes for visible broken states, raw API text, duplicate landmarks, overflow, and fresh console errors.
+- [x] Verify key API-backed dynamic detail endpoints through rendered pages or live HTTP responses.
+- [x] Check Vercel frontend logs, API health, and Hostinger API stderr after the smoke.
+- [x] Trace any reproduced issue to source/runtime root cause before editing source.
+- [x] Add a focused regression and apply the smallest clean fix if a source defect is found.
+- [x] Run relevant checks and live verification for any changes.
+- [x] Record review notes, evidence, and remaining risk.
+
+## Review
+
+- Live public/dynamic smoke covered `/`, `/how-it-works`, `/pricing`, `/checkout`, `/checkout/success`, `/faq`, `/partners`, `/referral`, `/app`, `/sign-in`, `/sign-up`, `/drills`, all seven `/subjects/*` pages, `/foundations/lesson-01`, `/boot-camps/contract-formation-timing`, `/traps/overbroad_rule`, `/traps?official=1`, `/tensions/cp_diversity_amount_vs_supplemental_jurisdiction`, `/tensions?curated=1`, and `/diagnostic/session`.
+- Dynamic slugs were derived from live API data rather than guessed: Foundation lesson `lesson-01`, boot camp `contract-formation-timing`, trap `overbroad_rule`, and tension `cp_diversity_amount_vs_supplemental_jurisdiction`.
+- Auth pages redirect a signed-in user to `/`, which is expected and rendered without raw API text or fresh browser errors.
+- Client-backed pages that first looked like loading states (`/referral`, `/drills`, `/foundations/lesson-01`, `/boot-camps/contract-formation-timing`) settled to meaningful states after waiting.
+- Reproduced a live checkout-success bug: `/checkout/success` with no checkout session, and with fake unfulfilled session `cs_test_missing_live_audit_public_smoke`, rendered `ENROLLMENT CONFIRMED`.
+- Root cause: `app/checkout/success/page.tsx` rendered confirmation copy and `PurchaseSuccessTracker` unconditionally without checking the existing checkout-status endpoint.
+- Fixed the success page to call `api.getCheckoutStatus(checkoutSessionId)`, render confirmation only when `fulfilled` is true, render `Checkout verification needed` for missing session IDs, render `Activation check pending` for unfulfilled/unverifiable sessions, and track purchase completion only after confirmed fulfillment.
+- App commit `27af5c3 Verify checkout success before confirming access` was pushed to `auronpep/barmatrix-app`.
+- Red Zone files and local audit notes remained unstaged after the commit.
+
+## Verification
+
+- Red check before implementation: `node --test tests\checkout-success-state.test.ts` failed because the page did not call `api.getCheckoutStatus(checkoutSessionId)` and rendered the success tracker unconditionally.
+- Green checks:
+  - `node --test tests\checkout-success-state.test.ts tests\api-client-billing-portal.test.ts` passed.
+  - App tests excluding the untracked Red Zone test passed: 39 tests.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `git diff --check` and `git diff --cached --check` passed with only normal LF/CRLF warnings.
+- Local browser verification:
+  - `/checkout/success` with no checkout session rendered `Checkout verification needed`, not enrollment confirmed.
+  - `/checkout/success?checkout_session_id=cs_test_missing_live_audit_public_smoke` rendered `Activation check pending`, not enrollment confirmed.
+  - Both states rendered one `<main>` and no raw API text.
+- Deployment:
+  - GitHub Actions run `26799883858` succeeded for `27af5c3`.
+  - Vercel production deployment `dpl_8tmn6svAzTtr3szeBD6gGUfWBpTp` is `Ready` and aliased to `https://barmatrix.app`.
+- Live browser verification:
+  - `https://barmatrix.app/checkout/success?live_verify=missing_1780387001` rendered `Checkout verification needed`; `ENROLLMENT CONFIRMED` was absent.
+  - `https://barmatrix.app/checkout/success?checkout_session_id=cs_test_missing_live_audit_public_smoke&live_verify=fake_1780387001` rendered `Activation check pending`; `ENROLLMENT CONFIRMED` was absent.
+  - Both live pages had `<main>` count 1, no raw API text, no horizontal overflow, and no fresh browser warning/error logs.
+- SEO/log checks:
+  - `https://barmatrix.app/robots.txt` returned HTTP 200 and disallows `/checkout/success`.
+  - `https://barmatrix.app/sitemap.xml` returned HTTP 200 with 12 `<loc>` entries.
+  - `GET https://api.barmatrix.app/health` returned `{"ok":true,"db":"up"}`.
+  - Vercel error-log query returned no rows.
+  - Hostinger `stderr.log` was empty.
+
+## Remaining Risk
+
+- Red Zone routes remain explicitly out of scope for this pass.
+- A real fulfilled Stripe session was not available for live positive-path verification; the confirmed branch is covered by source regression and deploy/build checks, while the two previously false-positive live paths are directly verified.
+- C3 Mastery/Coach measurement remains limited by missing authored annotation/tagging content, tracked as `auronpep/barmatrix-api#3`.
+
+# Live Mobile Responsive Non-Red-Zone Audit
+
+## Scope
+
+- Continue the live production audit outside Red Zones.
+- Use a temporary 390px mobile viewport in the in-app browser, then reset the viewport before finishing.
+- Check representative public, paid, study, and dynamic non-Red-Zone routes for meaningful states, raw API text, duplicate landmarks, horizontal overflow, and fresh browser errors.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Read the in-app browser viewport capability documentation.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Set the in-app browser to a mobile viewport.
+- [x] Browser-smoke representative live non-Red-Zone pages at mobile width.
+- [x] Trace any reproduced responsive defect to root cause before editing source.
+- [x] Add focused regression coverage and apply the smallest clean fix if a source defect is found.
+- [x] Run relevant tests/lint/build/deploy/live verification for any source changes.
+- [x] Reset the temporary browser viewport and record evidence/results.
+
+## Review
+
+- Initial 390px live mobile smoke covered `/`, `/pricing`, `/checkout`, checkout-success missing/fake states, `/account`, `/dashboard`, `/foundations`, `/foundations/lesson-01`, `/drills`, `/drills/evidence`, `/drills/criminal-law`, `/subjects/criminal-law`, `/subjects/evidence`, `/practice`, `/timed-sets`, `/boot-camps`, `/boot-camps/contract-formation-timing`, `/traps`, `/traps/overbroad_rule`, `/tensions`, `/tensions/cp_diversity_amount_vs_supplemental_jurisdiction`, `/diagnostic/session`, `/referral`, `/faq`, and `/partners`.
+- Reproduced persistent mobile document overflow on `/subjects/evidence`, `/traps`, and `/tensions`; each route still had one `<main>`, no raw API text, and no fresh browser warnings/errors.
+- Root cause: live subject question cards could force min-content width through long external ids/topic metadata, and trap/tension catalog flex/grid rows did not consistently opt their grid/flex children into shrinking or stacking on narrow screens.
+- Added `tests/mobile-content-overflow.test.ts`, a `.break-anywhere` utility, subject question-card wrap guards across all seven subject pages, and min-width/stacking guards for trap and tension catalog rows.
+- App commit `6a8781e Fix mobile content overflow` was pushed to `auronpep/barmatrix-app`; Red Zone files and the untracked Red Zone test remained untouched and unstaged.
+
+## Verification
+
+- Red check before implementation: `node --test tests\mobile-content-overflow.test.ts` failed on missing wrap/shrink guards.
+- Green checks:
+  - `node --test tests\mobile-content-overflow.test.ts tests\nav-mobile-overflow.test.ts` passed.
+  - App tests excluding the untracked Red Zone test passed: 41 tests.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `git diff --check` and `git diff --cached --check` passed with only normal LF/CRLF warnings.
+- Local browser verification at mobile width:
+  - `http://localhost:3000/subjects/evidence`, `/subjects/criminal-law`, `/traps`, and `/tensions` each had `scrollWidth=clientWidth`, `<main>` count 1, no raw API text, and no fresh browser warnings/errors.
+- Deployment:
+  - GitHub Actions run `26800474033` succeeded for `6a8781e`.
+  - Vercel production deployment `dpl_3p2VFuxmy18bZFyufe1ZNybKWJsS` is `Ready` and aliased to `https://barmatrix.app`.
+- Live browser verification at mobile width:
+  - `https://barmatrix.app/subjects/evidence?mobile_live_verify=6a8781e`, `/subjects/criminal-law`, `/traps`, and `/tensions` each had `scrollWidth=clientWidth=375`, `<main>` count 1, no raw API text, and no fresh browser warnings/errors.
+  - The temporary browser viewport override was reset after verification.
+- Production health/log checks:
+  - Vercel error-log query returned no rows.
+  - `GET https://api.barmatrix.app/health` returned `{"ok":true,"db":"up"}`.
+  - Hostinger `stderr.log` was empty.
+
+## Remaining Risk
+
+- Red Zone routes remain explicitly out of scope for this pass.
+- C3 Mastery/Coach measurement remains limited by missing authored annotation/tagging content, tracked as `auronpep/barmatrix-api#3`.
+
+# Live Malformed Dynamic Route Non-Red-Zone Audit
+
+## Scope
+
+- Continue the live production audit outside Red Zones.
+- Check nonexistent or malformed dynamic route params for non-Red-Zone pages.
+- Expected behavior: clear product/not-found or sign-in/gated states, one `<main>`, no raw API/runtime error text, no client error logs, and no production error-log entries.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Read local Next.js not-found docs before changing route behavior.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Browser-smoke representative malformed live non-Red-Zone dynamic routes.
+- [x] Trace any reproduced broken state to source/runtime root cause before editing.
+- [x] Add focused regression coverage and apply the smallest clean fix if a source defect is found.
+- [x] Run relevant tests/lint/build/deploy/live verification for any source changes.
+- [x] Check production logs/API health and record evidence/results.
+
+## Review
+
+- Initial live malformed-route smoke found raw API status text on `/foundations/not-a-real-lesson-live-audit`, `/boot-camps/not-a-real-boot-camp-live-audit`, `/boot-camps/sessions/not-a-real-session-live-audit`, `/boot-camps/sessions/not-a-real-session-live-audit/days/1`, `/boot-camps/sessions/not-a-real-session-live-audit/mastery`, `/diagnostic/not-a-real-session-live-audit/results`, `/diagnostic/session/not-a-real-session-live-audit/results`, and `/drills/not-a-real-drill-live-audit`.
+- Root cause: client route pages built visible error strings directly from `ApiClientError.status` and, in two diagnostic pages, included backend error messages verbatim.
+- Added `lib/user-facing-errors.ts` so expected 400/404 resource failures map to product-facing not-found/unavailable copy.
+- Updated affected non-Red-Zone dynamic pages to use the shared mapper, preserving signed-out/forbidden/unavailable distinctions where the page already exposed them.
+- Added `tests/malformed-route-errors.test.ts` to prevent reintroducing raw API status copy in those route error states.
+- App commit `f13a193 Sanitize malformed route error states` was pushed to `auronpep/barmatrix-app`.
+- Red Zone files and the untracked Red Zone test remained untouched and unstaged.
+
+## Verification
+
+- Red check before implementation: `node --test tests\malformed-route-errors.test.ts` failed because `lib/user-facing-errors.ts` did not exist and the pages still rendered raw API statuses.
+- Green checks:
+  - `node --test tests\malformed-route-errors.test.ts` passed.
+  - `node --test tests\malformed-route-errors.test.ts tests\checkout-success-state.test.ts` passed.
+  - App tests excluding the untracked Red Zone test passed: 42 tests.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `git diff --check` and `git diff --cached --check` passed with only normal LF/CRLF warnings.
+- Local browser verification on the eight affected malformed routes showed one `<main>`, no raw API status text, and no browser warning/error logs.
+- Deployment:
+  - GitHub Actions run `26800969639` succeeded for `f13a193`.
+  - Vercel production deployment `dpl_32CrEZshExCXAoyJi2VQEgHit8v4` is `Ready` and aliased to `https://barmatrix.app`.
+- Live browser verification on the eight affected malformed routes with `bad_route_live=f13a193...` showed user-facing copy, one `<main>`, no raw API status text, and no fresh browser warning/error logs after the deploy window.
+- Production health/log checks:
+  - Vercel error-log query returned no rows.
+  - `GET https://api.barmatrix.app/health` returned `{"ok":true,"db":"up"}`.
+  - Hostinger `stderr.log` was empty.
+
+## Remaining Risk
+
+- Red Zone malformed routes remain explicitly out of scope for this pass.
+- These checks validate nonexistent/malformed route failure states. Happy-path C3 Mastery/Coach measurement remains limited by missing authored annotation/tagging content, tracked as `auronpep/barmatrix-api#3`.
+
+# Live Signed-In Workflow Non-Red-Zone Audit
+
+## Scope
+
+- Continue the live production audit outside Red Zones.
+- Use the paid signed-in in-app browser session to verify safe, non-payment study workflows on production.
+- Avoid destructive checkout/payment-provider side effects and skip Red Zone source/routes handled by the other session.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Inspect workflow route/client code and live API readiness for safe browser actions.
+- [x] Browser-test signed-in non-Red-Zone study workflows on production.
+- [x] Check visible state, raw API text, duplicate landmarks, overflow, and fresh console logs.
+- [x] Check production frontend/API logs after the workflow smoke.
+- [x] Trace any reproduced issue to root cause before editing.
+- [x] Add focused regression coverage and apply the smallest clean fix if a source defect is found.
+- [x] Run relevant checks/deploy/live verification if source changes are made.
+- [x] Record review notes, evidence, and remaining risk.
+
+## Review
+
+- Verified production deployment `dpl_32CrEZshExCXAoyJi2VQEgHit8v4` was still `Ready` and aliased to `https://barmatrix.app`; live API health returned `{"ok":true,"db":"up"}` before workflow testing.
+- Confirmed the in-app browser account rendered active access on `/account` with `No Stripe billing portal`, one `<main>`, no raw API text, and no fresh warning/error logs.
+- Live Evidence drill: started the Evidence queue, selected answer A, submitted, and rendered the forensics/result state with one `<main>`, no raw API text, and no fresh warning/error logs.
+- Live Practice: selected the Evidence subject, loaded a 20-question set, submitted answer A, and rendered `Wrong Answer Forensics`.
+- Live Timed Sets: started a 17-question mixed set, submitted the first answer, and rendered the timed forensics state.
+- Live Boot Camps: catalog and `contract-formation-timing` detail rendered; `Start camp` created session `f5cb4b5d-dddb-4794-8685-c5a1cd4f4bb7`; Day 1 loaded and the first answer submitted, advancing to question 2 with forensics.
+- Live Certification: `/certification` and `/certification/M1` correctly rendered Method-gate states for this account, without raw API text.
+- Live Diagnostic: started session `e632e749-3f5f-41dd-8959-aee2d554e7ff`, submitted question 1, rendered forensics, and advanced to question 2.
+- Live Coach: `Start coaching` rendered the expected `Not measurable yet` state because C3 measurement content is not available for this account.
+- Live Mastery: rendered measured-on-0-attempts / not-yet-measured C3 state without raw API text.
+- No source defect was reproduced in this slice, so no app/API code was changed and no regression test was added.
+
+## Verification
+
+- Browser checks after each workflow confirmed one `<main>`, no raw `API ###` copy, no visible `internal server error` / `Application error`, and no fresh browser warning/error logs since the workflow window began.
+- Production health/log checks after workflow testing:
+  - Vercel error-log query for the last 30 minutes returned no rows.
+  - `GET https://api.barmatrix.app/health` returned `{"ok":true,"db":"up"}`.
+  - Hostinger `stderr.log` was empty.
+- No source changes were made in this slice, so deployment/test reruns were not applicable beyond the already-current production deployment and live browser/log verification.
+
+## Remaining Risk
+
+- Red Zone routes and source remain explicitly out of scope because another session owns that audit.
+- The diagnostic and boot-camp workflows were partially exercised to verify production start/submit/navigation paths; they were not completed end-to-end to avoid replacing the account's full diagnostic result or finishing a full boot camp.
+- Certification full assessment remains gated for this account until The Method is complete.
+- C3 Coach/Mastery measurement remains limited by missing authored C3 annotation/tagging content, tracked as `auronpep/barmatrix-api#3`.
+
+# Live API Auth Boundary Non-Red-Zone Audit
+
+## Scope
+
+- Continue the live production audit outside Red Zones.
+- Probe representative public, protected, malformed, CORS preflight, and method-boundary API contracts used by the web app.
+- Expected behavior: public endpoints return shaped JSON, protected endpoints fail closed without stack traces, malformed requests return sanitized client errors, CORS permits the production app origin, and production logs stay clean.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Map app API calls to representative live endpoints.
+- [x] Probe live public/protected/CORS/error contracts.
+- [x] Check production frontend/API logs after the API probes.
+- [x] Trace any reproduced issue to root cause before editing.
+- [x] Add focused regression coverage and apply the smallest clean fix if a source defect is found.
+- [x] Run relevant checks/deploy/live verification if source changes are made.
+- [x] Record review notes, evidence, and remaining risk.
+
+## Review
+
+- Mapped representative app dependencies from `lib/api-client.ts` and API route registrations in `C:\barmatrix-api\src`.
+- Public live probes returned shaped 200 responses for health, cohort status, Foundations outline/lesson, Evidence question list/detail, traps, tensions, boot camps, drill catalog, C3 deck, certification outline, and fake checkout status.
+- Malformed live probes returned sanitized 400/404 JSON for bad Foundation/question/trap/tension/boot-camp identifiers and missing subject query.
+- Unauthenticated protected probes failed closed with 401 JSON for `/api/me/dashboard`, `/api/me/c3`, `/api/me/c3/next`, `/api/me/gamification`, `/api/drills/prescribed`, `/api/drills/start`, and `/api/certification/M1`.
+- Invalid write probes returned sanitized 400 JSON for malformed `/api/attempts` payloads and invalid JSON bodies.
+- Question detail response was scanned and did not expose answer-key or forensic fields (`is_correct`, `why_correct`, `why_wrong`, `forensic_tags`, `misconception_tags`) before attempt submission.
+- CORS preflight allowed `https://barmatrix.app` with credentials for protected dashboard and attempts endpoints; a disallowed origin did not receive allow-origin/credentials headers.
+- No source defect was reproduced in this slice, so no app/API code was changed and no regression test was added.
+
+## Verification
+
+- Live API probe set covered representative public, protected, malformed, CORS, and invalid-write contracts.
+- Narrow internal-leak scan found no stack traces, SQL errors, database exception codes, bearer tokens, Stripe secret/public live keys, or password fields. One broad first-pass match on trap detail was rechecked and identified as ordinary answer text (`select strict scrutiny`), not SQL.
+- Production health/log checks after probes:
+  - Vercel error-log query for the last 30 minutes returned no rows.
+  - `GET https://api.barmatrix.app/health` returned `{"ok":true,"db":"up"}`.
+  - Hostinger `stderr.log` was empty.
+- No source changes were made in this slice, so deployment/test reruns were not applicable.
+
+## Remaining Risk
+
+- Red Zone API paths remain explicitly out of scope because another session owns Red Zone review/debugging.
+- This pass did not click Stripe checkout creation or billing portal creation to avoid payment-provider side effects.
+- Authenticated API positive paths are covered by the prior live signed-in browser workflow pass rather than by printing bearer tokens into a shell probe.
+
+# Live Route And Link Integrity Non-Red-Zone Audit
+
+## Scope
+
+- Continue the live production audit outside Red Zones.
+- Check rendered production routes and internal links for broken navigation, duplicate landmarks, raw API/runtime text, visible error states, desktop overflow, and fresh browser/production errors.
+- Use the in-app browser for rendered UI evidence and skip Red Zone routes/source owned by the other session.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Derive non-Red-Zone static and representative dynamic route targets.
+- [x] Browser-smoke rendered live route targets.
+- [x] Collect same-origin internal links from rendered pages and probe their HTTP/redirect status.
+- [x] Check production frontend/API logs after the route/link pass.
+- [x] Trace any reproduced issue to root cause before editing.
+- [x] Add focused regression coverage and apply the smallest clean fix if a source defect is found.
+- [x] Run relevant checks/deploy/live verification if source changes are made.
+- [x] Record review notes, evidence, and remaining risk.
+
+## Review
+
+- Browser route smoke covered 56 live non-Red-Zone route targets with one `<main>`, no raw API text, no visible runtime errors, no desktop overflow, and no fresh browser warning/error logs.
+- Link discovery collected 398 same-origin non-Red-Zone links; the initial probe found 34 broken `/tensions/...` links from the Tension Map catalog.
+- Root cause was an API catalog/detail contract mismatch: observed-only tension tags were emitted as raw list slugs, but detail validation and Next path routing could not reliably open all raw bank values (`FM-I.B-*`, semicolon composites, and slash/prose tags).
+- API commits pushed to `auronpep/barmatrix-api`:
+  - `695e4b8 Accept observed tension link slugs`
+  - `e37b596 Publish route-safe observed tension slugs`
+- Hostinger could not fetch GitHub from SSH, so the pushed API source files were copied to the deployed app directory, built there with Node 20, and the `tmp/restart.txt` marker timestamp was updated. The deployed source/dist contain the `toTensionRouteSlug` route-safe observed-slug logic.
+- Live API now emits route-safe `observed_...` slugs for unsafe observed values, while detail endpoints decode them back to the original bank tag.
+
+## Verification
+
+- Red checks:
+  - `npx tsx --test src/lib/tensions.test.ts` failed before the validator change on `invalid tension slug`.
+  - The route-safe slug regression failed before implementation because `toTensionRouteSlug` did not exist.
+- Green API checks from the clean deploy worktree:
+  - `npx tsx --test src/lib/tensions.test.ts` passed: 23 tests.
+  - `npm test` passed: 286 tests.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+  - `git diff --check -- src/lib/tensions.ts src/lib/tensions.test.ts` passed with only normal CRLF warnings.
+- Live API verification:
+  - `GET https://api.barmatrix.app/health` returned `{"ok":true,"db":"up"}`.
+  - `/api/tensions/FM-I.B-AMBIGUOUS-ACCEPTANCE-MODE`, `/api/tensions/observed_Q09OLUNNLTAwMTsgQ09OLUNNLTAwMw`, and `/api/tensions/observed_RmFjdCBvZiBjb25zZXF1ZW5jZSArIHdlYWsgcHJvb2YvYWx0ZXJuYXRpdmUgY2F1c2U` returned HTTP 200 detail payloads.
+- Live browser verification:
+  - `/tensions` rendered 267 current catalog links, including route-safe `observed_...` hrefs for semicolon and slash/prose observed tags; no raw unsafe tension hrefs were present.
+  - Rendered detail checks passed for `/tensions/AEDPA`, `/tensions/cl_congress_power_vs_anti_commandeering`, `/tensions/observed_Q09OLUNNLTAwMTsgQ09OLUNNLTAwMw`, `/tensions/observed_RmFjdCBvZiBjb25zZXF1ZW5jZSArIHdlYWsgcHJvb2YvYWx0ZXJuYXRpdmUgY2F1c2U`, and `/tensions/FM-I.B-AMBIGUOUS-ACCEPTANCE-MODE`.
+  - Each checked detail page had one `<main>`, no 404, no raw API text, no desktop overflow, and no fresh browser warning/error logs.
+  - A catalog-wide HTTP probe found all 267 current `/tensions/...` hrefs returned HTTP 200.
+- Production log checks:
+  - Vercel error logs were clean for the post-verification 3-minute window. The wider 30-minute window contained the pre-fix reproduction 404s.
+  - Hostinger `stderr.log` was empty after deploy.
+
+## Remaining Risk
+
+- Red Zone routes and source remain explicitly out of scope because another session owns them.
+- The API deployed source/dist are live, but Hostinger SSH cannot fetch the private GitHub repo, so the remote git HEAD may lag the pushed commit even though the deployed files and behavior match the fix.
+
+# Hostinger API Deploy Path Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones.
+- Investigate and repair the Hostinger API deploy-path gap where the production checkout cannot fetch the private `auronpep/barmatrix-api` repo from GitHub.
+- Expected behavior: the deployed API directory can authenticate to GitHub read-only, fetch/pull the pushed `main` commit, build from git state, restart cleanly, and leave live API/browser health/log checks clean.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Inspect Hostinger git remote, SSH key, GitHub deploy-key, and local `gh` auth state without exposing secrets.
+- [x] Choose the smallest safe deployment authentication repair.
+- [x] Apply the repair and verify Hostinger can fetch/pull `main`.
+- [x] Build/restart the API from the fetched git checkout.
+- [x] Verify live API health, relevant endpoint behavior, and production logs.
+- [x] Record review notes, evidence, and remaining risk.
+
+## Review
+
+- Confirmed local `gh` is authenticated with admin permission on private repo `auronpep/barmatrix-api`.
+- Confirmed Hostinger initially had no GitHub SSH auth: `ssh -T git@github.com` returned publickey denied, and `git ls-remote origin main` failed because `origin` was HTTPS with no interactive credentials.
+- Created a read-only GitHub deploy key named `hostinger-barmatrix-api-readonly` for `auronpep/barmatrix-api`.
+- Added an SSH config entry on Hostinger for `github.com` using the new deploy key, changed API `origin` to `git@github.com:auronpep/barmatrix-api.git`, fetched `origin/main`, and reset the deployed checkout onto a normal `main` branch tracking `origin/main`.
+- Rebuilt the API from the fetched git checkout with Hostinger Node 20 and touched `tmp/restart.txt`.
+
+## Verification
+
+- GitHub deploy key list shows `hostinger-barmatrix-api-readonly` with `read_only: true`.
+- Hostinger `ssh -T git@github.com` now authenticates as `auronpep/barmatrix-api`.
+- Hostinger `git ls-remote --heads origin main` returned `e37b59611d3d35051c4c9b522e15c620218d3f13`.
+- Hostinger deployed checkout `HEAD` is `e37b59611d3d35051c4c9b522e15c620218d3f13` on branch `main`, tracking `origin/main`, with only untracked runtime `tmp/`.
+- Live `GET https://api.barmatrix.app/health?deploy_path_verify=1` returned `{"ok":true,"db":"up"}`.
+- Live `GET https://api.barmatrix.app/api/tensions/observed_Q09OLUNNLTAwMTsgQ09OLUNNLTAwMw?deploy_path_verify=1` returned HTTP 200.
+- Hostinger `stderr.log` was empty.
+- Vercel error logs for the post-check 5-minute window returned no rows.
+
+## Remaining Risk
+
+- API production deploys can now fetch the private repo from Hostinger through a read-only deploy key.
+- Red Zone routes/source remain out of scope for this pass.
+
+# Live Static Surface And Metadata Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones.
+- Verify public/static surfaces that support production discoverability and trust: sitemap, robots, metadata/open graph, icons/manifest, legal/static pages, checkout/account status states, security headers, asset delivery, and cache behavior.
+- Use local source/runtime and live browser/HTTP evidence only; do not use external bug-specific facts.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Map public/static route source, metadata, icons/assets, headers, sitemap/robots, and cache rules.
+- [x] Probe representative live pages/assets and rendered browser states.
+- [x] Check production frontend/API logs after the static-surface pass.
+- [x] Trace any reproduced issue to root cause before editing.
+- [x] Add focused regression coverage and apply the smallest clean fix if a source defect is found.
+- [x] Run relevant local checks and browser verification.
+- [ ] Deploy and run live post-deploy verification.
+- [x] Record review notes, evidence, and remaining risk.
+
+## Review
+
+- Initial live/source audit found multiple non-Red-Zone static-surface defects:
+  - Global `app/layout.tsx` canonical metadata forced routes such as `/pricing` to canonicalize to the home page.
+  - Transactional/auth status pages did not declare `noindex, nofollow`.
+  - Public sitemap omitted several product/catalog routes and used request-time `new Date()` for every `lastModified`.
+  - The app had no manifest route, so `/manifest.webmanifest` was missing.
+  - Production responses lacked basic defensive headers managed by the app.
+  - Non-Red-Zone static LPs linked to stale destinations and still advertised iOS/Android availability.
+- Applied the smallest source changes for this slice:
+  - Added app-wide security headers in `next.config.ts`.
+  - Moved the home canonical from global layout metadata to `app/page.tsx`.
+  - Added `noindex, nofollow` metadata to sign-in, sign-up, and checkout success.
+  - Stabilized sitemap `lastModified` and added missing public routes.
+  - Added `app/manifest.ts`.
+  - Cleaned stale links/mobile claims in `public/lp-failed-by-6.html`, `public/lp-four-traps.html`, `public/lp-priced-right.html`, and `public/lp-wrong-answers.html`.
+- Red Zone source, tests, and LP behavior remain excluded because another session owns that area.
+
+## Verification
+
+- Focused regression tests were written red-first and now pass:
+  - `node --test tests\security-headers.test.ts`
+  - `node --test tests\metadata-canonical.test.ts`
+  - `node --test tests\noindex-transactional-pages.test.ts`
+  - `node --test tests\sitemap-static-surface.test.ts`
+  - `node --test tests\static-landing-pages.test.ts`
+  - `node --test tests\manifest-route.test.ts`
+- Full non-Red-Zone app test sweep passed with the unrelated Red Zone test excluded:
+  - `node --test <all tests except tests\red-zone-detail-params.test.ts>` passed 51/51.
+- `npm run lint` passed.
+- `npm run build` passed and emitted `/manifest.webmanifest`.
+- Local production verification on `http://localhost:3012` passed for `/`, `/pricing`, `/terms`, `/checkout/success`, `/sign-in`, `/sitemap.xml`, `/robots.txt`, `/manifest.webmanifest`, `/lp-four-traps.html`, and `/lp-priced-right.html`.
+- In-app browser verification passed for local `/pricing`, `/checkout/success`, and `/lp-four-traps.html`: intended page identity, meaningful content, no framework overlay/runtime text, no desktop overflow, expected canonical/robots/manifest signals, expected cleaned LP links, and no fresh browser warning/error logs.
+
+## Remaining Risk
+
+- Live post-deploy verification is still pending for this slice.
+- Red Zone routes and source remain out of scope for this pass.
+- `app/checkout/page.tsx` still lacks a page-level noindex export because it is a client component; changing that would require a broader server/client wrapper refactor.
+- CSP was intentionally not added in this smallest-change pass because Clerk, Stripe, PostHog, and Sentry need a carefully tested policy.

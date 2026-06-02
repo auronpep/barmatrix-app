@@ -3171,14 +3171,27 @@ Expected behavior: the diagnostic session flow should render meaningful producti
   - `http://localhost:3000/diagnostic/session?heading_ui_check=localhost` rendered a clean entry page while signed in.
   - Clicking `Start Assessment ->` created local/live-backed session `e790b043-39d9-48ae-9af0-9405e0ce47a8`.
   - The resulting session route rendered question 1 of 18, exactly one H1 with text `C3 Placement Assessment`, one `<main>`, no horizontal overflow, no raw runtime text, no dev dialog overlay, and no browser logs.
+- Deployment:
+  - Pushed app commit `ad3b613` to `origin/main`.
+  - Automatic GitHub Actions did not create a run for this commit.
+  - Vercel had an older deployment `dpl_9PcRHv7mh25yorddN9uTLfgvVGSa` stuck initializing; removing it unblocked the queue.
+  - Clean worktree deploy from `ad3b613` completed, and `https://barmatrix.app` now resolves to Ready deployment `dpl_2vfNbR1ibYZfJS6SyZ6EkmJmA7RX`.
+- Live post-deploy browser verification:
+  - `https://barmatrix.app/diagnostic/session?post_deploy_heading=ad3b613` rendered a clean signed-in entry page with one H1 `Find your starting level.`
+  - Clicking `Start Assessment ->` created session `537688fe-c245-4d25-9fd1-d916148d9d08`.
+  - The resulting production question route rendered question 1 of 18, exactly one H1 with text `C3 Placement Assessment`, one `<main>`, no horizontal overflow, no raw runtime/API text, no framework overlay, and no browser logs.
+- Production health/log checks:
+  - `GET https://api.barmatrix.app/health?diagnostic_heading_audit=ad3b613` returned `{"ok":true,"db":"up"}`.
+  - Vercel logs for the post-deploy window showed normal 200 rows for `/diagnostic/session` and `/diagnostic/session/537688fe-c245-4d25-9fd1-d916148d9d08`; the error/CSP filter found no actionable entries.
+  - Hostinger API `stderr.log` was empty.
 - Screenshot evidence:
   - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-diagnostic-session-live-20260602.png`
   - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-diagnostic-session-mobile-live-20260602.png`
   - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-diagnostic-entry-mobile-live-20260602.png`
   - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-diagnostic-session-localhost-origin-ui-start-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-diagnostic-session-live-postdeploy-ad3b613.png`
 
 ## Remaining Risk
 
 - Red Zone routes/source remain out of scope for this pass.
-- Production still needs the source patch deployed and post-deploy browser/log verification before the heading defect can be called fixed on `https://barmatrix.app`.
 - Local `npx next start` on ports `3017` and `3018` accepted sockets but did not answer HTTP requests. The existing authenticated `localhost:3000` app server and the successful production build were used for local rendered verification instead.

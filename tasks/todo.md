@@ -2239,8 +2239,8 @@
 - [x] Submit one safe diagnostic answer and verify the post-submit feedback or navigation state.
 - [x] Run a mobile viewport smoke for the diagnostic entry/question state where practical.
 - [x] Trace and fix any reproduced non-Red-Zone root cause with focused regression coverage where practical.
-- [ ] Run relevant tests, lint, build, deployment, production health/log checks, and post-deploy browser verification.
-- [ ] Record review notes, verification evidence, and remaining risk.
+- [x] Run relevant tests, lint, build, deployment, production health/log checks, and post-deploy browser verification.
+- [x] Record review notes, verification evidence, and remaining risk.
 
 ## Review
 
@@ -2249,6 +2249,8 @@
 - Small clean change: added one `sr-only` H1, `C3 Placement Assessment`, inside the session route content wrapper. This preserves visual layout while restoring route identity for accessibility and DOM audit checks.
 - Added a focused regression test that failed before the source change and passes after it.
 - Localhost browser verification after the patch used the UI start flow, created session `e790b043-39d9-48ae-9af0-9405e0ce47a8`, rendered question 1 of 18, and verified exactly one H1 with text `C3 Placement Assessment`, one `<main>`, no horizontal overflow, no raw runtime text, no dev dialog overlay, and no browser logs.
+- Pushed app commit `ad3b613` and deployed production via Vercel deployment `dpl_2vfNbR1ibYZfJS6SyZ6EkmJmA7RX`, aliased to `https://barmatrix.app`.
+- Live post-deploy browser verification created session `537688fe-c245-4d25-9fd1-d916148d9d08`, rendered question 1 of 18, and verified exactly one H1 with text `C3 Placement Assessment`, one `<main>`, no horizontal overflow, no raw runtime/API text, no framework overlay, and no browser logs.
 
 ## Verification
 
@@ -2259,9 +2261,16 @@
 - `npm run build` passed.
 - `git diff --check -- "app/diagnostic/session/[sessionId]/page.tsx" tests/diagnostic-session-heading.test.ts tasks/todo.md tasks/evidence.md` passed with only normal CRLF warnings.
 - Local browser verification screenshot: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-diagnostic-session-localhost-origin-ui-start-20260602.png`.
+- Deployment:
+  - Removed stale Vercel deployment `dpl_9PcRHv7mh25yorddN9uTLfgvVGSa`, which was stuck initializing from an earlier deploy and blocking the queue.
+  - Clean worktree deploy from commit `ad3b613` completed; `https://barmatrix.app` now resolves to `dpl_2vfNbR1ibYZfJS6SyZ6EkmJmA7RX`.
+- Live production checks:
+  - `GET https://api.barmatrix.app/health?diagnostic_heading_audit=ad3b613` returned `{"ok":true,"db":"up"}`.
+  - Vercel logs for the post-deploy window showed normal 200 rows for `/diagnostic/session` and `/diagnostic/session/537688fe-c245-4d25-9fd1-d916148d9d08`; the error/CSP filter found no actionable entries.
+  - Hostinger API `stderr.log` was empty.
+- Live post-deploy screenshot: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-diagnostic-session-live-postdeploy-ad3b613.png`.
 
 ## Remaining Risk
 
 - Red Zone routes/source remain out of scope for this pass.
-- Production still needs the source patch deployed and post-deploy browser/log verification before this diagnostic heading defect can be called fixed on `https://barmatrix.app`.
 - A separate local `npx next start` attempt on ports `3017` and `3018` accepted sockets but did not answer HTTP requests. The existing authenticated `localhost:3000` app server and the successful production build were used for local browser/source verification instead.

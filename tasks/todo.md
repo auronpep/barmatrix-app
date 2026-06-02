@@ -2444,7 +2444,7 @@
 - [x] Browser-verify `/checkout`, `/pricing`, `/sign-in`, and `/sign-up` transactional entry states on production without initiating checkout.
 - [x] Probe live API/account checkout status boundaries and production logs where safe.
 - [x] Trace and fix any reproduced non-Red-Zone root cause with focused regression coverage where practical.
-- [ ] Run relevant tests, lint/build as needed, production health/log checks, and record final evidence.
+- [x] Run relevant tests, lint/build as needed, production health/log checks, and record final evidence.
 
 ## Review
 
@@ -2471,10 +2471,16 @@
   - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-sign-in-live-20260602.png`
 - Local post-patch screenshot evidence:
   - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-account-missing-session-local-guard-20260602.png`
-- Production post-deploy verification pending.
+- Production deploy run `26814257016` completed successfully for commit `c763c0b`.
+- Live post-deploy browser verification of `/account?checkout_session_id=cs_test_missing_live_audit_final2_1780367857789&post_deploy_account_guard=c763c0b` passed: active access remained visible, checkout recovery was absent, one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warnings/errors.
+- Production API health returned `{"ok":true,"db":"up"}` for `https://api.barmatrix.app/health?account_recovery_guard=c763c0b`.
+- Vercel logs showed a normal 200 row for `/account` and no error/CSP matches in the post-deploy window.
+- Hostinger API `stderr.log` was empty.
+- Production post-deploy screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-account-missing-session-live-postdeploy-c763c0b.png`
 
 ## Remaining Risk
 
 - Red Zone routes/source remain out of scope for this pass.
 - This slice intentionally avoids creating a new Stripe checkout session or billing portal session unless a concrete defect requires it.
-- Production active-account branch needs post-deploy browser verification because localhost did not load active dashboard state.
+- This slice did not click `Recover enrollment`, create a Stripe checkout session, or create a Stripe billing portal session.

@@ -3559,16 +3559,23 @@ Expected behavior: signed-in paid-user account, checkout-return, checkout entry,
   - `git diff --check -- app\account\enrollment-recovery.tsx tests\api-client-billing-portal.test.ts tasks\todo.md tasks\evidence.md` passed with only normal CRLF warnings.
 - Browser verification:
   - Pre-patch live production route matrix reproduced the account/recovery contradiction and verified neighboring account/checkout/pricing/auth entry states had one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
-  - Local post-patch browser check at `http://localhost:3000/account?checkout_session_id=...` rendered `Account status unavailable`, so it could not prove the active-account suppression branch. Production active-account browser verification is pending deploy.
+  - Local post-patch browser check at `http://localhost:3000/account?checkout_session_id=...` rendered `Account status unavailable`, so it could not prove the active-account suppression branch. The active paid-account branch was verified on production after deploy.
+  - Live post-deploy browser verification at `https://barmatrix.app/account?checkout_session_id=cs_test_missing_live_audit_final2_1780367857789&post_deploy_account_guard=c763c0b` rendered active access, did not render `Checkout recovery` / `Recover enrollment`, kept one H1 and one `<main>`, had no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+- Deployment and production health:
+  - GitHub Actions production deploy run `26814257016` completed successfully for commit `c763c0b7c5b4d468a4837e8297f7ce871a76b387`.
+  - `GET https://api.barmatrix.app/health?account_recovery_guard=c763c0b` returned `{"ok":true,"db":"up"}`.
+  - Vercel logs showed a normal 200 row for `/account`; no error/CSP matches appeared in the post-deploy window.
+  - Hostinger API `stderr.log` was empty.
 - Screenshot evidence:
   - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-account-missing-session-live-20260602.png`
   - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-checkout-success-missing-session-live-20260602.png`
   - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-checkout-live-20260602.png`
   - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-sign-in-live-20260602.png`
   - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-account-missing-session-local-guard-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-account-missing-session-live-postdeploy-c763c0b.png`
 
 ## Remaining Risk
 
 - Red Zone routes/source remain out of scope for this pass.
 - This slice intentionally avoids creating a new Stripe checkout session or billing portal session unless a concrete defect requires it.
-- Production active-account branch needs post-deploy browser verification because localhost did not load active dashboard state.
+- This slice did not click `Recover enrollment`, create a Stripe checkout session, or create a Stripe billing portal session.

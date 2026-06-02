@@ -235,7 +235,7 @@ export default function FinalSprintPathPage() {
   const activeDay = SPRINT_DAYS[activeIndex];
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
+    <div className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
       <section className="border-b border-zinc-900 pb-8">
         <p className="eyebrow-red">Final Sprint Path</p>
         <div className="mt-4 grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
@@ -331,7 +331,7 @@ export default function FinalSprintPathPage() {
           </section>
         </>
       )}
-    </main>
+    </div>
   );
 }
 
@@ -339,7 +339,7 @@ function SprintSkeleton({ dash }: { dash: ReturnType<typeof useDashboard> }) {
   // Deterministic, Date-free placeholder rendered on the server and the first
   // client render so the two match; the real plan replaces it after mount.
   return (
-    <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
+    <div className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
       <section className="border-b border-zinc-900 pb-8">
         <p className="eyebrow-red">Final Sprint Path</p>
         <div className="mt-4 grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
@@ -373,7 +373,7 @@ function SprintSkeleton({ dash }: { dash: ReturnType<typeof useDashboard> }) {
       >
         Calibrating the sprint to today&apos;s date…
       </p>
-    </main>
+    </div>
   );
 }
 

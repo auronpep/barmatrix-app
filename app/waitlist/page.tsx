@@ -26,7 +26,7 @@ export default function WaitlistPage() {
   };
 
   return (
-    <main>
+    <div>
       <section className="hero">
         <div className="container">
           <div className="hero-meta">
@@ -177,7 +177,7 @@ export default function WaitlistPage() {
           </p>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
 

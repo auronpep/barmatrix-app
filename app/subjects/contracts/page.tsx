@@ -261,7 +261,7 @@ export default function ContractsSubjectPage() {
   };
 
   return (
-    <main>
+    <div>
       <section className="hero">
         <div className="container">
           <div className="hero-meta">
@@ -410,7 +410,7 @@ export default function ContractsSubjectPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
 

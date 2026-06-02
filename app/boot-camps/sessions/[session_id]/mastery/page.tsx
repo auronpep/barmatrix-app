@@ -153,7 +153,7 @@ export default function BootCampMasteryPage({
   };
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-12">
+    <div className="mx-auto max-w-3xl px-6 py-12">
       <Link
         href={`/boot-camps/sessions/${sessionId}`}
         className="font-mono text-xs uppercase tracking-wider text-zinc-500 hover:text-zinc-800"
@@ -225,7 +225,7 @@ export default function BootCampMasteryPage({
           <MasteryResult sessionId={sessionId} data={state.data} result={state.result} />
         )}
       </div>
-    </main>
+    </div>
   );
 }
 

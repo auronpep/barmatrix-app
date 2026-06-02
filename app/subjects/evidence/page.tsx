@@ -247,7 +247,7 @@ export default function EvidenceSubjectPage() {
   };
 
   return (
-    <main>
+    <div>
       <section className="hero">
         <div className="container">
           <div className="hero-meta">
@@ -401,7 +401,7 @@ export default function EvidenceSubjectPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
 

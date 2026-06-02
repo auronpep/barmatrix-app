@@ -239,7 +239,7 @@ export default function ConstitutionalLawSubjectPage() {
   };
 
   return (
-    <main>
+    <div>
       <section className="hero">
         <div className="container">
           <div className="hero-meta">
@@ -409,7 +409,7 @@ export default function ConstitutionalLawSubjectPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
 

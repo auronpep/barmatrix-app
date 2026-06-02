@@ -75,7 +75,7 @@ export default function BootCampDetailPage({
   };
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-12 sm:py-16">
+    <div className="mx-auto max-w-5xl px-6 py-12 sm:py-16">
       <Link href="/boot-camps" className="font-mono text-xs uppercase tracking-wider text-zinc-500 hover:text-zinc-800">
         &larr; All boot camps
       </Link>
@@ -165,7 +165,7 @@ export default function BootCampDetailPage({
           </section>
         </>
       )}
-    </main>
+    </div>
   );
 }
 

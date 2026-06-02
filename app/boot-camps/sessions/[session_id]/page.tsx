@@ -77,7 +77,7 @@ export default function BootCampSessionPage({
   }, [getToken, isLoaded, isSignedIn, sessionId]);
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-12 sm:py-16">
+    <div className="mx-auto max-w-4xl px-6 py-12 sm:py-16">
       <Link
         href="/boot-camps"
         className="font-mono text-xs uppercase tracking-wider text-zinc-500 hover:text-zinc-800"
@@ -104,7 +104,7 @@ export default function BootCampSessionPage({
       )}
 
       {state.phase === "ready" && <SessionHub session={state.session} gamification={state.gamification} />}
-    </main>
+    </div>
   );
 }
 

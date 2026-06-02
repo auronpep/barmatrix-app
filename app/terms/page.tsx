@@ -7,7 +7,7 @@ const LAST_UPDATED = "May 25, 2026";
 
 export default function TermsPage() {
   return (
-    <main className="mx-auto max-w-3xl px-6 py-20">
+    <div className="mx-auto max-w-3xl px-6 py-20">
       <h1 className="font-serif text-4xl font-semibold tracking-tight">Terms of Service</h1>
       <p className="mt-2 text-sm text-zinc-500">Last updated {LAST_UPDATED}</p>
 
@@ -114,7 +114,7 @@ export default function TermsPage() {
         </section>
 
       </div>
-    </main>
+    </div>
   );
 }
 

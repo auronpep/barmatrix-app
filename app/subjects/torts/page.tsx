@@ -246,7 +246,7 @@ export default function TortsSubjectPage() {
   };
 
   return (
-    <main>
+    <div>
       <section className="hero">
         <div className="container">
           <div className="hero-meta">
@@ -406,7 +406,7 @@ export default function TortsSubjectPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
 

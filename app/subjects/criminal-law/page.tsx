@@ -260,7 +260,7 @@ export default function CriminalLawSubjectPage() {
   };
 
   return (
-    <main>
+    <div>
       <section className="hero">
         <div className="container">
           <div className="hero-meta">
@@ -431,7 +431,7 @@ export default function CriminalLawSubjectPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
 

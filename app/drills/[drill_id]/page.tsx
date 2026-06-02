@@ -167,7 +167,7 @@ export default function DrillRunnerPage({
   };
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-12">
+    <div className="mx-auto max-w-3xl px-6 py-12">
       <Link
         href="/drills"
         className="font-mono text-xs uppercase tracking-wider text-zinc-500 hover:text-zinc-800"
@@ -247,7 +247,7 @@ export default function DrillRunnerPage({
           />
         )}
       </div>
-    </main>
+    </div>
   );
 }
 

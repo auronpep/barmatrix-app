@@ -43,7 +43,7 @@ export default function PatternMasteryBoardPage() {
   const isEmpty = !dash.loading && !hasData && !dash.error;
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
+    <div className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
       <div className="border-b border-zinc-900 pb-8">
         <p className="eyebrow-red">Pattern Mastery Board</p>
         <div className="mt-4 grid gap-6 md:grid-cols-[1.2fr_0.8fr] md:items-end">
@@ -118,7 +118,7 @@ export default function PatternMasteryBoardPage() {
           </section>
         </>
       )}
-    </main>
+    </div>
   );
 }
 

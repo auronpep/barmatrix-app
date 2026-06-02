@@ -239,7 +239,7 @@ export default function CivilProcedureSubjectPage() {
   };
 
   return (
-    <main>
+    <div>
       <section className="hero">
         <div className="container">
           <div className="hero-meta">
@@ -408,7 +408,7 @@ export default function CivilProcedureSubjectPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
 

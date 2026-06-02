@@ -66,7 +66,7 @@ const TIMELINE = [
 
 export default function AboutPage() {
   return (
-    <main>
+    <div>
       <section className="mx-auto max-w-7xl px-6 py-14 sm:py-16">
         <div className="border-b border-zinc-200 pb-10">
           <div className="mb-8 flex flex-wrap gap-2 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
@@ -230,6 +230,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

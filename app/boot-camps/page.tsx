@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 
 export default function BootCampsPage() {
   return (
-    <main>
+    <div>
       <section className="mx-auto max-w-7xl px-6 py-14 sm:py-16">
         <div className="grid gap-10 border-b border-zinc-200 pb-10 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-end">
           <div>
@@ -70,6 +70,6 @@ export default function BootCampsPage() {
       <section className="mx-auto max-w-7xl px-6 pb-16">
         <BootCampCatalog />
       </section>
-    </main>
+    </div>
   );
 }

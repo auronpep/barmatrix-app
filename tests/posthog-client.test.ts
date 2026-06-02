@@ -5,6 +5,10 @@ import {
   getPostHogBrowserConfig,
   initializePostHogClient,
 } from "../lib/posthog-client.ts";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
+const projectRoot = join(import.meta.dirname, "..");
 
 describe("posthog client config", () => {
   it("does not initialize without a public project token", () => {
@@ -50,5 +54,17 @@ describe("posthog client config", () => {
     assert.equal(initializePostHogClient(client, { NEXT_PUBLIC_POSTHOG_KEY: "phc_test_token" }), false);
     assert.equal(calls.length, 1);
     assert.equal(calls[0]?.token, "phc_test_token");
+  });
+
+  it("passes directly referenced public env values from instrumentation-client", () => {
+    const source = readFileSync(
+      join(projectRoot, "instrumentation-client.ts"),
+      "utf8",
+    );
+
+    assert.match(source, /NEXT_PUBLIC_POSTHOG_KEY:\s*process\.env\.NEXT_PUBLIC_POSTHOG_KEY/);
+    assert.match(source, /NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN:\s*process\.env\.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN/);
+    assert.match(source, /NEXT_PUBLIC_POSTHOG_HOST:\s*process\.env\.NEXT_PUBLIC_POSTHOG_HOST/);
+    assert.doesNotMatch(source, /initializePostHogClient\(posthog\)/);
   });
 });

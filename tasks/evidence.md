@@ -762,3 +762,130 @@ Expected behavior: production paid-subscriber flows should tolerate optional cer
 - The API repo still has unrelated admin/complimentary-access work outside this audit.
 - `tasks/lessons.md` is missing, so there were no project lesson rules to apply beyond `AGENTS.md`.
 - The AM status helper still cannot find a session for `C:\barmatrix-app`.
+
+# C3 Deck Content Schema Audit
+
+## Issue
+
+Expected behavior: if `/api/c3/deck` is intended as a live public C3 deck endpoint, production should have authoritative C3 card/mold schema and content. Actual behavior: the endpoint returns HTTP 200 with an empty `cards` array. Affected domain: future C3 deck and C3-tagged mastery measurement, not a currently reproduced visible UI failure.
+
+## Reproduction
+
+- Reproduced: yes for the empty public endpoint; no current UI crash reproduced.
+- Direct live API check:
+  - `GET https://api.barmatrix.app/api/c3/deck` returned HTTP 200 with `cards=0`.
+- Browser checks:
+  - `http://localhost:3000/boot-camps/sessions/98f7e066-418f-4646-acb2-653573bf295f/mastery` rendered `Mastery check is locked` with no raw API status, loading hang, error boundary, or recent relevant console warnings/errors.
+  - `http://localhost:3000/mastery` rendered `Not yet measured` with no raw API status, loading hang, error boundary, or recent relevant console warnings/errors.
+
+## Trace
+
+- Files inspected:
+  - `C:\barmatrix-api\src\routes\c3.ts`
+  - `C:\barmatrix-api\src\lib\c3-queries.ts`
+  - `C:\barmatrix-app\lib\api-client.ts`
+  - App route/test usage via `rg`.
+- Verified facts:
+  - The app exposes `listC3Deck()` in the typed API client, but current app source does not consume it.
+  - `/api/c3/deck` reads `c3_cards` and intentionally returns `{ cards: [] }` when that optional table/column layer is missing.
+  - `/api/me/c3` reads `c3_molds` and `question_c3_molds` and intentionally degrades to a not-measured C3 state when that optional layer is missing.
+  - Sanitized production DB inspection confirmed `c3_cards`, `c3_molds`, and `question_c3_molds` do not exist.
+  - Production has `questions` with 3684 rows and `answer_choices` with 14736 rows.
+  - Production `answer_choices` does not have `c3_mold_code`.
+- Suspected root cause: production has not been provisioned with authoritative C3 deck/mold schema and card/question tagging content.
+- Confidence: high for the schema/content gap; high that no current UI defect was reproduced from it.
+
+## Change
+
+- No implementation code changed.
+- Audit documentation was updated only.
+- No regression test was added because no code defect was confirmed and the current API behavior intentionally handles the missing optional tables.
+- Created GitHub issue `auronpep/barmatrix-api#1` to track the C3 deck/mold schema and content provisioning gap.
+
+## Verification
+
+- Live API check confirmed `/api/c3/deck` returns HTTP 200 with an empty array rather than a server error.
+- Live sanitized schema check exited 0 and confirmed the missing optional C3 tables/columns without printing secrets or user data.
+- In-app Browser verification confirmed the relevant paid-session mastery and C3 mastery surfaces render stable product states instead of raw API errors.
+- App `node --test tests\*.test.ts` passed: 28 tests, 28 pass.
+- App `npm run lint` passed.
+- App `npm run build` passed.
+- API `npm test` passed: 271 tests, 271 pass.
+- API `npm run typecheck` passed.
+- API `npm run build` passed.
+- App/API `git diff --check` passed with only existing LF/CRLF normalization warnings.
+
+## Remaining Risk
+
+- If the public C3 deck is intended to be active now, it needs a migration/provisioning task with authoritative `c3_cards`, `c3_molds`, `question_c3_molds`, and question/choice C3 tagging. The current source does not contain enough authoritative card content to create this safely during the bug audit.
+
+# Live Operational Integration Audit
+
+## Issue
+
+Expected behavior: live operational integrations should fail closed where appropriate and configured monitoring/analytics should initialize without blocking the app. Actual behavior found: production API Sentry DSN and frontend Sentry DSN were not configured, and production PostHog did not initialize in the browser even though Vercel had PostHog env names. Affected domain: live telemetry/observability, not core study rendering.
+
+## Reproduction
+
+- Safe live API checks:
+  - `POST /api/webhooks/stripe` with no `stripe-signature` returned HTTP 400.
+  - `POST /api/webhooks/stripe` with a fake signature returned HTTP 400 signature-verification failure.
+  - Invalid `POST /api/checkout/create-session` payload returned HTTP 400 validation errors without creating a Stripe session.
+  - `GET /api/checkout/cs_test_missing/status` returned `{"fulfilled":false}`.
+  - Allowed checkout CORS preflight from `https://barmatrix.app` returned HTTP 204 with `Access-Control-Allow-Origin: https://barmatrix.app`.
+  - Disallowed checkout CORS preflight from `https://evil.example` returned no allow-origin header.
+- Admin route checks:
+  - Production `GET /api/admin/grants` returned HTTP 404.
+  - Production `POST /api/admin/grant-access` with valid JSON and no secret returned HTTP 404.
+  - Local dirty API route check returned HTTP 403 without the admin secret.
+- Browser checks:
+  - Production `/checkout`, `/checkout/success?checkout_session_id=cs_test_missing`, `/account?checkout_session_id=cs_test_missing`, and `/privacy` rendered without raw API status text, loading hangs, error boundaries, or relevant console warnings/errors.
+  - `window.posthog` was absent on all four pages.
+
+## Trace
+
+- Files inspected:
+  - `C:\barmatrix-api\src\index.ts`
+  - `C:\barmatrix-api\src\config.ts`
+  - `C:\barmatrix-api\src\email.ts`
+  - `C:\barmatrix-api\src\sentry.ts`
+  - `C:\barmatrix-api\src\routes\admin.ts`
+  - `C:\barmatrix-app\instrumentation-client.ts`
+  - `C:\barmatrix-app\lib\posthog-client.ts`
+  - `C:\barmatrix-app\tests\posthog-client.test.ts`
+  - `C:\barmatrix-app\tests\sentry-wiring.test.ts`
+- Verified facts:
+  - Sanitized Hostinger config showed Stripe, Clerk, email, and allowed-origin config present.
+  - Hostinger config initially had no API Sentry DSN loaded.
+  - Vercel production initially listed PostHog env names but did not list `NEXT_PUBLIC_SENTRY_DSN`.
+  - The deployed frontend chunks contained PostHog code, but the live browser had no `window.posthog`.
+  - `instrumentation-client.ts` called `initializePostHogClient(posthog)`, which lets the helper read `process.env` as an object.
+  - Local Next.js docs state client env values are inlined from direct `process.env.NAME` references and env-object/destructuring patterns do not work reliably.
+- Root cause: PostHog was not initialized because the client bundle did not receive directly referenced public env values.
+- Confidence: high.
+
+## Test
+
+- Added a failing source-contract regression to `tests/posthog-client.test.ts` requiring `instrumentation-client.ts` to pass direct `process.env.NEXT_PUBLIC_POSTHOG_*` references.
+- The focused test failed before the implementation change for the expected reason.
+
+## Change
+
+- `instrumentation-client.ts` now passes an explicit public-env object to `initializePostHogClient`.
+- `tests/posthog-client.test.ts` now covers the direct-env contract.
+- `tests/sentry-wiring.test.ts` now expects the explicit PostHog env object while preserving Sentry privacy defaults.
+- Added `NEXT_PUBLIC_SENTRY_DSN` to Vercel production from the secure local env.
+- Added `BARMATRIX_API_SENTRY_DSN` to the persistent Hostinger API env file from the secure local env and touched the Node restart marker.
+
+## Verification
+
+- Red check: `node --test tests\posthog-client.test.ts` failed before the source fix.
+- Green focused check: `node --test tests\posthog-client.test.ts` passed: 4 tests, 4 pass.
+- App `node --test tests\*.test.ts` passed: 29 tests, 29 pass.
+- App `npm run lint` passed.
+- App `npm run build` passed.
+- Live API `GET https://api.barmatrix.app/health` returned HTTP 200 with `{"ok":true,"db":"up"}` after touching the Hostinger restart marker.
+
+## Remaining Risk
+
+- Production frontend redeploy and browser verification of `window.posthog` are still pending for this pass.

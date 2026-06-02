@@ -618,3 +618,111 @@
 - The API repo still has unrelated local admin/complimentary-access work that was intentionally excluded.
 - `tasks/lessons.md` is still missing.
 - The AM status command still fails because no AM session matches `C:\barmatrix-app`.
+
+# C3 Deck Content Schema Audit
+
+## Scope
+
+- Investigate the live `/api/c3/deck` endpoint returning HTTP 200 with an empty `cards` array.
+- Determine from local code/schema/runtime evidence whether the endpoint is an unused placeholder, a missing live table, an empty live table, or a route/query defect.
+- Avoid inventing C3 content; if the issue is content provisioning, record it as such unless the repo already contains authoritative card content.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Inspect current app/API working trees and prior audit evidence.
+- [x] Inspect local source, route usage, tests, and schema scripts for intended deck behavior.
+- [x] Inspect live schema/data counts for C3 tables without exposing secrets.
+- [x] Inspect the currently open paid boot-camp mastery page for visible state, browser console errors, and API failures.
+- [x] If a defect is confirmed, apply the smallest aligned fix with regression coverage.
+- [x] Verify with relevant tests/build/live API checks and document evidence.
+
+## Review
+
+- Local source inspection confirmed `lib/api-client.ts` exposes `listC3Deck()` and `C3DeckResponse`, but no current app route or test consumes `listC3Deck`.
+- API source inspection confirmed `/api/c3/deck` and `/api/c3/deck/:id` read `c3_cards`, while `/api/me/c3` reads `c3_molds`/`question_c3_molds`; these routes intentionally degrade missing C3 schema to empty/not-measured states.
+- Live `GET https://api.barmatrix.app/api/c3/deck` returned HTTP 200 with `cards=0`.
+- Sanitized production DB inspection showed:
+  - `c3_cards`, `c3_molds`, and `question_c3_molds` do not exist.
+  - `questions` exists with 3684 rows.
+  - `answer_choices` exists with 14736 rows.
+  - `answer_choices.c3_mold_code` is not provisioned.
+- In-app Browser local paid-session check opened `http://localhost:3000/boot-camps/sessions/98f7e066-418f-4646-acb2-653573bf295f/mastery`; it rendered the valid locked state `Mastery check is locked` with no raw API status, loading hang, error boundary, or recent relevant console warnings/errors.
+- In-app Browser local C3 mastery check opened `http://localhost:3000/mastery`; it rendered `Not yet measured` with no raw API status, loading hang, error boundary, or recent relevant console warnings/errors.
+- No source-code defect was confirmed in this pass. The open C3 issue is live schema/content provisioning for a currently unused public deck endpoint and future C3-tagged mastery measurement.
+- Created GitHub issue `auronpep/barmatrix-api#1` to track the C3 deck/mold schema and content provisioning gap.
+
+## Verification
+
+- Live API check: `/api/c3/deck` returned HTTP 200 with an empty `cards` array.
+- Live sanitized schema check exited 0 and confirmed the missing optional C3 tables/columns without printing secrets or user data.
+- Browser verification confirmed the paid boot-camp mastery and C3 mastery UI surfaces fail soft rather than breaking.
+- No implementation code changed, so no regression test was added in this pass.
+- App `node --test tests\*.test.ts` passed: 28 tests, 28 pass.
+- App `npm run lint` passed.
+- App `npm run build` passed.
+- API `npm test` passed: 271 tests, 271 pass.
+- API `npm run typecheck` passed.
+- API `npm run build` passed.
+- App/API `git diff --check` passed with only existing LF/CRLF normalization warnings.
+
+## Remaining Risk
+
+- If the public C3 deck or C3-tagged mastery measurement is intended to be user-facing now, production needs authoritative `c3_cards`, `c3_molds`, `question_c3_molds`, and related tagging migrations/content. There is no authoritative card seed in the current source evidence, so inventing content would not be a clean fix.
+
+# Live Operational Integration Audit
+
+## Scope
+
+- Audit live-environment integration surfaces that are not fully proven by normal route smoke.
+- Cover Stripe webhook fail-closed behavior, billing/checkout/email configuration presence, Sentry/PostHog wiring, health/deployment parity, and production browser console state on integration-touching pages.
+- Avoid printing secret values or triggering paid-provider side effects.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Attempt AM working check-in and record failure if it still cannot find the workspace session.
+- [x] Inspect API/app integration source, tests, and deployment env contracts.
+- [x] Run safe live HTTP checks for operational endpoints and fail-closed paths.
+- [x] Inspect sanitized production env/config presence without exposing values.
+- [x] Browser-verify production integration-touching pages for runtime and console health.
+- [x] Fix only reproduced code defects with regression coverage.
+- [ ] Run relevant tests/lint/build, deploy, and record live evidence.
+
+## Review
+
+- Safe live checks confirmed Stripe webhook fail-closed behavior:
+  - Missing `stripe-signature` returned HTTP 400.
+  - Fake `stripe-signature` returned HTTP 400 signature-verification failure.
+- Safe checkout checks confirmed:
+  - Invalid checkout payload returned HTTP 400 validation errors without creating a Stripe session.
+  - `GET /api/checkout/cs_test_missing/status` returned `{"fulfilled":false}`.
+  - Allowed CORS preflight from `https://barmatrix.app` returned HTTP 204 with the expected allow-origin header.
+  - Disallowed CORS preflight from `https://evil.example` returned no allow-origin header.
+- Production admin route safety:
+  - Live `GET /api/admin/grants` returned HTTP 404.
+  - Live `POST /api/admin/grant-access` with valid JSON and no secret returned HTTP 404.
+  - Local dirty API worktree has an unreleased admin route; its local no-secret check returned HTTP 403.
+- Sanitized production API config check showed Stripe, Clerk, email, and allowed-origin config present.
+- Found and repaired telemetry gaps:
+  - API `BARMATRIX_API_SENTRY_DSN` was absent from Hostinger env; added it from the secure local env and touched the Hostinger restart marker.
+  - Vercel production did not have `NEXT_PUBLIC_SENTRY_DSN`; added it from the secure local env.
+  - Production frontend had PostHog env names in Vercel, but `window.posthog` was absent on `/checkout`, `/checkout/success`, `/account`, and `/privacy`.
+- Root cause for missing PostHog: `instrumentation-client.ts` passed the default `process.env` object into `initializePostHogClient`. The local Next.js docs state browser env values are inlined from direct `process.env.NAME` references and env-object/destructuring patterns do not work reliably.
+- Source fix: `instrumentation-client.ts` now passes a small explicit object containing direct `process.env.NEXT_PUBLIC_POSTHOG_*` references into the PostHog initializer.
+- Regression coverage:
+  - `tests/posthog-client.test.ts` now locks the direct public-env references.
+  - `tests/sentry-wiring.test.ts` was updated to preserve the Sentry/PostHog source contract with the explicit env object.
+
+## Verification
+
+- Red check: `node --test tests\posthog-client.test.ts` failed before the source fix because `instrumentation-client.ts` called `initializePostHogClient(posthog)` with no explicit env object.
+- Green focused check: `node --test tests\posthog-client.test.ts` passed: 4 tests, 4 pass.
+- App `node --test tests\*.test.ts` passed: 29 tests, 29 pass.
+- App `npm run lint` passed.
+- App `npm run build` passed.
+- Live API `GET https://api.barmatrix.app/health` returned HTTP 200 with `{"ok":true,"db":"up"}` after the Hostinger restart marker was touched.
+
+## Remaining Risk
+
+- Production frontend redeploy and browser verification of `window.posthog` are still pending for this pass.

@@ -29,7 +29,8 @@ describe("Sentry Next.js wiring", () => {
     assert.match(clientConfig, /import\s+\*\s+as\s+Sentry\s+from\s+"@sentry\/nextjs"/);
     assert.match(clientConfig, /Sentry\.init\(/);
     assert.match(clientConfig, /dsn:\s*process\.env\.NEXT_PUBLIC_SENTRY_DSN/);
-    assert.match(clientConfig, /initializePostHogClient\(posthog\)/);
+    assert.match(clientConfig, /initializePostHogClient\(posthog,\s*\{/);
+    assert.match(clientConfig, /NEXT_PUBLIC_POSTHOG_KEY:\s*process\.env\.NEXT_PUBLIC_POSTHOG_KEY/);
     assert.match(clientConfig, /sendDefaultPii:\s*false/);
     assert.match(clientConfig, /tracesSampleRate:\s*0/);
     assert.match(clientConfig, /onRouterTransitionStart\s*=\s*Sentry\.captureRouterTransitionStart/);

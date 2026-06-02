@@ -3305,3 +3305,85 @@ Expected behavior: signed-in paid-user boot-camp routes should render meaningful
 
 - Red Zone routes/source remain out of scope for this pass.
 - This slice did not complete the boot-camp day or unlock the mastery check; it verified the catalog/detail/session/day route surfaces and source/test coverage for the mastery running branch.
+
+# Live Foundations And Coach Evidence
+
+## Issue
+
+Expected behavior: signed-in paid-user Foundations/Method and C3 Coach routes should render meaningful production states with one page-level `<main>`, stable page-level headings, no raw runtime/API/CSP text, no desktop overflow, fresh console health, and safe controls that update visible UI state without runtime errors. Actual behavior found in this slice: no confirmed non-Red-Zone defect; the audited routes and safe controls reached coherent states. Affected domain: non-Red-Zone Foundations/Method and Coach study surfaces.
+
+## Reproduction
+
+- Reproduced: no non-Red-Zone defect reproduced.
+- Setup:
+  - In-app browser signed in as the current paid subscriber.
+  - Dirty Red Zone source/test files intentionally untouched.
+- Live production Foundations hub `/foundations?foundations_coach_audit=20260602a`:
+  - Rendered H1 `The Method: Cut → Clash → Call — the BarMatrix wrong-answer method`, body length `3614`, 14 lesson rows, course progress `0/14 lessons · 0%`, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh production browser warning/error logs.
+- Live production lesson `/foundations/lesson-01?foundations_coach_audit=20260602a`:
+  - Rendered H1 `The One Idea: TRUE and RESPONSIVE`, body length `18407`, five enabled `Reveal key` buttons, `Mark lesson complete & continue →`, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+  - Clicking the first `Reveal key` button changed the visible control state to `Hide key`, kept `h1Count=1`, `mainCount=1`, no desktop overflow, no raw runtime text, and no fresh browser warning/error logs.
+  - The test did not click `Mark lesson complete` or toggle a signed-in self-check checkbox, so it avoided Foundations progress persistence.
+- Live production Coach route `/coach?foundations_coach_audit=20260602a`:
+  - Initial state rendered H1 `The C3 Coach`, one `Start coaching` button, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+  - Clicking `Start coaching` called the live Coach next endpoint and rendered `Not measurable yet` guidance for the current paid account, with no raw API text, no answer submission controls, one `<main>`, no desktop overflow, no framework overlay, and no fresh browser warning/error logs.
+
+## Trace
+
+- Files inspected:
+  - `app/foundations/page.tsx`
+  - `app/foundations/[slug]/page.tsx`
+  - `app/coach/page.tsx`
+  - `app/coach/coach-client.tsx`
+  - `lib/use-foundations.ts`
+  - `lib/use-coach.ts`
+  - `lib/use-c3.ts`
+  - `tests/coach-main-landmark.test.ts`
+  - `tests/auth-401-state.test.ts`
+  - `tests/page-main-landmarks.test.ts`
+- Verified facts:
+  - Foundations hub uses `useFoundations()` and falls back to public outline data when stale signed-in auth is rejected.
+  - Foundation lessons load public lesson content and only persist progress through self-check toggles or `Mark lesson complete`.
+  - Coach renders a stable route H1 in `app/coach/page.tsx` and starts the adaptive path through `useCoach().fetchNext()`.
+  - For the current paid account, Coach returns an app-level `Not measurable yet` state rather than a raw API-status state.
+- Root cause: none confirmed in this slice.
+- Confidence: high for the audited desktop/signed-in hub, lesson, reveal-key, Coach start, and current availability states.
+
+## Change
+
+- No implementation change was made because no non-Red-Zone source defect was reproduced.
+- Changed files in this slice are audit ledgers only:
+  - `tasks/todo.md`
+  - `tasks/evidence.md`
+
+## Verification
+
+- Browser verification:
+  - `/foundations?foundations_coach_audit=20260602a` passed page identity/content, one-main, no-overlay, no-raw-error, no-overflow, and fresh console-health checks.
+  - `/foundations/lesson-01?foundations_coach_audit=20260602a` passed the same checks.
+  - Lesson `Reveal key` interaction rendered `Hide key` without route instability or fresh browser warnings/errors.
+  - `/coach?foundations_coach_audit=20260602a` passed page identity/content, one-main, no-overlay, no-raw-error, no-overflow, and fresh console-health checks before and after clicking `Start coaching`.
+- Local checks:
+  - `node --test tests\coach-main-landmark.test.ts tests\auth-401-state.test.ts tests\page-main-landmarks.test.ts` passed 4/4.
+  - Full non-Red-Zone test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 57/57.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `git diff --check -- tasks/todo.md tasks/evidence.md` passed with only normal CRLF warnings.
+- Production HTTP/health/log checks:
+  - `GET https://barmatrix.app/foundations?foundations_http_audit=20260602` returned HTTP 200 with CSP present and no broad raw-error marker.
+  - `GET https://barmatrix.app/foundations/lesson-01?foundations_http_audit=20260602` returned HTTP 200 with CSP present and no broad raw-error marker.
+  - `GET https://barmatrix.app/coach?foundations_http_audit=20260602` returned HTTP 200 with CSP present and no broad raw-error marker.
+  - `GET https://api.barmatrix.app/health?foundations_coach_audit=20260602` returned `{"ok":true,"db":"up"}`.
+  - Vercel logs showed normal 200 rows for `/foundations`, `/foundations/lesson-01`, and `/coach`; the error/CSP-only filter returned `NO_ERROR_OR_CSP_MATCHES`.
+  - Hostinger API `stderr.log` was empty.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-foundations-hub-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-foundations-lesson-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-foundations-lesson-reveal-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-coach-live-initial-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-coach-live-started-20260602.png`
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- This slice did not mark a Foundations lesson complete, toggle signed-in drill self-check persistence, submit a Coach answer, or force Method completion for Coach question availability. It verified the current live paid-account state and safe non-submitting controls.

@@ -75,17 +75,26 @@ export function getPostHogBrowserConfig(env: PostHogEnv = process.env): PostHogB
 export function initializePostHogClient(client: PostHogClientLike, env: PostHogEnv = process.env): boolean {
   const config = getPostHogBrowserConfig(env);
 
-  if (!config || client.__loaded) {
+  if (!config) {
+    return false;
+  }
+
+  exposePostHogClient(client);
+
+  if (client.__loaded) {
     return false;
   }
 
   client.init(config.projectToken, config.options);
+  exposePostHogClient(client);
 
+  return true;
+}
+
+function exposePostHogClient(client: PostHogClientLike): void {
   if (typeof window !== "undefined") {
     (window as WindowWithPostHog).posthog = client;
   }
-
-  return true;
 }
 
 function normalizePostHogHost(host: string | undefined): string {

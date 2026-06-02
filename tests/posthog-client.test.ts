@@ -10,6 +10,31 @@ import { join } from "node:path";
 
 const projectRoot = join(import.meta.dirname, "..");
 
+type BrowserWindowStub = {
+  posthog?: unknown;
+};
+
+function withBrowserWindow(callback: (browserWindow: BrowserWindowStub) => void): void {
+  const mutableGlobal = globalThis as typeof globalThis & {
+    window?: BrowserWindowStub;
+  };
+  const hadWindow = "window" in mutableGlobal;
+  const originalWindow = mutableGlobal.window;
+  const browserWindow: BrowserWindowStub = {};
+
+  mutableGlobal.window = browserWindow;
+
+  try {
+    callback(browserWindow);
+  } finally {
+    if (hadWindow) {
+      mutableGlobal.window = originalWindow;
+    } else {
+      delete mutableGlobal.window;
+    }
+  }
+}
+
 describe("posthog client config", () => {
   it("does not initialize without a public project token", () => {
     assert.equal(getPostHogBrowserConfig({}), null);
@@ -54,6 +79,28 @@ describe("posthog client config", () => {
     assert.equal(initializePostHogClient(client, { NEXT_PUBLIC_POSTHOG_KEY: "phc_test_token" }), false);
     assert.equal(calls.length, 1);
     assert.equal(calls[0]?.token, "phc_test_token");
+  });
+
+  it("exposes an already-loaded SDK on the browser global", () => {
+    const client = {
+      init() {
+        throw new Error("already-loaded client should not initialize again");
+      },
+      capture() {
+        return undefined;
+      },
+      __loaded: true,
+    };
+
+    withBrowserWindow((browserWindow) => {
+      assert.equal(
+        initializePostHogClient(client, {
+          NEXT_PUBLIC_POSTHOG_KEY: "phc_test_token",
+        }),
+        false,
+      );
+      assert.equal(browserWindow.posthog, client);
+    });
   });
 
   it("passes directly referenced public env values from instrumentation-client", () => {

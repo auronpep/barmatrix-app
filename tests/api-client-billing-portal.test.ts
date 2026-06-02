@@ -130,6 +130,25 @@ describe("EnrollmentRecoveryPanel checkout routing", () => {
     assert.doesNotMatch(source, /checkout session is confirmed/i);
     assert.match(source, /Checkout recovery/);
   });
+
+  it("does not show checkout recovery when the signed-in account is already active", () => {
+    const source = readFileSync(
+      new URL("../app/account/enrollment-recovery.tsx", import.meta.url),
+      "utf8",
+    );
+
+    assert.match(source, /import \{ useDashboard \} from "@\/lib\/use-dashboard";/);
+    assert.match(source, /const dash = useDashboard\(\)/);
+    assert.match(source, /const accountAlreadyActive = dash\.data\?\.enrolled === true/);
+    assert.match(
+      source,
+      /if \(!checkoutSessionId \|\| accountAlreadyActive \|\| accountStatusPending\) return;/,
+    );
+    assert.match(
+      source,
+      /if \(!checkoutSessionId \|\| accountAlreadyActive \|\| accountStatusPending \|\| !status \|\| status\.fulfilled\)/,
+    );
+  });
 });
 
 describe("BillingPortalButton unavailable-state copy", () => {

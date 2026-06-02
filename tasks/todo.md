@@ -2426,3 +2426,55 @@
 
 - Red Zone routes/source remain out of scope for this pass.
 - This slice did not start a new production drill/practice queue or submit any production answer. It verified entry states, safe drill catalog tab switching, live API contracts, and current paid-account rendering.
+
+# Live Account Checkout Auth Transactional Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones.
+- Verify signed-in paid-user account and checkout-return surfaces from rendered production UI, including the missing/unowned checkout session edge.
+- Verify checkout entry, pricing CTA surface, and auth pages without creating a new Stripe checkout or billing portal session unless a concrete defect requires deeper reproduction.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Inspect account/checkout/auth source and existing regression tests.
+- [x] Browser-verify `/account`, `/account?checkout_session_id=<missing-test-id>`, `/checkout/success`, and `/checkout/success?checkout_session_id=<missing-test-id>` on production.
+- [x] Browser-verify `/checkout`, `/pricing`, `/sign-in`, and `/sign-up` transactional entry states on production without initiating checkout.
+- [x] Probe live API/account checkout status boundaries and production logs where safe.
+- [x] Trace and fix any reproduced non-Red-Zone root cause with focused regression coverage where practical.
+- [ ] Run relevant tests, lint/build as needed, production health/log checks, and record final evidence.
+
+## Review
+
+- Live pre-patch production reproduction found one non-Red-Zone defect on `/account?checkout_session_id=cs_test_missing_live_audit_final2_1780367857789`: the paid account rendered `Your BarMatrix access is active.` and also rendered `Checkout recovery` / `Recover enrollment` for the unrelated unresolved checkout session.
+- Root cause: `EnrollmentRecoveryPanel` only considered `checkoutSessionId` and checkout-status fulfillment. It did not wait for or consult signed-in dashboard enrollment state, so an unresolved session could show a recovery CTA even when the current account already had active access.
+- Small clean change: `EnrollmentRecoveryPanel` now reads `useDashboard()`, waits while account status is pending, skips checkout-status polling when active access is already confirmed, and returns `null` for active accounts.
+- Added a focused regression to `tests/api-client-billing-portal.test.ts`; it failed before the source change and passes after it.
+- Other transactional surfaces in the pre-patch live matrix rendered coherent states: `/account`, checkout success missing-session states, `/checkout`, `/pricing?checkout=cancelled`, and signed-in redirects from `/sign-in` and `/sign-up` to the home page. No checkout or billing portal session was created.
+
+## Verification
+
+- Red regression: `node --test tests\api-client-billing-portal.test.ts` failed before the source change on the new active-account recovery guard.
+- Focused checks passed 13/13:
+  - `node --test tests\api-client-billing-portal.test.ts tests\account-entitlement-state.test.ts tests\checkout-success-state.test.ts tests\auth-form-fallback.test.ts tests\noindex-transactional-pages.test.ts`
+- Full local non-Red-Zone test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 58/58.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `git diff --check -- app\account\enrollment-recovery.tsx tests\api-client-billing-portal.test.ts tasks\todo.md tasks\evidence.md` passed with only normal CRLF warnings.
+- Localhost browser caveat: `http://localhost:3000/account?checkout_session_id=...` rendered `Account status unavailable`, so it could not prove the active-account branch locally. Production signed-in verification is required after deployment.
+- Pre-patch production screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-account-missing-session-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-checkout-success-missing-session-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-checkout-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-sign-in-live-20260602.png`
+- Local post-patch screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-account-missing-session-local-guard-20260602.png`
+- Production post-deploy verification pending.
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- This slice intentionally avoids creating a new Stripe checkout session or billing portal session unless a concrete defect requires it.
+- Production active-account branch needs post-deploy browser verification because localhost did not load active dashboard state.

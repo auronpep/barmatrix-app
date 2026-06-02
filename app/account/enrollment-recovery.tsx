@@ -3,19 +3,23 @@
 import { useEffect, useState } from "react";
 
 import { api, type CheckoutStatusResponse } from "@/lib/api-client";
+import { useDashboard } from "@/lib/use-dashboard";
 
 export function EnrollmentRecoveryPanel({
   checkoutSessionId,
 }: {
   checkoutSessionId: string | null;
 }) {
+  const dash = useDashboard();
   const [status, setStatus] = useState<CheckoutStatusResponse | null>(null);
   const [recovering, setRecovering] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const accountAlreadyActive = dash.data?.enrolled === true;
+  const accountStatusPending = dash.loading;
 
   // Check if the checkout session has been fulfilled
   useEffect(() => {
-    if (!checkoutSessionId) return;
+    if (!checkoutSessionId || accountAlreadyActive || accountStatusPending) return;
 
     const checkStatus = async () => {
       try {
@@ -41,7 +45,7 @@ export function EnrollmentRecoveryPanel({
       clearInterval(interval);
       clearTimeout(longInterval);
     };
-  }, [checkoutSessionId]);
+  }, [checkoutSessionId, accountAlreadyActive, accountStatusPending]);
 
   const handleRecovery = async () => {
     if (!checkoutSessionId) return;
@@ -66,8 +70,8 @@ export function EnrollmentRecoveryPanel({
     }
   };
 
-  // Only show if we have a checkout session and it hasn't been fulfilled after some time
-  if (!checkoutSessionId || !status || status.fulfilled) {
+  // Only show if an unresolved checkout needs help and active access is not already confirmed.
+  if (!checkoutSessionId || accountAlreadyActive || accountStatusPending || !status || status.fulfilled) {
     return null;
   }
 

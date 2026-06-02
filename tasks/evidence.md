@@ -3472,3 +3472,103 @@ Expected behavior: signed-in paid-user subject bank pages and drill entry pages 
 
 - Red Zone routes/source remain out of scope for this pass.
 - This slice did not start a new production drill/practice queue, resume an existing drill, or submit a production answer. It verified entry rendering, safe catalog tab state, and live data contracts.
+
+# Live Account Checkout Auth Transactional Evidence
+
+## Issue
+
+Expected behavior: signed-in paid-user account, checkout-return, checkout entry, pricing, and auth transactional pages should render meaningful production states with one page-level `<main>`, stable headings, no raw runtime/API/CSP text, no desktop overflow, fresh console health, and clear user-facing states for missing or unowned checkout sessions. Actual behavior found: `/account?checkout_session_id=cs_test_missing_live_audit_final2_1780367857789` rendered active paid access and an unrelated `Checkout recovery` CTA at the same time. Affected domain: non-Red-Zone account, checkout, billing-status, pricing, and auth entry surfaces.
+
+## Reproduction
+
+- Reproduced: yes, on live production before the patch.
+- Setup:
+  - In-app browser signed in as the current paid subscriber.
+  - Dirty Red Zone source/test files intentionally untouched.
+- Live route matrix:
+  - `/account` rendered active paid access, no Stripe billing portal copy, one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+  - `/account?checkout_session_id=cs_test_missing_live_audit_final2_1780367857789&acct_checkout_audit=20260602a` rendered active paid access and also `Checkout recovery` / `Recover enrollment` for the unresolved session. This was the reproduced defect.
+  - `/checkout/success?acct_checkout_audit=20260602a` rendered the missing-session state `Open your account to confirm access.`
+  - `/checkout/success?checkout_session_id=cs_test_missing_live_audit_final2_1780367857789&acct_checkout_audit=20260602a` rendered the pending state `We are checking your Flagship activation.`
+  - `/checkout?acct_checkout_audit=20260602a` rendered plan choices without initiating checkout.
+  - `/pricing?checkout=cancelled&acct_checkout_audit=20260602a` rendered pricing and checkout CTA.
+  - `/sign-in?...` and `/sign-up?...` redirected the already signed-in user to `/`, a coherent signed-in state.
+- Live API probe:
+  - `GET https://api.barmatrix.app/api/checkout/cs_test_missing_live_audit_final2_1780367857789/status?acct_checkout_audit=20260602a` returned HTTP 200 with `{"fulfilled":false}`.
+- Production logs:
+  - Vercel showed normal 200 `/account` rows around the audit window.
+  - Hostinger API `stderr.log` was empty.
+
+## Trace
+
+- Files inspected:
+  - `app/account/page.tsx`
+  - `app/account/account-status.tsx`
+  - `app/account/billing-portal-button.tsx`
+  - `app/account/enrollment-recovery.tsx`
+  - `app/checkout/success/page.tsx`
+  - `app/checkout/checkout-client.tsx`
+  - `app/checkout/page.tsx`
+  - `app/pricing/page.tsx`
+  - `app/sign-in/[[...sign-in]]/page.tsx`
+  - `app/sign-up/[[...sign-up]]/page.tsx`
+  - `app/auth-form.tsx`
+  - `lib/use-dashboard.ts`
+  - `lib/api-client.ts`
+  - `tests/account-entitlement-state.test.ts`
+  - `tests/api-client-billing-portal.test.ts`
+  - `tests/checkout-success-state.test.ts`
+  - `tests/auth-form-fallback.test.ts`
+  - `tests/noindex-transactional-pages.test.ts`
+- Verified facts:
+  - `AccountAccessPanel`, `AccountEntitlementPanel`, and `BillingPortalButton` already use live dashboard enrollment/billing state.
+  - `EnrollmentRecoveryPanel` only used `checkoutSessionId` plus `api.getCheckoutStatus(checkoutSessionId)` before the patch.
+  - The fake session status endpoint returned `fulfilled:false`, so the recovery panel did exactly what its local logic allowed.
+  - The defect was frontend gating, not a backend checkout-status failure.
+- Root cause: `EnrollmentRecoveryPanel` did not wait for dashboard enrollment state or suppress recovery when the current signed-in account was already active.
+- Confidence: high.
+
+## Change
+
+- Changed files:
+  - `app/account/enrollment-recovery.tsx`
+  - `tests/api-client-billing-portal.test.ts`
+  - `tasks/todo.md`
+  - `tasks/evidence.md`
+- Diff summary:
+  - `EnrollmentRecoveryPanel` now calls `useDashboard()`.
+  - The panel skips checkout-status polling while account status is pending or once dashboard enrollment is active.
+  - The panel returns `null` for already-active accounts even if the URL contains an unresolved checkout session ID.
+  - Added a focused regression that locks the active-account recovery suppression.
+- Smallest safe fix rationale:
+  - Keeps the checkout recovery flow available for unresolved sessions when active access is not confirmed.
+  - Avoids changing checkout-status API behavior.
+  - Avoids creating a larger account context/refactor while closing the reproduced contradiction.
+
+## Verification
+
+- Red regression:
+  - `node --test tests\api-client-billing-portal.test.ts` failed before the source change on `does not show checkout recovery when the signed-in account is already active`.
+- Focused local checks:
+  - `node --test tests\api-client-billing-portal.test.ts` passed 9/9 after the patch.
+  - `node --test tests\api-client-billing-portal.test.ts tests\account-entitlement-state.test.ts tests\checkout-success-state.test.ts tests\auth-form-fallback.test.ts tests\noindex-transactional-pages.test.ts` passed 13/13.
+- Full local checks:
+  - Full non-Red-Zone test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 58/58.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `git diff --check -- app\account\enrollment-recovery.tsx tests\api-client-billing-portal.test.ts tasks\todo.md tasks\evidence.md` passed with only normal CRLF warnings.
+- Browser verification:
+  - Pre-patch live production route matrix reproduced the account/recovery contradiction and verified neighboring account/checkout/pricing/auth entry states had one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+  - Local post-patch browser check at `http://localhost:3000/account?checkout_session_id=...` rendered `Account status unavailable`, so it could not prove the active-account suppression branch. Production active-account browser verification is pending deploy.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-account-missing-session-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-checkout-success-missing-session-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-checkout-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-sign-in-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-account-missing-session-local-guard-20260602.png`
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- This slice intentionally avoids creating a new Stripe checkout session or billing portal session unless a concrete defect requires it.
+- Production active-account branch needs post-deploy browser verification because localhost did not load active dashboard state.

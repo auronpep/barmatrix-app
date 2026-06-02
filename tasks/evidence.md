@@ -903,3 +903,49 @@ Expected behavior: live operational integrations should fail closed where approp
 
 - The live telemetry initialization/configuration gaps reproduced in this pass are closed, but this does not prove every possible operational edge case is bug-free.
 - The in-app browser can observe rendered state and network assets, but its isolated evaluation context cannot directly prove page main-world `window` expandos.
+
+# Knowledge Schema Resilience Audit
+
+Expected behavior: optional knowledge storage should not turn public search into a generic 500 when tables or columns are absent. Actual behavior found in source: `src/routes/knowledge.ts` had no missing-table/column fallback. Production currently has knowledge content and returns results, so this was a source resilience defect rather than a live outage.
+
+## Reproduction
+
+- Source-level red test imported the route helpers and asserted that MySQL `ER_NO_SUCH_TABLE`, errno `1146`, `ER_BAD_FIELD_ERROR`, and errno `1054` should be treated as unprovisioned optional knowledge schema.
+- Before the implementation change, the focused knowledge test failed because the route did not export or use the fallback helpers.
+- Live API checks:
+  - `GET https://api.barmatrix.app/api/knowledge/search?component=trap-taxonomy&q=decoder&limit=5` returned HTTP 200 with `KO-SRC-0650-C2C-002`.
+  - `GET https://api.barmatrix.app/api/tensions?limit=1` returned HTTP 200 with official tension entries.
+  - `GET https://api.barmatrix.app/api/c3/deck` returned HTTP 200 with `{"cards":[]}`.
+  - Unauthenticated `GET https://api.barmatrix.app/api/me/c3/next` returned HTTP 401.
+  - `GET https://api.barmatrix.app/health` returned HTTP 200 with `{"ok":true,"db":"up"}`.
+
+## Trace
+
+- Files inspected/changed:
+  - `C:\barmatrix-api\src\routes\knowledge.ts`
+  - `C:\barmatrix-api\src\lib\knowledge.test.ts`
+- Root cause:
+  - The knowledge route caught all query failures as internal server errors.
+  - Other optional content surfaces already degrade missing MySQL schema to empty/not-measured response shapes, so knowledge search was inconsistent with the established route contract.
+- Confidence: high for the source defect and fix; production is not currently on the failing path because live knowledge content exists.
+
+## Change
+
+- Added `isMissingKnowledgeSchema()` to recognize the MySQL missing-table and bad-field signals.
+- Added `shapeMissingKnowledgeResponse()` to reuse the existing empty `shapeKnowledgeSearchResponse()` contract.
+- Updated `/api/knowledge/search` to return the empty search response for unprovisioned optional schema before logging a 500 for unrelated failures.
+- Added regression coverage for both the classifier and the response shape.
+
+## Verification
+
+- Red focused check: `npx tsx --test src\lib\knowledge.test.ts` failed before the route fallback existed.
+- Green focused check: `npx tsx --test src\lib\knowledge.test.ts` passed: 5 tests, 5 pass.
+- API `npm test` passed: 273 tests, 273 pass.
+- API `npm run typecheck` passed.
+- API `npm run build` passed.
+- API `git diff --check` passed with only existing LF/CRLF normalization warnings.
+
+## Remaining Risk
+
+- This change has not been deployed during this pass. Because production knowledge search is already returning content, there is no live knowledge outage to resolve before continuing the broader audit.
+- The system is still not fully tested end to end; authenticated paid-user browser flows remain the next audit target.

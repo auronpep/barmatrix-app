@@ -734,3 +734,46 @@
 
 - This closes the reproduced live telemetry initialization/configuration gaps, but it does not prove every possible operational edge case is bug-free.
 - The in-app browser can observe rendered state and network assets, but its isolated evaluation context cannot directly prove page main-world `window` expandos.
+
+# Knowledge Schema Resilience Audit
+
+## Scope
+
+- Compare current API source behavior against live knowledge/tension/C3 runtime evidence.
+- Confirm whether missing optional knowledge storage would break the API or degrade gracefully.
+- Fix only verified source defects and avoid inventing content for intentionally empty or unprovisioned optional features.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Inspect current API/app worktree state and isolate unrelated dirty API admin changes.
+- [x] Probe live API knowledge, tension, C3, auth-gated C3, and health endpoints.
+- [x] Build a source-level regression for optional knowledge schema absence.
+- [x] Implement the smallest route-level fallback consistent with existing optional-schema routes.
+- [x] Run API tests, typecheck, build, diff hygiene, and refresh live endpoint evidence.
+
+## Review
+
+- Production knowledge search is currently working: `GET /api/knowledge/search?component=trap-taxonomy&q=decoder&limit=5` returned HTTP 200 with a real `KO-SRC-0650-C2C-002` result.
+- Production tension catalog is currently working: `GET /api/tensions?limit=1` returned HTTP 200 with official tension entries.
+- Production C3 deck remains graceful but empty: `GET /api/c3/deck` returned HTTP 200 with `{"cards":[]}`.
+- Production auth gating remains fail-closed: unauthenticated `GET /api/me/c3/next` returned HTTP 401.
+- Production API health is up on the correct route: `GET /health` returned HTTP 200 with `{"ok":true,"db":"up"}`.
+- Source defect found: `src/routes/knowledge.ts` returned HTTP 500 for missing optional knowledge tables/columns, unlike neighboring optional-schema routes such as C3 and tensions.
+- Source fix: missing MySQL table/column signals now return the normal empty knowledge search response shape instead of a generic 500.
+- Unrelated local API admin/complimentary-access changes were intentionally left untouched.
+
+## Verification
+
+- Red focused check: `npx tsx --test src\lib\knowledge.test.ts` failed before the helper/fallback existed.
+- Green focused check: `npx tsx --test src\lib\knowledge.test.ts` passed: 5 tests, 5 pass.
+- API `npm test` passed: 273 tests, 273 pass.
+- API `npm run typecheck` passed.
+- API `npm run build` passed.
+- API `git diff --check` passed with only existing LF/CRLF normalization warnings.
+- Refreshed live API checks confirmed knowledge/tensions/health are serving, C3 deck is empty by content/schema state, and unauthenticated C3 coach access returns 401.
+
+## Remaining Risk
+
+- The source hardening is verified locally but not yet deployed in this pass. Production currently has the knowledge schema/content, so the live knowledge endpoint is not exhibiting this 500 path today.
+- The broader system is not fully proven bug-free; the next high-value audit area is authenticated paid-user browser coverage across boot-camp progress, prescribed drills, red-zone drills, account/billing, and checkout-return flows.

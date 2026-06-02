@@ -2926,3 +2926,22 @@ Expected behavior: representative public, transactional, auth, static landing, a
   - `/lp-four-traps.html`, `/lp-priced-right.html`, `/lp-failed-by-6.html`, and `/lp-wrong-answers.html` each rendered `mainCount=1`, meaningful H1/title, no desktop overflow, no visible raw runtime/API/CSP text, and no fresh browser warning/error logs.
   - Screenshot evidence: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-lp-main-local.png`.
   - The temporary local server was stopped after verification.
+- Deployment:
+  - Pushed commit `69f117b` (`Add main landmarks to static landing pages`) to `main`.
+  - GitHub Actions run `26808290547` passed install, regression tests, lint, build, Vercel pull, and production deploy.
+  - `vercel inspect https://barmatrix.app` reported production deployment `dpl_FweyVh2CSK8SqsFWKL3y1FD9KNp8` Ready and aliased to `https://barmatrix.app`.
+- Live HTTP verification:
+  - `/lp-four-traps.html`, `/lp-priced-right.html`, `/lp-failed-by-6.html`, and `/lp-wrong-answers.html` returned HTTP 200 with CSP present, exactly one `<main>`, exactly one `</main>`, and expected titles.
+- Live browser verification:
+  - The four changed LPs each rendered `mainCount=1`, meaningful H1/title, no desktop overflow, no visible raw runtime/API/CSP text, and no fresh browser warning/error logs.
+  - Screenshot evidence: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-lp-main-live-69f117b.png`.
+- Production health/logs:
+  - `GET https://api.barmatrix.app/health?lp_main_verify=69f117b` returned `{"ok":true,"db":"up"}`.
+  - Vercel logs for the check window showed only normal info rows.
+  - Hostinger API `stderr.log` tail was empty.
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- Signed-in browser checks for `/sign-in` and `/sign-up` redirect to home because the browser session is already authenticated; unauthenticated HTTP checks returned auth pages with `noindex, nofollow`.
+- C3 Coach/Mastery measurement remains limited by missing authored C3 annotation/tagging content tracked separately in `auronpep/barmatrix-api#3`.

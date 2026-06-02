@@ -2092,7 +2092,7 @@
 - [x] Use the in-app browser to verify rendered page identity, one `<main>`, no raw runtime/API/CSP text, no desktop overflow, and fresh console health.
 - [x] Exercise safe navigation/CTA targets without creating checkout sessions or submitting forms.
 - [x] Trace and fix any reproduced source defect with focused regression coverage.
-- [ ] Record review notes, verification evidence, and remaining risk.
+- [x] Record review notes, verification evidence, and remaining risk.
 
 ## Review
 
@@ -2112,3 +2112,15 @@
 - `git diff --check -- public\lp-four-traps.html public\lp-priced-right.html public\lp-failed-by-6.html public\lp-wrong-answers.html tests\static-landing-pages.test.ts tasks\todo.md tasks\evidence.md` passed with only normal CRLF warnings.
 - Local production browser verification on `http://localhost:3016` passed for the four changed LPs: each had `mainCount=1`, meaningful H1/title, no desktop overflow, no visible raw runtime/API/CSP text, and no fresh browser warning/error logs.
 - Local screenshot evidence: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-lp-main-local.png`.
+- Pushed commit `69f117b` (`Add main landmarks to static landing pages`) to `main`; GitHub Actions run `26808290547` passed install, regression tests, lint, build, Vercel pull, and production deploy.
+- Vercel production deployment `dpl_FweyVh2CSK8SqsFWKL3y1FD9KNp8` is Ready and aliased to `https://barmatrix.app`.
+- Live HTTP verification passed for the four changed LPs: HTTP 200, CSP present, exactly one `<main>` and one `</main>`, and expected titles.
+- Live in-app browser verification passed for the four changed LPs: each rendered `mainCount=1`, meaningful H1/title, no desktop overflow, no visible raw runtime/API/CSP text, and no fresh browser warning/error logs.
+- Live screenshot evidence: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-lp-main-live-69f117b.png`.
+- Production health/log checks passed: API health returned `{"ok":true,"db":"up"}`, Vercel logs showed only normal info rows in the check window, and Hostinger API `stderr.log` was empty.
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- Signed-in browser checks for `/sign-in` and `/sign-up` redirect to home because the browser session is already authenticated; unauthenticated HTTP checks still returned the auth pages with `noindex, nofollow`.
+- C3 Coach/Mastery measurement remains limited by missing authored C3 annotation/tagging content tracked separately in `auronpep/barmatrix-api#3`.

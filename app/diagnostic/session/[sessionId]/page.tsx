@@ -225,6 +225,8 @@ export default function PlacementSessionPage({
 
   return (
     <section className="mx-auto max-w-3xl px-6 py-12">
+      <h1 className="sr-only">C3 Placement Assessment</h1>
+
       {total > 0 && (
         <ProgressIndicator current={currentIndex + 1} total={total} />
       )}

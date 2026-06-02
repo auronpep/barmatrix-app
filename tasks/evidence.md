@@ -3107,3 +3107,78 @@ Expected behavior: signed-in paid-user `/practice` and `/timed-sets` study flows
 
 - Red Zone routes/source remain out of scope for this pass.
 - This slice submitted one live practice attempt and one live timed-set attempt on the paid test account. It did not complete every question in either set.
+
+# Live Diagnostic Session Evidence
+
+## Issue
+
+Expected behavior: the diagnostic session flow should render meaningful production states with one page-level `<main>`, a stable page-level heading, no raw runtime/API/CSP text, no desktop/mobile overflow, fresh console health, and controls that start a live session, render a question, and submit one answer into a coherent feedback state without runtime errors. Actual behavior: the live flow worked, but the standalone question/feedback route had no `<h1>` in the question and feedback states. Affected domain: non-Red-Zone diagnostic session surfaces.
+
+## Reproduction
+
+- Setup:
+  - In-app browser signed in as the current paid subscriber.
+  - Dirty Red Zone source/test files intentionally untouched.
+- Live production entry route `/diagnostic/session?diag_audit=20260602a`:
+  - Rendered H1 `Find your starting level.`, body length `1716`, one `<main>`, no overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+- Live production session start:
+  - Clicking `Start Assessment ->` created session `8ecd502f-cb65-44b4-9ed4-e91765ae27eb` and loaded `/diagnostic/session/8ecd502f-cb65-44b4-9ed4-e91765ae27eb`.
+  - Question page rendered question `1/18`, one `<main>`, no overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+  - Defect observed: standalone question page reported `h1: ""`.
+- Live production answer submission:
+  - Selected answer `A`, selected C3 mechanism `CUT -- Other answers misstated the law`, and submitted.
+  - Feedback state rendered `WRONG · CORRECT ANSWER WAS B`, `Session score so far: 0 · 1 of 18 answered`, and `Next question ->`.
+  - Feedback state kept one `<main>`, no overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+- Mobile smoke:
+  - Feedback and diagnostic entry states at `390x844` kept one `<main>`, no horizontal overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+
+## Trace
+
+- Files inspected:
+  - `app/diagnostic/session/page.tsx`
+  - `app/diagnostic/session/placement-entry-client.tsx`
+  - `app/diagnostic/session/[sessionId]/page.tsx`
+  - `app/diagnostic/session/[sessionId]/results/page.tsx`
+  - `tests/placement-diagnostic-contract.test.ts`
+  - `tests/malformed-route-errors.test.ts`
+  - `lib/api-client.ts`
+  - Next page file-convention docs at `node_modules\next\dist\docs\01-app\03-api-reference\03-file-conventions\page.md`
+- Verified facts:
+  - The diagnostic entry page owns the visible entry H1 and starts a placement session through the shared API client.
+  - The session page is a client component that reads the cached pinned placement questions, renders question and feedback states, and submits attempts through `api.submitPlacementAttempt()`.
+  - The root layout owns the single page-level `<main>`, so the route-level fix should add a heading, not another main landmark.
+- Root cause:
+  - `app/diagnostic/session/[sessionId]/page.tsx` rendered no `<h1>` in the session route. The only visible text changed by phase, so the question/feedback page lacked stable route identity.
+- Confidence: high for the audited entry, question, one-submit, feedback, and local patched heading states.
+
+## Change
+
+- Added an `sr-only` H1 with text `C3 Placement Assessment` to `app/diagnostic/session/[sessionId]/page.tsx`.
+- Added focused regression coverage in `tests/diagnostic-session-heading.test.ts`.
+
+## Verification
+
+- Red regression:
+  - `node --test tests\diagnostic-session-heading.test.ts` failed before the source change because the session page had no H1.
+- Focused local checks:
+  - `node --test tests\diagnostic-session-heading.test.ts tests\placement-diagnostic-contract.test.ts tests\malformed-route-errors.test.ts` passed 4/4.
+- Full local checks:
+  - Full non-Red-Zone test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 56/56.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `git diff --check -- "app/diagnostic/session/[sessionId]/page.tsx" tests/diagnostic-session-heading.test.ts tasks/todo.md tasks/evidence.md` passed with only normal CRLF warnings.
+- Local browser verification after patch:
+  - `http://localhost:3000/diagnostic/session?heading_ui_check=localhost` rendered a clean entry page while signed in.
+  - Clicking `Start Assessment ->` created local/live-backed session `e790b043-39d9-48ae-9af0-9405e0ce47a8`.
+  - The resulting session route rendered question 1 of 18, exactly one H1 with text `C3 Placement Assessment`, one `<main>`, no horizontal overflow, no raw runtime text, no dev dialog overlay, and no browser logs.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-diagnostic-session-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-diagnostic-session-mobile-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-diagnostic-entry-mobile-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-diagnostic-session-localhost-origin-ui-start-20260602.png`
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- Production still needs the source patch deployed and post-deploy browser/log verification before the heading defect can be called fixed on `https://barmatrix.app`.
+- Local `npx next start` on ports `3017` and `3018` accepted sockets but did not answer HTTP requests. The existing authenticated `localhost:3000` app server and the successful production build were used for local rendered verification instead.

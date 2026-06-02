@@ -2220,3 +2220,48 @@
 
 - Red Zone routes/source remain out of scope for this pass.
 - This slice submitted one live practice attempt and one live timed-set attempt on the paid test account. It did not complete all 20 practice questions or all 17 timed-set questions.
+
+# Live Diagnostic Session Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones.
+- Verify the C3/placement diagnostic session flow from the rendered UI: landing/session start, question screen, one answer submit, and post-submit feedback state.
+- Exercise only one live attempt unless a defect requires narrower reproduction.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Inspect diagnostic session source and existing tests to understand expected UI/API behavior.
+- [x] Browser-verify `/diagnostic/session` on production for meaningful content, one `<main>`, no overflow, no raw runtime/API/CSP text, and fresh console health.
+- [x] Start a live diagnostic session from the UI and verify question rendering.
+- [x] Submit one safe diagnostic answer and verify the post-submit feedback or navigation state.
+- [x] Run a mobile viewport smoke for the diagnostic entry/question state where practical.
+- [x] Trace and fix any reproduced non-Red-Zone root cause with focused regression coverage where practical.
+- [ ] Run relevant tests, lint, build, deployment, production health/log checks, and post-deploy browser verification.
+- [ ] Record review notes, verification evidence, and remaining risk.
+
+## Review
+
+- Live diagnostic entry, session start, question page, one answer submission, feedback state, and mobile smoke checks passed before the patch except for one confirmed source defect: the standalone `/diagnostic/session/[sessionId]` question/feedback page rendered no page-level `<h1>`.
+- Root cause: `app/diagnostic/session/[sessionId]/page.tsx` used a section as its top-level content wrapper and only rendered progress/question/feedback subcontent, leaving the route without a stable page identity heading in question and feedback states.
+- Small clean change: added one `sr-only` H1, `C3 Placement Assessment`, inside the session route content wrapper. This preserves visual layout while restoring route identity for accessibility and DOM audit checks.
+- Added a focused regression test that failed before the source change and passes after it.
+- Localhost browser verification after the patch used the UI start flow, created session `e790b043-39d9-48ae-9af0-9405e0ce47a8`, rendered question 1 of 18, and verified exactly one H1 with text `C3 Placement Assessment`, one `<main>`, no horizontal overflow, no raw runtime text, no dev dialog overlay, and no browser logs.
+
+## Verification
+
+- Red regression: `node --test tests\diagnostic-session-heading.test.ts` failed before the source change because the session page had no H1.
+- Focused green checks: `node --test tests\diagnostic-session-heading.test.ts tests\placement-diagnostic-contract.test.ts tests\malformed-route-errors.test.ts` passed 4/4.
+- Full non-Red-Zone test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 56/56.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `git diff --check -- "app/diagnostic/session/[sessionId]/page.tsx" tests/diagnostic-session-heading.test.ts tasks/todo.md tasks/evidence.md` passed with only normal CRLF warnings.
+- Local browser verification screenshot: `C:\Users\wks2391\AppData\Local\Temp\barmatrix-diagnostic-session-localhost-origin-ui-start-20260602.png`.
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- Production still needs the source patch deployed and post-deploy browser/log verification before this diagnostic heading defect can be called fixed on `https://barmatrix.app`.
+- A separate local `npx next start` attempt on ports `3017` and `3018` accepted sockets but did not answer HTTP requests. The existing authenticated `localhost:3000` app server and the successful production build were used for local browser/source verification instead.

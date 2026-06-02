@@ -2653,3 +2653,53 @@
 - Production Certification attempts will not persist until issue #5 provisions `cert_competency_results`.
 - Production C3 Coach cannot serve adaptive questions until issue #6 populates C3-tagged question coverage.
 - This slice intentionally completed the paid test subscriber's Method progress and submitted M1 grading attempts; those M1 attempts were not persisted because the production certification-results table is absent.
+
+# Live Certification Persistence Provisioning Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones.
+- Resolve the production Certification persistence gap tracked as GitHub issue #5.
+- Use existing deployed API route contracts and live DB conventions; avoid unrelated dirty API/app work.
+- Verify from the rendered paid-user UI that a new Certification submission persists and the scorecard attempt count updates.
+
+## Plan
+
+- [x] Confirm dirty Red Zone app work and unrelated dirty API work remain separate and untouched.
+- [x] Inspect API Certification source and live DB schema conventions.
+- [x] Provision only the missing live Certification persistence tables needed by the deployed route contract.
+- [x] Browser-verify a live Certification competency submission persists.
+- [x] Verify backing DB rows, API health, Hostinger stderr, Vercel logs, and focused app/API tests.
+- [x] Close GitHub issue #5 with the verification receipt.
+
+## Review
+
+- Root cause was production schema provisioning, not app rendering: `cert_competency_results` and `cert_sessions` were absent while the deployed Certification route already handled and wrote those tables.
+- Applied idempotent live DDL for `cert_sessions` and `cert_competency_results` using existing production conventions: InnoDB, `utf8mb4_unicode_ci`, `char(36)` student ids, `datetime(6)` timestamps, foreign keys to `students`, and JSON validity checks for `per_item`.
+- Live paid Browser verification submitted M2 after the schema provisioning. The graded result no longer displayed `(NOT SAVED — SYNC PENDING)`, and the scorecard showed `M2 ... attempts 1`.
+- Production DB aggregate confirmed one `cert_sessions` row and one `cert_competency_results` row for the hashed paid test subscriber, with `competency_id='M2'`, `attempts_count=1`, and valid JSON `per_item`.
+- Closed GitHub issue #5 as completed.
+
+## Verification
+
+- API focused check passed 7/7:
+  - `npx --no-install tsx --test src/routes/certification.test.ts`
+- App focused check passed 4/4:
+  - `node --test tests\certification-runner-locked-state.test.ts tests\certification-cta.test.ts`
+- Live Browser verification:
+  - `/certification/M2?cert_persist_verify=20260602a` rendered key-free before submit, one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, and no relevant browser logs.
+  - The graded M2 result rendered `SCORE 1`, no `(NOT SAVED — SYNC PENDING)` marker, one H1, one `<main>`, no desktop overflow, and no raw runtime/API/CSP text.
+  - `/certification?cert_persist_verify=20260602a_scorecard` rendered `M2 ... attempts 1`, one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, and no relevant browser logs.
+- Production health/logs:
+  - `GET https://api.barmatrix.app/health?cert_persist_verify=20260602a` returned `{"ok":true,"db":"up"}`.
+  - Vercel production error and `cert_persist_verify` log filters returned no logs for the verification window.
+  - Hostinger API `stderr.log` was empty.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-certification-m2-persisted-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-certification-scorecard-m2-attempt-live-20260602.png`
+
+## Remaining Risk
+
+- Red Zone routes/source/tests remain out of scope for this pass.
+- This slice added one live M2 Certification attempt for the paid test subscriber; it intentionally did not pass all ten competencies.
+- Production C3 Coach still cannot serve adaptive questions until issue #6 populates C3-tagged question coverage.

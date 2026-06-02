@@ -12,6 +12,7 @@ import GamificationSummary from "@/components/gamification/gamification-summary"
 import ProgressRing from "@/components/gamification/progress-ring";
 import { bootCampProgress, dayChipLabel, pct } from "@/lib/boot-camps";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
+import { userFacingResourceError } from "@/lib/user-facing-errors";
 
 type State =
   | { phase: "loading" }
@@ -61,13 +62,14 @@ export default function BootCampSessionPage({
           setState({
             phase: "error",
             message:
-              err instanceof ApiClientError && err.status === 401
-                ? "Sign in to resume this boot camp."
-                : err instanceof ApiClientError && err.status === 403
-                  ? "Enrollment required to resume this boot camp."
-                  : err instanceof ApiClientError
-                    ? `API ${err.status}`
-                    : "Session unavailable",
+              err instanceof ApiClientError
+                ? userFacingResourceError(err, {
+                    signedOut: "Sign in to resume this boot camp.",
+                    forbidden: "Enrollment required to resume this boot camp.",
+                    notFound: "This boot camp session could not be found.",
+                    unavailable: "This boot camp session is temporarily unavailable.",
+                  })
+                : "Session unavailable",
           });
       }
     })();

@@ -11,6 +11,7 @@ import {
 } from "@/lib/api-client";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
 import { Markdown } from "@/lib/markdown";
+import { userFacingResourceError } from "@/lib/user-facing-errors";
 
 export default function FoundationsLessonPage() {
   const params = useParams<{ slug: string }>();
@@ -41,11 +42,10 @@ export default function FoundationsLessonPage() {
       (err) => {
         if (!cancelled) {
           setError(
-            err instanceof ApiClientError
-              ? `API ${err.status}`
-              : err instanceof Error
-                ? err.message
-                : "Unknown error",
+            userFacingResourceError(err, {
+              notFound: "This lesson could not be found.",
+              unavailable: "This lesson is temporarily unavailable.",
+            }),
           );
         }
       },
@@ -108,7 +108,7 @@ export default function FoundationsLessonPage() {
         return result;
       } catch (err) {
         setSaveNote(
-          err instanceof ApiClientError ? `Save failed (API ${err.status})` : "Save failed.",
+          err instanceof ApiClientError ? "Save failed. Try again." : "Save failed.",
         );
       } finally {
         setSaving(false);

@@ -18,6 +18,7 @@ import { trackBootcampCompleted, trackBootcampXpEarned, trackBootcampBadgeUnlock
 import { useClerkAuth } from "@/lib/use-clerk-auth";
 import Celebration from "@/components/gamification/celebration";
 import { badgeMeta, formatXp } from "@/lib/gamification";
+import { userFacingResourceError } from "@/lib/user-facing-errors";
 
 interface MasteryData {
   slug: string;
@@ -93,13 +94,14 @@ export default function BootCampMasteryPage({
         setState({
           phase: "error",
           message:
-            err instanceof ApiClientError && err.status === 401
-              ? "Sign in to resume this mastery check."
-              : err instanceof ApiClientError && err.status === 403
-                ? "Enrollment required to resume this mastery check."
-                : err instanceof ApiClientError
-                  ? `API ${err.status}`
-                  : "Mastery unavailable",
+            err instanceof ApiClientError
+              ? userFacingResourceError(err, {
+                  signedOut: "Sign in to resume this mastery check.",
+                  forbidden: "Enrollment required to resume this mastery check.",
+                  notFound: "This mastery check could not be found.",
+                  unavailable: "This mastery check is temporarily unavailable.",
+                })
+              : "Mastery unavailable",
         });
       }
     })();
@@ -145,9 +147,7 @@ export default function BootCampMasteryPage({
             ? "Sign in to score this mastery check."
             : err instanceof ApiClientError && err.status === 403
               ? "Enrollment required to score this mastery check."
-              : err instanceof ApiClientError
-                ? `API ${err.status}`
-                : "Could not score mastery",
+              : "Could not score mastery. Try again from the session hub.",
       });
     }
   };

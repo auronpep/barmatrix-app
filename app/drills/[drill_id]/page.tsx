@@ -19,6 +19,7 @@ import QuestionRunner, { type RunnerSummary } from "@/components/question-runner
 import { trackDrillCompleted, trackDrillStarted } from "@/lib/analytics";
 import { humanizeTag, proficiencyPct } from "@/lib/drills";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
+import { userFacingResourceError } from "@/lib/user-facing-errors";
 
 type State =
   | { phase: "loading" }
@@ -252,10 +253,12 @@ export default function DrillRunnerPage({
 }
 
 function drillLoadErrorMessage(err: ApiClientError): string {
-  if (err.status === 401) return "Sign in to resume this drill.";
-  if (err.status === 403) return "Enrollment required to resume this drill.";
-  if (err.status === 404) return "This drill no longer exists.";
-  return `API ${err.status}`;
+  return userFacingResourceError(err, {
+    signedOut: "Sign in to resume this drill.",
+    forbidden: "Enrollment required to resume this drill.",
+    notFound: "This drill no longer exists.",
+    unavailable: "This drill is temporarily unavailable.",
+  });
 }
 
 function MasteryCard({

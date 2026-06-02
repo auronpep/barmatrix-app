@@ -10,6 +10,7 @@ import { api, ApiClientError, type BootCampDetail } from "@/lib/api-client";
 import { humanizeTag } from "@/lib/boot-camps";
 import { trackBootcampStarted } from "@/lib/analytics";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
+import { userFacingResourceError } from "@/lib/user-facing-errors";
 
 type State =
   | { phase: "loading" }
@@ -39,7 +40,10 @@ export default function BootCampDetailPage({
         if (active)
           setState({
             phase: "error",
-            message: err instanceof ApiClientError ? `API ${err.status}` : "Camp unavailable",
+            message: userFacingResourceError(err, {
+              notFound: "This boot camp could not be found.",
+              unavailable: "This boot camp is temporarily unavailable.",
+            }),
           });
       });
     return () => {
@@ -66,9 +70,7 @@ export default function BootCampDetailPage({
       } else if (err instanceof ApiClientError && err.status === 403) {
         setStartError("Enrollment required — enroll at barmatrix.app/checkout.");
       } else {
-        setStartError(
-          err instanceof ApiClientError ? `API ${err.status}` : "Could not start the camp",
-        );
+        setStartError("Could not start the camp. Try again from the catalog.");
       }
       setStarting(false);
     }

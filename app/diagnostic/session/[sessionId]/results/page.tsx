@@ -11,11 +11,11 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   api,
-  ApiClientError,
   type PlacementResults,
   type PlacementSubjectAccuracy,
   type PlacementRemediationTarget,
 } from "@/lib/api-client";
+import { userFacingResourceError } from "@/lib/user-facing-errors";
 
 const LEVEL_META: Record<
   number,
@@ -58,9 +58,10 @@ function getLevelMeta(level: number) {
 }
 
 function humanError(err: unknown): string {
-  if (err instanceof ApiClientError) return `API ${err.status}: ${err.message}`;
-  if (err instanceof Error) return err.message;
-  return "Unknown error";
+  return userFacingResourceError(err, {
+    notFound: "This placement session could not be found.",
+    unavailable: "Placement results are temporarily unavailable.",
+  });
 }
 
 export default function PlacementResultsPage({

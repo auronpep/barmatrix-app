@@ -15,6 +15,7 @@ import Celebration from "@/components/gamification/celebration";
 import { badgeMeta, formatXp } from "@/lib/gamification";
 import type { BootCampGamificationGrant } from "@/lib/api-client";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
+import { userFacingResourceError } from "@/lib/user-facing-errors";
 
 interface DayData {
   slug: string;
@@ -99,13 +100,14 @@ export default function BootCampDayPage({
         setState({
           phase: "error",
           message:
-            err instanceof ApiClientError && err.status === 401
-              ? "Sign in to resume this boot camp day."
-              : err instanceof ApiClientError && err.status === 403
-                ? "Enrollment required to resume this boot camp day."
-                : err instanceof ApiClientError
-                  ? `API ${err.status}`
-                  : "Day unavailable",
+            err instanceof ApiClientError
+              ? userFacingResourceError(err, {
+                  signedOut: "Sign in to resume this boot camp day.",
+                  forbidden: "Enrollment required to resume this boot camp day.",
+                  notFound: "This boot camp day could not be found.",
+                  unavailable: "This boot camp day is temporarily unavailable.",
+                })
+              : "Day unavailable",
         });
       }
     })();

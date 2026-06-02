@@ -12,7 +12,6 @@ import { use, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   api,
-  ApiClientError,
   type DiagnosticResultsResponse,
   type DiagnosticTrapPattern,
   type DiagnosticRedZoneEntry,
@@ -23,6 +22,7 @@ import {
 } from "@/lib/analytics";
 import { PRICING } from "@/lib/copy";
 import { useDashboard, type DashboardState } from "@/lib/use-dashboard";
+import { userFacingResourceError } from "@/lib/user-facing-errors";
 
 const DIMENSION_LABELS: Record<string, string> = {
   subject: "By subject",
@@ -100,11 +100,10 @@ export default function DiagnosticResultsPage({
       .catch((err: unknown) => {
         if (!active) return;
         setError(
-          err instanceof ApiClientError
-            ? `API ${err.status}: ${err.message}`
-            : err instanceof Error
-              ? err.message
-              : "Unknown error",
+          userFacingResourceError(err, {
+            notFound: "This diagnostic session could not be found.",
+            unavailable: "Diagnostic results are temporarily unavailable.",
+          }),
         );
         trackCompletion(null);
       });

@@ -2484,3 +2484,53 @@
 - Red Zone routes/source remain out of scope for this pass.
 - This slice intentionally avoids creating a new Stripe checkout session or billing portal session unless a concrete defect requires it.
 - This slice did not click `Recover enrollment`, create a Stripe checkout session, or create a Stripe billing portal session.
+
+# Live Tensions And Traps Knowledge Surface Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones.
+- Verify signed-in paid-user `/tensions`, representative `/tensions/<slug>`, `/traps`, and representative `/traps/<slug>` production surfaces.
+- Exercise safe catalog/navigation/profile/history rendering only; avoid submitting production attempts or changing user progress unless a concrete defect requires deeper reproduction.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Inspect Tensions/Traps source and existing regression tests to understand expected UI/API behavior.
+- [x] Browser-verify `/tensions` and one representative `/tensions/<slug>` on production.
+- [x] Browser-verify `/traps` and one representative `/traps/<slug>` on production.
+- [x] Probe safe live API/production health/log signals for Tensions and Traps.
+- [x] Trace and fix any reproduced non-Red-Zone root cause with focused regression coverage where practical.
+- [x] Run relevant tests, lint/build as needed, production health/log checks, and record final evidence.
+
+## Review
+
+- Live signed-in browser verification covered `/tensions`, `/tensions/cp_diversity_amount_vs_supplemental_jurisdiction`, `/traps`, and `/traps/undocumented_ordinary_alienage`.
+- The Tensions catalog rendered 267 tension links, the `Curated only` filter narrowed to 84 links, and `All tensions` restored the full catalog. The representative detail rendered 95 targeted questions with 12 initial examples; the safe `Load more` action advanced the button from `Load more (12/95)` to `Load more (24/95)`.
+- The Traps catalog rendered 61 first-page trap links with the signed-in `Your trap profile` panel. The `Official only` filter narrowed to 18 trap links, and `All traps` restored the catalog. The representative detail rendered signed-in `Your history`; opening the first example expanded the wrong-choice explanation without navigation or state mutation.
+- Every audited route/state rendered one `<main>`, one H1, meaningful body content, no desktop horizontal overflow in the in-app browser viewport, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+- Live API probes returned HTTP 200 contracts for the public catalog/detail/question endpoints. API health returned `{"ok":true,"db":"up"}`.
+- No non-Red-Zone source defect was reproduced in this slice, so no implementation patch or new regression test was added.
+
+## Verification
+
+- Focused local checks passed 8/8:
+  - `node --test tests\mobile-content-overflow.test.ts tests\sitemap-static-surface.test.ts tests\page-main-landmarks.test.ts tests\static-landing-pages.test.ts`
+- Full local non-Red-Zone test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 58/58.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `git diff --check -- tasks\todo.md tasks\evidence.md` passed with only normal CRLF warnings.
+- Production Vercel log filter returned `NO_ERROR_CSP_OR_500_MATCHES`; normal 200 rows appeared for Traps routes.
+- Hostinger API `stderr.log` was empty.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-tensions-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-tension-detail-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-traps-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-trap-detail-live-20260602.png`
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- This slice did not submit production answers or start practice from the Tension/Trap detail CTAs.
+- The live Traps data currently reports `misconception_count: 0`; the UI handles this state, but authored misconception taxonomy content remains a data/content question rather than a reproduced frontend defect.

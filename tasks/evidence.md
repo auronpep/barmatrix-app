@@ -3579,3 +3579,94 @@ Expected behavior: signed-in paid-user account, checkout-return, checkout entry,
 - Red Zone routes/source remain out of scope for this pass.
 - This slice intentionally avoids creating a new Stripe checkout session or billing portal session unless a concrete defect requires it.
 - This slice did not click `Recover enrollment`, create a Stripe checkout session, or create a Stripe billing portal session.
+
+# Live Tensions And Traps Knowledge Surface Evidence
+
+## Issue
+
+Expected behavior: signed-in paid-user Tensions and Traps catalog/detail surfaces should render meaningful production study content with one page-level `<main>`, stable headings, no raw runtime/API/CSP text, no desktop overflow, fresh console health, and coherent signed-in profile/history states. Actual behavior: no non-Red-Zone defect was reproduced in this slice. Affected domain: non-Red-Zone Tensions and Traps knowledge surfaces.
+
+## Reproduction
+
+- Reproduced: no non-Red-Zone source defect reproduced.
+- Setup:
+  - In-app browser signed in as the current paid subscriber.
+  - Dirty Red Zone source/test files intentionally untouched.
+- Live route matrix:
+  - `/tensions?tt_audit=20260602a` rendered `The recurring legal tension points`, one H1, one `<main>`, 267 tension links, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+  - Clicking `Curated only` navigated to `/tensions?curated=1` and narrowed the catalog to 84 tension links; clicking `All tensions` restored 267 links.
+  - `/tensions/cp_diversity_amount_vs_supplemental_jurisdiction?tt_audit=20260602a` rendered `Diversity amount versus supplemental jurisdiction`, one H1, one `<main>`, 95 total targeted questions with 12 examples, and a `Load more (12/95)` button.
+  - Clicking `Load more (12/95)` advanced the detail to `Load more (24/95)` without raw errors, overlay, overflow, or fresh console logs.
+  - `/traps?tt_audit=20260602a` rendered `The finite universe of MBE traps`, one H1, one `<main>`, 61 first-page trap links, and the signed-in `Your trap profile` panel.
+  - Clicking `Official only` navigated to `/traps?official=1` and narrowed the catalog to 18 trap links; clicking `All traps` restored the first-page catalog.
+  - `/traps/undocumented_ordinary_alienage?tt_audit=20260602a` rendered `Undocumented Ordinary Alienage`, signed-in `Your history`, one example wrong choice, one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+  - Opening the first example details block expanded the wrong-choice explanation without navigation or state mutation.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-tensions-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-tension-detail-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-traps-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-trap-detail-live-20260602.png`
+
+## Trace
+
+- Files inspected:
+  - `app/tensions/page.tsx`
+  - `app/tensions/[slug]/page.tsx`
+  - `app/tensions/[slug]/tension-questions-client.tsx`
+  - `app/tensions/tension-analytics.tsx`
+  - `app/traps/page.tsx`
+  - `app/traps/[slug]/page.tsx`
+  - `app/traps/trap-analytics.tsx`
+  - `app/traps/your-trap-profile.tsx`
+  - `app/traps/your-trap-history.tsx`
+  - `lib/tensions.ts`
+  - `lib/traps.ts`
+  - `lib/use-my-traps.ts`
+  - `lib/api-client.ts`
+  - `tests/mobile-content-overflow.test.ts`
+  - `tests/sitemap-static-surface.test.ts`
+  - `tests/page-main-landmarks.test.ts`
+  - `tests/static-landing-pages.test.ts`
+- Verified facts:
+  - Tension and Trap catalog/detail surfaces are server-rendered shells backed by typed `lib/api-client.ts` calls.
+  - Tension detail `Load more` is a read-only client call to `/api/tensions/:slug/questions`.
+  - Trap profile/history are signed-in personalization islands that fetch `/api/me/traps` and `/api/me/traps/:slug` with a Clerk token and fail soft.
+  - Live public API totals: 267 tensions, 84 official tensions, 183 observed tensions, 1,363 architecture traps, 0 misconception traps, and 17 official traps.
+  - Representative detail API contracts returned HTTP 200: the picked tension has 95 questions and the picked trap has 1 question.
+- Suspected root cause: none confirmed.
+- Confidence: high for the audited signed-in desktop route states, safe catalog filters, read-only detail interactions, and public API contracts.
+
+## Change
+
+- No implementation change was made because no non-Red-Zone source defect was reproduced.
+- Changed files in this slice are audit ledgers only:
+  - `tasks/todo.md`
+  - `tasks/evidence.md`
+
+## Verification
+
+- Browser verification:
+  - Four signed-in production routes plus four safe interaction states passed page identity/content, one-main, one-H1, no-overlay, no-raw-error, no-overflow, and fresh console-health checks.
+  - Safe interactions covered Tension filter toggling, Tension detail `Load more`, Traps filter toggling, and Trap detail example expansion.
+- Live API/production checks:
+  - `GET https://api.barmatrix.app/health?tt_audit=20260602a` returned `{"ok":true,"db":"up"}`.
+  - `GET https://api.barmatrix.app/api/tensions?tt_audit=20260602shape` returned 267 tensions with 84 official and 183 observed.
+  - `GET https://api.barmatrix.app/api/tensions/cp_diversity_amount_vs_supplemental_jurisdiction?tt_audit=20260602shape` returned 95 questions, 12 examples, and `examples_truncated: true`.
+  - `GET https://api.barmatrix.app/api/tensions/cp_diversity_amount_vs_supplemental_jurisdiction/questions?page=1&limit=12&tt_audit=20260602shape` returned 12 of 95 questions.
+  - `GET https://api.barmatrix.app/api/traps?tt_audit=20260602shape` returned 1,363 architecture traps, 0 misconception traps, and 17 official traps.
+  - `GET https://api.barmatrix.app/api/traps/undocumented_ordinary_alienage?tt_audit=20260602shape` returned 1 question and 1 example.
+  - `GET https://api.barmatrix.app/api/traps/undocumented_ordinary_alienage/questions?page=1&limit=12&tt_audit=20260602shape` returned 1 of 1 question.
+  - Vercel log filter returned `NO_ERROR_CSP_OR_500_MATCHES`; normal 200 rows appeared for Traps routes.
+  - Hostinger API `stderr.log` was empty.
+- Local checks:
+  - `node --test tests\mobile-content-overflow.test.ts tests\sitemap-static-surface.test.ts tests\page-main-landmarks.test.ts tests\static-landing-pages.test.ts` passed 8/8.
+  - Full non-Red-Zone test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 58/58.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+  - `git diff --check -- tasks\todo.md tasks\evidence.md` passed with only normal CRLF warnings.
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- This slice did not submit production answers or start practice from the Tension/Trap detail CTAs.
+- Live Trap data currently reports `misconception_count: 0`; the UI handles the empty column, but content provisioning is outside this frontend slice unless the next audit scope treats that as a product/data defect.

@@ -827,3 +827,58 @@
 
 - The API Sentry runtime warning is fixed and deployed, but this does not make the entire system fully tested.
 - Remaining high-value audit coverage is authenticated paid-user browser flows beyond `/drills`: boot-camp day progression, mastery start/submit, prescribed drills, red-zone detail/drill launch, account/billing portal, and checkout-return handling.
+
+# Authenticated Paid Browser Flow Audit
+
+## Scope
+
+- Use the existing paid-subscriber browser session to test production study workflows beyond the already verified `/drills` landing state.
+- Cover paid-user route access, dashboard/account state, drill launch and answer flow, red-zone surfaces, boot-camp progress/mastery surfaces, C3 mastery, and checkout-return/account billing behavior where safe.
+- Prefer non-destructive or low-impact interactions first; when a flow mutates progress, capture the exact session/page state and verify the UI/API result.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm app/API worktree state and isolate unrelated API admin changes.
+- [x] Map app routes and API calls for paid study surfaces from local source.
+- [x] Connect to the in-app browser and verify navigation capabilities with the current paid session.
+- [x] Browser-test production paid dashboard, account, mastery, boot-camp, drills, and red-zone flows.
+- [x] Inspect production API/app logs for any browser-visible errors or warnings.
+- [x] If defects are reproduced, trace source, add/update regression coverage, fix, and deploy.
+- [x] Run relevant app/API tests/lint/build and update evidence.
+
+## Review
+
+- Paid production route smoke rendered stable states for `/dashboard`, `/account`, `/red-zones`, `/mastery`, `/boot-camps`, `/foundations`, `/certification`, and `/coach` with no relevant browser logs or raw API-status copy.
+- Stale production URLs for the old localhost boot-camp session `98f7e066-418f-4646-acb2-653573bf295f` returned the expected unavailable/404 state. Fresh production-created sessions were verified instead.
+- Review drill flow passed end to end: `/drills` launched a review drill, an Evidence question was answered, and the UI rendered `DRILL MASTERED 1 / 1 correct`.
+- Boot-camp flow passed end to end for fresh production data: Evidence camp detail/session rendered; Civil Procedure camp created session `775888a9-63ff-4802-ae8f-ed238d88f142`; Day 1 answered 12/12; finish screen awarded `+170 XP`; session hub persisted `1 OF 5 DAYS COMPLETE` and unlocked Day 2.
+- Production API logs exposed a real background defect after paid attempts: `[c3-srs] background update failed: Unknown column 'c3_mold_code' in 'SELECT'`.
+- Root cause: the foreground attempt path tolerated an unprovisioned optional `answer_choices.c3_mold_code` column, but the correct-answer C3 SRS background lookup still queried that column directly.
+- API fix in `C:\barmatrix-api`: commit `32bb419` adds `listQuestionC3MoldCodesForAttempt()`, returns an empty mold list when the optional column is absent, and routes the background SRS update through that helper.
+- Deployed to Hostinger: remote `HEAD` is `32bb419`, `dist/routes/attempts.js` rebuilt, restart marker updated at `2026-06-02 02:00:25` UTC, and live health returned HTTP 200.
+- Post-deploy browser verification submitted Civil Procedure Day 2 Question 1 with answer `D`; UI rendered `CORRECT`, and fresh Hostinger log tails showed only normal listener lines with no new `[c3-srs]` errors.
+
+## Verification
+
+- Red/green API regression:
+  - `npx tsx --test src\routes\attempts.test.ts` failed before implementation because `listQuestionC3MoldCodesForAttempt` did not exist.
+  - `npx tsx --test src\routes\attempts.test.ts` passed after implementation.
+- API full checks passed:
+  - `npm test`: 276 tests passed.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+  - `git diff --check` passed with only existing LF/CRLF normalization warnings.
+- Live checks passed:
+  - `GET https://api.barmatrix.app/health` returned `{"ok":true,"db":"up"}`.
+  - `GET https://barmatrix.app/drills` returned HTTP 200.
+  - In-app browser paid-flow checks covered dashboard/account/red-zones/mastery/foundations/certification/coach, review drill completion, boot-camp creation, 12-question Day 1 completion, session-hub persistence, and a post-deploy correct answer submission.
+
+## Remaining Risk
+
+- This audit significantly expands paid-user production coverage, but it still cannot prove every possible user/data edge case is bug-free.
+- App source code did not change in this pass; app checks are limited to browser/HTTP verification and documentation diff hygiene.
+- Boot-camp mastery start/submit, billing portal handoff, and checkout-return mutation flows remain good follow-up candidates if the goal is exhaustive transaction-level coverage.
+- The API repo still has unrelated local admin/complimentary-access changes that were intentionally not staged or deployed.
+- `tasks/lessons.md` is still missing.
+- The AM status helper still cannot find a session for `C:\barmatrix-app`.

@@ -1016,3 +1016,60 @@ Expected behavior: production API startup should initialize Sentry before Expres
 
 - This closes the reproduced API Sentry runtime warning. It does not prove the whole BarMatrix system is fully tested.
 - Continue the audit with authenticated browser flows: boot-camp day progression, boot-camp mastery start/submit, prescribed drill launch/submit, red-zone drill launch, account/billing, and checkout-return pages.
+
+# Authenticated Paid Browser Flow Audit
+
+## Issue
+
+Expected behavior: paid users should be able to navigate study surfaces, complete drills and boot-camp questions, and leave the production API free of runtime errors after attempts. Actual behavior found: user-facing flows succeeded, but production API logs showed the C3 SRS background updater failing after paid attempts because live `answer_choices.c3_mold_code` is not provisioned.
+
+## Reproduction
+
+- Browser session: paid subscriber on `https://barmatrix.app`.
+- Stable route checks rendered without relevant browser logs: `/dashboard`, `/account`, `/red-zones`, `/mastery`, `/boot-camps`, `/foundations`, `/certification`, and `/coach`.
+- Review drill: launched from `/drills`, answered an Evidence question, and rendered `DRILL MASTERED 1 / 1 correct`.
+- Boot camp: created Civil Procedure session `775888a9-63ff-4802-ae8f-ed238d88f142`, answered Day 1 questions 1-12, clicked `Finish day`, saw `Day complete!`, `+170 XP`, and returned to a hub showing `1 OF 5 DAYS COMPLETE` with Day 2 unlocked.
+- Production log failure after paid attempts:
+  - `[c3-srs] background update failed: Error: Unknown column 'c3_mold_code' in 'SELECT'`
+  - Stack pointed to `dist/routes/attempts.js` inside `updateC3SrsAsync`.
+
+## Trace
+
+- Foreground attempt submit already used `findSelectedChoiceForAttempt()` to retry without `c3_mold_code` when the optional column is missing.
+- Correct-answer background SRS still queried `SELECT DISTINCT c3_mold_code FROM answer_choices ...` directly.
+- Live production schema/content state from earlier audit already established that C3 columns/tables are optional and currently unprovisioned.
+- Root cause: the optional C3 schema fallback was applied to the response path but not to the fire-and-forget SRS path.
+
+## Change
+
+- Changed files in `C:\barmatrix-api`:
+  - `src\routes\attempts.ts`
+  - `src\routes\attempts.test.ts`
+- Added `listQuestionC3MoldCodesForAttempt()` to return an empty mold-code list when the optional `c3_mold_code` column is absent.
+- Updated `updateC3SrsAsync()` to call that helper for correct answers, preventing expected optional-schema absence from being logged as a background failure.
+- Committed and pushed API commit `32bb419 Degrade C3 SRS attempts when mold column missing`.
+
+## Verification
+
+- Red check: `npx tsx --test src\routes\attempts.test.ts` failed before implementation because the fallback helper did not exist.
+- Green focused check: `npx tsx --test src\routes\attempts.test.ts` passed.
+- API full checks passed:
+  - `npm test`: 276 tests passed.
+  - `npm run typecheck` passed.
+  - `npm run build` passed.
+  - `git diff --check` passed with only existing LF/CRLF normalization warnings.
+- Hostinger deploy:
+  - Remote `HEAD`: `32bb419`.
+  - Remote `dist/routes/attempts.js` rebuilt at `2026-06-02 02:00:17 UTC`.
+  - Restart marker updated at `2026-06-02 02:00:25 UTC`.
+  - `GET https://api.barmatrix.app/health` returned HTTP 200 with `{"ok":true,"db":"up"}`.
+- Post-deploy browser verification:
+  - Opened Day 2 in the paid Civil Procedure boot-camp session.
+  - Submitted Question 1 with answer `D`.
+  - UI rendered `CORRECT` and advanced to Question 2.
+  - Fresh Hostinger log tail after the post-deploy attempt showed normal listener lines only and no new `[c3-srs]` background errors.
+
+## Remaining Risk
+
+- This pass verifies representative paid production flows and closes the reproduced background log defect. It does not prove every paid-user edge case is bug-free.
+- Boot-camp mastery submit, billing portal handoff, and checkout-return mutation flows remain good follow-up coverage targets.

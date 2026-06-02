@@ -2171,3 +2171,52 @@
 
 - Red Zone routes/source remain out of scope for this pass.
 - The in-app Browser tab did not expose a viewport-resize capability, so this slice used the current desktop viewport (`873x912`) rather than a separate mobile browser pass.
+
+# Live Practice And Timed Sets Audit
+
+## Scope
+
+- Continue the live environment audit outside Red Zones.
+- Verify the signed-in paid-user study flows for `/practice` and `/timed-sets` from the rendered UI.
+- Exercise safe question-flow interactions where available, while avoiding Red Zone route/source and unnecessary production mutations.
+
+## Plan
+
+- [x] Re-read `AGENTS.md`; confirm `tasks/lessons.md` status.
+- [x] Confirm dirty Red Zone work remains separate and untouched.
+- [x] Inspect local practice/timed-set source and existing tests to understand expected UI/API behavior.
+- [x] Browser-verify `/practice` on production for meaningful content, one `<main>`, no overflow, no raw runtime/API/CSP text, and fresh console health.
+- [x] Exercise a safe `/practice` question-flow interaction if the live UI presents one.
+- [x] Browser-verify `/timed-sets` on production for meaningful content, one `<main>`, no overflow, no raw runtime/API/CSP text, and fresh console health.
+- [x] Exercise a safe `/timed-sets` interaction if the live UI presents one.
+- [x] Trace and fix any reproduced non-Red-Zone root cause with focused regression coverage where practical.
+- [x] Run relevant tests, lint, build, and production health/log checks.
+- [x] Record review notes, verification evidence, and remaining risk.
+
+## Review
+
+- Live signed-in browser verification passed for `/practice`: meaningful H1/content, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh `barmatrix.app` warning/error logs.
+- From `/practice`, selected the `Evidence` subject, loaded question `1/20`, selected answer `A`, submitted, and rendered the Wrong Answer Forensics card with `Correct answer: C` and a `Next question` control.
+- Live signed-in browser verification passed for `/timed-sets`: meaningful H1/content, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh `barmatrix.app` warning/error logs.
+- From `/timed-sets`, started a 17-question mixed set, loaded question `1/17`, selected answer `A`, submitted, and rendered the Wrong Answer Forensics card with why-it-looked-right/why-it-fails text, an assigned repair drill, and a `Next timed question` control.
+- Mobile viewport smoke at `390x844` passed for `/practice` and `/timed-sets`: one `<main>`, no horizontal overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+- No non-Red-Zone source defect was reproduced in this slice, so no implementation patch or new regression test was added.
+
+## Verification
+
+- Focused local checks: `node --test tests\practice-subject-response.test.ts tests\api-client-drills.test.ts` passed 4/4.
+- Full local non-Red-Zone test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 55/55.
+- `npm run lint` passed.
+- `npm run build` passed.
+- Production HTTP probes for `/practice` and `/timed-sets` returned HTTP 200 with CSP present.
+- Production health/log checks passed: API health returned `{"ok":true,"db":"up"}`, Vercel logs showed normal info request rows for the study routes and no filtered error/CSP entries, and Hostinger API `stderr.log` was empty.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-practice-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-timed-sets-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-practice-mobile-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-timed-sets-mobile-live-20260602.png`
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- This slice submitted one live practice attempt and one live timed-set attempt on the paid test account. It did not complete all 20 practice questions or all 17 timed-set questions.

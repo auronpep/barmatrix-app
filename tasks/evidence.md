@@ -3023,3 +3023,87 @@ Expected behavior: signed-in dashboard utility routes outside Red Zones should r
 
 - Red Zone routes/source remain out of scope for this pass.
 - The in-app Browser tab did not expose viewport resizing, so this slice did not run a separate mobile live-browser pass.
+
+# Live Practice And Timed Sets Evidence
+
+## Issue
+
+Expected behavior: signed-in paid-user `/practice` and `/timed-sets` study flows should render meaningful production states with one page-level `<main>`, no raw runtime/API/CSP text, no desktop overflow, fresh console health, and safe question-flow controls that advance to a coherent next state without runtime errors. Actual behavior found in this slice: no confirmed non-Red-Zone source defect; both audited flows reached live forensics states. Affected domain: non-Red-Zone practice and timed-set study surfaces.
+
+## Reproduction
+
+- Reproduced: no non-Red-Zone defect reproduced.
+- Setup:
+  - In-app browser signed in as the current paid subscriber.
+  - Dirty Red Zone source/test files intentionally untouched.
+  - Desktop browser viewport during the interaction checks: `873x912`.
+  - Mobile browser viewport during smoke checks: `390x844`, then reset.
+- Live browser evidence for `/practice?study_audit=20260602a`:
+  - Initial route rendered H1 `Practice the bank`, body length `1282`, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh `barmatrix.app` warning/error logs.
+  - The `Evidence` subject button was present exactly once.
+  - Clicking `Evidence` loaded an Evidence practice set with question `1/20`, four answer buttons, and one enabled `Submit answer` path after selecting answer `A`.
+  - Submitting answer `A` rendered a Wrong Answer Forensics card with `Correct answer: C` and a `Next question` control. The page still had one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+- Live browser evidence for `/timed-sets?study_audit=20260602a`:
+  - Initial route rendered H1 `Run a timed mixed set, then review the traps that surfaced under pressure.`, body length `2028`, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh `barmatrix.app` warning/error logs.
+  - `Start timed mixed set` controls were present; clicking one built a 17-question mixed queue and loaded question `1/17`.
+  - Selecting answer `A` enabled the `Submit answer` button. Submitting rendered the Wrong Answer Forensics side card for `Website Accessibility Only, overbroad Rule trap`, including why-it-looked-right/why-it-fails text, assigned repair drill `Pj Internet Contacts Drill`, and a `Next timed question` control.
+  - The post-submit timed-set page kept one `<main>`, had no desktop overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs.
+- Mobile viewport evidence:
+  - `/practice?study_mobile_audit=20260602a` rendered H1 `Practice the bank`, one `<main>`, no horizontal overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs at `390x844`.
+  - `/timed-sets?study_mobile_audit=20260602a` rendered H1 `Run a timed mixed set, then review the traps that surfaced under pressure.`, one `<main>`, no horizontal overflow, no raw runtime/API/CSP text, no framework overlay, and no fresh browser warning/error logs at `390x844`.
+
+## Trace
+
+- Files inspected:
+  - `app/practice/page.tsx`
+  - `app/practice/practice-client.tsx`
+  - `app/timed-sets/page.tsx`
+  - `lib/use-attempts.ts`
+  - `lib/api-client.ts`
+  - `tests/practice-subject-response.test.ts`
+  - `tests/api-client-drills.test.ts`
+  - Browser viewport capability docs at `C:\Users\wks2391\.codex\plugins\cache\openai-bundled\browser\26.527.31326\docs\capabilities\browser\viewport.md`
+- Verified facts:
+  - `/practice` starts subject/tension/trap-filtered sets, fetches live questions, and submits via `useSubmitAttempt()`.
+  - `/timed-sets` builds a live 17-question mixed queue from subject endpoints, fetches the current question, and submits via `useSubmitAttempt()`.
+  - `useSubmitAttempt()` attaches the Clerk token for signed-in users and otherwise falls back to anonymous attempt submission.
+  - Existing focused coverage checks practice subject response normalization and authenticated study API contracts.
+- Root cause: none confirmed in this slice.
+- Confidence: high for the audited desktop/signed-in answer-submit-forensics paths and mobile initial route states.
+
+## Change
+
+- No implementation change was made because no non-Red-Zone source defect was reproduced.
+- Changed files in this slice are audit ledgers only:
+  - `tasks/todo.md`
+  - `tasks/evidence.md`
+
+## Verification
+
+- Browser verification:
+  - `/practice?study_audit=20260602a` passed page identity/content, one-main, no-overlay, no-raw-error, no-overflow, and fresh console-health checks.
+  - Practice `Evidence` set start, answer `A`, and submit rendered Wrong Answer Forensics plus `Next question` with no fresh browser warnings/errors.
+  - `/timed-sets?study_audit=20260602a` passed page identity/content, one-main, no-overlay, no-raw-error, no-overflow, and fresh console-health checks.
+  - Timed-set start, answer `A`, and submit rendered Wrong Answer Forensics plus `Next timed question` with no fresh browser warnings/errors.
+  - Mobile smoke passed for `/practice` and `/timed-sets` at `390x844`.
+- Local checks:
+  - `node --test tests\practice-subject-response.test.ts tests\api-client-drills.test.ts` passed 4/4.
+  - Full non-Red-Zone test sweep passed with `tests\red-zone-detail-params.test.ts` excluded: 55/55.
+  - `npm run lint` passed.
+  - `npm run build` passed.
+- Production HTTP/health/log checks:
+  - `GET https://barmatrix.app/practice?study_http_audit=20260602b` returned HTTP 200 with CSP present.
+  - `GET https://barmatrix.app/timed-sets?study_http_audit=20260602b` returned HTTP 200 with CSP present.
+  - `GET https://api.barmatrix.app/health?practice_timed_audit=20260602` returned `{"ok":true,"db":"up"}`.
+  - Vercel logs for the check window showed normal info rows for `/practice` and `/timed-sets`; the error/CSP filter found no actionable entries.
+  - Hostinger API `stderr.log` tail was empty.
+- Screenshot evidence:
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-practice-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-timed-sets-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-practice-mobile-live-20260602.png`
+  - `C:\Users\wks2391\AppData\Local\Temp\barmatrix-timed-sets-mobile-live-20260602.png`
+
+## Remaining Risk
+
+- Red Zone routes/source remain out of scope for this pass.
+- This slice submitted one live practice attempt and one live timed-set attempt on the paid test account. It did not complete every question in either set.

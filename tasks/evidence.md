@@ -4310,6 +4310,17 @@ Expected behavior: production CSP for `barmatrix.app` should allow only the Cler
   - API headers retained JSON content type, credential support, `nosniff`, `SAMEORIGIN`, and HSTS.
   - Deploy log filter for the current production run showed no actionable error/failure/CSP rows.
   - Hostinger API stderr could not be checked because SSH timed out.
-- Remaining verification:
-  - Deploy the app CSP change.
-  - Verify live production CSP no longer contains `clerk.accounts.dev` while the signed-in dashboard still renders and browser logs stay clean.
+- Production deploy/header verification:
+  - Pushed commit `2b4a5f2` to `main`; Deploy Vercel Production run `26820889447` completed with conclusion `success`.
+  - `GET https://barmatrix.app/dashboard?live_env_csp_verify=2b4a5f2` returned HTTP 200 with CSP present.
+  - The live CSP contained `https://clerk.barmatrix.app`.
+  - The live CSP no longer contained `clerk.accounts.dev`.
+  - The live CSP did not contain `localhost`, `127.0.0.1`, or `ws://`.
+  - The live response retained `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, and `Referrer-Policy: strict-origin-when-cross-origin`.
+  - Live HTML still contained a live Clerk public-key marker, no test-key marker, no `clerk.accounts.dev`, and no development-key warning text.
+  - `GET https://api.barmatrix.app/health?live_env_csp_verify=2b4a5f2` returned `{"ok":true,"db":"up"}`.
+- Production Browser verification:
+  - Live signed-in `/dashboard?live_env_csp_verify=2b4a5f2` rendered paid dashboard content with one H1, one `<main>`, no desktop horizontal overflow, no sign-in fallback, no raw runtime/API/CSP text, and no fresh `barmatrix.app` browser warning/error logs.
+- Production logs:
+  - Deploy log for run `26820889447` showed the new CSP tests passing and no actionable error/failure/CSP rows.
+  - Hostinger API stderr remained unavailable because SSH timed out.

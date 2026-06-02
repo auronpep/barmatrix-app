@@ -2943,7 +2943,7 @@
 - [x] Inspect production response headers and CSP for app and API.
 - [x] Check current production deploy logs for error-class signals.
 - [x] Retry Hostinger API stderr access if available.
-- [ ] Record findings, fixes, or remaining gaps.
+- [x] Record findings, fixes, or remaining gaps.
 
 ## Review
 
@@ -2963,6 +2963,16 @@
 - Local green checks:
   - `node --test tests\security-headers.test.ts` passed 4/4.
   - Full app non-Red-Zone test sweep with Red Zone tests excluded passed 63/63.
-  - App `npm run lint` passed.
-  - App `npm run build` passed.
-- Production deployment and live post-deploy header/browser verification are pending.
+- App `npm run lint` passed.
+- App `npm run build` passed.
+- Pushed commit `2b4a5f2` to `main`; Deploy Vercel Production run `26820889447` completed successfully.
+- Live post-deploy header verification of `/dashboard?live_env_csp_verify=2b4a5f2` passed:
+  - HTTP 200 with CSP present.
+  - `https://clerk.barmatrix.app` present.
+  - `clerk.accounts.dev` absent.
+  - `localhost`, `127.0.0.1`, and `ws://` absent.
+  - `nosniff`, `SAMEORIGIN`, and `strict-origin-when-cross-origin` retained.
+- Live post-deploy HTML verification confirmed live Clerk key marker present, test key marker absent, Clerk accounts-dev absent, and development-key warning text absent.
+- Live signed-in Browser verification of `/dashboard?live_env_csp_verify=2b4a5f2` rendered the paid dashboard, one H1, one `<main>`, no desktop overflow, no raw runtime/API/CSP text, no sign-in fallback, and no fresh `barmatrix.app` browser warning/error logs.
+- `GET https://api.barmatrix.app/health?live_env_csp_verify=2b4a5f2` returned `{"ok":true,"db":"up"}`.
+- Deploy log for run `26820889447` showed the new CSP tests passing and no actionable error/failure/CSP rows.

@@ -153,10 +153,15 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
   const [error, setError] = useState<string | null>(null);
   const startedAt = useRef<number>(Date.now());
 
+  // Choice-button tasks: the student picks one of item.choices[]; grading is on
+  // selected_choice_id. LABEL_SELECT (pick a fixed label, e.g. Ear/Issue-Sense)
+  // carries choices[] and grades on correct_choice_id, so it MUST render here, not
+  // via STATUS_OPTIONS — omitting it left 7 live drills with no answer controls.
   const usesChoices =
     item.task_type === "TRUE_VS_TRUE" ||
     item.task_type === "SURVIVOR_PICK" ||
-    item.task_type === "CALL_CHECK";
+    item.task_type === "CALL_CHECK" ||
+    item.task_type === "LABEL_SELECT";
   const statusOptions = STATUS_OPTIONS[item.task_type] ?? [];
 
   const canSubmit = usesChoices ? choiceId !== null : status !== null;

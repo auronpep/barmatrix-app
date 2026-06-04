@@ -167,7 +167,13 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
     item.task_type === "TRUE_VS_TRUE" ||
     item.task_type === "SURVIVOR_PICK" ||
     item.task_type === "CALL_CHECK" ||
-    item.task_type === "LABEL_SELECT";
+    item.task_type === "LABEL_SELECT" ||
+    item.task_type === "COUNT_SELECT" ||
+    item.task_type === "SEQUENCE_SELECT";
+  // COUNT_SELECT (1–4) and SEQUENCE_SELECT (the 6 Method steps) render as compact
+  // inline chips — their choice text is the whole label, so no "id." prefix.
+  const compactChoices =
+    item.task_type === "COUNT_SELECT" || item.task_type === "SEQUENCE_SELECT";
   const statusOptions = STATUS_OPTIONS[item.task_type] ?? [];
 
   const canSubmit = usesChoices ? choiceId !== null : status !== null;
@@ -247,12 +253,19 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
           ? (item.choices ?? []).map((c) => (
               <ChoiceButton
                 key={c.id}
+                compact={compactChoices}
                 selected={choiceId === c.id}
                 disabled={graded}
                 correct={graded ? grade?.correct_choice_id === c.id : null}
                 onClick={() => setChoiceId(c.id)}
               >
-                <span className="font-mono font-semibold">{c.id}.</span> {c.text}
+                {compactChoices ? (
+                  c.text
+                ) : (
+                  <>
+                    <span className="font-mono font-semibold">{c.id}.</span> {c.text}
+                  </>
+                )}
               </ChoiceButton>
             ))
           : statusOptions.map((opt) => (
@@ -331,27 +344,31 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
 
 function ChoiceButton({
   children,
+  compact = false,
   selected,
   disabled,
   correct,
   onClick,
 }: {
   children: React.ReactNode;
+  compact?: boolean;
   selected: boolean;
   disabled: boolean;
   correct: boolean | null;
   onClick: () => void;
 }) {
+  // Compact chips (COUNT_SELECT / SEQUENCE_SELECT) sit inline and size to content;
+  // the default full-width left-aligned rows suit the long MCQ/label choices.
+  const layout = compact
+    ? "rounded-md border px-4 py-2 text-sm font-medium transition"
+    : "w-full rounded-md border px-3 py-2 text-left text-sm leading-6 transition";
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
       aria-pressed={selected}
-      className={`w-full rounded-md border px-3 py-2 text-left text-sm leading-6 transition ${markClasses(
-        selected,
-        correct,
-      )}`}
+      className={`${layout} ${markClasses(selected, correct)}`}
     >
       {markGlyph(selected, correct)}
       {children}

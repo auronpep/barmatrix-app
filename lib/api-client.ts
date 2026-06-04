@@ -1006,7 +1006,12 @@ export type C3TaskType =
   | "MIXED_CLASSIFICATION"
   | "CALL_CHECK"
   | "CHOICE_CLASSIFICATION"
-  | "LABEL_SELECT";
+  | "LABEL_SELECT"
+  // Mirror of api src/lib/c3-drill.ts — keep in sync. COUNT_SELECT (Drill 2.2,
+  // survivor count) and SEQUENCE_SELECT (Drill 14.1, next workflow move) are
+  // single-choice picks from a fixed option set; both grade on correct_choice_id.
+  | "COUNT_SELECT"
+  | "SEQUENCE_SELECT";
 
 export type C3Skill = "EAR" | "ISSUE_SENSE" | "CUT" | "CLASH" | "CALL";
 export type C3MissedFilter = "NOT_TRUE" | "NOT_RESPONSIVE" | "SURVIVES";

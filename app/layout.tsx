@@ -172,6 +172,9 @@ export default function RootLayout({
                       <Link href="/diagnostic">Free Diagnostic</Link>
                     </li>
                     <li>
+                      <Link href="/webinar">Next Webinar</Link>
+                    </li>
+                    <li>
                       <Link href="/red-zones">Red-Zone Map</Link>
                     </li>
                     <li>

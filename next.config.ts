@@ -110,6 +110,11 @@ const nextConfig: NextConfig = {
         destination: "https://barmatrix.app/:path*",
         permanent: true,
       },
+      {
+        source: "/webinar.html",
+        destination: "/webinar",
+        permanent: true,
+      },
     ];
   },
 };

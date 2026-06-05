@@ -32,7 +32,8 @@ describe("Sentry Next.js wiring", () => {
     assert.match(clientConfig, /initializePostHogClient\(posthog,\s*\{/);
     assert.match(clientConfig, /NEXT_PUBLIC_POSTHOG_KEY:\s*process\.env\.NEXT_PUBLIC_POSTHOG_KEY/);
     assert.match(clientConfig, /sendDefaultPii:\s*false/);
-    assert.match(clientConfig, /tracesSampleRate:\s*0/);
+    assert.match(clientConfig, /tracesSampleRate:\s*1(\.0)?/);
+    assert.match(clientConfig, /tracePropagationTargets:\s*\[/);
     assert.match(clientConfig, /onRouterTransitionStart\s*=\s*Sentry\.captureRouterTransitionStart/);
     assert.doesNotMatch(clientConfig, /replayIntegration|feedbackIntegration|replaysSessionSampleRate|replaysOnErrorSampleRate/);
   });
@@ -50,7 +51,7 @@ describe("Sentry Next.js wiring", () => {
       assert.match(config, /Sentry\.init\(/);
       assert.match(config, /dsn:\s*process\.env\.NEXT_PUBLIC_SENTRY_DSN/);
       assert.match(config, /sendDefaultPii:\s*false/);
-      assert.match(config, /tracesSampleRate:\s*0/);
+      assert.match(config, /tracesSampleRate:\s*1(\.0)?/);
     }
   });
 });

@@ -4,8 +4,17 @@ import { initializePostHogClient } from "./lib/posthog-client";
 
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  environment: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT ?? process.env.NODE_ENV,
   sendDefaultPii: false,
-  tracesSampleRate: 0,
+  // Trial: capture all browser traces to evaluate distributed tracing.
+  // Dial down to ~0.1–0.2 after the trial to control cost.
+  tracesSampleRate: 1.0,
+  // Propagate trace headers to the API so frontend → backend requests
+  // stitch into a single distributed trace.
+  tracePropagationTargets: [
+    "localhost",
+    process.env.NEXT_PUBLIC_API_URL ?? "https://api.barmatrix.app",
+  ],
 });
 
 try {

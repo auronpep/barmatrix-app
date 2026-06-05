@@ -154,9 +154,11 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
   const startedAt = useRef<number>(Date.now());
 
   // Choice-button tasks: the student picks one of item.choices[]; grading is on
-  // selected_choice_id. LABEL_SELECT (pick a fixed label, e.g. Ear/Issue-Sense)
-  // carries choices[] and grades on correct_choice_id, so it MUST render here, not
-  // via STATUS_OPTIONS — omitting it left 7 live drills with no answer controls.
+  // selected_choice_id. LABEL_SELECT (pick a fixed label, e.g. Ear/Issue-Sense) is
+  // one of these — its items carry choices[] and grade on correct_choice_id, so it
+  // MUST render here, not via STATUS_OPTIONS. Omitting it left 7 live drills with no
+  // answer controls (unanswerable). CHOICE_CLASSIFICATION is a multi-select and is
+  // deliberately NOT here — it needs its own UI (no content uses it yet).
   const usesChoices =
     item.task_type === "TRUE_VS_TRUE" ||
     item.task_type === "SURVIVOR_PICK" ||

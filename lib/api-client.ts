@@ -1011,7 +1011,11 @@ export type C3TaskType =
   // survivor count) and SEQUENCE_SELECT (Drill 14.1, next workflow move) are
   // single-choice picks from a fixed option set; both grade on correct_choice_id.
   | "COUNT_SELECT"
-  | "SEQUENCE_SELECT";
+  | "SEQUENCE_SELECT"
+  // MULTI_SELECT (Drills 2.5/13.5/14.5): the full-workflow drills. The item carries
+  // parts[] — several finite sub-answers (answer/phase/band/mechanism), each graded
+  // independently. Keep in sync with api src/lib/c3-drill.ts.
+  | "MULTI_SELECT";
 
 export type C3Skill = "EAR" | "ISSUE_SENSE" | "CUT" | "CLASH" | "CALL";
 export type C3MissedFilter = "NOT_TRUE" | "NOT_RESPONSIVE" | "SURVIVES";
@@ -1019,6 +1023,13 @@ export type C3MissedFilter = "NOT_TRUE" | "NOT_RESPONSIVE" | "SURVIVES";
 export interface C3Choice {
   id: string;
   text: string;
+}
+
+/** One MULTI_SELECT sub-question as shipped to the browser (answer key stripped). */
+export interface C3DrillPartPublic {
+  id: string;
+  prompt: string;
+  choices: C3Choice[];
 }
 
 export interface C3DrillItemPublic {
@@ -1030,6 +1041,8 @@ export interface C3DrillItemPublic {
   prompt: string;
   choice_text?: string;
   choices?: C3Choice[];
+  /** MULTI_SELECT only: the per-item sub-questions to render as choice groups. */
+  parts?: C3DrillPartPublic[];
   skill: C3Skill;
   legal_review_status: "pending" | "approved" | "needs_revision";
   source_status: "authored" | "legacy_candidate" | "licensed" | "unknown";
@@ -1040,6 +1053,15 @@ export interface C3StudentResponse {
   selected_status?: C3Status;
   selected_choice_id?: string;
   selected_choice_statuses?: Record<string, C3Status>;
+  /** MULTI_SELECT only: part_id -> chosen choice id. */
+  selected_parts?: Record<string, string>;
+}
+
+/** Per-part outcome for a MULTI_SELECT item (independent scoring + feedback). */
+export interface C3PartResult {
+  part_id: string;
+  correct: boolean;
+  correct_choice_id: string;
 }
 
 export interface C3Explanation {
@@ -1057,6 +1079,8 @@ export interface C3GradeResult {
   missed_filter: C3MissedFilter | null;
   missed_skill: C3Skill | null;
   explanation: C3Explanation;
+  /** MULTI_SELECT only: independent per-part correctness for student feedback. */
+  part_results?: C3PartResult[];
 }
 
 export interface FoundationsDrill {

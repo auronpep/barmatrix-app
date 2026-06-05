@@ -146,6 +146,8 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
   const [uiState, setUiState] = useState<ItemUiState>("unattempted");
   const [status, setStatus] = useState<C3Status | null>(null);
   const [choiceId, setChoiceId] = useState<string | null>(null);
+  // MULTI_SELECT only: part_id -> chosen choice id (one pick per workflow part).
+  const [partChoices, setPartChoices] = useState<Record<string, string>>({});
   const [grade, setGrade] = useState<C3GradeResult | null>(null);
   const [attemptNumber, setAttemptNumber] = useState(1);
   const [reflection, setReflection] = useState("");
@@ -174,9 +176,18 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
   // inline chips — their choice text is the whole label, so no "id." prefix.
   const compactChoices =
     item.task_type === "COUNT_SELECT" || item.task_type === "SEQUENCE_SELECT";
+  // MULTI_SELECT (full-workflow drills 2.5/13.5/14.5): the item carries parts[],
+  // each an independent finite pick (answer/phase/band/mechanism). All parts must
+  // be answered before submit; each is graded independently (grade.part_results).
+  const usesMulti = item.task_type === "MULTI_SELECT";
+  const itemParts = item.parts ?? [];
   const statusOptions = STATUS_OPTIONS[item.task_type] ?? [];
 
-  const canSubmit = usesChoices ? choiceId !== null : status !== null;
+  const canSubmit = usesMulti
+    ? itemParts.length > 0 && itemParts.every((p) => Boolean(partChoices[p.id]))
+    : usesChoices
+      ? choiceId !== null
+      : status !== null;
 
   const submit = useCallback(async () => {
     if (!canSubmit || submitting) return;
@@ -188,7 +199,11 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
       item_id: item.id,
       attempt_number: attemptNumber,
       time_ms: Math.max(0, Date.now() - started),
-      ...(usesChoices ? { selected_choice_id: choiceId! } : { selected_status: status! }),
+      ...(usesMulti
+        ? { selected_parts: partChoices }
+        : usesChoices
+          ? { selected_choice_id: choiceId! }
+          : { selected_status: status! }),
       ...(attemptNumber >= 2 && reflection.trim()
         ? { reflection_text: reflection.trim() }
         : {}),
@@ -215,7 +230,7 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
     }
   }, [
     canSubmit, submitting, drillId, item.id, item.task_type, attemptNumber,
-    usesChoices, choiceId, status, reflection, slug, token, onGraded,
+    usesChoices, usesMulti, choiceId, status, partChoices, reflection, slug, token, onGraded,
   ]);
 
   const retry = useCallback(() => {
@@ -223,6 +238,7 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
     setGrade(null);
     setStatus(null);
     setChoiceId(null);
+    setPartChoices({});
     setAttemptNumber((n) => n + 1);
     startedAt.current = Date.now();
   }, []);
@@ -248,38 +264,76 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
       )}
 
       {/* Controls */}
-      <div className="mt-4 flex flex-wrap gap-2">
-        {usesChoices
-          ? (item.choices ?? []).map((c) => (
-              <ChoiceButton
-                key={c.id}
-                compact={compactChoices}
-                selected={choiceId === c.id}
-                disabled={graded}
-                correct={graded ? grade?.correct_choice_id === c.id : null}
-                onClick={() => setChoiceId(c.id)}
-              >
-                {compactChoices ? (
-                  c.text
-                ) : (
-                  <>
-                    <span className="font-mono font-semibold">{c.id}.</span> {c.text}
-                  </>
-                )}
-              </ChoiceButton>
-            ))
-          : statusOptions.map((opt) => (
-              <StatusButton
-                key={opt.value}
-                selected={status === opt.value}
-                disabled={graded}
-                correct={graded ? grade?.correct_status === opt.value : null}
-                onClick={() => setStatus(opt.value)}
-              >
-                {opt.label}
-              </StatusButton>
-            ))}
-      </div>
+      {usesMulti ? (
+        <div className="mt-4 space-y-4">
+          {itemParts.map((p) => {
+            const pr = grade?.part_results?.find((r) => r.part_id === p.id);
+            const isAnswer = p.id === "answer";
+            return (
+              <div key={p.id}>
+                <div className="font-mono text-[11px] uppercase tracking-wider text-zinc-600">
+                  {p.prompt}
+                </div>
+                <div className="mt-1.5 flex flex-wrap gap-2">
+                  {p.choices.map((c) => (
+                    <ChoiceButton
+                      key={c.id}
+                      compact={!isAnswer}
+                      selected={partChoices[p.id] === c.id}
+                      disabled={graded}
+                      correct={graded && pr ? pr.correct_choice_id === c.id : null}
+                      onClick={() =>
+                        setPartChoices((prev) => ({ ...prev, [p.id]: c.id }))
+                      }
+                    >
+                      {isAnswer ? (
+                        <>
+                          <span className="font-mono font-semibold">{c.id}.</span> {c.text}
+                        </>
+                      ) : (
+                        c.text
+                      )}
+                    </ChoiceButton>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {usesChoices
+            ? (item.choices ?? []).map((c) => (
+                <ChoiceButton
+                  key={c.id}
+                  compact={compactChoices}
+                  selected={choiceId === c.id}
+                  disabled={graded}
+                  correct={graded ? grade?.correct_choice_id === c.id : null}
+                  onClick={() => setChoiceId(c.id)}
+                >
+                  {compactChoices ? (
+                    c.text
+                  ) : (
+                    <>
+                      <span className="font-mono font-semibold">{c.id}.</span> {c.text}
+                    </>
+                  )}
+                </ChoiceButton>
+              ))
+            : statusOptions.map((opt) => (
+                <StatusButton
+                  key={opt.value}
+                  selected={status === opt.value}
+                  disabled={graded}
+                  correct={graded ? grade?.correct_status === opt.value : null}
+                  onClick={() => setStatus(opt.value)}
+                >
+                  {opt.label}
+                </StatusButton>
+              ))}
+        </div>
+      )}
 
       {error && (
         <p className="mt-3 font-mono text-xs text-amber-700" role="alert">

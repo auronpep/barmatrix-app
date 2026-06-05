@@ -5,7 +5,7 @@
 // the server grades; feedback explains the filter break. No answer key is shown
 // before a submission. Misses are reported up for the lesson-level review.
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   api,
   ApiClientError,
@@ -151,7 +151,11 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
   const [reflection, setReflection] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const startedAt = useRef<number>(Date.now());
+  const startedAt = useRef<number | null>(null);
+
+  useEffect(() => {
+    startedAt.current = Date.now();
+  }, [item.id]);
 
   // Choice-button tasks: the student picks one of item.choices[]; grading is on
   // selected_choice_id. LABEL_SELECT (pick a fixed label, e.g. Ear/Issue-Sense) is
@@ -172,11 +176,12 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
     if (!canSubmit || submitting) return;
     setSubmitting(true);
     setError(null);
+    const started = startedAt.current ?? Date.now();
     const payload: FoundationsAttemptRequest = {
       drill_id: drillId,
       item_id: item.id,
       attempt_number: attemptNumber,
-      time_ms: Math.max(0, Date.now() - startedAt.current),
+      time_ms: Math.max(0, Date.now() - started),
       ...(usesChoices ? { selected_choice_id: choiceId! } : { selected_status: status! }),
       ...(attemptNumber >= 2 && reflection.trim()
         ? { reflection_text: reflection.trim() }

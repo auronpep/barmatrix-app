@@ -9,6 +9,7 @@
         <meta property="og:type" content="website"/>
         <meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'%3E%3Crect width='1200' height='630' fill='%230a0a0a'/%3E%3Crect width='1200' height='12' fill='%23c8102e'/%3E%3Ctext x='100' y='280' font-family='Georgia,serif' font-size='90' font-weight='700' fill='white'%3EBarMatrix.%3C/text%3E%3Ctext x='100' y='370' font-family='Georgia,serif' font-size='52' font-weight='700' fill='%23c8102e' font-style='italic'%3EDiagnose. Repair.%3C/text%3E%3Ctext x='100' y='550' font-family='monospace' font-size='22' fill='%23a39e93' letter-spacing='4'%3E%E2%96%8C SAME-DAY PROMOTION %C2%B7 FLAGSHIP %24999%3C/text%3E%3C/svg%3E"/>
         <meta name="twitter:card" content="summary_large_image"/>
+        <link rel="canonical" href="https://barmatrix.app/campaign.html"/>
         <title>BarMatrix - Same-Day Campaign</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,7 +26,7 @@
     <a href="/app"><button>App</button></a>
     <a href="/about"><button>About</button></a>
   </div>
-  <div class="nav-cta"><a href="/checkout?lp=campaign-index" class="btn btn-sm red">Enroll &rarr;</a></div>
+  <div class="nav-cta"><a href="/checkout?lp=campaign-index" class="btn btn-sm red" data-preserve-attribution="true">Enroll $999 &rarr;</a></div>
 </div></nav>
         <section class="cmp-index-hero"><div class="container">
           <div class="cmp-meta">
@@ -35,7 +36,13 @@
           </div>
           <div class="two-col" style="align-items:end;gap:64px">
             <h1 class="display display-xl" style="margin:0">Twenty ways to sell the same sharp promise.</h1>
-            <p class="body-lg" style="margin:0 0 8px">Each page focuses on a different BarMatrix component, public-safe demonstration, or student pain point. The common claim stays disciplined: diagnose recurring wrong-answer patterns, repair the traps, and use the flagship program when the diagnostic proves the gap.</p>
+            <div>
+              <p class="body-lg" style="margin:0 0 22px">Each page focuses on a different BarMatrix component, public-safe demonstration, or student pain point. The common claim stays disciplined: diagnose recurring wrong-answer patterns, repair the traps, and use the flagship program when the diagnostic proves the gap.</p>
+              <div class="hero-actions">
+                <a href="/diagnostic?lp=campaign-index" class="btn btn-lg ghost" data-preserve-attribution="true">Run free diagnostic first</a>
+                <a href="/checkout?lp=campaign-index" class="btn btn-lg red" data-preserve-attribution="true">Enroll in BarMatrix Flagship - $999 <span class="arrow">&rarr;</span></a>
+              </div>
+            </div>
           </div>
         </div></section>
         <section class="section"><div class="container">
@@ -206,7 +213,21 @@
         <section class="section cmp-dark"><div class="container">
           <h2 class="display display-lg" style="color:#fff;margin:0 0 24px">Run the diagnostic, then enroll.</h2>
           <p style="font-size:19px;line-height:1.5;margin:0 auto 32px;max-width:52ch">The index is built for same-day ad routing: each channel can point to the page that matches its hook, while every page drives to checkout with its own `lp` attribution tag.</p>
-          <a href="/checkout?lp=campaign-index" class="btn btn-lg red">Enroll in BarMatrix Flagship <span class="arrow">&rarr;</span></a>
+          <div class="cmp-claims cmp-claims-compact" aria-label="What BarMatrix is and is not">
+  <div>
+    <strong>BarMatrix is</strong>
+    <span>An MBE multiple-choice diagnostic and repair layer with web access live now. Use it alongside BARBRI, Themis, UWorld, AdaptiBar, Kaplan, or your tutor plan.</span>
+  </div>
+  <div>
+    <strong>BarMatrix is not</strong>
+    <span>A full bar course, essay or performance-test prep, official NCBE material, legal advice, or a promise of any score or exam outcome.</span>
+  </div>
+  <p>Checkout attribution: <code>lp=campaign-index</code>. UTM, partner, campaign, and referral parameters stay attached when present.</p>
+</div>
+          <div class="hero-actions" style="justify-content:center;margin-top:26px">
+            <a href="/checkout?lp=campaign-index" class="btn btn-lg red" data-preserve-attribution="true">Enroll in BarMatrix Flagship - $999 <span class="arrow">&rarr;</span></a>
+            <a href="/diagnostic?lp=campaign-index" class="btn btn-lg ghost" data-preserve-attribution="true" style="color:#fff;border-color:#fff">Run free diagnostic first</a>
+          </div>
         </div></section>
         <footer class="footer"><div class="container">
   <div class="footer-grid">
@@ -217,7 +238,7 @@
     <div><h5>Product</h5><ul>
       <li><a href="/campaign.html">Campaign Pages</a></li>
       <li><a href="/how-it-works">How It Works</a></li>
-      <li><a href="/checkout?lp=footer">Enroll</a></li>
+      <li><a href="/checkout?lp=footer" data-preserve-attribution="true">Enroll</a></li>
       <li><a href="/app">Student App</a></li>
     </ul></div>
     <div><h5>Program</h5><ul>
@@ -236,4 +257,21 @@
   <div class="footer-bottom"><span>&copy; 2026 BarMatrix LLC</span><span>BAR-MTX-V1 &middot; SAME-DAY PROMOTION</span></div>
   <p class="disclaimer">BarMatrix is an independent educational product. It is not affiliated with, endorsed by, sponsored by, or licensed by NCBE, the State Bar of California, or any bar authority. BarMatrix is multiple-choice only and does not replace essay preparation, performance-test preparation, legal advice, or official bar-admission guidance. No score, pass result, or exam outcome is guaranteed. Demonstration scenarios on these pages are original marketing examples and are not official bar-exam questions.</p>
 </div></footer>
+        <script>
+(function () {
+  var keys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "utm_id", "campaign_id", "partner_id", "referral_click_id", "click_id", "gclid", "fbclid", "ttclid", "rdt_cid"];
+  var current = new URLSearchParams(window.location.search);
+  if (!current.toString()) return;
+  document.querySelectorAll("a[data-preserve-attribution='true']").forEach(function (link) {
+    try {
+      var url = new URL(link.getAttribute("href"), window.location.origin);
+      keys.forEach(function (key) {
+        var value = current.get(key);
+        if (value && !url.searchParams.has(key)) url.searchParams.set(key, value);
+      });
+      link.setAttribute("href", url.pathname + url.search + url.hash);
+    } catch (error) {}
+  });
+}());
+</script>
         </body></html>

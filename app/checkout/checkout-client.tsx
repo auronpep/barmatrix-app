@@ -11,17 +11,51 @@ import {
 import { PRICING, DISCLAIMER, CAPACITY_COPY } from "@/lib/copy";
 
 type Phase = "ready" | "redirecting" | "error" | "capacity";
+type AttributionState = {
+  lp: string;
+  source: string;
+  campaign: string;
+  partner: string;
+  referral: string;
+};
 
 export default function CheckoutClient() {
   const [phase, setPhase] = useState<Phase>("ready");
   const [error, setError] = useState<string | null>(null);
+  const [attribution, setAttribution] = useState<AttributionState>({
+    lp: "direct",
+    source: "none",
+    campaign: "none",
+    partner: "none",
+    referral: "none",
+  });
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    const lp = params.get("lp") ?? "direct";
+    const timeouts: number[] = [];
+    timeouts.push(
+      window.setTimeout(
+        () =>
+          setAttribution({
+            lp,
+            source: params.get("utm_source") ?? "none",
+            campaign:
+              params.get("utm_campaign") ??
+              params.get("campaign_id") ??
+              params.get("campaign") ??
+              (lp !== "direct" ? `lp_${lp}` : "none"),
+            partner: params.get("partner_id") ?? "none",
+            referral:
+              params.get("referral_click_id") ?? params.get("click_id") ?? "none",
+          }),
+        0,
+      ),
+    );
     if (params.get("capacity") === "reached" || params.get("status") === "waitlist") {
-      const timeout = window.setTimeout(() => setPhase("capacity"), 0);
-      return () => window.clearTimeout(timeout);
+      timeouts.push(window.setTimeout(() => setPhase("capacity"), 0));
     }
+    return () => timeouts.forEach((timeout) => window.clearTimeout(timeout));
   }, []);
 
   const enroll = async (plan: PaymentPlan) => {
@@ -87,6 +121,17 @@ export default function CheckoutClient() {
             Forensics, Red-Zone Map, assigned drills, boot camp modules, timed
             mixed sets, and full web dashboard access.
           </p>
+          <div
+            className="hero-actions"
+            style={{ marginTop: 32 }}
+          >
+            <Link href="/diagnostic" className="btn btn-lg ghost">
+              Run free diagnostic first
+            </Link>
+            <Link href="/account" className="btn btn-lg ghost">
+              Already enrolled? Open account
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -96,6 +141,7 @@ export default function CheckoutClient() {
             <div className="section-rule">
               <span className="label">▌ Choose Your Plan</span>
             </div>
+            <CheckoutContextPanel attribution={attribution} />
 
             <div
               style={{ display: "flex", flexDirection: "column", gap: 24 }}
@@ -129,7 +175,7 @@ export default function CheckoutClient() {
                     >
                       {phase === "redirecting"
                         ? "Redirecting to Stripe…"
-                        : "Continue · Pay $999 →"}
+                        : "Enroll in BarMatrix Flagship - $999 →"}
                     </button>
                   </div>
 
@@ -168,7 +214,7 @@ export default function CheckoutClient() {
                     >
                       {phase === "redirecting"
                         ? "Redirecting to Stripe…"
-                        : "Continue · Payment plan →"}
+                        : "Enroll with payment plan - $500 today →"}
                     </button>
                   </div>
                 </>
@@ -203,8 +249,8 @@ export default function CheckoutClient() {
                     color: "var(--ink-soft)",
                     margin: 0,
                   }}
-                >
-                  If this persists, email{" "}
+                  >
+                    If this persists, email{" "}
                   <Link
                     href="mailto:support@barmatrix.app"
                     style={{
@@ -214,10 +260,14 @@ export default function CheckoutClient() {
                   >
                     support@barmatrix.app
                   </Link>{" "}
-                  and we&apos;ll resolve it.
+                  and we&apos;ll resolve it. You are not enrolled or charged by
+                  BarMatrix unless Stripe shows a completed checkout and returns
+                  you to the success page.
                 </p>
               </div>
             )}
+
+            <CheckoutFaqPanel />
 
             <p
               style={{
@@ -234,6 +284,146 @@ export default function CheckoutClient() {
         </div>
       </section>
     </>
+  );
+}
+
+function CheckoutContextPanel({
+  attribution,
+}: {
+  attribution: AttributionState;
+}) {
+  return (
+    <div
+      className="info-panel"
+      style={{ marginBottom: 24, background: "var(--paper)" }}
+    >
+      <div className="eyebrow-strong" style={{ marginBottom: 14 }}>
+        ▌ BEFORE YOU ENROLL
+      </div>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+          gap: 18,
+        }}
+      >
+        <div>
+          <h2
+            className="serif"
+            style={{
+              fontSize: 24,
+              lineHeight: 1.15,
+              margin: "0 0 10px",
+            }}
+          >
+            What BarMatrix is
+          </h2>
+          <p style={{ margin: 0, color: "var(--ink-soft)", lineHeight: 1.55 }}>
+            A web-live MBE multiple-choice diagnostic and repair layer. Use it
+            alongside BARBRI, Themis, UWorld, AdaptiBar, Kaplan, or a tutor.
+          </p>
+        </div>
+        <div>
+          <h2
+            className="serif"
+            style={{
+              fontSize: 24,
+              lineHeight: 1.15,
+              margin: "0 0 10px",
+            }}
+          >
+            What BarMatrix is not
+          </h2>
+          <p style={{ margin: 0, color: "var(--ink-soft)", lineHeight: 1.55 }}>
+            Not a full bar course, essay or performance-test prep, official bar
+            material, legal advice, or any guarantee of a score or result.
+          </p>
+        </div>
+      </div>
+      <div
+        className="mono"
+        style={{
+          marginTop: 18,
+          paddingTop: 14,
+          borderTop: "1px solid var(--rule-soft)",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 14,
+          fontSize: 11,
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          color: "var(--muted)",
+        }}
+      >
+        <span>lp: {attribution.lp}</span>
+        <span>source: {attribution.source}</span>
+        <span>campaign: {attribution.campaign}</span>
+        <span>partner: {attribution.partner}</span>
+        <span>referral: {attribution.referral}</span>
+      </div>
+    </div>
+  );
+}
+
+function CheckoutFaqPanel() {
+  const rows = [
+    {
+      q: "Price",
+      a: "BarMatrix Flagship is $999. The payment plan is $500 today and $499 in 30 days.",
+    },
+    {
+      q: "Refund window",
+      a: "You may request a full refund within 3 days of enrollment if the Terms refund limits have not been exceeded.",
+    },
+    {
+      q: "Course companion",
+      a: "BarMatrix is designed to sit beside your full course. Keep using your essay, performance-test, lecture, and outline plan.",
+    },
+    {
+      q: "Checkout recovery",
+      a: "If Stripe completes but access does not appear, open Account from the same email or contact support with your Stripe receipt.",
+    },
+  ];
+
+  return (
+    <div className="info-panel" style={{ marginTop: 32 }}>
+      <div className="eyebrow-strong" style={{ marginBottom: 14 }}>
+        ▌ CHECKOUT FAQ
+      </div>
+      <div style={{ display: "grid", gap: 14 }}>
+        {rows.map((row) => (
+          <div
+            key={row.q}
+            style={{
+              borderTop: "1px solid var(--rule-soft)",
+              paddingTop: 14,
+            }}
+          >
+            <h2
+              className="serif"
+              style={{
+                fontSize: 22,
+                lineHeight: 1.15,
+                margin: "0 0 6px",
+              }}
+            >
+              {row.q}
+            </h2>
+            <p style={{ margin: 0, color: "var(--ink-soft)", lineHeight: 1.55 }}>
+              {row.a}
+            </p>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 22, display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <Link href="/terms" className="btn ghost">
+          Terms
+        </Link>
+        <Link href="/account" className="btn ghost">
+          Checkout recovery
+        </Link>
+      </div>
+    </div>
   );
 }
 

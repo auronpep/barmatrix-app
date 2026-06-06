@@ -53,6 +53,9 @@ export interface CheckoutSessionRequest {
   payment_plan: PaymentPlan;
   partner_id?: string | null;
   referral_click_id?: string | null;
+  // The free diagnostic the buyer just took, so fulfillment can claim it onto
+  // their new student record (their Red-Zone Map is waiting on day one).
+  diagnostic_id?: string | null;
   success_url?: string;
   cancel_url?: string;
 }
@@ -61,6 +64,8 @@ export interface CheckoutStatusResponse {
   fulfilled: boolean;
   purchaseId?: string;
   status?: string;
+  diagnostic_completed?: boolean;
+  next_step?: "foundations" | "diagnostic";
 }
 
 export interface CheckoutRecoveryResponse {
@@ -90,6 +95,29 @@ export interface WebinarLeadRequest {
 }
 
 export interface WebinarLeadResponse {
+  ok: true;
+  lead_id: string | null;
+  status: "created" | "updated" | "ignored";
+  message: string;
+}
+
+export interface DiagnosticLeadRequest {
+  email: string;
+  diagnostic_id?: string | null;
+  full_name?: string | null;
+  jurisdiction?: string | null;
+  source_page?: string | null;
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
+  utm_content?: string | null;
+  utm_term?: string | null;
+  partner_id?: string | null;
+  referral_click_id?: string | null;
+  website?: string | null;
+}
+
+export interface DiagnosticLeadResponse {
   ok: true;
   lead_id: string | null;
   status: "created" | "updated" | "ignored";
@@ -212,12 +240,30 @@ export interface DiagnosticTrapPattern {
   severity: "high" | "medium";
 }
 
+export interface DiagnosticPlacementLevel {
+  level: number;
+  label: string;
+  description: string;
+  route: string[];
+}
+
+export interface DiagnosticRecommendation {
+  level: DiagnosticPlacementLevel;
+  top_leak: DiagnosticTrapPattern | null;
+  next_step: {
+    primary_label: string;
+    href: string;
+    copy: string;
+  };
+}
+
 export interface DiagnosticResultsResponse {
   diagnostic_id: string;
   answered: number;
   summary: DiagnosticSummary;
   red_zones: { by_dimension: Record<string, DiagnosticRedZoneEntry[]> };
   top_trap_patterns: DiagnosticTrapPattern[];
+  recommendation: DiagnosticRecommendation;
 }
 
 export type KnowledgeComponent =
@@ -1489,6 +1535,12 @@ export const api = {
 
   createWebinarLead: (payload: WebinarLeadRequest) =>
     request<WebinarLeadResponse>("/api/webinar/leads", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  createDiagnosticLead: (payload: DiagnosticLeadRequest) =>
+    request<DiagnosticLeadResponse>("/api/diagnostic/lead", {
       method: "POST",
       body: JSON.stringify(payload),
     }),

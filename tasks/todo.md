@@ -3106,3 +3106,45 @@
 - `Vary: Origin` is not live-verified because Hostinger/hcdn strips or overwrites it at the edge. The verified mitigation is `Cache-Control: no-store` on API responses.
 - Red Zone remains out of scope by request because another session is reviewing/debugging it.
 - C3 Coach/Mastery measured behavior remains blocked on authored C3 annotations and answer-choice mold tags.
+
+# Ambassador Dashboard Entry And Diagnostic Recommendation
+
+## Scope
+
+- Add the Day-1 Ambassador dashboard entry into The Method.
+- Replace generic post-diagnostic result CTAs with one recommendation CTA using level plus the top red-zone/remediation signal.
+- Keep app-repo changes only and reuse existing dashboard, diagnostic, foundations, and red-zone surfaces.
+
+## Plan
+
+- [x] Read the A3 work order and Day-1 experience contract.
+- [x] Read the local Next.js App Router/link/client-component docs before editing.
+- [x] Create `feat/ambassador-dashboard` from `origin/main`.
+- [x] Add a dashboard Overview Method entry that routes through Foundations `next_slug`.
+- [x] Suppress the competing empty-dashboard diagnostic CTA while the Method card owns Day 1.
+- [x] Add The Method to dashboard program navigation.
+- [x] Replace free diagnostic results hub/enroll CTAs with a single recommendation CTA.
+- [x] Replace placement diagnostic results hub CTA with a level/top-remediation recommendation CTA.
+- [x] Add focused regression coverage.
+- [x] Run lint and build with `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` set.
+
+## Review
+
+- Dashboard Overview now shows a prominent `Start The Method` / `Resume The Method` card whenever Foundations progress is incomplete.
+- The dashboard Method CTA uses `progress.next_slug`, falling back to the first lesson and then `lesson-01`.
+- Fresh enrolled empty dashboards no longer show the diagnostic banner CTA while the Method card is pending or visible.
+- The dashboard program row includes `The Method` as the first program link.
+- `/diagnostic/[session]/results` now renders `Your top leak is X - start here.` with level-aware routing and support for optional API recommendation/next-step fields.
+- `/diagnostic/session/[sessionId]/results` now routes from `placement_level` and the top remediation target instead of sending users to `/dashboard`.
+- No new daily-plan table or state library was added.
+
+## Verification
+
+- Focused tests passed:
+  - `node --test tests\ambassador-dashboard-entry.test.ts tests\diagnostic-results-enrolled-cta.test.ts`
+- `git diff --check` passed for changed paths with only normal CRLF warnings.
+- `npm run lint` passed.
+- `npm run build` passed with `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` set.
+- Broad `node --test tests\*.test.ts` still has two unrelated failures in `tests\static-landing-pages.test.ts` against untouched `public/lp-boot-camp.html` static landing markup.
+- App test sweep excluding the unrelated static landing-page test passed 67/67:
+  - `node --test <all tests/*.test.ts except static-landing-pages.test.ts>`

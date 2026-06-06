@@ -15,6 +15,7 @@ import {
   type PlacementSubjectAccuracy,
   type PlacementRemediationTarget,
 } from "@/lib/api-client";
+import { useFoundations } from "@/lib/use-foundations";
 import { userFacingResourceError } from "@/lib/user-facing-errors";
 
 const LEVEL_META: Record<
@@ -72,6 +73,11 @@ export default function PlacementResultsPage({
   const { sessionId } = use(params);
   const [results, setResults] = useState<PlacementResults | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const foundations = useFoundations();
+  const methodSlug =
+    foundations.data?.progress.next_slug ??
+    foundations.data?.lessons[0]?.slug ??
+    "lesson-01";
 
   useEffect(() => {
     let active = true;
@@ -115,7 +121,7 @@ export default function PlacementResultsPage({
           {results.top_remediation_targets.length > 0 && (
             <RemediationTargets targets={results.top_remediation_targets} />
           )}
-          <ProgramCta />
+          <ProgramCta methodSlug={methodSlug} results={results} />
         </>
       )}
 
@@ -327,30 +333,57 @@ function RemediationTargets({
   );
 }
 
-function ProgramCta() {
+function ProgramCta({
+  methodSlug,
+  results,
+}: {
+  methodSlug: string;
+  results: PlacementResults;
+}) {
+  const nextStep = placementNextStep(results.placement_level, methodSlug);
+  const topLeak = placementTopLeak(results);
   return (
     <div className="mt-10 rounded-lg border border-zinc-900 bg-zinc-900 p-8 text-white">
       <p className="font-mono text-xs uppercase tracking-wider text-red-400">
-        Next step
+        Recommended next step - L{results.placement_level}
       </p>
       <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
-        Start your program at the right level.
+        Your top leak is {topLeak} - start here.
       </h2>
       <p className="mt-3 text-zinc-300">
-        Your placement identifies exactly where to enter the C3 method so you
-        build the right foundations without wasting time on what you already
-        know.
+        {results.placement_label}. {results.placement_description}
       </p>
-      <div className="mt-6 flex flex-wrap gap-3">
-        <Link href="/dashboard" className="btn red">
-          Start your program →
-        </Link>
-        <Link href="/how-it-works" className="btn ghost border-zinc-600 text-white">
-          How it works
-        </Link>
-      </div>
+      <p className="mt-3 font-mono text-[11px] uppercase tracking-wider text-zinc-400">
+        Route: {nextStep.focus}
+      </p>
+      <Link href={nextStep.href} className="btn red mt-6">
+        {nextStep.label} <span aria-hidden>→</span>
+      </Link>
     </div>
   );
+}
+
+function placementNextStep(level: number, methodSlug: string) {
+  if (level >= 4) {
+    return { href: "/timed-sets", label: "Start timed refinement", focus: "Timed refinement" };
+  }
+  if (level >= 3) {
+    return { href: "/red-zones", label: "Start red-zone repair", focus: "Red-zone repair" };
+  }
+  return {
+    href: `/foundations/${methodSlug}`,
+    label: "Start The Method",
+    focus: "The Method",
+  };
+}
+
+function placementTopLeak(results: PlacementResults): string {
+  const target = results.top_remediation_targets[0];
+  if (target) return `${target.subject}: ${target.label}`;
+  const weakestSubject = results.subject_accuracy
+    .filter((subject) => subject.total > 0)
+    .sort((a, b) => a.correct / a.total - b.correct / b.total)[0];
+  return weakestSubject ? weakestSubject.subject : "The Method";
 }
 
 function ResultsLoading() {

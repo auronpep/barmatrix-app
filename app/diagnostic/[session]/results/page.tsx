@@ -20,8 +20,7 @@ import {
   trackDiagnosticCompletedOnce,
   trackRedZonePreviewViewedOnce,
 } from "@/lib/analytics";
-import { PRICING } from "@/lib/copy";
-import { useDashboard, type DashboardState } from "@/lib/use-dashboard";
+import { useFoundations } from "@/lib/use-foundations";
 import { userFacingResourceError } from "@/lib/user-facing-errors";
 
 const DIMENSION_LABELS: Record<string, string> = {
@@ -52,6 +51,58 @@ function humanizeTag(tag: string): string {
     .join(" ");
 }
 
+type RecommendedStep = {
+  href: string;
+  label: string;
+  focus: string;
+};
+
+type BuiltRecommendation = {
+  href: string;
+  ctaLabel: string;
+  levelBadge: string;
+  levelLabel: string;
+  levelDescription: string;
+  topLeak: string;
+  focus: string;
+};
+
+const LEVEL_FALLBACKS: Record<
+  number,
+  { label: string; description: string; focus: string; ctaLabel: string }
+> = {
+  0: {
+    label: "L0 - Start from first principles",
+    description: "Begin with the foundations so the later repair work has a stable base.",
+    focus: "The Method",
+    ctaLabel: "Start The Method",
+  },
+  1: {
+    label: "L1 - Method foundations",
+    description: "Start with the core C3 workflow before pushing timed mixed practice.",
+    focus: "The Method",
+    ctaLabel: "Start The Method",
+  },
+  2: {
+    label: "L2 - Build the method",
+    description: "You have traction, but the diagnostic shows recurring misses to repair.",
+    focus: "The Method",
+    ctaLabel: "Start The Method",
+  },
+  3: {
+    label: "L3 - Targeted repair",
+    description: "Your best return is targeted work on the trap this diagnostic surfaced.",
+    focus: "Red-zone repair",
+    ctaLabel: "Start red-zone repair",
+  },
+  4: {
+    label: "L4 - Exam-ready refinement",
+    description: "Move into timed refinement while keeping this top leak on the board.",
+    focus: "Timed refinement",
+    ctaLabel: "Start timed refinement",
+  },
+};
+
 export default function DiagnosticResultsPage({
   params,
 }: {
@@ -61,7 +112,11 @@ export default function DiagnosticResultsPage({
   const completedEventRef = useRef<string | null>(null);
   const [results, setResults] = useState<DiagnosticResultsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const dashboard = useDashboard();
+  const foundations = useFoundations();
+  const methodSlug =
+    foundations.data?.progress.next_slug ??
+    foundations.data?.lessons[0]?.slug ??
+    "lesson-01";
 
   useEffect(() => {
     let active = true;
@@ -137,7 +192,10 @@ export default function DiagnosticResultsPage({
           <SummaryCard results={results} />
           <TopTrapPatterns patterns={results.top_trap_patterns} />
           <DimensionBreakdown byDimension={results.red_zones.by_dimension} />
-          <ResultsCta dashboard={dashboard} />
+          <RecommendationCta
+            methodSlug={methodSlug}
+            results={results}
+          />
         </>
       )}
 
@@ -294,118 +352,172 @@ function DimensionBreakdown({
   );
 }
 
-function ResultsCta({ dashboard }: { dashboard: DashboardState }) {
-  if (dashboard.data?.enrolled === true) {
-    return <EnrolledCta />;
-  }
-
-  if (dashboard.signedIn && dashboard.loading) {
-    return (
-      <div className="mt-10 rounded-lg border border-zinc-300 bg-white p-8">
-        <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-          Next step · Account
-        </p>
-        <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
-          Checking your enrollment...
-        </h2>
-        <p className="mt-3 text-zinc-600">
-          Once your account status loads, this screen will point you to the right
-          repair path.
-        </p>
-      </div>
-    );
-  }
-
-  if (dashboard.signedIn && dashboard.error) {
-    return <AccountCta />;
-  }
-
-  return <EnrollCta />;
+function RecommendationCta({
+  methodSlug,
+  results,
+}: {
+  methodSlug: string;
+  results: DiagnosticResultsResponse;
+}) {
+  return <RecommendationCard rec={buildDiagnosticRecommendation(results, methodSlug)} />;
 }
 
-function EnrolledCta() {
+function RecommendationCard({ rec }: { rec: BuiltRecommendation }) {
   return (
     <div className="mt-10 rounded-lg border border-zinc-900 bg-zinc-900 p-8 text-white">
       <p className="font-mono text-xs uppercase tracking-wider text-red-400">
-        Next step · Keep repairing
+        Recommended next step - {rec.levelBadge}
       </p>
       <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
-        Your diagnostic is ready. Keep working from your dashboard.
+        Your top leak is {rec.topLeak} - start here.
       </h2>
       <p className="mt-3 text-zinc-300">
-        Use your active BarMatrix access to turn this preview into saved red-zone
-        repair, assigned drills, and ongoing forensics.
+        {rec.levelLabel}. {rec.levelDescription}
       </p>
-      <div className="mt-6 flex flex-wrap gap-3">
-        <Link href="/dashboard" className="btn red">
-          Open dashboard
-        </Link>
-        <Link
-          href="/red-zones"
-          className="btn ghost border-zinc-600 text-white"
-        >
-          Review red zones
-        </Link>
-      </div>
+      <p className="mt-3 font-mono text-[11px] uppercase tracking-wider text-zinc-400">
+        Route: {rec.focus}
+      </p>
+      <Link href={rec.href} className="btn red mt-6">
+        {rec.ctaLabel} <span aria-hidden>→</span>
+      </Link>
     </div>
   );
 }
 
-function AccountCta() {
-  return (
-    <div className="mt-10 rounded-lg border border-zinc-900 bg-zinc-900 p-8 text-white">
-      <p className="font-mono text-xs uppercase tracking-wider text-red-400">
-        Next step · Account
-      </p>
-      <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
-        Open your dashboard to continue.
-      </h2>
-      <p className="mt-3 text-zinc-300">
-        We could not confirm enrollment from this screen, but your signed-in
-        dashboard can route you to the right next step.
-      </p>
-      <div className="mt-6 flex flex-wrap gap-3">
-        <Link href="/dashboard" className="btn red">
-          Open dashboard
-        </Link>
-        <Link
-          href="/pricing"
-          className="btn ghost border-zinc-600 text-white"
-        >
-          View pricing
-        </Link>
-      </div>
-    </div>
-  );
+function buildDiagnosticRecommendation(
+  results: DiagnosticResultsResponse,
+  methodSlug: string,
+): BuiltRecommendation {
+  const level = resolveRecommendationLevel(results);
+  const fallback = LEVEL_FALLBACKS[level] ?? LEVEL_FALLBACKS[0];
+  const explicitStep = resolveExplicitStep(results, methodSlug);
+  const step = explicitStep ?? recommendedStepForLevel(level, methodSlug, results);
+  const apiRecommendation = results.recommendation;
+  return {
+    href: step.href,
+    ctaLabel: step.label,
+    levelBadge: `L${level}`,
+    levelLabel:
+      apiRecommendation?.label ??
+      apiRecommendation?.level_label ??
+      apiRecommendation?.placement_label ??
+      results.placement_label ??
+      fallback.label,
+    levelDescription:
+      apiRecommendation?.description ??
+      apiRecommendation?.level_description ??
+      apiRecommendation?.placement_description ??
+      results.placement_description ??
+      fallback.description,
+    topLeak: resolveTopLeak(results),
+    focus: step.focus,
+  };
 }
 
-function EnrollCta() {
-  return (
-    <div className="mt-10 rounded-lg border border-zinc-900 bg-zinc-900 p-8 text-white">
-      <p className="font-mono text-xs uppercase tracking-wider text-red-400">
-        Next step · Enroll
-      </p>
-      <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
-        Save your Red-Zone Map and start closing these traps.
-      </h2>
-      <p className="mt-3 text-zinc-300">
-        Enrolling saves this map to your account and unlocks your repair drills,
-        the full 2,400-question forensic bank, Wrong Answer Forensics on every
-        miss, and full web access.
-      </p>
-      <div className="mt-6 flex flex-wrap gap-3">
-        <Link href="/pricing" className="btn red">
-          Enroll for {PRICING.priceLabel}
-        </Link>
-        <Link
-          href="/how-it-works"
-          className="btn ghost border-zinc-600 text-white"
-        >
-          How it works
-        </Link>
-      </div>
-    </div>
+function resolveRecommendationLevel(results: DiagnosticResultsResponse): number {
+  const fromApi = normalizeLevel(
+    results.recommendation?.level ??
+      results.recommendation?.placement_level ??
+      results.level ??
+      results.placement_level,
   );
+  if (fromApi != null) return fromApi;
+  const pct = results.summary.score_pct;
+  if (pct >= 85) return 4;
+  if (pct >= 68) return 3;
+  if (pct >= 50) return 2;
+  if (pct >= 30) return 1;
+  return 0;
+}
+
+function normalizeLevel(value: number | string | undefined): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return Math.max(0, Math.min(4, Math.trunc(value)));
+  }
+  if (typeof value !== "string") return null;
+  const match = value.match(/[0-4]/);
+  return match ? Number(match[0]) : null;
+}
+
+function resolveExplicitStep(
+  results: DiagnosticResultsResponse,
+  methodSlug: string,
+): RecommendedStep | null {
+  const nextStep = results.recommendation?.next_step;
+  if (!nextStep) return null;
+  const href = normalizeInternalHref(nextStep.href) ?? slugToMethodHref(nextStep.slug);
+  if (!href) return null;
+  return {
+    href,
+    label: nextStep.label ?? "Start here",
+    focus: routeFocusFromHref(href, methodSlug),
+  };
+}
+
+function recommendedStepForLevel(
+  level: number,
+  methodSlug: string,
+  results: DiagnosticResultsResponse,
+): RecommendedStep {
+  if (level >= 4) {
+    return { href: "/timed-sets", label: "Start timed refinement", focus: "Timed refinement" };
+  }
+  if (level >= 3) {
+    return {
+      href: redZoneDetailHref(results) ?? "/red-zones",
+      label: "Start red-zone repair",
+      focus: "Red-zone repair",
+    };
+  }
+  return {
+    href: `/foundations/${methodSlug}`,
+    label: "Start The Method",
+    focus: "The Method",
+  };
+}
+
+function normalizeInternalHref(href: string | undefined): string | null {
+  if (!href || !href.startsWith("/")) return null;
+  if (href.startsWith("//")) return null;
+  return href;
+}
+
+function slugToMethodHref(slug: string | undefined): string | null {
+  if (!slug) return null;
+  return `/foundations/${encodeURIComponent(slug)}`;
+}
+
+function routeFocusFromHref(href: string, methodSlug: string): string {
+  if (href === `/foundations/${methodSlug}` || href.startsWith("/foundations")) {
+    return "The Method";
+  }
+  if (href.startsWith("/red-zones")) return "Red-zone repair";
+  if (href.startsWith("/timed-sets")) return "Timed refinement";
+  return "Recommended path";
+}
+
+function resolveTopLeak(results: DiagnosticResultsResponse): string {
+  const topPattern = results.top_trap_patterns[0];
+  if (topPattern) return topPattern.label || humanizeTag(topPattern.tag);
+  const fallbackZone = firstRedZone(results);
+  if (fallbackZone) return humanizeTag(fallbackZone.tag);
+  return results.summary.correct === results.summary.total
+    ? "timed refinement"
+    : "The Method";
+}
+
+function firstRedZone(results: DiagnosticResultsResponse): DiagnosticRedZoneEntry | null {
+  for (const zones of Object.values(results.red_zones.by_dimension)) {
+    const first = zones[0];
+    if (first) return first;
+  }
+  return null;
+}
+
+function redZoneDetailHref(results: DiagnosticResultsResponse): string | null {
+  const pattern = results.top_trap_patterns[0];
+  if (!pattern) return null;
+  return `/red-zones/${encodeURIComponent(pattern.dimension)}/${encodeURIComponent(pattern.tag)}`;
 }
 
 function NoSessionPanel() {

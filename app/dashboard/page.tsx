@@ -71,8 +71,11 @@ export default function DashboardPage() {
   const nextDrill = buildNextDrill(data?.assigned_drills?.[0] ?? null, weakestZone);
   const recent = data?.recent_attempts ?? [];
   const hasData = zones.length > 0 || recent.length > 0;
+  const methodEntryPending =
+    foundations.loading ||
+    (foundations.data != null && !foundations.data.progress.complete);
 
-  const banner = resolveBanner(dash, hasData);
+  const banner = resolveBanner(dash, hasData, methodEntryPending);
 
   return (
     <section className="mx-auto max-w-7xl px-6 py-10 sm:py-14">
@@ -94,8 +97,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {foundations.signedIn &&
-        foundations.data &&
+      {foundations.data &&
         !foundations.data.progress.complete && (
           <MethodGate data={foundations.data} />
         )}
@@ -171,6 +173,7 @@ type Banner =
 function resolveBanner(
   dash: ReturnType<typeof useDashboard>,
   hasData: boolean,
+  methodEntryPending: boolean,
 ): Banner {
   if (dash.loading) return null;
   if (!dash.signedIn) {
@@ -192,7 +195,7 @@ function resolveBanner(
         : { href: "/checkout", label: "Enroll now" },
     };
   }
-  if (dash.data?.enrolled && !hasData) {
+  if (dash.data?.enrolled && !hasData && !methodEntryPending) {
     return {
       tone: "info",
       text: "You're enrolled. Take the diagnostic to build your Red-Zone Map and unlock targeted drills.",
@@ -209,17 +212,18 @@ function MethodGate({ data }: { data: FoundationsOutline }) {
   const p = data.progress;
   const started = p.lessons_completed > 0;
   const resumeSlug = p.next_slug ?? data.lessons[0]?.slug ?? "lesson-01";
+  const methodHref = `/foundations/${resumeSlug}`;
   return (
     <section className="mt-6 border-2 border-zinc-900 bg-zinc-950 p-6 text-white">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-2xl">
           <p className="font-mono text-xs uppercase tracking-wider text-red-300">
-            Start Here — The Method
+            Dashboard entry - The Method
           </p>
           <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
             {started
-              ? "Finish the method before you go deep on drills."
-              : "Learn the method the whole platform runs on."}
+              ? "Resume The Method before you go deep on drills."
+              : "Start The Method with Lesson 1."}
           </h2>
           <p className="mt-3 text-sm leading-7 text-zinc-200">
             {data.tagline}
@@ -232,10 +236,10 @@ function MethodGate({ data }: { data: FoundationsOutline }) {
           </p>
         </div>
         <Link
-          href={`/foundations/${started ? resumeSlug : "lesson-01"}`}
-          className="rounded-md bg-red-700 px-6 py-3 text-sm font-medium text-white hover:bg-red-600"
+          href={methodHref}
+          className="btn btn-lg red bg-red-700 text-white hover:bg-red-600"
         >
-          {started ? "Resume the method" : "Start Lesson 1"} <span aria-hidden>→</span>
+          {started ? "Resume The Method" : "Start The Method"} <span aria-hidden>→</span>
         </Link>
       </div>
       <Link

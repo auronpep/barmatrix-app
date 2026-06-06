@@ -212,12 +212,37 @@ export interface DiagnosticTrapPattern {
   severity: "high" | "medium";
 }
 
+export interface DiagnosticRecommendationNextStep {
+  label?: string;
+  href?: string;
+  slug?: string;
+}
+
+export interface DiagnosticRecommendation {
+  level?: number | string;
+  placement_level?: number | string;
+  label?: string;
+  level_label?: string;
+  placement_label?: string;
+  description?: string;
+  level_description?: string;
+  placement_description?: string;
+  entry_route?: string[];
+  next_step?: DiagnosticRecommendationNextStep;
+}
+
 export interface DiagnosticResultsResponse {
   diagnostic_id: string;
   answered: number;
   summary: DiagnosticSummary;
   red_zones: { by_dimension: Record<string, DiagnosticRedZoneEntry[]> };
   top_trap_patterns: DiagnosticTrapPattern[];
+  recommendation?: DiagnosticRecommendation;
+  level?: number | string;
+  placement_level?: number | string;
+  placement_label?: string;
+  placement_description?: string;
+  entry_route?: string[];
 }
 
 export type KnowledgeComponent =

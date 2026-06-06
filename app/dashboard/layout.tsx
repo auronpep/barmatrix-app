@@ -29,6 +29,7 @@ const VIEW_TABS: readonly NavItem[] = [
 // so they carry no active state. Every href is a real route with a page.tsx
 // (no /subjects — it has only per-subject sub-pages, no index, so it 404s).
 const PROGRAM_LINKS: readonly NavItem[] = [
+  { href: "/foundations", label: "The Method" },
   { href: "/tensions", label: "Tension Map" },
   { href: "/traps", label: "Trap Taxonomy" },
   { href: "/practice", label: "Practice" },

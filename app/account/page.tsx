@@ -30,9 +30,14 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   const checkoutSessionId = sp.checkout_session_id ?? sp.session_id ?? null;
 
   let nextStep: "foundations" | "diagnostic" | null = null;
-  if (checkoutSessionId) {
+  if (isWelcome && checkoutSessionId) {
     try {
-      const status = await api.getCheckoutStatus(checkoutSessionId);
+      const status = await Promise.race([
+        api.getCheckoutStatus(checkoutSessionId),
+        new Promise<never>((_, rej) =>
+          setTimeout(() => rej(new Error("timeout")), 3000),
+        ),
+      ]);
       nextStep = status.next_step ?? null;
     } catch {
       nextStep = null;

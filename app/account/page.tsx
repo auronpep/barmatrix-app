@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { api } from "@/lib/api-client";
 import { WELCOME } from "@/lib/copy";
 import {
   AccountAccessPanel,
@@ -28,11 +29,21 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   const isWelcome = sp.welcome === "1";
   const checkoutSessionId = sp.checkout_session_id ?? sp.session_id ?? null;
 
+  let nextStep: "foundations" | "diagnostic" | null = null;
+  if (checkoutSessionId) {
+    try {
+      const status = await api.getCheckoutStatus(checkoutSessionId);
+      nextStep = status.next_step ?? null;
+    } catch {
+      nextStep = null;
+    }
+  }
+
   return (
     <section className="mx-auto max-w-5xl px-6 py-16 sm:py-20">
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div>
-          {isWelcome ? <WelcomePanel /> : <AccountAccessPanel />}
+          {isWelcome ? <WelcomePanel nextStep={nextStep} /> : <AccountAccessPanel />}
           <EnrollmentRecoveryPanel checkoutSessionId={checkoutSessionId} />
           <BillingPanel checkoutSessionId={checkoutSessionId} />
         </div>
@@ -48,7 +59,17 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   );
 }
 
-function WelcomePanel() {
+function WelcomePanel({
+  nextStep,
+}: {
+  nextStep: "foundations" | "diagnostic" | null;
+}) {
+  const primary =
+    nextStep === "foundations"
+      ? { href: "/foundations", label: "Start with The Method" }
+      : nextStep === "diagnostic"
+        ? { href: "/diagnostic", label: "Take the diagnostic now" }
+        : WELCOME.primaryCta;
   return (
     <div className="rounded-lg border border-zinc-300 bg-white p-8 shadow-sm sm:p-10">
       <p className="font-mono text-xs uppercase tracking-wider text-emerald-700">
@@ -63,10 +84,10 @@ function WelcomePanel() {
       </p>
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
         <Link
-          href={WELCOME.primaryCta.href}
+          href={primary.href}
           className="rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900"
         >
-          {WELCOME.primaryCta.label}
+          {primary.label}
         </Link>
         <Link
           href={WELCOME.secondaryCta.href}

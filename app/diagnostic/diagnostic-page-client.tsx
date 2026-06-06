@@ -71,7 +71,7 @@ export function DiagnosticPageClient() {
       <section className="hero">
         <div className="container">
           <div className="hero-meta">
-            <span className="stamp">FREE · ~10 MINUTES</span>
+            <span className="stamp">FREE · ~15 MINUTES</span>
             <span className="stamp">MBE TRAP DIAGNOSTIC</span>
             <span className="stamp">EDITION : LAUNCH</span>
           </div>
@@ -143,14 +143,14 @@ export function DiagnosticPageClient() {
                       <span className="live-dot" />
                       Ready to Start
                     </span>
-                    <span>~10 MIN</span>
+                    <span>~15 MIN</span>
                   </div>
                   <div className="forensics-body">
                     <div
                       className="eyebrow-strong"
                       style={{ marginBottom: 16 }}
                     >
-                      ▸ TRAP-WEIGHTED · 12 QUESTIONS
+                      ▸ TRAP-WEIGHTED · 20 QUESTIONS
                     </div>
                     <p
                       style={{

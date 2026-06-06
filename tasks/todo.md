@@ -3126,6 +3126,7 @@
 - [x] Replace free diagnostic results hub/enroll CTAs with a single recommendation CTA.
 - [x] Replace placement diagnostic results hub CTA with a level/top-remediation recommendation CTA.
 - [x] Add focused regression coverage.
+- [x] Repair the campaign static landing-page shell that blocked the production workflow.
 - [x] Run lint and build with `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` set.
 
 ## Review
@@ -3136,6 +3137,7 @@
 - The dashboard program row includes `The Method` as the first program link.
 - `/diagnostic/[session]/results` now renders `Your top leak is X - start here.` with level-aware routing and support for optional API recommendation/next-step fields.
 - `/diagnostic/session/[sessionId]/results` now routes from `placement_level` and the top remediation target instead of sending users to `/dashboard`.
+- Campaign static landing pages now share the expected product/legal nav/footer links and one non-footer `<main>` landmark, matching the existing landing-page contract.
 - No new daily-plan table or state library was added.
 
 ## Verification
@@ -3143,8 +3145,7 @@
 - Focused tests passed:
   - `node --test tests\ambassador-dashboard-entry.test.ts tests\diagnostic-results-enrolled-cta.test.ts`
 - `git diff --check` passed for changed paths with only normal CRLF warnings.
+- `node --test tests\static-landing-pages.test.ts` passed after repairing the campaign static shell.
+- `node --test tests\*.test.ts` passed 70/70.
 - `npm run lint` passed.
 - `npm run build` passed with `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` set.
-- Broad `node --test tests\*.test.ts` still has two unrelated failures in `tests\static-landing-pages.test.ts` against untouched `public/lp-boot-camp.html` static landing markup.
-- App test sweep excluding the unrelated static landing-page test passed 67/67:
-  - `node --test <all tests/*.test.ts except static-landing-pages.test.ts>`

@@ -22,6 +22,8 @@ import {
 } from "@/lib/analytics";
 import { useFoundations } from "@/lib/use-foundations";
 import { userFacingResourceError } from "@/lib/user-facing-errors";
+import { rememberDiagnosticId } from "@/lib/diagnostic-session";
+import { AnchorStack } from "@/components/anchor-card";
 
 const DIMENSION_LABELS: Record<string, string> = {
   subject: "By subject",
@@ -121,6 +123,10 @@ export default function DiagnosticResultsPage({
   useEffect(() => {
     let active = true;
 
+    // Remember this diagnostic so checkout can carry it (via localStorage) and
+    // fulfillment can claim the anonymous Red-Zone Map onto the new account.
+    rememberDiagnosticId(diagnosticId);
+
     const trackCompletion = (
       response: DiagnosticResultsResponse | null,
       includePreview = false,
@@ -196,6 +202,7 @@ export default function DiagnosticResultsPage({
             methodSlug={methodSlug}
             results={results}
           />
+          <AnchorStack anchors={results.anchors} />
         </>
       )}
 

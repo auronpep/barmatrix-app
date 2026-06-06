@@ -12,6 +12,7 @@ import {
 import { useClerkAuth } from "@/lib/use-clerk-auth";
 import { Markdown } from "@/lib/markdown";
 import { userFacingResourceError } from "@/lib/user-facing-errors";
+import { AnchorCard } from "@/components/anchor-card";
 import {
   C3DrillRunner,
   C3ReviewSummary,
@@ -254,6 +255,19 @@ export default function FoundationsLessonPage() {
       </section>
 
       {gradeLog.length > 0 && <C3ReviewSummary log={gradeLog} />}
+
+      {gradeLog.length > 0 && (
+        <AnchorCard
+          anchor={{
+            id: `lesson-${lesson.number}`,
+            title: `Lesson ${lesson.number} · ${lesson.title}`,
+            rule: lesson.objective,
+            prompt: null,
+            source_tag: "foundations",
+            subject: "The Method",
+          }}
+        />
+      )}
 
       {lesson.how_to_use_md && (
         <section className="mt-10 border border-zinc-200 bg-zinc-50 p-6">

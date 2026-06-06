@@ -8,6 +8,7 @@ import {
   trackCheckoutStarted,
   type StoredAttribution,
 } from "@/lib/analytics";
+import { getRememberedDiagnosticId } from "@/lib/diagnostic-session";
 import { PRICING, DISCLAIMER, CAPACITY_COPY } from "@/lib/copy";
 
 type Phase = "ready" | "redirecting" | "error" | "capacity";
@@ -79,6 +80,7 @@ export default function CheckoutClient() {
         payment_plan: plan,
         partner_id: attribution.partner_id === "none" ? null : attribution.partner_id,
         referral_click_id: getReferralClickId(checkoutSearchParams),
+        diagnostic_id: getDiagnosticId(checkoutSearchParams),
         ...buildCheckoutReturnUrls(plan, attribution),
       });
       window.location.assign(session.checkout_url);
@@ -481,6 +483,18 @@ function getCurrentSearchParams(): URLSearchParams {
 
 function getReferralClickId(searchParams: URLSearchParams): string | null {
   return searchParams.get("referral_click_id") ?? searchParams.get("click_id");
+}
+
+const DIAGNOSTIC_ID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Prefer the id passed on the URL from the results page; fall back to the one
+// remembered in localStorage when the diagnostic was taken. Validate the shape
+// so a junk value never reaches the API (server also re-validates).
+function getDiagnosticId(searchParams: URLSearchParams): string | null {
+  const fromUrl = searchParams.get("diagnostic_id");
+  const candidate = fromUrl ?? getRememberedDiagnosticId();
+  return candidate && DIAGNOSTIC_ID_RE.test(candidate) ? candidate : null;
 }
 
 function buildCheckoutReturnUrls(plan: PaymentPlan, attribution: StoredAttribution) {

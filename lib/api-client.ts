@@ -53,6 +53,7 @@ export interface CheckoutSessionRequest {
   payment_plan: PaymentPlan;
   partner_id?: string | null;
   referral_click_id?: string | null;
+  diagnostic_id?: string | null;
   success_url?: string;
   cancel_url?: string;
 }
@@ -231,12 +232,25 @@ export interface DiagnosticRecommendation {
   next_step?: DiagnosticRecommendationNextStep;
 }
 
+// One reusable rule the diagnostic taker now owns — surfaced from the anchor
+// card seeded on each answered question (questions.metadata.anchor_card). The
+// "you learned this" win moment. Theming lives only in example names, never the rule.
+export interface AnchorCard {
+  id: string;
+  title: string | null;
+  rule: string;
+  prompt: string | null;
+  source_tag: string;
+  subject: string;
+}
+
 export interface DiagnosticResultsResponse {
   diagnostic_id: string;
   answered: number;
   summary: DiagnosticSummary;
   red_zones: { by_dimension: Record<string, DiagnosticRedZoneEntry[]> };
   top_trap_patterns: DiagnosticTrapPattern[];
+  anchors?: AnchorCard[];
   recommendation?: DiagnosticRecommendation;
   level?: number | string;
   placement_level?: number | string;

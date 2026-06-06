@@ -41,6 +41,7 @@ export default async function CheckoutSuccessPage({
     checkoutSessionId,
     activationState.kind === "confirmed",
   );
+  const primaryCta = getPrimaryCta(activationState);
 
   return (
     <>
@@ -71,8 +72,8 @@ export default async function CheckoutSuccessPage({
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 32 }}>
             {activationState.kind === "confirmed" && (
               <>
-                <Link href="/foundations" className="btn btn-lg red">
-                  Start with The Method <span className="arrow">→</span>
+                <Link href={primaryCta.href} className="btn btn-lg red">
+                  {primaryCta.label} <span className="arrow">→</span>
                 </Link>
                 <Link href="/dashboard" className="btn btn-lg red">
                   Go to Dashboard <span className="arrow">→</span>
@@ -134,7 +135,7 @@ function getActivationCopy(kind: CheckoutActivationState["kind"]) {
       eyebrow: "ENROLLMENT CONFIRMED",
       headline: "Your Flagship access is being activated.",
       body:
-        "Stripe has returned checkout completion to BarMatrix. Start with The Method - the 14-lesson core the whole platform runs on - then open your dashboard to begin the repair loop.",
+        "Stripe has returned checkout completion to BarMatrix. Use the button below to take your next step, then open your dashboard to begin the repair loop.",
     };
   }
 
@@ -155,6 +156,14 @@ function getActivationCopy(kind: CheckoutActivationState["kind"]) {
     body:
       "This return URL is missing a Stripe checkout session ID, so BarMatrix cannot treat it as a completed purchase. If you just enrolled, open your account or contact support with your Stripe receipt.",
   };
+}
+
+function getPrimaryCta(state: CheckoutActivationState): { href: string; label: string } {
+  if (state.kind === "confirmed" && state.status.next_step === "foundations") {
+    return { href: "/foundations", label: "Start with The Method" };
+  }
+  // Default (incl. missing next_step, pending, missing states): place first.
+  return { href: "/diagnostic", label: "Take your diagnostic" };
 }
 
 function buildAccountHref(

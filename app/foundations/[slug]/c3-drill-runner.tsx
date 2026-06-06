@@ -88,6 +88,11 @@ export function C3DrillRunner({
 
   if (items.length === 0) return null;
 
+  // Visual progress across the drill's items. Presentational only — the
+  // "Item X / Y" text below still conveys position to screen readers.
+  const completed = done ? items.length : idx;
+  const progressPct = Math.round((completed / items.length) * 100);
+
   return (
     <div className="border border-zinc-300 bg-white p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -97,6 +102,16 @@ export function C3DrillRunner({
         <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">
           {done ? "Complete" : `Item ${idx + 1} / ${items.length}`}
         </span>
+      </div>
+
+      <div
+        className="mt-3 h-1 w-full overflow-hidden rounded-full bg-zinc-200"
+        aria-hidden="true"
+      >
+        <div
+          className="h-full rounded-full bg-red-700 transition-all duration-500 ease-out"
+          style={{ width: `${progressPct}%` }}
+        />
       </div>
 
       {drill.instructions_md && !done && (

@@ -19,9 +19,57 @@ export default function CertificationPage() {
   if (!signedIn) {
     return (
       <Shell>
-        <Banner href="/sign-in" cta="Sign in">
-          Sign in to take the C3 Mastery Certification.
-        </Banner>
+        <p className="font-mono text-xs uppercase tracking-wider text-red-700">
+          C3 Mastery Certification
+        </p>
+        <h1 className="mt-3 font-serif text-4xl font-semibold tracking-tight text-zinc-950">
+          Prove you can run the method.
+        </h1>
+        <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-700">
+          The C3 Mastery Certification verifies the one skill the MBE actually
+          rewards: cut the answers that are wrong on the law, clash the final two,
+          and call the controlling distinction — across all ten C3 competencies.
+          You earn it inside BarMatrix Flagship by finishing The Method and
+          confirming each competency.
+        </p>
+
+        <div className="mt-8 border-2 border-zinc-900 bg-zinc-950 p-6 text-white">
+          <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-400">
+            How you earn it
+          </p>
+          <ol className="mt-3 space-y-2 text-sm text-zinc-200">
+            <li>
+              <span className="font-semibold text-white">1 · Diagnose</span> — take
+              the free MBE Trap Diagnostic to build your Red-Zone Map.
+            </li>
+            <li>
+              <span className="font-semibold text-white">2 · Repair</span> — work The
+              Method and your assigned drills until the traps stop firing.
+            </li>
+            <li>
+              <span className="font-semibold text-white">3 · Confirm</span> — pass all
+              ten C3 competencies to confirm your C3 Mastery.
+            </li>
+          </ol>
+        </div>
+
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <Link
+            href="/sign-in"
+            className="rounded-md bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-900"
+          >
+            Sign in →
+          </Link>
+          <Link
+            href="/diagnostic"
+            className="rounded-md border border-zinc-900 px-5 py-2.5 text-sm font-medium text-zinc-900 hover:bg-zinc-50"
+          >
+            Take the free diagnostic
+          </Link>
+        </div>
+        <p className="mt-4 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
+          Certification is part of BarMatrix Flagship.
+        </p>
       </Shell>
     );
   }

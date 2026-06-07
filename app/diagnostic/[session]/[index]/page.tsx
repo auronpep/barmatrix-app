@@ -325,11 +325,12 @@ function QuestionCard({
         {question.fact_pattern}
       </div>
 
-      {question.call_of_question && (
-        <p className="mt-6 text-base font-medium text-zinc-900">
-          {question.call_of_question}
-        </p>
-      )}
+      {question.call_of_question &&
+        !question.fact_pattern.includes(question.call_of_question.trim()) && (
+          <p className="mt-6 text-base font-medium text-zinc-900">
+            {question.call_of_question}
+          </p>
+        )}
 
       <ul className="mt-6 space-y-3">
         {question.choices.map((choice) => {
@@ -341,10 +342,10 @@ function QuestionCard({
                 disabled={disabled}
                 onClick={() => onSelect(choice.letter)}
                 aria-pressed={isSelected}
-                className={`w-full rounded-md border-2 border-solid px-4 py-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 ${
+                className={`w-full rounded-md !border-2 !border-solid px-4 py-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 ${
                   isSelected
-                    ? "border-zinc-900 bg-zinc-900 text-white"
-                    : "border-zinc-200 bg-white text-zinc-800 hover:border-zinc-500 hover:bg-zinc-50"
+                    ? "!border-zinc-900 !bg-zinc-900 !text-white"
+                    : "!border-zinc-200 !bg-white !text-zinc-800 hover:!border-zinc-500 hover:!bg-zinc-50"
                 } disabled:cursor-not-allowed`}
               >
                 <span className="font-mono font-semibold">{choice.letter}.</span>{" "}

@@ -198,55 +198,61 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
   const itemParts = item.parts ?? [];
   const statusOptions = STATUS_OPTIONS[item.task_type] ?? [];
 
-  const canSubmit = usesMulti
-    ? itemParts.length > 0 && itemParts.every((p) => Boolean(partChoices[p.id]))
-    : usesChoices
-      ? choiceId !== null
-      : status !== null;
-
-  const submit = useCallback(async () => {
-    if (!canSubmit || submitting) return;
-    setSubmitting(true);
-    setError(null);
-    const started = startedAt.current ?? Date.now();
-    const payload: FoundationsAttemptRequest = {
-      drill_id: drillId,
-      item_id: item.id,
-      attempt_number: attemptNumber,
-      time_ms: Math.max(0, Date.now() - started),
-      ...(usesMulti
-        ? { selected_parts: partChoices }
-        : usesChoices
-          ? { selected_choice_id: choiceId! }
-          : { selected_status: status! }),
-      ...(attemptNumber >= 2 && reflection.trim()
-        ? { reflection_text: reflection.trim() }
-        : {}),
-    };
-    try {
-      const res = await api.gradeFoundationsAttempt(slug, payload, token ?? undefined);
-      setGrade(res.graded);
-      setUiState(res.graded.correct ? "submitted_correct" : "submitted_wrong");
-      onGraded({
+  // Core grading call. Accepts the decisive value explicitly so callers can
+  // pass the just-selected value before React re-renders (avoids stale closure).
+  // For MULTI_SELECT the caller passes `newPartChoices` (the full updated map).
+  const submitWith = useCallback(
+    async (opts: {
+      choiceIdOverride?: string;
+      statusOverride?: C3Status;
+      partChoicesOverride?: Record<string, string>;
+    }) => {
+      if (submitting) return;
+      setSubmitting(true);
+      setError(null);
+      const started = startedAt.current ?? Date.now();
+      const { choiceIdOverride, statusOverride, partChoicesOverride } = opts;
+      const payload: FoundationsAttemptRequest = {
         drill_id: drillId,
         item_id: item.id,
-        task_type: item.task_type,
         attempt_number: attemptNumber,
-        correct: res.graded.correct,
-        missed_filter: res.graded.missed_filter,
-        missed_skill: res.graded.missed_skill,
-      });
-    } catch (err) {
-      setError(
-        err instanceof ApiClientError ? `Couldn't grade (API ${err.status}).` : "Couldn't grade.",
-      );
-    } finally {
-      setSubmitting(false);
-    }
-  }, [
-    canSubmit, submitting, drillId, item.id, item.task_type, attemptNumber,
-    usesChoices, usesMulti, choiceId, status, partChoices, reflection, slug, token, onGraded,
-  ]);
+        time_ms: Math.max(0, Date.now() - started),
+        ...(usesMulti
+          ? { selected_parts: partChoicesOverride! }
+          : usesChoices
+            ? { selected_choice_id: choiceIdOverride! }
+            : { selected_status: statusOverride! }),
+        ...(attemptNumber >= 2 && reflection.trim()
+          ? { reflection_text: reflection.trim() }
+          : {}),
+      };
+      try {
+        const res = await api.gradeFoundationsAttempt(slug, payload, token ?? undefined);
+        setGrade(res.graded);
+        setUiState(res.graded.correct ? "submitted_correct" : "submitted_wrong");
+        onGraded({
+          drill_id: drillId,
+          item_id: item.id,
+          task_type: item.task_type,
+          attempt_number: attemptNumber,
+          correct: res.graded.correct,
+          missed_filter: res.graded.missed_filter,
+          missed_skill: res.graded.missed_skill,
+        });
+      } catch (err) {
+        setError(
+          err instanceof ApiClientError ? `Couldn't grade (API ${err.status}).` : "Couldn't grade.",
+        );
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [
+      submitting, drillId, item.id, item.task_type, attemptNumber,
+      usesChoices, usesMulti, reflection, slug, token, onGraded,
+    ],
+  );
+
 
   const retry = useCallback(() => {
     setUiState("unattempted");
@@ -255,6 +261,7 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
     setChoiceId(null);
     setPartChoices({});
     setAttemptNumber((n) => n + 1);
+    setError(null);
     startedAt.current = Date.now();
   }, []);
 
@@ -278,8 +285,9 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
         </blockquote>
       )}
 
-      {/* Controls */}
+      {/* Controls — grade on first selection, no Submit button */}
       {usesMulti ? (
+        // MULTI_SELECT: one pick per part; auto-grade once ALL parts are filled.
         <div className="mt-4 space-y-4">
           {itemParts.map((p) => {
             const pr = grade?.part_results?.find((r) => r.part_id === p.id);
@@ -295,11 +303,20 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
                       key={c.id}
                       compact={!isAnswer}
                       selected={partChoices[p.id] === c.id}
-                      disabled={graded}
+                      disabled={graded || submitting}
                       correct={graded && pr ? pr.correct_choice_id === c.id : null}
-                      onClick={() =>
-                        setPartChoices((prev) => ({ ...prev, [p.id]: c.id }))
-                      }
+                      onClick={() => {
+                        if (graded || submitting) return;
+                        const newChoices = { ...partChoices, [p.id]: c.id };
+                        setPartChoices(newChoices);
+                        // Auto-grade once every part has a selection.
+                        const allFilled =
+                          itemParts.length > 0 &&
+                          itemParts.every((part) => Boolean(newChoices[part.id]));
+                        if (allFilled) {
+                          void submitWith({ partChoicesOverride: newChoices });
+                        }
+                      }}
                     >
                       {isAnswer ? (
                         <>
@@ -316,6 +333,7 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
           })}
         </div>
       ) : (
+        // Single-pick: grade immediately on the first click.
         <div className="mt-4 flex flex-wrap gap-2">
           {usesChoices
             ? (item.choices ?? []).map((c) => (
@@ -323,9 +341,13 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
                   key={c.id}
                   compact={compactChoices}
                   selected={choiceId === c.id}
-                  disabled={graded}
+                  disabled={graded || submitting}
                   correct={graded ? grade?.correct_choice_id === c.id : null}
-                  onClick={() => setChoiceId(c.id)}
+                  onClick={() => {
+                    if (graded || submitting) return;
+                    setChoiceId(c.id);
+                    void submitWith({ choiceIdOverride: c.id });
+                  }}
                 >
                   {compactChoices ? (
                     c.text
@@ -340,14 +362,23 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
                 <StatusButton
                   key={opt.value}
                   selected={status === opt.value}
-                  disabled={graded}
+                  disabled={graded || submitting}
                   correct={graded ? grade?.correct_status === opt.value : null}
-                  onClick={() => setStatus(opt.value)}
+                  onClick={() => {
+                    if (graded || submitting) return;
+                    setStatus(opt.value);
+                    void submitWith({ statusOverride: opt.value });
+                  }}
                 >
                   {opt.label}
                 </StatusButton>
               ))}
         </div>
+      )}
+
+      {/* "Grading…" indicator shown while the API call is in-flight */}
+      {submitting && !graded && (
+        <p className="mt-3 font-mono text-xs text-zinc-500">Grading…</p>
       )}
 
       {error && (
@@ -356,54 +387,43 @@ function C3Item({ slug, drillId, item, token, isLast, onGraded, onNext }: C3Item
         </p>
       )}
 
-      {/* Submit / feedback */}
-      {!graded ? (
-        <button
-          type="button"
-          onClick={submit}
-          disabled={!canSubmit || submitting}
-          className="mt-4 rounded-md bg-red-700 px-5 py-2 text-sm font-medium text-white hover:bg-red-900 disabled:opacity-40"
-        >
-          {submitting ? "Grading…" : "Submit"}
-        </button>
-      ) : (
-        grade && (
-          <>
-            <ExplanationPanel grade={grade} />
-            {uiState === "submitted_wrong" && attemptNumber >= 2 && (
-              <div className="mt-4">
-                <label className="font-mono text-[11px] uppercase tracking-wider text-zinc-600">
-                  Say the break in your own words
-                </label>
-                <textarea
-                  value={reflection}
-                  onChange={(e) => setReflection(e.target.value)}
-                  rows={2}
-                  className="mt-1 w-full rounded-md border border-zinc-300 p-2 text-sm"
-                  placeholder="False because… / True, but it answers…"
-                />
-              </div>
-            )}
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              {uiState === "submitted_wrong" && (
-                <button
-                  type="button"
-                  onClick={retry}
-                  className="rounded-md border border-zinc-900 px-4 py-2 font-mono text-xs uppercase tracking-wider text-zinc-900 hover:bg-zinc-950 hover:text-white"
-                >
-                  Try again
-                </button>
-              )}
+      {/* Feedback — shown after grading; no Submit button */}
+      {graded && grade && (
+        <>
+          <ExplanationPanel grade={grade} />
+          {uiState === "submitted_wrong" && attemptNumber >= 2 && (
+            <div className="mt-4">
+              <label className="font-mono text-[11px] uppercase tracking-wider text-zinc-600">
+                Say the break in your own words
+              </label>
+              <textarea
+                value={reflection}
+                onChange={(e) => setReflection(e.target.value)}
+                rows={2}
+                className="mt-1 w-full rounded-md border border-zinc-300 p-2 text-sm"
+                placeholder="False because… / True, but it answers…"
+              />
+            </div>
+          )}
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            {uiState === "submitted_wrong" && (
               <button
                 type="button"
-                onClick={onNext}
-                className="rounded-md bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+                onClick={retry}
+                className="rounded-md border border-zinc-900 px-4 py-2 font-mono text-xs uppercase tracking-wider text-zinc-900 hover:bg-zinc-950 hover:text-white"
               >
-                {isLast ? "Finish drill →" : "Next item →"}
+                Try again
               </button>
-            </div>
-          </>
-        )
+            )}
+            <button
+              type="button"
+              onClick={onNext}
+              className="rounded-md bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+            >
+              {isLast ? "Finish drill →" : "Next item →"}
+            </button>
+          </div>
+        </>
       )}
     </div>
   );

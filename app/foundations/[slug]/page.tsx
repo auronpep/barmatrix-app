@@ -35,6 +35,9 @@ export default function FoundationsLessonPage() {
   const [token, setToken] = useState<string | null>(null);
   // Accumulated grade results across the lesson's interactive drills.
   const [gradeLog, setGradeLog] = useState<C3GradeLogEntry[]>([]);
+  // One-at-a-time drill sequencing: index into lesson.drills for the
+  // CURRENT drill the student should work. Advances only after completion.
+  const [currentDrillIndex, setCurrentDrillIndex] = useState(0);
 
   // Load public lesson content for everyone.
   useEffect(() => {
@@ -131,17 +134,23 @@ export default function FoundationsLessonPage() {
   const toggleDrill = useCallback(
     (id: string) => {
       setChecked((prev) => {
+        const wasChecked = prev.has(id);
         const next = new Set(prev);
-        if (next.has(id)) next.delete(id);
+        if (wasChecked) next.delete(id);
         else next.add(id);
         if (isSignedIn) void persist([...next], completed);
+        // When checking (not unchecking) a self-check drill, advance the sequencer.
+        if (!wasChecked) {
+          setCurrentDrillIndex((i) => i + 1);
+        }
         return next;
       });
     },
     [persist, isSignedIn, completed],
   );
 
-  // Interactive drill finished → mark it complete (add-only) and persist.
+  // Interactive drill finished → mark it complete (add-only), persist, and
+  // advance the one-at-a-time sequencer to the next drill.
   const markDrillComplete = useCallback(
     (id: string) => {
       setChecked((prev) => {
@@ -151,6 +160,8 @@ export default function FoundationsLessonPage() {
         if (isSignedIn) void persist([...next], completed);
         return next;
       });
+      // Advance sequencer so the next drill becomes visible.
+      setCurrentDrillIndex((i) => i + 1);
     },
     [persist, isSignedIn, completed],
   );
@@ -231,9 +242,36 @@ export default function FoundationsLessonPage() {
             ? "Two filters. Three statuses. Name the break. Classify each item, then read why the filter broke — you can't pass by revealing a key."
             : "Work each drill cold, then reveal the key and say the missed filter aloud — the verbalization is the training. Check off each drill once you've self-marked it."}
         </p>
+
+        {/* One-at-a-time sequencer with progression indicator */}
+        {lesson.drills.length > 0 && (
+          <div className="mt-4 flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
+            <span>
+              Drill {Math.min(currentDrillIndex + 1, lesson.drills.length)} of{" "}
+              {lesson.drills.length}
+            </span>
+            <div className="flex gap-1.5" aria-hidden="true">
+              {lesson.drills.map((d, i) => (
+                <span
+                  key={d.id}
+                  className={`inline-block h-1.5 w-5 rounded-full ${
+                    i < currentDrillIndex
+                      ? "bg-emerald-600"
+                      : i === currentDrillIndex
+                        ? "bg-red-700"
+                        : "bg-zinc-300"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="mt-6 space-y-6">
-          {lesson.drills.map((drill) =>
-            drill.graded_items?.length ? (
+          {lesson.drills.map((drill, i) => {
+            // Only show drills up to and including the current index.
+            if (i > currentDrillIndex) return null;
+            return drill.graded_items?.length ? (
               <C3DrillRunner
                 key={drill.id}
                 slug={slug}
@@ -249,8 +287,8 @@ export default function FoundationsLessonPage() {
                 checked={checked.has(drill.id)}
                 onToggle={() => toggleDrill(drill.id)}
               />
-            ),
-          )}
+            );
+          })}
         </div>
       </section>
 

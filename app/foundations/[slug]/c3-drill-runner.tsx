@@ -503,10 +503,10 @@ function markGlyph(selected: boolean, correct: boolean | null): React.ReactNode 
 }
 
 function markClasses(selected: boolean, correct: boolean | null): string {
-  if (correct === true) return "border-emerald-700 bg-emerald-50 text-emerald-900";
-  if (correct === false && selected) return "border-red-700 bg-red-50 text-red-900";
-  if (selected) return "border-zinc-900 bg-zinc-900 text-white";
-  return "border-zinc-300 bg-white text-zinc-800 hover:border-zinc-500 disabled:opacity-60";
+  if (correct === true) return "border-2 border-solid !border-emerald-700 !bg-emerald-50 !text-emerald-900";
+  if (correct === false && selected) return "border-2 border-solid !border-red-700 !bg-red-50 !text-red-900";
+  if (selected) return "border-2 border-solid !border-zinc-900 !bg-zinc-900 !text-white";
+  return "border-2 border-solid !border-zinc-300 !bg-white !text-zinc-800 hover:!border-zinc-500 disabled:opacity-60";
 }
 
 function ExplanationPanel({ grade }: { grade: C3GradeResult }) {

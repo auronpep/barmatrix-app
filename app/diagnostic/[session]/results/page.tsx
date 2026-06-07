@@ -53,6 +53,24 @@ function humanizeTag(tag: string): string {
     .join(" ");
 }
 
+// Maps DB enum subject values to display labels.
+// Falls back to humanizeTag for any unknown value.
+const SUBJECT_DISPLAY: Record<string, string> = {
+  CIVIL_PROCEDURE: "Civil Procedure",
+  CONSTITUTIONAL_LAW: "Constitutional Law",
+  CONTRACTS: "Contracts",
+  CRIMINAL_LAW: "Criminal Law",
+  CRIMINAL_PROCEDURE: "Criminal Procedure",
+  EVIDENCE: "Evidence",
+  REAL_PROPERTY: "Real Property",
+  TORTS: "Torts",
+};
+
+function humanizeSubject(subject: string | null | undefined): string {
+  if (!subject) return "";
+  return SUBJECT_DISPLAY[subject] ?? humanizeTag(subject);
+}
+
 type RecommendedStep = {
   href: string;
   label: string;
@@ -202,6 +220,7 @@ export default function DiagnosticResultsPage({
             methodSlug={methodSlug}
             results={results}
           />
+          <EnrollCta />
           <AnchorStack anchors={results.anchors} />
         </>
       )}
@@ -225,7 +244,7 @@ function SummaryCard({ results }: { results: DiagnosticResultsResponse }) {
   const stats: Array<{ label: string; value: string; alert?: boolean }> = [
     { label: "Score", value: `${s.correct}/${s.total} · ${s.score_pct}%` },
     { label: "Avg confidence", value: `${s.avg_confidence}/5` },
-    { label: "Avg time", value: `${s.avg_time_seconds}s` },
+    { label: "Avg time / question", value: `${s.avg_time_seconds}s` },
     {
       label: "High-confidence misses",
       value: String(s.high_confidence_misses),
@@ -302,7 +321,7 @@ function TopTrapPatterns({ patterns }: { patterns: DiagnosticTrapPattern[] }) {
                 {p.label}
               </p>
               <p className="font-mono text-[11px] uppercase tracking-wide text-zinc-500">
-                {p.subject ? `${p.subject} · ` : ""}
+                {p.subject ? `${humanizeSubject(p.subject)} · ` : ""}
                 {p.attempts} miss{p.attempts === 1 ? "" : "es"}
                 {p.high_confidence_wrongs > 0
                   ? ` · ${p.high_confidence_wrongs} high-confidence`
@@ -355,6 +374,41 @@ function DimensionBreakdown({
           </ul>
         </div>
       ))}
+    </div>
+  );
+}
+
+// R3-01: Enrollment CTA — bridges the emotional peak (Red-Zone Map visible) to purchase.
+// Mirrors /pricing enroll button destination (/checkout) and button style.
+function EnrollCta() {
+  return (
+    <div className="mt-10 rounded-lg border border-zinc-200 bg-zinc-50 p-8">
+      <p className="font-mono text-xs uppercase tracking-wider text-red-700">
+        Ready to repair your red zones?
+      </p>
+      <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-900">
+        Your Red-Zone Map is built. Enroll to repair it.
+      </h2>
+      <p className="mt-3 text-zinc-700">
+        BarMatrix Flagship gives you the full forensic bank, targeted repair
+        drills, boot camps, and a persistent Red-Zone Map that updates as you
+        drill — so you stop practicing randomly and start fixing the patterns
+        that cost you points.
+      </p>
+      <p className="mt-2 font-mono text-sm font-semibold text-zinc-900">
+        $999 — July-cycle cohort. Limited seats.
+      </p>
+      <div className="mt-6 flex flex-wrap items-center gap-4">
+        <Link href="/checkout" className="btn red">
+          Enroll in Flagship <span aria-hidden>→</span>
+        </Link>
+        <Link
+          href="/pricing"
+          className="text-sm text-zinc-600 underline hover:text-zinc-900"
+        >
+          See full program details
+        </Link>
+      </div>
     </div>
   );
 }

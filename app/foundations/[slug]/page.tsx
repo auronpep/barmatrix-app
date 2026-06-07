@@ -202,6 +202,15 @@ export default function FoundationsLessonPage() {
   const { lesson } = resp;
   const hasInteractiveDrills = lesson.drills.some((d) => d.graded_items?.length);
 
+  // Gate the "Mark lesson complete" button: every interactive drill must be
+  // finished before the student can mark the lesson done.
+  const interactiveDrillIds = lesson.drills
+    .filter((d) => d.graded_items?.length)
+    .map((d) => d.id);
+  const allDrillsDone =
+    interactiveDrillIds.length === 0 ||
+    interactiveDrillIds.every((id) => checked.has(id));
+
   return (
     <article className="mx-auto max-w-3xl px-6 py-10 sm:py-14">
       <div className="flex items-center justify-between gap-4 border-b border-zinc-200 pb-4">
@@ -323,7 +332,8 @@ export default function FoundationsLessonPage() {
           <button
             type="button"
             onClick={onComplete}
-            disabled={saving}
+            disabled={saving || (!completed && !allDrillsDone)}
+            title={!completed && !allDrillsDone ? "Complete the drills first" : undefined}
             className={`rounded-md px-6 py-3 text-sm font-medium ${
               completed
                 ? "border border-emerald-700 text-emerald-800"
@@ -333,6 +343,11 @@ export default function FoundationsLessonPage() {
             {completed ? "Completed ✓ — review again" : "Mark lesson complete"}
             {resp.next_slug && !completed ? " & continue →" : ""}
           </button>
+          {!completed && !allDrillsDone && (
+            <span className="font-mono text-[11px] text-zinc-500">
+              Complete the drills first
+            </span>
+          )}
           {saveNote && (
             <span className="font-mono text-[11px] text-zinc-500">{saveNote}</span>
           )}

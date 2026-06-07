@@ -137,8 +137,11 @@ export default function DiagnosticQuestionPage({
       0,
       Math.round((Date.now() - startedAtRef.current) / 1000),
     );
+
+    // --- attempt submission (hard failure: show error panel) ---
+    let resp: AttemptResponse;
     try {
-      const resp = await submitAttempt({
+      resp = await submitAttempt({
         question_id: question.question_id,
         selected_letter: selected,
         confidence,
@@ -146,25 +149,60 @@ export default function DiagnosticQuestionPage({
         platform: "web",
         set_id: diagnosticId,
       });
-      setAttempt(resp);
+    } catch (err) {
+      setErrorMsg(humanError(err));
+      setPhase("error");
+      return;
+    }
+
+    // Attempt succeeded. Record it and fire analytics — neither can block progression.
+    setAttempt(resp);
+    try {
       trackQuestionAttempted({
         questionId: question.question_id,
         correct: resp.correct,
         confidence,
         sessionId: diagnosticId,
       });
-      const f = await api.getForensics(resp.attempt_id);
-      setForensics(f);
-      trackForensicsViewed({
-        attemptId: resp.attempt_id,
-        forensicTags: collectForensicTags(resp, f),
-        sessionId: diagnosticId,
-      });
-      setPhase("forensics");
-    } catch (err) {
-      setErrorMsg(humanError(err));
-      setPhase("error");
+    } catch {
+      // analytics failure must never trap the user
     }
+
+    // --- forensics fetch (soft failure: show verdict + next without forensics) ---
+    // A 10-second timeout ensures the user is never left on "Submitting answer..."
+    // even if the forensics endpoint hangs. The attempt is already recorded; the
+    // verdict (correct/wrong + correct_answer) is available from `resp` alone.
+    let f: ForensicsResponse | null = null;
+    try {
+      const forensicsPromise = resp.attempt_id
+        ? api.getForensics(resp.attempt_id)
+        : Promise.reject(new Error("missing attempt_id"));
+
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("forensics_timeout")), 10_000),
+      );
+
+      f = await Promise.race([forensicsPromise, timeoutPromise]);
+    } catch {
+      // Forensics unavailable — still advance so the user sees the verdict and
+      // "Next question" button. f stays null; ForensicsCard renders gracefully.
+    }
+
+    setForensics(f);
+
+    try {
+      if (f) {
+        trackForensicsViewed({
+          attemptId: resp.attempt_id,
+          forensicTags: collectForensicTags(resp, f),
+          sessionId: diagnosticId,
+        });
+      }
+    } catch {
+      // analytics failure must never trap the user
+    }
+
+    setPhase("forensics");
   };
 
   const next = () => {
@@ -203,7 +241,7 @@ export default function DiagnosticQuestionPage({
         />
       )}
 
-      {phase === "forensics" && attempt && forensics && (
+      {phase === "forensics" && attempt && (
         <ForensicsCard
           attempt={attempt}
           forensics={forensics}
@@ -397,7 +435,7 @@ function ForensicsCard({
   isLast,
 }: {
   attempt: AttemptResponse;
-  forensics: ForensicsResponse;
+  forensics: ForensicsResponse | null;
   onNext: () => void;
   isLast: boolean;
 }) {
@@ -419,49 +457,59 @@ function ForensicsCard({
           : `Wrong Answer Forensics · correct answer was ${attempt.correct_answer ?? "—"}`}
       </p>
 
-      {attempt.correct ? (
+      {forensics ? (
         <>
-          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-900">
-            Why that answer was right
-          </h2>
-          {forensics.why_correct && (
-            <p className="mt-4 whitespace-pre-line text-base leading-relaxed text-zinc-800">
-              {forensics.why_correct}
+          {attempt.correct ? (
+            <>
+              <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-900">
+                Why that answer was right
+              </h2>
+              {forensics.why_correct && (
+                <p className="mt-4 whitespace-pre-line text-base leading-relaxed text-zinc-800">
+                  {forensics.why_correct}
+                </p>
+              )}
+            </>
+          ) : (
+            <>
+              <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-900">
+                {forensics.trap_name ?? "Wrong-answer trap"}
+              </h2>
+
+              {forensics.why_attractive && (
+                <Section title="Why this answer looked right">
+                  {forensics.why_attractive}
+                </Section>
+              )}
+              {forensics.why_wrong && (
+                <Section title="Why it is actually wrong">{forensics.why_wrong}</Section>
+              )}
+              {forensics.future_cue && (
+                <Section title="Cue for next time">{forensics.future_cue}</Section>
+              )}
+            </>
+          )}
+
+          {forensics.focus_group && (
+            <p className="mt-6 rounded-md bg-zinc-100 px-4 py-3 text-sm text-zinc-700">
+              <span className="font-medium">Focus-group data:</span>{" "}
+              {forensics.focus_group.selected_choice_pct}% of {forensics.focus_group.sample_size}{" "}
+              test-takers picked the same answer.
+            </p>
+          )}
+
+          {!attempt.correct && forensics.assigned_drill && (
+            <p className="mt-4 text-sm text-zinc-700">
+              <span className="font-medium">Assigned drill:</span>{" "}
+              {forensics.assigned_drill.name}
             </p>
           )}
         </>
       ) : (
-        <>
-          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-900">
-            {forensics.trap_name ?? "Wrong-answer trap"}
-          </h2>
-
-          {forensics.why_attractive && (
-            <Section title="Why this answer looked right">
-              {forensics.why_attractive}
-            </Section>
-          )}
-          {forensics.why_wrong && (
-            <Section title="Why it is actually wrong">{forensics.why_wrong}</Section>
-          )}
-          {forensics.future_cue && (
-            <Section title="Cue for next time">{forensics.future_cue}</Section>
-          )}
-        </>
-      )}
-
-      {forensics.focus_group && (
-        <p className="mt-6 rounded-md bg-zinc-100 px-4 py-3 text-sm text-zinc-700">
-          <span className="font-medium">Focus-group data:</span>{" "}
-          {forensics.focus_group.selected_choice_pct}% of {forensics.focus_group.sample_size}{" "}
-          test-takers picked the same answer.
-        </p>
-      )}
-
-      {!attempt.correct && forensics.assigned_drill && (
-        <p className="mt-4 text-sm text-zinc-700">
-          <span className="font-medium">Assigned drill:</span>{" "}
-          {forensics.assigned_drill.name}
+        <p className="mt-4 text-sm text-zinc-600">
+          {attempt.correct
+            ? "Your answer was correct."
+            : `The correct answer was ${attempt.correct_answer ?? "—"}.`}
         </p>
       )}
 
@@ -495,12 +543,15 @@ function humanError(err: unknown): string {
 
 function collectForensicTags(
   attempt: AttemptResponse,
-  forensics: ForensicsResponse,
+  forensics: ForensicsResponse | null,
 ): string[] {
+  const redZoneUpdates = Array.isArray(attempt.red_zone_updates)
+    ? attempt.red_zone_updates
+    : [];
   const tags = [
-    ...attempt.red_zone_updates.map((update) => `${update.dimension}:${update.tag}`),
-    forensics.trap_name,
-    forensics.assigned_drill?.slug,
+    ...redZoneUpdates.map((update) => `${update.dimension}:${update.tag}`),
+    forensics?.trap_name,
+    forensics?.assigned_drill?.slug,
   ].filter((tag): tag is string => Boolean(tag));
 
   return tags.length > 0 ? tags : ["diagnostic_attempt"];

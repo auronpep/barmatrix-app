@@ -213,7 +213,7 @@ export default function FoundationsLessonPage() {
 
   return (
     <article className="mx-auto max-w-3xl px-6 py-10 sm:py-14">
-      <div className="flex items-center justify-between gap-4 border-b border-zinc-200 pb-4">
+      <div className="flex min-h-[44px] flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-zinc-200 pb-4">
         <Link href="/foundations" className="font-mono text-xs text-zinc-500 hover:text-zinc-900">
           ← The Method
         </Link>

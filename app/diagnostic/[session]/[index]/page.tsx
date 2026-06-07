@@ -26,6 +26,7 @@ import {
   trackForensicsViewed,
   trackQuestionAttempted,
 } from "@/lib/analytics";
+import { humanizeSubject } from "@/lib/format-subject";
 
 type Phase = "loading" | "presenting" | "submitting" | "forensics" | "error";
 
@@ -355,7 +356,7 @@ function QuestionCard({
   return (
     <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:p-8">
       <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-        {question.subject}
+        {humanizeSubject(question.subject)}
         {question.subtopic ? ` · ${question.subtopic}` : ""}
       </p>
 

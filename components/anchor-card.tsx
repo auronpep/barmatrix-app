@@ -10,6 +10,7 @@
 // it's given, presentation only.
 
 import type { AnchorCard as AnchorCardData } from "@/lib/api-client";
+import { humanizeSubject } from "@/lib/format-subject";
 
 // The one rule the whole platform runs on — used when answered items had no
 // seeded anchor, so the close always lands on something concrete to own.
@@ -23,9 +24,17 @@ const METHOD_FALLBACK: AnchorCardData = {
 };
 
 function AnchorCardItem({ anchor }: { anchor: AnchorCardData }) {
+  // Bug 1 guard: if the prompt text equals the rule text (data reality where
+  // some anchors were seeded with prompt == rule), suppress the prompt so the
+  // same sentence never appears twice on one card.
+  const promptIsDuplicate =
+    !!anchor.prompt &&
+    anchor.prompt.trim().toLowerCase() === anchor.rule.trim().toLowerCase();
+  const showPrompt = !!anchor.prompt && !promptIsDuplicate;
+
   return (
     <li className="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm">
-      {anchor.prompt ? (
+      {showPrompt ? (
         <p className="font-serif text-base italic leading-6 text-zinc-500">
           {anchor.prompt}
         </p>
@@ -34,7 +43,7 @@ function AnchorCardItem({ anchor }: { anchor: AnchorCardData }) {
         {anchor.rule}
       </p>
       <p className="mt-3 font-mono text-[11px] uppercase tracking-wide text-zinc-400">
-        {anchor.subject}
+        {humanizeSubject(anchor.subject)}
         {anchor.title ? ` · ${anchor.title}` : ""}
       </p>
     </li>

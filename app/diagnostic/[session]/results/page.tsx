@@ -24,6 +24,7 @@ import { useFoundations } from "@/lib/use-foundations";
 import { userFacingResourceError } from "@/lib/user-facing-errors";
 import { rememberDiagnosticId } from "@/lib/diagnostic-session";
 import { AnchorStack } from "@/components/anchor-card";
+import { humanizeSubject } from "@/lib/format-subject";
 
 const DIMENSION_LABELS: Record<string, string> = {
   subject: "By subject",
@@ -51,24 +52,6 @@ function humanizeTag(tag: string): string {
     .filter(Boolean)
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
     .join(" ");
-}
-
-// Maps DB enum subject values to display labels.
-// Falls back to humanizeTag for any unknown value.
-const SUBJECT_DISPLAY: Record<string, string> = {
-  CIVIL_PROCEDURE: "Civil Procedure",
-  CONSTITUTIONAL_LAW: "Constitutional Law",
-  CONTRACTS: "Contracts",
-  CRIMINAL_LAW: "Criminal Law",
-  CRIMINAL_PROCEDURE: "Criminal Procedure",
-  EVIDENCE: "Evidence",
-  REAL_PROPERTY: "Real Property",
-  TORTS: "Torts",
-};
-
-function humanizeSubject(subject: string | null | undefined): string {
-  if (!subject) return "";
-  return SUBJECT_DISPLAY[subject] ?? humanizeTag(subject);
 }
 
 type RecommendedStep = {

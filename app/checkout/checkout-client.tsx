@@ -18,6 +18,7 @@ type AttributionState = {
   campaign: string;
   partner: string;
   referral: string;
+  hasDiagnosticContext: boolean;
 };
 
 export default function CheckoutClient() {
@@ -29,6 +30,7 @@ export default function CheckoutClient() {
     campaign: "none",
     partner: "none",
     referral: "none",
+    hasDiagnosticContext: false,
   });
 
   useEffect(() => {
@@ -40,7 +42,7 @@ export default function CheckoutClient() {
         () =>
           setAttribution({
             lp,
-            source: params.get("utm_source") ?? "none",
+            source: params.get("utm_source") ?? params.get("source") ?? "none",
             campaign:
               params.get("utm_campaign") ??
               params.get("campaign_id") ??
@@ -49,6 +51,7 @@ export default function CheckoutClient() {
             partner: params.get("partner_id") ?? "none",
             referral:
               params.get("referral_click_id") ?? params.get("click_id") ?? "none",
+            hasDiagnosticContext: getDiagnosticId(params) !== null,
           }),
         0,
       ),
@@ -144,6 +147,9 @@ export default function CheckoutClient() {
               <span className="label">▌ Choose Your Plan</span>
             </div>
             <CheckoutContextPanel attribution={attribution} />
+            <CheckoutProofPanel
+              hasDiagnosticContext={attribution.hasDiagnosticContext}
+            />
 
             <div
               style={{ display: "flex", flexDirection: "column", gap: 24 }}
@@ -363,6 +369,74 @@ function CheckoutContextPanel({
           <span>campaign: {attribution.campaign}</span>
           <span>partner: {attribution.partner}</span>
           <span>referral: {attribution.referral}</span>
+          <span>
+            diagnostic: {attribution.hasDiagnosticContext ? "attached" : "none"}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CheckoutProofPanel({
+  hasDiagnosticContext,
+}: {
+  hasDiagnosticContext: boolean;
+}) {
+  const rows = [
+    {
+      title: hasDiagnosticContext
+        ? "Your diagnostic is attached"
+        : "The diagnostic can come first",
+      body: hasDiagnosticContext
+        ? "This checkout includes your diagnostic session ID so your Red-Zone Map can be connected during fulfillment."
+        : "If you have not taken the free diagnostic yet, run it first and come back with a Red-Zone Map attached.",
+    },
+    {
+      title: "What happens after payment",
+      body: "Stripe returns you to BarMatrix, then you use the same email to open your account and start the assigned repair path.",
+    },
+    {
+      title: "What is not promised",
+      body: "BarMatrix is multiple-choice-only repair. It is not a full bar course, legal advice, or any guarantee of an exam outcome.",
+    },
+  ];
+
+  return (
+    <div className="info-panel" style={{ marginBottom: 24 }}>
+      <div className="eyebrow-strong" style={{ marginBottom: 14 }}>
+        ▌ CHECKOUT CONFIDENCE
+      </div>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gap: 18,
+        }}
+      >
+        {rows.map((row) => (
+          <div key={row.title}>
+            <h2
+              className="serif"
+              style={{
+                fontSize: 22,
+                lineHeight: 1.15,
+                margin: "0 0 8px",
+              }}
+            >
+              {row.title}
+            </h2>
+            <p style={{ margin: 0, color: "var(--ink-soft)", lineHeight: 1.55 }}>
+              {row.body}
+            </p>
+          </div>
+        ))}
+      </div>
+      {!hasDiagnosticContext && (
+        <div style={{ marginTop: 22 }}>
+          <Link href="/diagnostic" className="btn ghost">
+            Run free diagnostic first
+          </Link>
         </div>
       )}
     </div>

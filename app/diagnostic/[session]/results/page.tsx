@@ -106,6 +106,16 @@ const LEVEL_FALLBACKS: Record<
   },
 };
 
+function checkoutHrefForDiagnostic(diagnosticId: string): string {
+  const params = new URLSearchParams({
+    diagnostic_id: diagnosticId,
+    source: "diagnostic_results",
+    campaign: "red_zone_map",
+    lp: "diagnostic-results",
+  });
+  return `/checkout?${params.toString()}`;
+}
+
 export default function DiagnosticResultsPage({
   params,
 }: {
@@ -198,12 +208,12 @@ export default function DiagnosticResultsPage({
         <>
           <SummaryCard results={results} />
           <TopTrapPatterns patterns={results.top_trap_patterns} />
+          <ResultsDecisionPanel diagnosticId={diagnosticId} results={results} />
           <DimensionBreakdown byDimension={results.red_zones.by_dimension} />
           <RecommendationCta
             methodSlug={methodSlug}
             results={results}
           />
-          <EnrollCta />
           <AnchorStack anchors={results.anchors} />
         </>
       )}
@@ -303,6 +313,9 @@ function TopTrapPatterns({ patterns }: { patterns: DiagnosticTrapPattern[] }) {
               <p className="font-serif text-lg font-semibold text-zinc-900">
                 {p.label}
               </p>
+              <p className="mt-1 text-sm leading-5 text-zinc-700">
+                {plainEnglishTrapInsight(p)}
+              </p>
               <p className="font-mono text-[11px] uppercase tracking-wide text-zinc-500">
                 {p.subject ? `${humanizeSubject(p.subject)} · ` : ""}
                 {p.attempts} miss{p.attempts === 1 ? "" : "es"}
@@ -361,37 +374,79 @@ function DimensionBreakdown({
   );
 }
 
-// R3-01: Enrollment CTA — bridges the emotional peak (Red-Zone Map visible) to purchase.
-// Mirrors /pricing enroll button destination (/checkout) and button style.
-function EnrollCta() {
+function plainEnglishTrapInsight(pattern: DiagnosticTrapPattern): string {
+  const key = `${pattern.tag} ${pattern.label}`.toLowerCase();
+  if (key.includes("wrong_element") || key.includes("wrong element")) {
+    return "You may know the rule family, but the answer choice pulls you toward the wrong legal element under pressure.";
+  }
+  if (key.includes("bait_doctrine") || key.includes("bait doctrine")) {
+    return "A familiar doctrine name is luring you away from the rule actually being tested.";
+  }
+  if (key.includes("flat_misstatement") || key.includes("flat misstatement")) {
+    return "The answer sounds crisp, but it changes the rule or drops an element.";
+  }
+  if (key.includes("overbroad")) {
+    return "The answer overstates a real rule, which makes it feel safer than it is.";
+  }
+  if (key.includes("confidence")) {
+    return "The costly part is not just the miss; it is choosing the trap with confidence.";
+  }
+  if (pattern.high_confidence_wrongs > 0) {
+    return "This pattern includes high-confidence misses, so it is worth repairing before more timed practice.";
+  }
+  return "This is a repeated wrong-answer pattern, not a random miss. Flagship turns patterns like this into assigned repair drills.";
+}
+
+function ResultsDecisionPanel({
+  diagnosticId,
+  results,
+}: {
+  diagnosticId: string;
+  results: DiagnosticResultsResponse;
+}) {
+  const topPattern = results.top_trap_patterns[0];
+  const topLeak = resolveTopLeak(results);
+  const checkoutHref = checkoutHrefForDiagnostic(diagnosticId);
   return (
-    <div className="mt-10 rounded-lg border border-zinc-200 bg-zinc-50 p-8">
-      <p className="font-mono text-xs uppercase tracking-wider text-red-700">
-        Ready to repair your red zones?
+    <div className="mt-8 rounded-lg border border-zinc-900 bg-zinc-950 p-8 text-white shadow-sm">
+      <p className="font-mono text-xs uppercase tracking-wider text-red-400">
+        Save this Red-Zone Map
       </p>
-      <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-900">
-        Your Red-Zone Map is built. Enroll to repair it.
+      <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
+        This is the proof moment: {topLeak} is costing points now.
       </h2>
-      <p className="mt-3 text-zinc-700">
-        BarMatrix Flagship gives you the full forensic bank, targeted repair
-        drills, boot camps, and a persistent Red-Zone Map that updates as you
-        drill — so you stop practicing randomly and start fixing the patterns
-        that cost you points.
+      <p className="mt-3 text-zinc-300">
+        {topPattern
+          ? plainEnglishTrapInsight(topPattern)
+          : "This diagnostic turned your answers into a repair map instead of a generic score report."}{" "}
+        Enroll to carry this diagnostic into checkout, save the map to your
+        account, and unlock the drills built for the pattern.
       </p>
-      <p className="mt-2 font-mono text-sm font-semibold text-zinc-900">
-        $999 — July-cycle cohort. Limited seats.
+      <p className="mt-4 font-mono text-sm font-semibold text-zinc-100">
+        BarMatrix Flagship is $999. Payment plan: $500 today + $499 in 30 days.
       </p>
       <div className="mt-6 flex flex-wrap items-center gap-4">
-        <Link href="/checkout" className="btn red">
-          Enroll in Flagship <span aria-hidden>→</span>
+        <Link href={checkoutHref} className="btn red">
+          Enroll and save this map <span aria-hidden>→</span>
         </Link>
         <Link
           href="/pricing"
-          className="text-sm text-zinc-600 underline hover:text-zinc-900"
+          className="text-sm text-zinc-300 underline hover:text-white"
         >
-          See full program details
+          See payment options
         </Link>
       </div>
+      <ul className="mt-6 grid gap-3 text-sm text-zinc-300 sm:grid-cols-3">
+        {[
+          "Stripe checkout opens only after the cohort status check passes.",
+          "Your diagnostic ID travels with checkout for fulfillment.",
+          "No score, pass result, or exam outcome is guaranteed.",
+        ].map((item) => (
+          <li key={item} className="border-t border-zinc-700 pt-3">
+            {item}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

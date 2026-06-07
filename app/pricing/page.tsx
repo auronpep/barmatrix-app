@@ -92,21 +92,40 @@ export default function PricingPage() {
               </p>
             </div>
 
-            {/* Right column: scarcity + try-first */}
+            {/* Right column: capacity policy + try-first */}
             <div
               style={{ display: "flex", flexDirection: "column", gap: 32 }}
             >
-              <div className="scarcity-meter">
-                <div className="meter-row">
-                  <span className="left">July-cycle cohort</span>
-                  <span className="right">Limited Seats</span>
+              <div className="info-panel">
+                <div
+                  className="eyebrow"
+                  style={{ marginBottom: 12, color: "var(--ink)" }}
+                >
+                  ▸ CAPACITY POLICY
                 </div>
-                <div className="meter-bar">
-                  <div className="fill" style={{ width: "62%" }} />
-                </div>
-                <div className="meter-meta">
-                  Enrollment closes when capacity is reached.
-                </div>
+                <h3
+                  className="serif"
+                  style={{
+                    fontSize: 24,
+                    fontWeight: 700,
+                    margin: "0 0 12px",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  Checkout verifies availability before payment.
+                </h3>
+                <p
+                  style={{
+                    color: "var(--ink-soft)",
+                    fontSize: 15,
+                    margin: 0,
+                    lineHeight: 1.55,
+                  }}
+                >
+                  The July-cycle cohort is limited. When capacity is reached,
+                  checkout pauses and the waitlist opens; we do not show a
+                  percentage meter unless it is backed by live cohort data.
+                </p>
               </div>
 
               <div

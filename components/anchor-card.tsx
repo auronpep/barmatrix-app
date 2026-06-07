@@ -43,10 +43,14 @@ function AnchorCardItem({ anchor }: { anchor: AnchorCardData }) {
 
 export function AnchorStack({ anchors }: { anchors?: AnchorCardData[] | null }) {
   // De-dupe defensively and drop any anchor with no rule to own.
+  // De-dupe by both id AND rule text so that duplicate rule strings (R3-03)
+  // never render twice, even when the API returns them under different ids.
   const seen = new Set<string>();
+  const seenRules = new Set<string>();
   const usable = (anchors ?? []).filter((a) => {
-    if (!a || !a.rule || seen.has(a.id)) return false;
+    if (!a || !a.rule || seen.has(a.id) || seenRules.has(a.rule)) return false;
     seen.add(a.id);
+    seenRules.add(a.rule);
     return true;
   });
   const cards = usable.length > 0 ? usable : [METHOD_FALLBACK];

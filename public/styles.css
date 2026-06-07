@@ -492,14 +492,11 @@ button {
   padding: 16px 8px;
   border-bottom: 1px solid var(--rule-soft);
   align-items: start;
-  cursor: pointer;
+  cursor: default;
   transition: background 120ms;
   font-size: 15px;
   line-height: 1.45;
   position: relative;
-}
-.choice:hover {
-  background: rgba(0, 0, 0, 0.025);
 }
 .choice .letter {
   font-family: var(--mono);
@@ -626,6 +623,7 @@ button {
   padding: 14px 16px;
   background: var(--ink);
   color: var(--bg);
+  cursor: default;
 }
 .repair-cta .label {
   font-family: var(--mono);

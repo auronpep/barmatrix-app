@@ -449,8 +449,8 @@ function ChoiceButton({
   // Compact chips (COUNT_SELECT / SEQUENCE_SELECT) sit inline and size to content;
   // the default full-width left-aligned rows suit the long MCQ/label choices.
   const layout = compact
-    ? "rounded-md border px-4 py-2 text-sm font-medium transition"
-    : "w-full rounded-md border px-3 py-2 text-left text-sm leading-6 transition";
+    ? "min-h-[44px] rounded-md border px-4 py-2 text-sm font-medium transition"
+    : "min-h-[44px] w-full rounded-md border px-3 py-2 text-left text-sm leading-6 transition";
   return (
     <button
       type="button"
@@ -484,7 +484,7 @@ function StatusButton({
       onClick={onClick}
       disabled={disabled}
       aria-pressed={selected}
-      className={`rounded-md border px-4 py-2 text-sm font-medium transition ${markClasses(
+      className={`min-h-[44px] rounded-md border px-4 py-2 text-sm font-medium transition ${markClasses(
         selected,
         correct,
       )}`}

@@ -215,7 +215,7 @@ export default function DiagnosticQuestionPage({
   };
 
   return (
-    <section className="mx-auto max-w-3xl px-6 py-12">
+    <section className="mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-12">
       <ProgressIndicator current={index + 1} total={total} />
 
       {phase === "loading" && <Loading />}
@@ -264,7 +264,7 @@ function ProgressIndicator({
 }) {
   if (total <= 0) return null;
   return (
-    <p className="mb-8 font-mono text-xs uppercase tracking-wider text-zinc-500">
+    <p className="mb-4 font-mono text-xs uppercase tracking-wider text-zinc-500 sm:mb-8">
       Question {current} of {total}
     </p>
   );
@@ -353,24 +353,24 @@ function QuestionCard({
   onSubmit: () => void;
 }) {
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white p-8 shadow-sm">
+    <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:p-8">
       <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
         {question.subject}
         {question.subtopic ? ` · ${question.subtopic}` : ""}
       </p>
 
-      <div className="mt-4 whitespace-pre-line text-base leading-relaxed text-zinc-800">
+      <div className="mt-3 whitespace-pre-line text-base leading-relaxed text-zinc-800 sm:mt-4">
         {question.fact_pattern}
       </div>
 
       {question.call_of_question &&
         !question.fact_pattern.includes(question.call_of_question.trim()) && (
-          <p className="mt-6 text-base font-medium text-zinc-900">
+          <p className="mt-4 text-base font-medium text-zinc-900 sm:mt-6">
             {question.call_of_question}
           </p>
         )}
 
-      <ul className="mt-6 space-y-3">
+      <ul className="mt-4 space-y-2 sm:mt-6 sm:space-y-3">
         {question.choices.map((choice) => {
           const isSelected = selected === choice.letter;
           return (
@@ -380,7 +380,7 @@ function QuestionCard({
                 disabled={disabled}
                 onClick={() => onSelect(choice.letter)}
                 aria-pressed={isSelected}
-                className={`w-full rounded-md !border-2 !border-solid px-4 py-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 ${
+                className={`min-h-[44px] w-full rounded-md !border-2 !border-solid px-4 py-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 ${
                   isSelected
                     ? "!border-zinc-900 !bg-zinc-900 !text-white"
                     : "!border-zinc-200 !bg-white !text-zinc-800 hover:!border-zinc-500 hover:!bg-zinc-50"
@@ -394,7 +394,7 @@ function QuestionCard({
         })}
       </ul>
 
-      <div className="mt-8">
+      <div className="mt-5 sm:mt-8">
         <label className="block text-sm font-medium text-zinc-800">
           Confidence: <span className="font-mono">{confidence}</span> / 5
         </label>
@@ -420,7 +420,7 @@ function QuestionCard({
         type="button"
         onClick={onSubmit}
         disabled={disabled || selected === null}
-        className="btn red mt-8"
+        className="btn red mt-5 sm:mt-8"
       >
         {disabled ? "Submitting answer..." : "Submit answer"}
       </button>

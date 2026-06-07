@@ -342,27 +342,29 @@ function CheckoutContextPanel({
           </p>
         </div>
       </div>
-      <div
-        className="mono"
-        style={{
-          marginTop: 18,
-          paddingTop: 14,
-          borderTop: "1px solid var(--rule-soft)",
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 14,
-          fontSize: 11,
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          color: "var(--muted)",
-        }}
-      >
-        <span>lp: {attribution.lp}</span>
-        <span>source: {attribution.source}</span>
-        <span>campaign: {attribution.campaign}</span>
-        <span>partner: {attribution.partner}</span>
-        <span>referral: {attribution.referral}</span>
-      </div>
+      {process.env.NODE_ENV === "development" && (
+        <div
+          className="mono"
+          style={{
+            marginTop: 18,
+            paddingTop: 14,
+            borderTop: "1px solid var(--rule-soft)",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 14,
+            fontSize: 11,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            color: "var(--muted)",
+          }}
+        >
+          <span>lp: {attribution.lp}</span>
+          <span>source: {attribution.source}</span>
+          <span>campaign: {attribution.campaign}</span>
+          <span>partner: {attribution.partner}</span>
+          <span>referral: {attribution.referral}</span>
+        </div>
+      )}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import { AnalyticsEvents } from "./analytics-events";
 import { NavAuth } from "./nav-auth";
+import { MobileNavToggle } from "@/components/mobile-nav";
 import { BRAND, DISCLAIMER, DOMAIN } from "@/lib/copy";
 
 const SITE_DESCRIPTION =
@@ -118,6 +119,7 @@ export default function RootLayout({
                 <Link href="/diagnostic" className="btn btn-sm red hide-md">
                   Free Diagnostic <span className="arrow">→</span>
                 </Link>
+                <MobileNavToggle />
               </div>
             </div>
           </nav>

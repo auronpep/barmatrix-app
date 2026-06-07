@@ -101,6 +101,8 @@ button {
   top: 6px;
   z-index: 49;
   backdrop-filter: blur(8px);
+  /* needed to anchor the mobile-nav-drawer absolutely within it */
+  position: sticky;
 }
 .nav-inner {
   max-width: var(--maxw);
@@ -1138,6 +1140,67 @@ button {
   margin: 48px 0;
 }
 
+/* ====== MOBILE NAV HAMBURGER ====== */
+.mobile-nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+  /* override the global button reset with !important per design-system gotcha */
+  border: 1px solid var(--ink) !important;
+  background: transparent !important;
+  color: var(--ink) !important;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 120ms, color 120ms;
+}
+.mobile-nav-toggle:hover {
+  background: var(--ink) !important;
+  color: var(--bg) !important;
+}
+.mobile-nav-drawer {
+  position: absolute;
+  top: calc(100% + 1px);
+  left: 0;
+  right: 0;
+  background: var(--bg);
+  border-bottom: 2px solid var(--ink);
+  z-index: 48;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+.mobile-nav-link {
+  display: block;
+  padding: 14px var(--gutter);
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  border-bottom: 1px solid var(--rule-soft);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.mobile-nav-link:last-child {
+  border-bottom: none;
+}
+.mobile-nav-link.mobile-nav-cta {
+  font-weight: 700;
+  color: var(--red);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 13px;
+  margin-top: 4px;
+}
+.mobile-nav-link:hover {
+  background: var(--bg-alt);
+}
+
 /* ====== RESPONSIVE ====== */
 @media (max-width: 960px) {
   .hero-grid { grid-template-columns: 1fr; gap: 48px; }
@@ -1150,13 +1213,46 @@ button {
   .nav-links { display: none; }
   .section { padding: 64px 0; }
   .nav-cta .hide-md { display: none; }
+
+  /* Show hamburger toggle on tablet/mobile */
+  .mobile-nav-toggle { display: flex; }
 }
 
 @media (max-width: 640px) {
+  :root { --gutter: 20px; }
   .four-col { grid-template-columns: 1fr; }
   .stat-strip { grid-template-columns: 1fr; }
   .stat-strip > div { border-right: none; border-bottom: 1px solid var(--rule); }
   .stat-strip > div:last-child { border-bottom: none; }
   .footer-grid { grid-template-columns: 1fr; }
   .footer-bottom { flex-direction: column; gap: 12px; align-items: flex-start; }
+
+  /* R3-09: forensics demo card — metadata row: switch to 2×2 grid with clear gap */
+  .q-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 20px;
+    margin: 0 -20px 20px;
+    padding: 12px 20px;
+  }
+  /* Add a visual right-border on odd cells so DIFFICULTY / TENSION don't bleed together */
+  .q-meta > div:nth-child(odd) {
+    padding-right: 12px;
+    border-right: 1px solid var(--rule-soft);
+  }
+  .forensics-body { padding: 20px; }
+  .forensic-breakdown {
+    margin-left: -20px;
+    margin-right: -20px;
+    margin-bottom: -20px;
+    padding: 20px;
+  }
+  .choice {
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 10px;
+    padding: 12px 0;
+  }
+  .choice .pct {
+    grid-column: 2;
+    white-space: normal;
+  }
 }

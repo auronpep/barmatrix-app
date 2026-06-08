@@ -16,9 +16,12 @@ import { usePathname } from "next/navigation";
 
 type NavItem = { href: string; label: string };
 
-// The three dashboard views, all under /dashboard, switched via the primary tabs.
+// The dashboard views, switched via the primary tabs. "My Path" (the J7 guided
+// "lead me" surface) leads; "Full Dashboard" is the metric wall for power users
+// and students who have finished the path.
 const VIEW_TABS: readonly NavItem[] = [
-  { href: "/dashboard", label: "Overview" },
+  { href: "/dashboard/path", label: "My Path" },
+  { href: "/dashboard", label: "Full Dashboard" },
   { href: "/dashboard/mastery", label: "Mastery Board" },
   { href: "/dashboard/final-sprint", label: "Final Sprint" },
 ];

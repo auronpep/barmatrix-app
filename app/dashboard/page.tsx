@@ -13,6 +13,8 @@ import {
 import { useDashboard } from "@/lib/use-dashboard";
 import { useFoundations } from "@/lib/use-foundations";
 import { useC3 } from "@/lib/use-c3";
+import { usePath } from "@/lib/use-path";
+import PathSurface from "@/components/path/path-surface";
 import type { FoundationsOutline } from "@/lib/api-client";
 
 // Static path guide — the repair loop shape, shown regardless of data state.
@@ -42,6 +44,7 @@ export default function DashboardPage() {
   const dash = useDashboard();
   const foundations = useFoundations();
   const c3 = useC3();
+  const path = usePath();
   const [status, setStatus] = useState<CohortStatus | null>(null);
   const [cohortError, setCohortError] = useState<string | null>(null);
 
@@ -76,6 +79,20 @@ export default function DashboardPage() {
     (foundations.data != null && !foundations.data.progress.complete);
 
   const banner = resolveBanner(dash, hasData, methodEntryPending);
+
+  // J7: an enrolled student who hasn't finished the guided path lands on the
+  // prescribed "lead me" surface instead of the metric wall. The path's Foundations
+  // step subsumes the MethodGate, so neither it nor the wall render while active.
+  // `path.loading` holds the takeover so the wall never flashes first. Once the
+  // path is complete (next_step === null) the normal dashboard returns below.
+  const showPath = path.signedIn && (path.loading || path.data?.next_step != null);
+  if (showPath) {
+    return (
+      <section className="mx-auto max-w-3xl px-6 py-10 sm:py-14">
+        <PathSurface state={path} />
+      </section>
+    );
+  }
 
   return (
     <section className="mx-auto max-w-7xl px-6 py-10 sm:py-14">

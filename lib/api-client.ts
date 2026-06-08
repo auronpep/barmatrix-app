@@ -1500,6 +1500,110 @@ export interface CertSubmitAnswer {
   flag?: boolean;
 }
 
+// --- J7 Guided "Lead Me" Path ---
+// One prescribed next task at a time. Mirrors barmatrix-api src/lib/path-engine.ts
+// (public shapes only) and routes/path.ts.
+
+export type PathStepKind =
+  | "quiz_set"
+  | "foundations_lesson"
+  | "flashcard_deck"
+  | "doctrinal_lesson"
+  | "micro_read"
+  | "reflect"
+  | "celebrate";
+
+export type PathStepTarget =
+  | { kind: "route"; href: string }
+  | { kind: "quiz"; set_id: string; question_ids: string[] }
+  | { kind: "flashcard"; deck_id: string }
+  | { kind: "doctrinal"; slug: string }
+  | { kind: "inline" };
+
+export interface PathPublicStep {
+  id: string;
+  day: number;
+  kind: PathStepKind;
+  is_milestone: boolean;
+  title: string;
+  microcopy: string;
+  xp: number;
+  target: PathStepTarget;
+  is_fallback: boolean;
+  source: "today" | "backlog" | null;
+}
+
+export interface PathMilestone {
+  step_id: string;
+  title: string;
+  kind: PathStepKind;
+  day: number;
+  order: number;
+  completed: boolean;
+  available: boolean;
+}
+
+export interface PathGamification {
+  total_xp: number;
+  current_streak: number;
+  longest_streak: number;
+  badges: Array<{ slug: string; label: string; emoji: string; earned_at: string }>;
+}
+
+export interface PathResponse {
+  path_version: number;
+  day_count: number;
+  next_step: PathPublicStep | null;
+  current_day: number;
+  total_steps: number;
+  completed_steps: number;
+  day_total_steps: number;
+  day_completed_steps: number;
+  day_complete: boolean;
+  milestones: PathMilestone[];
+  gamification: PathGamification;
+}
+
+export interface PathCompleteResponse {
+  step_id: string;
+  status: "completed" | "already_complete" | "not_provisioned";
+  xp_earned: number;
+  total_xp: number | null;
+  badges_unlocked: string[];
+  next_step: PathPublicStep | null;
+}
+
+export interface FlashCardPublic {
+  card_id: string;
+  front: string;
+  back: string;
+}
+
+export interface FlashcardDeckResponse {
+  deck_id: string;
+  deck_title: string;
+  subject: string;
+  card_count: number;
+  cards: FlashCardPublic[];
+}
+
+export interface FlashcardCompleteResponse {
+  deck_id: string;
+  persisted: boolean;
+  reason?: string;
+  reviewed: number;
+  card_count: number;
+  complete: boolean;
+}
+
+export interface DoctrinalLessonResponse {
+  slug: string;
+  title: string;
+  subject: string;
+  estimated_minutes: number;
+  body_md: string;
+}
+
 export const api = {
   cohortStatus: () => request<CohortStatus>("/api/cohort/status"),
 
@@ -1806,6 +1910,40 @@ export const api = {
         body: JSON.stringify(payload),
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       },
+    ),
+
+  // --- J7 Guided "Lead Me" Path (Clerk-gated, server-derives the student) ---
+  getMyPath: (token: string, init?: RequestInit) =>
+    authedRequest<PathResponse>("/api/me/path", token, init),
+
+  completePathStep: (token: string, stepId: string) =>
+    authedRequest<PathCompleteResponse>(
+      `/api/me/path/${encodeURIComponent(stepId)}/complete`,
+      token,
+      { method: "POST", body: JSON.stringify({}) },
+    ),
+
+  // Public flashcard deck content.
+  getFlashcardDeck: (deckId: string, init?: RequestInit) =>
+    request<FlashcardDeckResponse>(
+      `/api/flashcards/${encodeURIComponent(deckId)}`,
+      init,
+    ),
+
+  // Record reviewed cards (enrolled). XP for the path step is granted separately
+  // by completePathStep (which reads the review count).
+  completeFlashcardDeck: (token: string, deckId: string, cardsReviewed: string[]) =>
+    authedRequest<FlashcardCompleteResponse>(
+      `/api/me/flashcards/${encodeURIComponent(deckId)}/complete`,
+      token,
+      { method: "POST", body: JSON.stringify({ cards_reviewed: cardsReviewed }) },
+    ),
+
+  // Doctrinal lesson content — 503 until DOCTRINAL_APPROVED on the API.
+  getDoctrinalLesson: (slug: string, init?: RequestInit) =>
+    request<DoctrinalLessonResponse>(
+      `/api/study/doctrinal/${encodeURIComponent(slug)}`,
+      init,
     ),
 
   // --- C3 Mastery (flagship measurement surface) ---

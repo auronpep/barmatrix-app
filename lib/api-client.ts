@@ -1511,13 +1511,15 @@ export type PathStepKind =
   | "doctrinal_lesson"
   | "micro_read"
   | "reflect"
-  | "celebrate";
+  | "celebrate"
+  | "mini_drill";
 
 export type PathStepTarget =
   | { kind: "route"; href: string }
   | { kind: "quiz"; set_id: string; question_ids: string[] }
   | { kind: "flashcard"; deck_id: string }
   | { kind: "doctrinal"; slug: string }
+  | { kind: "mini_drill"; drill_id: string }
   | { kind: "inline" };
 
 export interface PathPublicStep {
@@ -1602,6 +1604,29 @@ export interface DoctrinalLessonResponse {
   subject: string;
   estimated_minutes: number;
   body_md: string;
+}
+
+export interface MiniDrillChoice {
+  id: string;
+  text: string;
+}
+
+export interface MiniDrillQuestion {
+  id: string;
+  stem: string;
+  choices: MiniDrillChoice[];
+  answer_id: string;
+  explanation: string;
+}
+
+export interface MiniDrillResponse {
+  drill_id: string;
+  drill_type: "charge_picker" | "trap_spotter";
+  title: string;
+  subject: string;
+  instruction: string;
+  question_count: number;
+  questions: MiniDrillQuestion[];
 }
 
 export const api = {
@@ -1943,6 +1968,13 @@ export const api = {
   getDoctrinalLesson: (slug: string, init?: RequestInit) =>
     request<DoctrinalLessonResponse>(
       `/api/study/doctrinal/${encodeURIComponent(slug)}`,
+      init,
+    ),
+
+  // Mini-drill content — public, no auth required.
+  getMiniDrill: (drillId: string, init?: RequestInit) =>
+    request<MiniDrillResponse>(
+      `/api/study/mini-drill/${encodeURIComponent(drillId)}`,
       init,
     ),
 

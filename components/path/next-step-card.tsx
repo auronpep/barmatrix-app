@@ -29,6 +29,8 @@ function actionLabel(step: PathPublicStep): string {
       return "Read it →";
     case "quiz_set":
       return "Start the set →";
+    case "mini_drill":
+      return "Answer questions →";
     case "celebrate":
       return "Keep going →";
     default:
@@ -44,6 +46,8 @@ function hrefFor(step: PathPublicStep): string | null {
       return `/flashcards/${encodeURIComponent(step.target.deck_id)}?step=${encodeURIComponent(step.id)}`;
     case "doctrinal":
       return `/study/doctrinal/${encodeURIComponent(step.target.slug)}?step=${encodeURIComponent(step.id)}`;
+    case "mini_drill":
+      return `/study/mini-drill/${encodeURIComponent(step.target.drill_id)}?step=${encodeURIComponent(step.id)}`;
     case "quiz":
       // Curated quiz sets are founder-gated (empty until hand-picked IDs land), so
       // this never renders at launch. Placeholder until the path-quiz runner ships.

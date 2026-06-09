@@ -10,6 +10,10 @@ import PathProgressStrip from "./path-progress-strip";
 import MilestoneMap from "./milestone-map";
 
 const CLAIM_KEY = "bm_path_claim";
+type OptimisticOverride = {
+  base: PathResponse | null;
+  data: PathResponse;
+};
 
 // The "lead me" surface. Renders exactly one next task (or a caught-up state),
 // the gamified progress strip, and the milestone map. Owns inline step completion
@@ -17,15 +21,10 @@ const CLAIM_KEY = "bm_path_claim";
 // usePath so a host page can gate on it without double-fetching.
 export default function PathSurface({ state }: { state: PathState }) {
   const { getToken } = useClerkAuth();
-  const [override, setOverride] = useState<PathResponse | null>(null);
+  const [override, setOverride] = useState<OptimisticOverride | null>(null);
   const [busy, setBusy] = useState(false);
   const [flash, setFlash] = useState<string | null>(null);
   const claimed = useRef(false);
-
-  // Fresh server data supersedes any optimistic override.
-  useEffect(() => {
-    setOverride(null);
-  }, [state.data]);
 
   // One-shot: claim XP for an external step (foundations lesson) finished off-page.
   useEffect(() => {
@@ -49,7 +48,10 @@ export default function PathSurface({ state }: { state: PathState }) {
       if (!token || cancelled) return;
       // 200 grants XP if the signal is satisfied; 422 (bailed early) is a no-op.
       await api.completePathStep(token, pending).catch(() => undefined);
-      if (!cancelled) state.reload();
+      if (!cancelled) {
+        await state.reload();
+        setOverride(null);
+      }
     })();
     return () => {
       cancelled = true;
@@ -63,18 +65,21 @@ export default function PathSurface({ state }: { state: PathState }) {
         const token = await getToken();
         if (!token) throw new Error("no token");
         const res = await api.completePathStep(token, stepId);
-        const base = override ?? state.data;
-        if (base) {
+        const current = override?.data ?? state.data;
+        if (current) {
           setOverride({
-            ...base,
-            next_step: res.next_step,
-            completed_steps:
-              base.completed_steps + (res.status === "completed" ? 1 : 0),
-            day_completed_steps:
-              base.day_completed_steps + (res.status === "completed" ? 1 : 0),
-            gamification: {
-              ...base.gamification,
-              total_xp: res.total_xp ?? base.gamification.total_xp,
+            base: state.data,
+            data: {
+              ...current,
+              next_step: res.next_step,
+              completed_steps:
+                current.completed_steps + (res.status === "completed" ? 1 : 0),
+              day_completed_steps:
+                current.day_completed_steps + (res.status === "completed" ? 1 : 0),
+              gamification: {
+                ...current.gamification,
+                total_xp: res.total_xp ?? current.gamification.total_xp,
+              },
             },
           });
         }
@@ -110,7 +115,8 @@ export default function PathSurface({ state }: { state: PathState }) {
     );
   }
 
-  const data = override ?? state.data;
+  const data =
+    override && override.base === state.data ? override.data : state.data;
   if (!data) {
     return <CenterNote>Loading your path…</CenterNote>;
   }

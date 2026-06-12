@@ -216,6 +216,16 @@ export const ANALYTICS_EVENT_CATALOG = {
     required: ["trap_tags"],
     optional: ["session_id", "cohort_id"],
   },
+  red_zone_map_save_requested: {
+    area: "diagnostic",
+    required: ["source", "status"],
+    optional: ["session_id", "trap_tags"],
+  },
+  red_zone_map_shared: {
+    area: "diagnostic",
+    required: ["channel", "trap_tags"],
+    optional: ["session_id", "score_band"],
+  },
   trap_taxonomy_viewed: {
     area: "product",
     required: ["trap_count"],
@@ -1588,6 +1598,46 @@ export function trackRedZonePreviewViewedOnce(input: RedZonePreviewInput): boole
   }
 
   return captured;
+}
+
+type MapSaveRequestedInput = {
+  status: "submitted" | "saved" | "error";
+  trapTags?: readonly string[];
+  sessionId?: string | null;
+};
+
+export function trackMapSaveRequested({
+  status,
+  trapTags,
+  sessionId,
+}: MapSaveRequestedInput): boolean {
+  return trackAnalyticsEvent("red_zone_map_save_requested", {
+    source: "diagnostic_results",
+    status,
+    trap_tags: trapTags ? normalizeTrapTags([...trapTags]) : undefined,
+    session_id: cleanToken(sessionId) || getAnalyticsSession().session_id,
+  });
+}
+
+type MapSharedInput = {
+  channel: "web_share" | "clipboard";
+  trapTags: readonly string[];
+  scoreBand?: string | null;
+  sessionId?: string | null;
+};
+
+export function trackMapShared({
+  channel,
+  trapTags,
+  scoreBand,
+  sessionId,
+}: MapSharedInput): boolean {
+  return trackAnalyticsEvent("red_zone_map_shared", {
+    channel,
+    trap_tags: normalizeTrapTags([...trapTags]),
+    score_band: cleanToken(scoreBand) || undefined,
+    session_id: cleanToken(sessionId) || getAnalyticsSession().session_id,
+  });
 }
 
 export function trackQuestionAttempted({

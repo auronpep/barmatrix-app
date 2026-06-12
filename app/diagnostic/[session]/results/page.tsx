@@ -24,6 +24,8 @@ import { useFoundations } from "@/lib/use-foundations";
 import { userFacingResourceError } from "@/lib/user-facing-errors";
 import { rememberDiagnosticId } from "@/lib/diagnostic-session";
 import { AnchorStack } from "@/components/anchor-card";
+import { SaveMapForm } from "@/components/save-map-form";
+import { ShareMap } from "@/components/share-map";
 import { humanizeSubject } from "@/lib/format-subject";
 
 const DIMENSION_LABELS: Record<string, string> = {
@@ -209,6 +211,15 @@ export default function DiagnosticResultsPage({
           <SummaryCard results={results} />
           <TopTrapPatterns patterns={results.top_trap_patterns} />
           <ResultsDecisionPanel diagnosticId={diagnosticId} results={results} />
+          <SaveMapForm
+            diagnosticId={diagnosticId}
+            topTrapTags={topTrapTags(results)}
+          />
+          <ShareMap
+            patterns={results.top_trap_patterns}
+            scoreBand={scoreBandFromPct(results.summary.score_pct)}
+            sessionId={diagnosticId}
+          />
           <DimensionBreakdown byDimension={results.red_zones.by_dimension} />
           <RecommendationCta
             methodSlug={methodSlug}

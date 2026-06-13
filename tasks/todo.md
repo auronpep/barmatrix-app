@@ -3246,6 +3246,7 @@ Restore the paid-user dashboard behavior from the old BMO-operated BarMatrix app
 - 2026-06-12: Live enrolled QA dashboard initially proved the app restoration but exposed an API copy issue: the API still served internal labels like `Diagnostic A question 1` and `Diagnostic A external question 14556`.
 - 2026-06-12: API worktree `C:\barmatrix-api\.worktrees\checkout-clerk-access` commit `ee727b3` (`Clean Lead Me day-plan labels`) was built, manually deployed to Hostinger from the same artifacts using the documented atomic staging/swap pattern after `scripts\deploy.sh` hung at the Windows bash boundary, and production API health returned `{"ok":true,"db":"up"}`.
 - 2026-06-12: Live enrolled QA dashboard after API restart rendered `Lead Me`, `First 3 Days`, Day 1 active, Day 2/3 locked, `Current Task`, and `Illegal arrest remedy trap`; it no longer showed sign-in/enroll prompts, `Diagnostic A external question 14556`, internal content codes, raw errors, browser errors, or horizontal overflow.
+- 2026-06-12: Live enrolled QA diagnostic-results check passed after submitting an 18-question placement session. `/diagnostic/session/<session>/results` rendered `Your C3 Starting Level`, `Recommended Next Step - L1`, and `Start The Method`, with no enrollment pitch, no raw errors, no browser errors, one `<main>`, and no horizontal overflow.
 
 ## Review Results
 

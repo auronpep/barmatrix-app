@@ -1,5 +1,86 @@
 # BarMatrix Full Bug Audit
 
+# Live Coach Baseline Loop Verification - 2026-06-13
+
+## Scope
+
+- Verify the live paid C3 Coach is no longer a dead coverage-pending stop for the signed-in enrolled account.
+- Prove the user can start a baseline coaching item and submit an answer through the production app/API.
+
+## Plan
+
+- [x] Open live `/coach` in the signed-in browser session.
+- [x] Start the coaching session from the visible `Start coaching` control.
+- [x] Submit an answer and verify feedback renders.
+- [x] Record live route, layout, and console evidence.
+
+## Verification
+
+- Live URL: `https://barmatrix.app/coach?audit=coach_live_20260613`.
+- Initial page rendered one `<main>`, no horizontal overflow, no runtime error text, no coverage-pending dead end, and no browser console errors.
+- Clicking `Start coaching` rendered a baseline coach item with `Starting with a baseline question: Starter C3 Baseline (issue sense)` and `Submit answer`.
+- Submitting answer choice `A` rendered `Correct`, `Why that answer was right`, and `Next question`.
+- Post-submit verification had one `<main>`, no horizontal overflow, no runtime error text, and no browser console errors.
+
+## Review
+
+- Status: LIVE-VERIFIED.
+- C3 Coach now provides a usable baseline coaching loop while deeper authored C3 mold-tag coverage continues to mature.
+
+# Live Certification M1 Submit Verification - 2026-06-13
+
+## Scope
+
+- Verify the live paid certification route can load a competency, accept answers, grade, and show remediation without a sync/persistence failure.
+
+## Plan
+
+- [x] Open live `/certification` in the signed-in browser session.
+- [x] Open `/certification/M1`.
+- [x] Select one answer for all ten M1 items.
+- [x] Submit for grading and verify the result page.
+
+## Verification
+
+- Live certification index URL: `https://barmatrix.app/certification?audit=cert_live_20260613`.
+- Index rendered `C3 Mastery Certification`, all ten competency entries, one `<main>`, no horizontal overflow, no runtime error text, no `sync pending` / `not saved` marker, and no browser console errors.
+- Live M1 URL: `https://barmatrix.app/certification/M1?audit=cert_m1_live_20260613`.
+- M1 rendered ten radio-answer items and `Submit for grading`.
+- Selected `NOT-TRUE` for all ten items, submitted, and the results page rendered `M1 · Results`, `Score 5`, item-by-item correct/missed rows, and `Repair -> lesson-01` / `Repair -> lesson-02`.
+- Post-submit verification had one `<main>`, no horizontal overflow, no runtime error text, no `sync pending` / `not saved` marker, and no browser console errors.
+
+## Review
+
+- Status: LIVE-VERIFIED.
+- Certification is currently a preview/sample-item certification loop, but the live route is usable and graded instead of broken or unsaved.
+
+# Live Timed Set Submit Verification - 2026-06-13
+
+## Scope
+
+- Verify the live paid timed-set engine starts a mixed set, accepts an answer, and opens the feedback loop.
+
+## Plan
+
+- [x] Open live `/timed-sets` in the signed-in browser session.
+- [x] Start the 17-question mixed timed set.
+- [x] Select an answer and submit.
+- [x] Verify graded feedback and next-step CTA.
+
+## Verification
+
+- Live URL: `https://barmatrix.app/timed-sets?audit=timed_live_20260613`.
+- Initial timed-set page rendered `Timed Set Engine`, `17-question mixed set`, one `<main>`, no horizontal overflow, no runtime error text, and no browser console errors.
+- Clicking `Start timed mixed set` rendered question `1/17`, kept the subject hidden before submit, showed a running `29:56` clock, and disabled `Submit answer` until an answer was selected.
+- Selecting answer `C` enabled `Submit answer`.
+- Submitting rendered `Correct`, `Transfer held under time`, `Rule fit`, and `Next timed question`.
+- Post-submit verification had one `<main>`, no horizontal overflow, no runtime error text, and no browser console errors.
+
+## Review
+
+- Status: LIVE-VERIFIED.
+- Timed Sets are usable for the first-question timed transfer loop in production.
+
 # Final Sprint Drill Label Polish - 2026-06-13
 
 ## Scope

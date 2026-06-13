@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, type ReactNode } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useRef, useState, type ReactNode } from "react";
 import {
   api,
   API_URL,
@@ -12,6 +13,7 @@ import {
   type QuestionPayload,
 } from "@/lib/api-client";
 import { useSubmitAttempt } from "@/lib/use-attempts";
+import { useClerkAuth } from "@/lib/use-clerk-auth";
 import { BRAND } from "@/lib/copy";
 import { formatStudyLabel } from "@/lib/study-labels";
 
@@ -143,7 +145,19 @@ function readableLabel(value: string | null): string {
 }
 
 export default function CriminalLawDrillPage() {
+  return (
+    <Suspense fallback={<StatusPanel title="Loading Criminal Law drill" />}>
+      <CriminalLawDrillClient />
+    </Suspense>
+  );
+}
+
+function CriminalLawDrillClient() {
+  const router = useRouter();
+  const search = useSearchParams();
   const submitAttempt = useSubmitAttempt();
+  const { getToken, isSignedIn } = useClerkAuth();
+  const stepId = search.get("step");
   const [phase, setPhase] = useState<Phase>("idle");
   const [queue, setQueue] = useState<SubjectQuestionRef[]>([]);
   const [index, setIndex] = useState(0);
@@ -153,6 +167,7 @@ export default function CriminalLawDrillPage() {
   const [attempt, setAttempt] = useState<AttemptResponse | null>(null);
   const [forensics, setForensics] = useState<ForensicsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [savingLeadMeTask, setSavingLeadMeTask] = useState(false);
   const setIdRef = useRef<string | null>(null);
   const startedAtRef = useRef(0);
 
@@ -247,6 +262,24 @@ export default function CriminalLawDrillPage() {
 
   const next = () => {
     void loadQuestion(index + 1);
+  };
+
+  const finishLeadMeTask = async () => {
+    if (!stepId) return;
+    setSavingLeadMeTask(true);
+    setError(null);
+    try {
+      if (isSignedIn) {
+        const token = await getToken();
+        if (token) await api.completeMyDayPlanStep(token, stepId);
+      }
+      router.push("/dashboard/path");
+    } catch (nextError) {
+      setError(humanError(nextError));
+      setPhase("error");
+    } finally {
+      setSavingLeadMeTask(false);
+    }
   };
 
   return (
@@ -348,8 +381,10 @@ export default function CriminalLawDrillPage() {
             phase={phase}
             attempt={attempt}
             forensics={forensics}
-            onNext={next}
+            onNext={stepId ? finishLeadMeTask : next}
             isLast={isLast}
+            isLeadMeTask={Boolean(stepId)}
+            savingLeadMeTask={savingLeadMeTask}
           />
         </div>
       )}
@@ -520,12 +555,16 @@ function ForensicsPanel({
   forensics,
   onNext,
   isLast,
+  isLeadMeTask,
+  savingLeadMeTask,
 }: {
   phase: Phase;
   attempt: AttemptResponse | null;
   forensics: ForensicsResponse | null;
   onNext: () => void;
   isLast: boolean;
+  isLeadMeTask: boolean;
+  savingLeadMeTask: boolean;
 }) {
   if (phase === "forensics" && attempt && forensics) {
     return (
@@ -589,9 +628,16 @@ function ForensicsPanel({
         <button
           type="button"
           onClick={onNext}
+          disabled={savingLeadMeTask}
           className="btn btn-lg red mt-6 w-full justify-center"
         >
-          {isLast ? "Finish drill" : "Next Criminal Law question"}
+          {savingLeadMeTask
+            ? "Saving..."
+            : isLeadMeTask
+              ? "Finish Lead Me task"
+              : isLast
+                ? "Finish drill"
+                : "Next Criminal Law question"}
         </button>
       </aside>
     );

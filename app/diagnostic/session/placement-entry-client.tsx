@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { api, ApiClientError, type PlacementSessionStartResponse } from "@/lib/api-client";
 
 type Phase = "intro" | "starting" | "error";
@@ -26,8 +26,10 @@ function cachePlacementSession(result: PlacementSessionStartResponse): void {
 
 export function PlacementEntryClient() {
   const router = useRouter();
+  const search = useSearchParams();
   const [phase, setPhase] = useState<Phase>("intro");
   const [error, setError] = useState<string | null>(null);
+  const stepId = search.get("step");
 
   const start = async () => {
     setPhase("starting");
@@ -35,7 +37,11 @@ export function PlacementEntryClient() {
     try {
       const result = await api.startPlacementSession();
       cachePlacementSession(result);
-      router.push(`/diagnostic/session/${result.session_id}`);
+      router.push(
+        `/diagnostic/session/${result.session_id}${
+          stepId ? `?step=${encodeURIComponent(stepId)}` : ""
+        }`,
+      );
     } catch (err) {
       const message =
         err instanceof ApiClientError

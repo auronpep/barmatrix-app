@@ -46,4 +46,21 @@ describe("J7 guided path dashboard", () => {
     assert.doesNotMatch(source, /api\.completePathStep\(token, stepId\)/);
     assert.match(source, /Finish card/);
   });
+
+  it("preserves Lead Me step context through placement questions and Criminal Law drills", () => {
+    const placementEntry = readProjectFile("app/diagnostic/session/placement-entry-client.tsx");
+    const placementSession = readProjectFile("app/diagnostic/session/[sessionId]/page.tsx");
+    const criminalDrill = readProjectFile("app/drills/criminal-law/page.tsx");
+
+    assert.match(placementEntry, /search\.get\("step"\)/);
+    assert.match(placementEntry, /\/diagnostic\/session\/\$\{result\.session_id\}/);
+    assert.match(placementEntry, /step=\$\{encodeURIComponent\(stepId\)\}/);
+
+    for (const source of [placementSession, criminalDrill]) {
+      assert.match(source, /search\.get\("step"\)/);
+      assert.match(source, /api\.completeMyDayPlanStep\(token, stepId\)/);
+      assert.doesNotMatch(source, /api\.completePathStep\(token, stepId\)/);
+      assert.match(source, /Finish Lead Me task/);
+    }
+  });
 });

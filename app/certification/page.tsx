@@ -4,6 +4,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { useCertification } from "@/lib/use-certification";
 import type { CertCompetencyStatus } from "@/lib/api-client";
+import {
+  formatCertificationCapture,
+  formatCertificationCode,
+} from "@/lib/certification-labels";
 
 export default function CertificationPage() {
   const { loading, signedIn, data, error } = useCertification();
@@ -115,13 +119,15 @@ export default function CertificationPage() {
   return (
     <Shell>
       <p className="font-mono text-xs uppercase tracking-wider text-red-700">
-        {data.preview ? "Preview Certification" : "Certification"}
+        Certification
       </p>
       <h1 className="mt-3 font-serif text-4xl font-semibold tracking-tight text-zinc-950">
         {data.title}
       </h1>
       <p className="mt-4 border-l-2 border-red-700 bg-zinc-50 py-3 pl-4 text-sm leading-6 text-zinc-700">
-        {data.preview_note}
+        {data.preview
+          ? "Your certification scorecard tracks each C3 mastery check and routes misses back into The Method."
+          : data.preview_note}
       </p>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -167,13 +173,13 @@ function CompetencyCard({ comp }: { comp: CertCompetencyStatus }) {
     >
       <div>
         <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">
-          {comp.id}
+          {formatCertificationCode(comp.id)}
         </p>
         <p className="mt-1 font-serif text-lg font-semibold leading-tight text-zinc-950">
           {comp.title}
         </p>
         <p className="mt-1 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
-          {comp.capture.replace(/_/g, " ")} · attempts {comp.attempts}
+          {formatCertificationCapture(comp.capture)} · attempts {comp.attempts}
         </p>
       </div>
       <StatusChip status={comp.status} lockedUntil={lockedUntil} />

@@ -11,6 +11,13 @@ import {
   type CertPublicItem,
   type CertSubmitAnswer,
 } from "@/lib/api-client";
+import {
+  formatCertificationCapture,
+  formatCertificationCode,
+  formatCertificationCondition,
+  formatCertificationLesson,
+  formatCertificationOption,
+} from "@/lib/certification-labels";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
 
 // One item's in-progress answer. Mirrors CertSubmitAnswer minus the id; the id is
@@ -152,7 +159,7 @@ export default function CertificationRunnerPage() {
       <Back />
       <header className="mt-6">
         <p className="font-mono text-xs uppercase tracking-wider text-red-700">
-          {comp.id} · {comp.capture.replace(/_/g, " ")}
+          {formatCertificationCode(comp.id)} · {formatCertificationCapture(comp.capture)}
         </p>
         <h1 className="mt-3 font-serif text-3xl font-semibold leading-tight tracking-tight text-zinc-950 sm:text-4xl">
           {comp.title}
@@ -185,7 +192,7 @@ export default function CertificationRunnerPage() {
           {submitting ? "Grading…" : "Submit for grading"}
         </button>
         <span className="font-mono text-[11px] text-zinc-500">
-          Auto-graded on submit · answers are fixed sample items
+          Auto-graded on submit · answers sync to your certification scorecard
         </span>
       </div>
     </Shell>
@@ -244,7 +251,10 @@ function renderInput(
       <RadioGroup
         name={`${item.id}-value`}
         label="Label"
-        options={(comp.label_options ?? []).map((o) => ({ value: o, label: o }))}
+        options={(comp.label_options ?? []).map((o) => ({
+          value: o,
+          label: formatCertificationOption(o),
+        }))}
         value={draft.value ?? null}
         onChange={(v) => onChange({ value: v })}
       />
@@ -257,7 +267,10 @@ function renderInput(
         <RadioGroup
           name={`${item.id}-rule`}
           label="Rule type"
-          options={(comp.rule_options ?? []).map((o) => ({ value: o, label: o }))}
+          options={(comp.rule_options ?? []).map((o) => ({
+            value: o,
+            label: formatCertificationOption(o),
+          }))}
           value={draft.rule ?? null}
           onChange={(v) => onChange({ rule: v })}
         />
@@ -266,7 +279,7 @@ function renderInput(
           label="Distractor type"
           options={(comp.distractor_options ?? []).map((o) => ({
             value: o,
-            label: o,
+            label: formatCertificationOption(o),
           }))}
           value={draft.distractor ?? null}
           onChange={(v) => onChange({ distractor: v })}
@@ -281,7 +294,10 @@ function renderInput(
         <RadioGroup
           name={`${item.id}-axis`}
           label="Decision axis"
-          options={(item.axis_options ?? []).map((o) => ({ value: o, label: o }))}
+          options={(item.axis_options ?? []).map((o) => ({
+            value: o,
+            label: formatCertificationOption(o),
+          }))}
           value={draft.axis ?? null}
           onChange={(v) => onChange({ axis: v })}
         />
@@ -306,7 +322,7 @@ function renderInput(
         label="Band"
         options={(comp.band_options ?? ["HIGH", "MED", "COIN"]).map((o) => ({
           value: o,
-          label: o,
+          label: formatCertificationOption(o),
         }))}
         value={draft.band ?? null}
         onChange={(v) => onChange({ band: v as Draft["band"] })}
@@ -332,7 +348,7 @@ function renderInput(
         label="Phase"
         options={(comp.phase_options ?? ["CUT", "CLASH", "CALL"]).map((o) => ({
           value: o,
-          label: o,
+          label: formatCertificationOption(o),
         }))}
         value={draft.phase ?? null}
         onChange={(v) => onChange({ phase: v as Draft["phase"] })}
@@ -404,7 +420,7 @@ function GradedView({
       <Back />
       <header className="mt-6">
         <p className="font-mono text-xs uppercase tracking-wider text-red-700">
-          {comp.id} · results
+          {formatCertificationCode(comp.id)} · results
         </p>
         <h1 className="mt-3 font-serif text-3xl font-semibold leading-tight tracking-tight text-zinc-950 sm:text-4xl">
           {comp.title}
@@ -448,10 +464,11 @@ function GradedView({
               }`}
             >
               <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-600">
-                {p.id} · {p.correct ? "correct ✓" : "missed"}
+                {formatCertificationCode(p.id)} · {p.correct ? "correct ✓" : "missed"}
               </p>
               <p className="mt-2 font-mono text-xs text-zinc-700">
-                your: {p.your ?? "—"} · key: {p.key ?? "—"}
+                your: {formatCertificationOption(p.your)} · key:{" "}
+                {formatCertificationOption(p.key)}
               </p>
               {p.explanation && (
                 <p className="mt-2 text-sm leading-6 text-zinc-800">
@@ -475,7 +492,7 @@ function GradedView({
                 href={`/foundations/${slug}`}
                 className="rounded-md border border-zinc-900 px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-zinc-900 hover:bg-zinc-950 hover:text-white"
               >
-                Repair → {slug}
+                Repair → {formatCertificationLesson(slug)}
               </Link>
             ))}
           </div>
@@ -512,7 +529,7 @@ function ConditionsRow({ result }: { result: CertGradeResult }) {
           key={k}
           className="rounded-md border border-zinc-300 bg-white px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-zinc-700"
         >
-          {k}: {v}
+          {formatCertificationCondition(k)}: {v}
         </span>
       ))}
     </div>

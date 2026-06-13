@@ -37,4 +37,13 @@ describe("J7 guided path dashboard", () => {
     assert.doesNotMatch(source, /NextDrillPanel/);
     assert.doesNotMatch(source, /Open Red-Zone Map/);
   });
+
+  it("records flashcard task completion through the day-plan API", () => {
+    const source = readProjectFile("app/flashcards/[deckId]/page.tsx");
+
+    assert.match(source, /search\.get\("card"\)/);
+    assert.match(source, /api\.completeMyDayPlanStep\(token, stepId\)/);
+    assert.doesNotMatch(source, /api\.completePathStep\(token, stepId\)/);
+    assert.match(source, /Finish card/);
+  });
 });

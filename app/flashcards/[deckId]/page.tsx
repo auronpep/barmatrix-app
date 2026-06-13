@@ -10,8 +10,8 @@ import {
 import { useClerkAuth } from "@/lib/use-clerk-auth";
 
 // Minimal flip-card runner (J7 item 3). Public deck content; reviews are recorded
-// for signed-in students. Completion = every card flipped once; on finish we
-// record the reviews + complete the path step, then return to the guided path.
+// for signed-in students. Completion = every requested card flipped once; on finish
+// we record the reviews + complete the day-plan step, then return to the guided path.
 export default function FlashcardDeckPage() {
   const params = useParams<{ deckId: string }>();
   const search = useSearchParams();
@@ -25,6 +25,7 @@ export default function FlashcardDeckPage() {
         ? (params.deckId[0] ?? "")
         : "";
   const stepId = search.get("step");
+  const cardId = search.get("card");
 
   const [deck, setDeck] = useState<FlashcardDeckResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +40,13 @@ export default function FlashcardDeckPage() {
     void (async () => {
       try {
         const d = await api.getFlashcardDeck(deckId);
-        if (!cancelled) setDeck(d);
+        if (!cancelled) {
+          setDeck(d);
+          const requestedIndex = cardId
+            ? d.cards.findIndex((candidate) => candidate.card_id === cardId)
+            : -1;
+          if (requestedIndex >= 0) setIdx(requestedIndex);
+        }
       } catch (err) {
         if (!cancelled) {
           setError(
@@ -51,7 +58,7 @@ export default function FlashcardDeckPage() {
     return () => {
       cancelled = true;
     };
-  }, [deckId]);
+  }, [cardId, deckId]);
 
   if (error) {
     return (
@@ -70,7 +77,11 @@ export default function FlashcardDeckPage() {
 
   const card = deck.cards[idx];
   const total = deck.cards.length;
-  const allReviewed = reviewed.size >= total;
+  const requiredCardIds = cardId && deck.cards.some((candidate) => candidate.card_id === cardId)
+    ? [cardId]
+    : deck.cards.map((candidate) => candidate.card_id);
+  const allReviewed = requiredCardIds.every((requiredId) => reviewed.has(requiredId));
+  const singleCardMode = requiredCardIds.length === 1;
 
   function flip() {
     setFlipped((f) => {
@@ -100,7 +111,7 @@ export default function FlashcardDeckPage() {
             .completeFlashcardDeck(token, deckId, Array.from(reviewed))
             .catch(() => undefined);
           if (stepId) {
-            await api.completePathStep(token, stepId).catch(() => undefined);
+            await api.completeMyDayPlanStep(token, stepId).catch(() => undefined);
           }
         }
       }
@@ -120,7 +131,7 @@ export default function FlashcardDeckPage() {
           {deck.deck_title}
         </h1>
         <p className="mt-2 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
-          Card {idx + 1} of {total} · {reviewed.size}/{total} reviewed
+          Card {idx + 1} of {total} · {Math.min(reviewed.size, requiredCardIds.length)}/{requiredCardIds.length} reviewed
         </p>
       </header>
 
@@ -162,7 +173,15 @@ export default function FlashcardDeckPage() {
             disabled={!allReviewed || finishing}
             className="rounded-md bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-600 disabled:opacity-40"
           >
-            {finishing ? "Saving…" : allReviewed ? "Finish deck →" : "Flip every card first"}
+            {finishing
+              ? "Saving…"
+              : allReviewed
+                ? singleCardMode
+                  ? "Finish card →"
+                  : "Finish deck →"
+                : singleCardMode
+                  ? "Flip this card first"
+                  : "Flip every card first"}
           </button>
         )}
       </div>

@@ -2076,8 +2076,8 @@ export const api = {
       init,
     ),
 
-  // Record reviewed cards (enrolled). XP for the path step is granted separately
-  // by completePathStep (which reads the review count).
+  // Record reviewed cards (enrolled). Lead Me task XP is granted separately
+  // by completeMyDayPlanStep.
   completeFlashcardDeck: (token: string, deckId: string, cardsReviewed: string[]) =>
     authedRequest<FlashcardCompleteResponse>(
       `/api/me/flashcards/${encodeURIComponent(deckId)}/complete`,

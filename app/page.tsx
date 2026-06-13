@@ -535,7 +535,7 @@ export default function Home() {
                     "Personal Red-Zone Map (dashboard)",
                     "Top trap patterns ranked by attractiveness",
                     "Forensic tags explaining why each miss was attractive",
-                    "Sample assigned drills — try before you buy",
+                    "Assigned repair drills tied to your diagnostic misses",
                     "Companion path with your existing bar course",
                   ].map((t, i, arr) => (
                     <li

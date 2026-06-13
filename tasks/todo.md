@@ -25,10 +25,14 @@
 - `npm run build` passed.
 - `git diff --check` passed with only the existing Windows LF-to-CRLF warning.
 - Local production browser smoke on `http://127.0.0.1:3028/dashboard/path` and `/certification` confirmed a page-level heading, one `<main>`, no horizontal overflow, no raw runtime error text, and no console errors.
+- Production deploy `dpl_3PmcSfNkWDkmZqLQrzYuJB38R9Fj` is `READY` and aliased to `https://barmatrix.app` and `https://www.barmatrix.app`.
+- Live HTTP checks returned 200 for `https://barmatrix.app/dashboard/path` and `/certification`.
+- Live browser smoke confirmed both routes have a page-level heading during the loading state, then settle to visible headings: `Day 1: Trap Hunt and C3 Power-Up` on `/dashboard/path` and `C3 Mastery Certification` on `/certification`.
+- Production source tag pushed: `live-program-loading-headings-2026-06-13-dpl-3PmcSfN`.
 
 ## Review
 
-- Status: LOCAL VERIFIED, READY FOR APP DEPLOY.
+- Status: DEPLOYED AND LIVE-VERIFIED.
 - This is a narrow paid-program polish/accessibility fix; it does not alter checkout, entitlement, API contracts, or paid-study behavior.
 
 # Coupon Checkout Context - 2026-06-12

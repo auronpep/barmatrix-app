@@ -14,7 +14,7 @@
 - [x] Add focused regression coverage for the exact completion URL contract.
 - [x] Patch the client to call `/api/me/day-plan/steps/:stepId/complete`.
 - [x] Run focused, adjacent, full-suite, lint, diff, and production-build checks.
-- [ ] Deploy and live-check production click persistence.
+- [x] Deploy and live-check production click persistence.
 
 ## Verification
 
@@ -27,10 +27,16 @@
 - `npm run lint` passed.
 - `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
 - `npm run build` passed and generated `/dashboard/path`.
+- Production deploy `dpl_BpyBUpDBVFtHSMZnYNWch6jn1Umg` completed successfully and was aliased to `https://barmatrix.app`.
+- Live post-deploy `/dashboard/path?postdeploy=leadme_complete_9842a97` settled to Day 1 with `0%`, `0/50`, the active task `Illegal arrest remedy trap`, one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+- Clicking the visible `MARK COMPLETE` button advanced the persisted day-plan state to `2%`, `1/50`, `1/10`, changed the active task to `Grand jury exclusionary-rule posture`, and removed the completed `Illegal arrest remedy trap` from the active slot.
+- Reloading the same live route preserved `2%`, `1/50`, and `Grand jury exclusionary-rule posture`, proving backend persistence rather than only local UI state.
 
 ## Review
 
-- Status: LOCAL-VERIFIED, DEPLOY PENDING.
+- Status: DEPLOYED AND LIVE-VERIFIED.
+- Commit: `9842a97 Fix Lead Me day-plan completion route`.
+- Deployment: `dpl_BpyBUpDBVFtHSMZnYNWch6jn1Umg`.
 - Files changed: `lib/api-client.ts`, `tests/j7-guided-path.test.ts`.
 
 # Paid Workflow Anomaly Recheck - 2026-06-13

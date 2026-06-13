@@ -55,6 +55,27 @@ const PROGRAM_COMMAND_CENTER = [
     cta: "Open Map",
   },
   {
+    label: "Tension Matrix",
+    status: "Live Data",
+    href: "/matrix",
+    body: "Group live account history into repair-priority cells across red-zone dimensions.",
+    cta: "Open Matrix",
+  },
+  {
+    label: "Misconceptions",
+    status: "Forensics",
+    href: "/misconceptions",
+    body: "Review the wrong beliefs that are repeating across your misses and assigned repairs.",
+    cta: "Open Profile",
+  },
+  {
+    label: "Question History",
+    status: "Attempt Log",
+    href: "/question-history",
+    body: "See recent attempts with selected answer, result, subtopic, and trap attached.",
+    cta: "Open History",
+  },
+  {
     label: "Practice",
     status: "Active Work",
     href: "/practice",
@@ -255,7 +276,7 @@ function ProgramCommandCenter() {
             id="program-command-center"
             className="mt-2 font-serif text-3xl font-semibold tracking-tight text-zinc-950"
           >
-            The restored tools are live from here.
+            Your repair tools are live from here.
           </h2>
         </div>
         <Link href="/dashboard/path" className="btn btn-sm red">

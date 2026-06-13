@@ -196,4 +196,16 @@ describe("BillingPortalButton unavailable-state copy", () => {
     assert.doesNotMatch(dashboardCheck, /!checkoutSessionId/);
     assert.doesNotMatch(unavailableCheck, /!checkoutSessionId/);
   });
+
+  it("keeps Stripe customer recovery available for active enrolled accounts", () => {
+    const button = readFileSync(
+      new URL("../app/account/billing-portal-button.tsx", import.meta.url),
+      "utf8",
+    );
+
+    assert.match(button, /canAttemptStripeCustomerRecovery/);
+    assert.match(button, /billingPortal\?\.unavailable_reason === "stripe_customer_missing"/);
+    assert.match(button, /dash\.data\?\.enrolled === true/);
+    assert.match(button, /&&\s*!canAttemptStripeCustomerRecovery/);
+  });
 });

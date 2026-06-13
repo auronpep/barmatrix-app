@@ -53,6 +53,14 @@ export const PROOF_CARD = {
   nextDrill: "Hearsay Purpose-of-Offer Drill",
 } as const;
 
+export const DIAGNOSTIC_FIRST = {
+  eyebrow: "Proof before price",
+  headline: "The diagnostic should prove the method before checkout.",
+  body:
+    "Start free because the proof should come before the price: BarMatrix reads your own misses back to you, names the trap pattern, and shows the same diagnostic-to-repair loop Flagship uses after enrollment.",
+  cta: { label: "Start the free diagnostic", href: "/diagnostic" },
+} as const;
+
 export const FAQ: Array<{ q: string; a: string }> = [
   {
     q: "What is BarMatrix?",

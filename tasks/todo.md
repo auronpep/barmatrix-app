@@ -1,5 +1,45 @@
 # BarMatrix Full Bug Audit
 
+# Restore Old Integrated App + New Marketing Layer
+
+## Scope
+
+- Use `C:\barmatrix-app` as the restoration base because it is the integrated Next.js product app with Clerk, API-backed diagnostic sessions, dashboard, account, red zones, drills, boot camps, mastery, certification, checkout, analytics, and deployed Vercel wiring.
+- Treat `C:\BMO` as the operations and product source of truth for rules, stack, API contracts, locked offer language, and drift control.
+- Treat `C:\ABM` as the current live rebuild checkpoint and marketing/reference layer only. Do not continue rebuilding product functionality inside ABM.
+- Preserve the current live rebuild checkpoint at `auronpep/ABM` branch `codex/launch-stabilization`, commit `2a90f5d`, tag `live-checkpoint-2026-06-12-dpl-2DBvda2r`.
+
+## Plan
+
+- [x] Create isolated restore worktree `C:\barmatrix-app\.worktrees\restore-old-app-marketing` on branch `codex/restore-old-app-marketing` from `origin/main`.
+- [x] Verify `auronpep/barmatrix-app` is private before remote write decisions.
+- [x] Read local Next.js 16 docs before editing.
+- [x] Run baseline restore-app checks: `npm run lint` and `npm run build`.
+- [x] Confirm live API health and cohort status from `https://api.barmatrix.app`.
+- [x] Bring over only selected ABM marketing/sales language that strengthens the current integrated app without weakening the product engine.
+- [ ] Keep real integrated app routes and API-backed product flows as the canonical app: `/diagnostic`, `/dashboard`, `/account`, `/drills`, `/red-zones`, `/boot-camps`, `/timed-sets`, `/mastery`, `/certification`, `/checkout`, `/checkout/success`, `/sign-in`, and `/sign-up`.
+- [ ] Verify public copy against BMO drift rules: no discount, no coupon offer, no early-bird language, no public seat number, no guarantee, no official-affiliation claims.
+- [ ] Verify local build and smoke the launch-critical routes before any production deploy.
+- [ ] Deploy from this integrated app worktree only after Vercel project link and production target are intentionally present.
+
+## Evidence So Far
+
+- `C:\barmatrix-app` README identifies this repo as the production Next.js web app and points to `C:\BMO\BARMATRIX` for locked offer, stack, copy, taxonomy, schema, and operating rules.
+- `C:\BMO\STATE.md` identifies `C:\barmatrix-app` as `app-repo` and `C:\barmatrix-api` as `api-repo`; BMO is the orchestration layer, not the deployed app.
+- `C:\BMO\BARMATRIX\engineering\STACK_AND_DEPLOYMENT.md` confirms Next.js 16 on Vercel, Hostinger Node/Express API, Hostinger MySQL/MariaDB, Clerk, Stripe, PostHog, Resend, and Sentry.
+- `C:\BMO\BARMATRIX\RULES.md` requires every paid user to receive entitlement immediately after successful checkout and requires the dashboard to show what to do next.
+- Baseline restore worktree verification passed: `npm run lint`; `npm run build`.
+- Live API checks passed: `/health` returned `{"ok":true,"db":"up"}` and `/api/cohort/status` returned current public cohort copy.
+- Added `tests/diagnostic-first-sales-copy.test.ts`; red state confirmed before implementation and green state passed after implementation.
+- Integrated ABM's strongest diagnostic-first sales idea into the real app: `app/page.tsx` now has a proof-before-price bridge, and `app/pricing/page.tsx` explains that the free diagnostic shows the same diagnostic-to-repair loop used after enrollment.
+- Post-change verification passed: `node --test tests\diagnostic-first-sales-copy.test.ts`, `npm run lint`, and `npm run build`.
+- Local browser smoke passed on `http://127.0.0.1:3000/` and `/pricing`: the new proof-before-price copy rendered, each route had one `<main>`, neither route had horizontal overflow, and no browser warning/error logs were captured.
+
+## Review
+
+- Active conclusion: restore from the integrated Next app, not from the static ABM rebuild. ABM remains useful for selected marketing phrasing and the current-live rollback checkpoint, but it is not the product foundation.
+- First restore slice preserves the integrated app engine and changes only public sales copy plus the tracker/test guard.
+
 ## Scope
 
 - Audit the local BarMatrix study web app from the rendered UI and project runtime evidence.

@@ -3326,7 +3326,7 @@ Make the restored paid-program tools obvious from the full dashboard so enrolled
 - [x] Add a full-dashboard command center with links to Lead Me, Red-Zone Map, Practice, Drills, Boot Camps, Timed Sets, Mastery Board, C3 Coach, and Certification.
 - [x] Keep the section visually consistent with the restored dashboard pattern and avoid changing `/dashboard/path`.
 - [x] Run focused dashboard tests, full app tests, lint, and production build.
-- [ ] Deploy and live-verify the command center on `/dashboard`.
+- [x] Deploy and live-verify the command center on `/dashboard`.
 
 ## Review Log
 
@@ -3336,3 +3336,5 @@ Make the restored paid-program tools obvious from the full dashboard so enrolled
 - 2026-06-13: Initial production deployment `dpl_5JoQX6FgqsbP1286sPwctaB2dw5z` exposed the command center on desktop, then live mobile verification found horizontal overflow from the signed-in top navigation.
 - 2026-06-13: Added `tests/nav-mobile-overflow.test.ts` coverage for the phone-width signed-in dashboard CTA, moved Dashboard into the mobile drawer, and hid the top-bar ghost auth CTA at phone width.
 - 2026-06-13: Local verification passed after the mobile fix: `node --test tests\nav-mobile-overflow.test.ts`, `node --test tests\ambassador-dashboard-entry.test.ts`, `git diff --check`, `node --test tests\*.test.ts` (76/76), `npm run lint`, and `npm run build`.
+- 2026-06-13: Production deployment `dpl_7UqDZJ89RjW4CaRvYxpZ69bt1waA` is aliased to `https://barmatrix.app`; live browser verification passed on `/dashboard` at phone and desktop widths with one `main`, no document horizontal overflow, and all nine paid-program links present.
+- 2026-06-13: Live HTTPS smoke returned 200 for `/`, `/diagnostic`, `/pricing`, `/checkout`, `/checkout/success`, `/sign-in`, and `/sign-up`; anonymous `/account`, `/dashboard`, and `/dashboard/path` redirected to sign-in with return URLs.

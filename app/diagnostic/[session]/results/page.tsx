@@ -24,6 +24,7 @@ import { useDashboard, type DashboardState } from "@/lib/use-dashboard";
 import { useFoundations } from "@/lib/use-foundations";
 import { userFacingResourceError } from "@/lib/user-facing-errors";
 import { rememberDiagnosticId } from "@/lib/diagnostic-session";
+import { useRecentConfirmedCheckoutAccess } from "@/lib/checkout-access-state";
 import { AnchorStack } from "@/components/anchor-card";
 import { humanizeSubject } from "@/lib/format-subject";
 
@@ -75,6 +76,7 @@ type DiagnosticResultsAccessState =
   | "checking"
   | "signed_out"
   | "access_unavailable"
+  | "recent_checkout"
   | "account_unconfirmed"
   | "not_enrolled"
   | "enrolled";
@@ -135,7 +137,8 @@ export default function DiagnosticResultsPage({
   const [results, setResults] = useState<DiagnosticResultsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const dash = useDashboard();
-  const accessState = resolveDiagnosticResultsAccess(dash);
+  const recentCheckoutAccess = useRecentConfirmedCheckoutAccess();
+  const accessState = resolveDiagnosticResultsAccess(dash, recentCheckoutAccess);
   const foundations = useFoundations();
   const methodSlug =
     foundations.data?.progress.next_slug ??
@@ -304,12 +307,15 @@ function SeverityChip({ severity }: { severity: "high" | "medium" }) {
 
 function resolveDiagnosticResultsAccess(
   dash: DashboardState,
+  recentCheckoutAccess: { checking: boolean; active: boolean },
 ): DiagnosticResultsAccessState {
   if (dash.loading) return "checking";
-  if (!dash.signedIn) return "signed_out";
+  if (recentCheckoutAccess.checking) return "checking";
   if (dash.data?.enrolled === true) return "enrolled";
   if (dash.error) return "access_unavailable";
   if (dash.signedIn && dash.data && !dash.data.enrolled) return "account_unconfirmed";
+  if (recentCheckoutAccess.active) return "recent_checkout";
+  if (!dash.signedIn) return "signed_out";
   return "not_enrolled";
 }
 
@@ -324,6 +330,7 @@ function TopTrapPatterns({
     const enrolled = accessState === "enrolled";
     const accountCheckNeeded =
       accessState === "access_unavailable" ||
+      accessState === "recent_checkout" ||
       accessState === "account_unconfirmed";
     return (
       <div className="mt-8 rounded-lg border border-emerald-300 bg-emerald-50 p-6">
@@ -520,6 +527,32 @@ function ResultsDecisionPanel({
               className="text-sm text-zinc-700 underline hover:text-zinc-950"
             >
               Go to dashboard
+            </Link>
+          </div>
+        </div>
+      );
+    case "recent_checkout":
+      return (
+        <div className="mt-8 rounded-lg border border-amber-300 bg-amber-50 p-8 shadow-sm">
+          <p className="font-mono text-xs uppercase tracking-wider text-amber-800">
+            Account check needed
+          </p>
+          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
+            This browser has a confirmed checkout on record.
+          </h2>
+          <p className="mt-3 text-zinc-700">
+            Your diagnostic map is ready. Open your account or sign in with the
+            checkout email before starting another checkout.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <Link href="/account" className="btn red">
+              Open account <span aria-hidden>→</span>
+            </Link>
+            <Link
+              href="/sign-in?after=dashboard"
+              className="text-sm text-zinc-700 underline hover:text-zinc-950"
+            >
+              Sign in
             </Link>
           </div>
         </div>

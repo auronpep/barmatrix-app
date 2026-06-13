@@ -7,6 +7,7 @@ import {
   trackPurchaseCompleted,
   type CheckoutPaymentPlan,
 } from "@/lib/analytics";
+import { rememberConfirmedCheckoutAccess } from "@/lib/checkout-access-state";
 
 const CHECKOUT_PAYMENT_PLANS = new Set<CheckoutPaymentPlan>(["pay_in_full", "two_pay_500_499"]);
 
@@ -30,6 +31,7 @@ export function PurchaseSuccessTracker() {
       checkout_session_id: checkoutSessionId,
       cohort_id: cohortId,
     });
+    rememberConfirmedCheckoutAccess({ checkoutSessionId });
   }, [checkoutSessionId, cohortId, partnerId, paymentPlan]);
 
   return null;

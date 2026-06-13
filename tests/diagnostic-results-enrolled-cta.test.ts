@@ -12,7 +12,7 @@ describe("diagnostic results enrolled CTA", () => {
 
     assert.match(source, /import \{ useDashboard, type DashboardState \} from "@\/lib\/use-dashboard";/);
     assert.match(source, /const dash = useDashboard\(\);/);
-    assert.match(source, /const accessState = resolveDiagnosticResultsAccess\(dash\);/);
+    assert.match(source, /const accessState = resolveDiagnosticResultsAccess\(dash, recentCheckoutAccess\);/);
     assert.match(source, /<RecommendationCta\s+methodSlug=\{methodSlug\}\s+results=\{results\}/);
     assert.match(source, /<ResultsDecisionPanel\s+diagnosticId=\{diagnosticId\}\s+results=\{results\}\s+accessState=\{accessState\}/);
     assert.match(source, /case "enrolled":/);
@@ -27,6 +27,14 @@ describe("diagnostic results enrolled CTA", () => {
     assert.match(source, /case "account_unconfirmed":/);
     assert.match(source, /This signed-in account is not showing active Flagship access yet\./);
     assert.match(source, /confirm or recover access before another checkout/i);
+    assert.match(source, /useRecentConfirmedCheckoutAccess/);
+    assert.match(source, /const recentCheckoutAccess = useRecentConfirmedCheckoutAccess\(\);/);
+    assert.match(source, /resolveDiagnosticResultsAccess\(dash, recentCheckoutAccess\)/);
+    assert.match(source, /"recent_checkout"/);
+    assert.match(source, /if \(recentCheckoutAccess\.checking\) return "checking";/);
+    assert.match(source, /if \(recentCheckoutAccess\.active\) return "recent_checkout";/);
+    assert.match(source, /case "recent_checkout":/);
+    assert.match(source, /This browser has a confirmed checkout on record\./);
     assert.match(source, /buildDiagnosticRecommendation/);
     assert.match(source, /Your top leak is \{rec\.topLeak\} - start here\./);
     assert.match(source, /results\.recommendation\?\.next_step/);
@@ -49,5 +57,15 @@ describe("diagnostic results enrolled CTA", () => {
     assert.match(source, /results\.top_remediation_targets\[0\]/);
     assert.doesNotMatch(source, /Start your program at the right level/);
     assert.doesNotMatch(source, /href="\/dashboard"/);
+  });
+
+  it("remembers confirmed checkout access for later diagnostic-result screens", () => {
+    const tracker = readProjectFile("app/checkout/success/purchase-success-tracker.tsx");
+    const state = readProjectFile("lib/checkout-access-state.ts");
+
+    assert.match(tracker, /rememberConfirmedCheckoutAccess\(\{ checkoutSessionId \}\)/);
+    assert.match(state, /barmatrix\.checkout\.confirmed_access/);
+    assert.match(state, /RECENT_CHECKOUT_ACCESS_TTL_MS/);
+    assert.match(state, /useRecentConfirmedCheckoutAccess/);
   });
 });

@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { humanizeSubject } from "@/lib/format-subject";
-import { getTensionDetail } from "@/lib/tensions";
-import type { TensionExample } from "@/lib/api-client";
+import {
+  detailFromTensionCatalogEntry,
+  getTensionCatalog,
+  getTensionDetail,
+} from "@/lib/tensions";
+import type { TensionDetailResponse, TensionExample } from "@/lib/api-client";
 import { TensionDetailAnalytics } from "../tension-analytics";
 import { TensionQuestionsClient } from "./tension-questions-client";
 
@@ -15,7 +19,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const detail = await getTensionDetail(slug);
+  const detail = await getTensionDetailOrCatalogFallback(slug);
   if (!detail) {
     return { title: "Tension not found" };
   }
@@ -33,7 +37,7 @@ export default async function TensionDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const detail = await getTensionDetail(slug);
+  const detail = await getTensionDetailOrCatalogFallback(slug);
   if (!detail) {
     notFound();
   }
@@ -225,6 +229,17 @@ export default async function TensionDetailPage({
       </div>
     </section>
   );
+}
+
+async function getTensionDetailOrCatalogFallback(
+  slug: string,
+): Promise<TensionDetailResponse | null> {
+  const detail = await getTensionDetail(slug);
+  if (detail) return detail;
+
+  const catalog = await getTensionCatalog();
+  const entry = catalog.tensions.find((tension) => tension.slug === slug);
+  return entry ? detailFromTensionCatalogEntry(entry, catalog.catalog_ready) : null;
 }
 
 function TensionExampleCard({

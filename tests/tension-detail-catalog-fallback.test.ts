@@ -8,20 +8,23 @@ function readProjectFile(path: string): string {
 
 describe("tension detail catalog fallback", () => {
   it("falls back to the catalog entry when an observed detail endpoint 404s", () => {
-    const source = readProjectFile("lib/tensions.ts");
+    const helper = readProjectFile("lib/tensions.ts");
+    const page = readProjectFile("app/tensions/[slug]/page.tsx");
 
-    assert.match(source, /export function detailFromTensionCatalogEntry/);
-    assert.match(source, /const catalog = await getTensionCatalog\(\);/);
+    assert.match(helper, /export function detailFromTensionCatalogEntry/);
+    assert.match(page, /async function getTensionDetailOrCatalogFallback/);
+    assert.match(page, /const detail = await getTensionDetail\(slug\);/);
+    assert.match(page, /const catalog = await getTensionCatalog\(\);/);
     assert.match(
-      source,
+      page,
       /const entry = catalog\.tensions\.find\(\(tension\) => tension\.slug === slug\);/,
     );
     assert.match(
-      source,
-      /return detailFromTensionCatalogEntry\(entry, catalog\.catalog_ready\);/,
+      page,
+      /entry \? detailFromTensionCatalogEntry\(entry, catalog\.catalog_ready\) : null/,
     );
     assert.match(
-      source,
+      helper,
       /subject_distribution: entry\.subject\s+\? \[\{ subject: entry\.subject, question_count: entry\.question_count \}\]\s+: \[\]/,
     );
   });

@@ -3932,6 +3932,31 @@ Make the paid Coach UI handle the API starter-baseline fallback honestly: when t
 
 Treat `C:\BMO` / `C:\barmatrix-app` as the old integrated BarMatrix system and keep `C:\ABM` as a rebuild/reference source only. Continue launch repair from the deployed old-app transplant, preserving the new marketing pitch while restoring paid-program functionality.
 
+## Follow-up Route Polish - 2026-06-13
+
+### Scope
+
+Keep auditing the restored old-app surfaces on the live branch and remove customer-facing raw database labels or empty/loading shells that make the paid program feel unfinished.
+
+### Plan
+
+- [x] Run a broad signed-in live route smoke over public, account, dashboard, practice, drills, mastery, coach, certification, timed sets, boot camps, red zones, traps, tensions, foundations, and FAQ surfaces.
+- [x] Classify route-level findings into persistent defects versus normal client loading.
+- [x] Add a regression for the confirmed display defect.
+- [x] Patch the confirmed route display defect.
+- [x] Run focused tests, full app tests, lint, build, and local browser verification.
+- [ ] Deploy and live-verify the polished route.
+
+### Review Log
+
+- 2026-06-13: Live browser audit on `https://barmatrix.app` confirmed `/account`, `/dashboard`, `/dashboard/path`, `/dashboard/mastery`, `/dashboard/final-sprint`, `/practice`, `/drills`, `/drills/civil-procedure`, `/drills/contracts`, `/drills/criminal-law`, `/mastery`, `/coach`, `/certification`, `/timed-sets`, `/boot-camps`, `/red-zones`, `/traps`, `/tensions`, and `/foundations` rendered one `<main>`, no browser errors, no horizontal overflow, no stale checkout CTA, no `review_drill`, no raw external IDs, and no raw `undefined`/`NaN` after client loading settled.
+- 2026-06-13: The live audit exposed one persistent display-quality issue: `/tensions` rendered raw DB enum subject headings such as `CIVIL_PROCEDURE` and `CONSTITUTIONAL_LAW` alongside readable labels.
+- 2026-06-13: Added `tests\mobile-content-overflow.test.ts` coverage requiring `app\tensions\page.tsx` to use `humanizeSubject(subject)` instead of rendering `{subject}` directly.
+- 2026-06-13: Red state was observed before the patch: the focused test failed because `app\tensions\page.tsx` did not import `humanizeSubject` and rendered `{subject}` in the subject-group heading.
+- 2026-06-13: Patched `app\tensions\page.tsx` to use the existing `humanizeSubject` utility for subject headings.
+- 2026-06-13: Verification passed: `node --test tests\mobile-content-overflow.test.ts`, `node --test tests\sitemap-static-surface.test.ts tests\paid-program-display-labels.test.ts`, `node --test tests\*.test.ts` (90/90), `npm run lint`, `git diff --check` with normal CRLF warnings only, and `npm run build`.
+- 2026-06-13: Local production browser verification on `http://127.0.0.1:3034/tensions` showed `Civil Procedure` and `Constitutional Law`, no `CIVIL_PROCEDURE` or `CONSTITUTIONAL_LAW`, one `<main>`, no horizontal overflow, and no browser errors.
+
 ## Plan
 
 - [x] Re-anchor current state against `C:\BMO`, the app/API worktrees, and the live deployment checkpoint.

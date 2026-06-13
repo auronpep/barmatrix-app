@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getTensionCatalog } from "@/lib/tensions";
+import { humanizeSubject } from "@/lib/format-subject";
 import type { TensionEntry } from "@/lib/api-client";
 import { TensionMapAnalytics } from "./tension-analytics";
 
@@ -178,7 +179,7 @@ function TensionSubjectGroup({
     <div className="min-w-0">
       <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-zinc-200 pb-2">
         <h2 className="min-w-0 font-serif text-xl font-semibold text-zinc-950">
-          {subject}
+          {humanizeSubject(subject)}
         </h2>
         <span className="font-mono text-xs uppercase tracking-wider text-zinc-500">
           {tensions.length} {tensions.length === 1 ? "tension" : "tensions"}

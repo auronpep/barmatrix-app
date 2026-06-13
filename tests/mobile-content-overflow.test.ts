@@ -49,4 +49,12 @@ describe("mobile content overflow guards", () => {
     assert.match(tensions, /className="flex min-w-0 w-full flex-col items-start/);
     assert.match(tensions, /className="min-w-0 break-words/);
   });
+
+  it("formats tension subject headings instead of exposing DB enum values", () => {
+    const tensions = readProjectFile("app/tensions/page.tsx");
+
+    assert.match(tensions, /import \{ humanizeSubject \} from "@\/lib\/format-subject";/);
+    assert.match(tensions, /\{humanizeSubject\(subject\)\}/);
+    assert.doesNotMatch(tensions, /<h2[^>]*>\s*\{subject\}\s*<\/h2>/);
+  });
 });

@@ -3964,6 +3964,8 @@ Keep auditing the restored old-app surfaces on the live branch and remove custom
 - 2026-06-13: Removed the visible slug line from `app\traps\page.tsx` and updated the mobile catalog guard accordingly.
 - 2026-06-13: Verification passed after the trap fix: `node --test tests\trap-misconception-column.test.ts tests\mobile-content-overflow.test.ts`, `node --test tests\sitemap-static-surface.test.ts tests\paid-program-display-labels.test.ts`, `node --test tests\*.test.ts` (91/91), `npm run lint`, `git diff --check` with normal CRLF warnings only, and `npm run build`.
 - 2026-06-13: Local production browser verification on `http://127.0.0.1:3035/traps` showed readable `Overbroad Rule`, no `overbroad_rule` or `wrong_standard`, one `<main>`, no horizontal overflow, no raw error text, and no browser console errors.
+- 2026-06-13: Production deployment `dpl_6oN4oFJh7qGRyC2dRV1Hay3Xa68F` built successfully, was aliased to `https://barmatrix.app` and `https://www.barmatrix.app`, and was tagged `live-trap-slug-polish-2026-06-13-dpl-6oN4oFJ`.
+- 2026-06-13: Live browser verification on `https://barmatrix.app/traps?verify=trap_slug_polish_346cd4a` showed readable `Overbroad Rule`, no `overbroad_rule` or `wrong_standard`, one `<main>`, no horizontal overflow, no raw error text, and no browser console errors.
 
 ## Plan
 

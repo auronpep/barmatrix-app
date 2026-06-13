@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
@@ -10,9 +11,9 @@ import {
 import { useClerkAuth } from "@/lib/use-clerk-auth";
 import { Markdown } from "@/lib/markdown";
 
-// Doctrinal lesson reader (J7 item 4 — attorney-gated). Until DOCTRINAL_APPROVED
-// is set on the API, the endpoint returns 503 and this shows an honest "coming
-// soon" card. On completion we mark the path step done and return to the path.
+// Doctrinal lesson reader (J7 item 4). If the dedicated endpoint is unavailable,
+// route the learner to the live Method lesson for the same slug instead of
+// dead-ending the paid path.
 export default function DoctrinalLessonPage() {
   const params = useParams<{ slug: string }>();
   const search = useSearchParams();
@@ -28,13 +29,19 @@ export default function DoctrinalLessonPage() {
   const stepId = search.get("step");
 
   const [lesson, setLesson] = useState<DoctrinalLessonResponse | null>(null);
-  const [comingSoon, setComingSoon] = useState(false);
+  const [methodFallback, setMethodFallback] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
     let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setLesson(null);
+      setMethodFallback(false);
+      setError(null);
+    });
     void (async () => {
       try {
         const l = await api.getDoctrinalLesson(slug);
@@ -42,11 +49,11 @@ export default function DoctrinalLessonPage() {
       } catch (err) {
         if (cancelled) return;
         if (err instanceof ApiClientError && err.status === 503) {
-          setComingSoon(true);
+          setMethodFallback(true);
           return;
         }
         setError(
-          err instanceof ApiClientError ? `API ${err.status}` : "Couldn't load this lesson.",
+          "Couldn't load this lesson. Return to your path and try the next task.",
         );
       }
     })();
@@ -68,23 +75,35 @@ export default function DoctrinalLessonPage() {
     }
   }
 
-  if (comingSoon) {
+  if (methodFallback) {
     return (
       <Wrap>
-        <p className="font-mono text-xs uppercase tracking-wider text-red-700">Coming soon</p>
+        <p className="font-mono text-xs uppercase tracking-wider text-red-700">
+          Method lesson
+        </p>
         <h1 className="mt-2 font-serif text-3xl font-semibold tracking-tight text-zinc-950">
-          This lesson is in final review.
+          Use the live Method lesson.
         </h1>
         <p className="mt-3 text-base leading-7 text-zinc-700">
-          It&apos;ll unlock here shortly. Your path keeps moving in the meantime.
+          This path step is routed to the matching Method module, so you can keep
+          moving without waiting on a separate lesson endpoint.
         </p>
-        <button
-          type="button"
-          onClick={() => router.push("/dashboard/path")}
-          className="mt-5 rounded-md bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-900"
-        >
-          Back to your path →
-        </button>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link
+            href={`/foundations/${slug}`}
+            className="rounded-md bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-900"
+          >
+            Open Method lesson →
+          </Link>
+          <button
+            type="button"
+            onClick={markComplete}
+            disabled={saving}
+            className="rounded-md border border-zinc-900 px-5 py-2.5 text-sm font-medium text-zinc-900 hover:bg-zinc-50 disabled:opacity-50"
+          >
+            {saving ? "Saving…" : "Mark complete and return"}
+          </button>
+        </div>
       </Wrap>
     );
   }

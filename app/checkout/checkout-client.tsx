@@ -84,7 +84,7 @@ export default function CheckoutClient() {
       }
 
       const checkoutSearchParams = getCurrentSearchParams();
-      const attribution = trackCheckoutStarted({
+      const trackedAttribution = trackCheckoutStarted({
         payment_plan: plan,
         searchParams: checkoutSearchParams,
         cohort_id: DEFAULT_LAUNCH_COHORT_ID,
@@ -92,10 +92,11 @@ export default function CheckoutClient() {
       const session = await api.createCheckoutSession({
         product_code: "barmatrix_flagship_999",
         payment_plan: plan,
-        partner_id: attribution.partner_id === "none" ? null : attribution.partner_id,
+        partner_id: trackedAttribution.partner_id === "none" ? null : trackedAttribution.partner_id,
         referral_click_id: getReferralClickId(checkoutSearchParams),
         diagnostic_id: getDiagnosticId(checkoutSearchParams),
-        ...buildCheckoutReturnUrls(plan, attribution),
+        coupon_code: plan === "pay_in_full" ? getCouponCode(checkoutSearchParams) : null,
+        ...buildCheckoutReturnUrls(plan, trackedAttribution),
       });
       window.location.assign(session.checkout_url);
     } catch (err) {
@@ -183,8 +184,8 @@ export default function CheckoutClient() {
                     lineHeight: 1.55,
                   }}
                 >
-                  Enter {attribution.coupon} in Stripe after choosing pay in full.
-                  The payment plan is unavailable with a coupon.
+                  Code {attribution.coupon} will be applied automatically after
+                  choosing pay in full. The payment plan is unavailable with a coupon.
                 </p>
               </div>
             )}

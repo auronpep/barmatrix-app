@@ -54,6 +54,7 @@ export interface CheckoutSessionRequest {
   partner_id?: string | null;
   referral_click_id?: string | null;
   diagnostic_id?: string | null;
+  coupon_code?: string | null;
   success_url?: string;
   cancel_url?: string;
 }

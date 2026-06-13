@@ -16,7 +16,8 @@ describe("checkout coupon context", () => {
     assert.match(source, /params\.get\("promo"\)/);
 
     assert.match(source, /Coupons apply to pay-in-full checkout only/);
-    assert.match(source, /Enter \{attribution\.coupon\} in Stripe/);
+    assert.match(source, /Code \{attribution\.coupon\} will be applied automatically/);
+    assert.match(source, /coupon_code: plan === "pay_in_full" \? getCouponCode\(checkoutSearchParams\) : null/);
     assert.match(source, /const hasCouponContext = attribution\.coupon !== null/);
     assert.match(source, /plan === "two_pay_500_499" && hasCouponContext/);
     assert.match(source, /disabled=\{phase === "redirecting" \|\| hasCouponContext\}/);

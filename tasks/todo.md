@@ -3271,3 +3271,29 @@ Restore the older BMO paid dashboard functionality that the first launch repair 
 - `npm run build` passed; Next build output includes `/dashboard`, `/dashboard/path`, `/dashboard/mastery`, and `/dashboard/final-sprint`.
 - Local production server on `http://localhost:3022` rendered `/dashboard/path`, `/dashboard`, `/dashboard/mastery`, `/dashboard/final-sprint`, and `/checkout/success` with no raw errors, one `<main>`, and no horizontal overflow.
 - Deeper DOM check on `/dashboard` confirmed restored nav text: `MY PATH`, `FULL DASHBOARD`, `MASTERY BOARD`, `FINAL SPRINT`, and program links.
+- Production deployment `dpl_7jK8Q3gp1h1Tq1QtDKFYcnSPhK2d` built successfully and aliased to `https://barmatrix.app`.
+- Production tag `live-bmo-paid-tools-2026-06-13-dpl-7jK8Q3g` was pushed for rollback/reference.
+- Live browser smoke on `https://barmatrix.app` passed for `/`, `/checkout/success`, `/dashboard/path`, `/dashboard`, `/dashboard/mastery`, and `/dashboard/final-sprint`: no raw errors, one `<main>`, no horizontal overflow.
+- Live enrolled browser state confirmed `/dashboard/path` rendered `Day 1: Trap Hunt and C3 Power-Up`, `/dashboard` rendered the restored dashboard nav, `/dashboard/mastery` rendered `Your weakest patterns, ranked by dimension.`, and `/dashboard/final-sprint` rendered `The last two weeks become a daily repair plan.`
+
+# Dashboard Route Split Hardening - 2026-06-13
+
+## Scope
+
+Preserve the intended paid-program navigation split: `/dashboard/path` is the primary Lead Me guided path, while `/dashboard` remains the full old dashboard for metrics, red-zone state, next drill, and recent forensics.
+
+## Plan
+
+- [x] Prove the current source still lets `/dashboard` short-circuit into Lead Me.
+- [x] Add a regression that keeps `usePath` and `PathSurface` out of `/dashboard`.
+- [x] Remove the `/dashboard` Lead Me takeover while leaving `/dashboard/path` unchanged.
+- [x] Run focused dashboard/path tests.
+- [x] Run full app tests, lint, and production build.
+- [ ] Deploy and live-verify `/dashboard` and `/dashboard/path`.
+
+## Review Log
+
+- 2026-06-13: Found `app/dashboard/page.tsx` still importing `usePath` and `PathSurface`; enrolled users with a path `next_step` could be shown Lead Me from `/dashboard`, hiding the restored full dashboard.
+- 2026-06-13: Added `tests/ambassador-dashboard-entry.test.ts` coverage that `/dashboard/path` owns `useDayPlan`, while `/dashboard` does not use `usePath`, `PathSurface`, or `next_step` routing.
+- 2026-06-13: Removed the `/dashboard` short-circuit only; `/dashboard/path` continues to render the guided day-plan surface.
+- 2026-06-13: Verification passed: `node --test tests\ambassador-dashboard-entry.test.ts`, `node --test tests\j7-guided-path.test.ts tests\diagnostic-results-enrolled-cta.test.ts tests\sitemap-static-surface.test.ts`, `node --test tests\*.test.ts` (74/74), `npm run lint`, and `npm run build`.

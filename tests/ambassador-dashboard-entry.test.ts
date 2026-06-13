@@ -54,4 +54,14 @@ describe("dashboard guided-path entry", () => {
     assert.doesNotMatch(finalSprint, /redirect\("\/dashboard"\)/);
     assert.doesNotMatch(path, /redirect\("\/dashboard"\)/);
   });
+
+  it("keeps Lead Me isolated to /dashboard/path so /dashboard stays the full dashboard", () => {
+    const dashboard = readProjectFile("app/dashboard/page.tsx");
+    const path = readProjectFile("app/dashboard/path/page.tsx");
+
+    assert.match(path, /useDayPlan\(/);
+    assert.doesNotMatch(dashboard, /usePath\(/);
+    assert.doesNotMatch(dashboard, /PathSurface/);
+    assert.doesNotMatch(dashboard, /next_step != null/);
+  });
 });

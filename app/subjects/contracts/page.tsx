@@ -266,8 +266,8 @@ export default function ContractsSubjectPage() {
         <div className="container">
           <div className="hero-meta">
             <span className="stamp">MBE SUBJECT</span>
-            <span className="stamp">LIVE BANK</span>
-            <span className="stamp">SRC-0026</span>
+            <span className="stamp">Subject bank</span>
+            <span className="stamp">Live practice</span>
           </div>
           <div className="eyebrow-red" style={{ marginBottom: 24 }}>
             | {BRAND} subject practice
@@ -445,7 +445,7 @@ function StatusPanel({ title }: { title: string }) {
         {title}
       </div>
       <p style={{ margin: 0, color: "var(--ink-soft)" }}>
-        Syncing the first Contracts page from the subject endpoint.
+        Syncing the first Contracts page from the subject bank.
       </p>
     </div>
   );
@@ -459,7 +459,7 @@ function QuestionList({ questions }: { questions: SubjectQuestion[] }) {
           No Contracts questions returned
         </div>
         <p style={{ margin: 0 }}>
-          The route is live, but the subject endpoint did not return a runnable
+          The subject bank is connected, but it did not return a runnable
           queue yet.
         </p>
       </div>

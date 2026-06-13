@@ -244,8 +244,8 @@ export default function ConstitutionalLawSubjectPage() {
         <div className="container">
           <div className="hero-meta">
             <span className="stamp">MBE SUBJECT</span>
-            <span className="stamp">BY-SUBJECT API</span>
-            <span className="stamp">SRC-0026</span>
+            <span className="stamp">Subject bank</span>
+            <span className="stamp">Live practice</span>
           </div>
           <div className="eyebrow-red" style={{ marginBottom: 24 }}>
             | {BRAND} subject practice
@@ -257,7 +257,7 @@ export default function ConstitutionalLawSubjectPage() {
             Constitutional Law
           </h1>
           <p className="body-lg" style={{ marginBottom: 0, maxWidth: 760 }}>
-            Constitutional Law practice starts from the live subject endpoint,
+            Constitutional Law practice starts from the live subject bank,
             then hands the selected queue to the same answer and forensics
             runner used by the diagnostic flow.
           </p>
@@ -444,7 +444,7 @@ function IdlePanel({ onSync }: { onSync: () => void }) {
         Ready to sync
       </div>
       <p style={{ margin: 0, color: "var(--ink-soft)" }}>
-        Load the first Constitutional Law page from the by-subject endpoint,
+        Load the first Constitutional Law page from the subject bank,
         review the returned queue, then start practice.
       </p>
       <button
@@ -466,7 +466,7 @@ function StatusPanel({ title }: { title: string }) {
         {title}
       </div>
       <p style={{ margin: 0, color: "var(--ink-soft)" }}>
-        Syncing the first Constitutional Law page from the subject endpoint.
+        Syncing the first Constitutional Law page from the subject bank.
       </p>
     </div>
   );
@@ -480,7 +480,7 @@ function QuestionList({ questions }: { questions: SubjectQuestion[] }) {
           No Constitutional Law questions returned
         </div>
         <p style={{ margin: 0 }}>
-          The route is live, but the subject endpoint did not return a runnable
+          The subject bank is connected, but it did not return a runnable
           queue yet.
         </p>
       </div>

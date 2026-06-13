@@ -247,8 +247,8 @@ export default function TortsDrillPage() {
     <section className="mx-auto max-w-7xl px-6 py-10 sm:py-14">
       <div className="mb-8 flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
         <span className="rounded border border-zinc-200 px-2 py-1">Torts drill</span>
-        <span className="rounded border border-zinc-200 px-2 py-1">Inline forensics</span>
-        <span className="rounded border border-zinc-200 px-2 py-1">SRC-0026</span>
+        <span className="rounded border border-zinc-200 px-2 py-1">Wrong-answer forensics</span>
+        <span className="rounded border border-zinc-200 px-2 py-1">Guided review</span>
       </div>
 
       <div className="mb-10 grid gap-6 border-b border-zinc-200 pb-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
@@ -580,7 +580,7 @@ function ForensicsPanel({
   return (
     <aside className="border border-zinc-200 bg-zinc-50 p-6 lg:sticky lg:top-6">
       <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-        Inline forensics preview
+        Wrong-answer forensics preview
       </p>
       <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
         {TORTS_PREVIEW.trap}

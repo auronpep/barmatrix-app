@@ -333,7 +333,7 @@ export default function TimedSetsPage() {
       <div className="mb-8 flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
         <span className="rounded border border-zinc-200 px-2 py-1">Timed Set Engine</span>
         <span className="rounded border border-zinc-200 px-2 py-1">17-question mixed set</span>
-        <span className="rounded border border-zinc-200 px-2 py-1">SRC-0026</span>
+        <span className="rounded border border-zinc-200 px-2 py-1">Live mixed bank</span>
       </div>
 
       <div className="mb-10 grid gap-6 border-b border-zinc-200 pb-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-end">

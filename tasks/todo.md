@@ -34,11 +34,14 @@
 - Integrated ABM's strongest diagnostic-first sales idea into the real app: `app/page.tsx` now has a proof-before-price bridge, and `app/pricing/page.tsx` explains that the free diagnostic shows the same diagnostic-to-repair loop used after enrollment.
 - Post-change verification passed: `node --test tests\diagnostic-first-sales-copy.test.ts`, `npm run lint`, and `npm run build`.
 - Local browser smoke passed on `http://127.0.0.1:3000/` and `/pricing`: the new proof-before-price copy rendered, each route had one `<main>`, neither route had horizontal overflow, and no browser warning/error logs were captured.
+- Full app test sweep initially found an existing C3 Mastery copy regression. Fixed `app/mastery/page.tsx` so coverage-pending users see `Tagged coverage pending` and are not sent back by stale `Finish The Method, then work questions` copy.
+- Full app verification now passes: `node --test tests\*.test.ts` passed 71/71, `npm run lint` passed, and `npm run build` passed.
 
 ## Review
 
 - Active conclusion: restore from the integrated Next app, not from the static ABM rebuild. ABM remains useful for selected marketing phrasing and the current-live rollback checkpoint, but it is not the product foundation.
 - First restore slice preserves the integrated app engine and changes only public sales copy plus the tracker/test guard.
+- Second restore slice fixed a pre-existing C3 Mastery readiness test failure so the integrated app branch is a cleaner base for route smoke and eventual restore deploy.
 
 ## Scope
 

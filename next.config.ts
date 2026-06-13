@@ -115,6 +115,41 @@ const nextConfig: NextConfig = {
         destination: "/webinar",
         permanent: true,
       },
+      {
+        source: "/checkout.html",
+        destination: "/checkout",
+        permanent: true,
+      },
+      {
+        source: "/login.html",
+        destination: "/sign-in",
+        permanent: true,
+      },
+      {
+        source: "/signin.html",
+        destination: "/sign-in",
+        permanent: true,
+      },
+      {
+        source: "/signup.html",
+        destination: "/sign-up",
+        permanent: true,
+      },
+      {
+        source: "/account.html",
+        destination: "/account",
+        permanent: true,
+      },
+      {
+        source: "/dashboard.html",
+        destination: "/dashboard",
+        permanent: true,
+      },
+      {
+        source: "/welcome",
+        destination: "/account?welcome=1",
+        permanent: true,
+      },
     ];
   },
 };

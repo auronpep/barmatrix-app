@@ -43,10 +43,9 @@ export default function PricingPage() {
             <span style={{ color: "var(--red)" }}>Full repair access.</span>
           </h1>
           <p className="body-lg" style={{ marginBottom: 0 }}>
-            BarMatrix Flagship is a multiple-choice-only MBE repair system.
-            Diagnostic, Red-Zone Map, 2,400-question forensic bank, assigned
-            drills, boot camps, timed sets, dashboard, and full web access —
-            all included.
+            Price comes after the Red-Zone Map. Flagship is the paid repair
+            path that turns diagnostic misses into one guided task, wrong-answer
+            forensics, focused drills, timed repair work, and full web access.
           </p>
         </div>
       </section>

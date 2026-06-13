@@ -9,8 +9,18 @@ test("public sales copy keeps the proof-before-price diagnostic path", () => {
 
   assert.match(copy, /proof should come before the price/i);
   assert.match(copy, /same diagnostic-to-repair loop/i);
+  assert.match(copy, /diagnostic-first MBE repair system/);
   assert.match(home, /PROOF BEFORE PRICE/);
+  assert.match(home, /RED-ZONE MAP/);
   assert.match(pricing, /Try the diagnostic first/);
+  assert.match(pricing, /Price comes after the Red-Zone Map/);
   assert.match(pricing, /No card\. No commitment\./);
   assert.match(pricing, /href="\/checkout"|href=\{["']\/checkout["']\}/);
+
+  for (const source of [copy, home, pricing]) {
+    assert.doesNotMatch(source, /finite universe/);
+    assert.doesNotMatch(source, /forensic bank/);
+    assert.doesNotMatch(source, /question-bank access/);
+    assert.doesNotMatch(source, /resource dashboard/);
+  }
 });

@@ -892,6 +892,107 @@ export interface MyGamification {
   badges: MyGamificationBadge[];
 }
 
+// --- J7 Lead Me daily plan (Clerk-gated, paid-user path) ---
+
+export type DayPlanStepSource = "daily" | "catchup";
+
+export interface DayPlanContentRef {
+  type: string;
+  id: string;
+  label?: string;
+  href?: string;
+}
+
+export interface DayPlanAction {
+  label: string;
+  href?: string;
+}
+
+export interface DayPlanMainItem {
+  main_item_id: string;
+  order: number;
+  title: string;
+  description: string;
+  selectable: false;
+  step_count: number;
+  completed_steps: number;
+  status: "complete" | "current" | "upcoming";
+}
+
+export interface DayPlanStep {
+  step_id: string;
+  order: number;
+  main_item_id: string;
+  kind: string;
+  title: string;
+  prompt: string;
+  estimated_seconds: number;
+  content_ref: DayPlanContentRef;
+  action: DayPlanAction;
+  xp: number;
+  source: DayPlanStepSource;
+  completed: boolean;
+  catchup?: {
+    catchup_id: string;
+    original_day_key: string;
+    original_step_id: string;
+  };
+}
+
+export interface DayPlanPath {
+  plan_key: string;
+  day_index: number;
+  title: string;
+  main_items: DayPlanMainItem[];
+  steps: DayPlanStep[];
+  current_step: DayPlanStep | null;
+  metrics: {
+    total_daily_steps: number;
+    completed_daily_steps: number;
+    progress_pct: number;
+  };
+  catchup: {
+    pending_count: number;
+    injected_count: number;
+    max_per_day: number;
+    per_completed_milestone: number;
+  };
+}
+
+export type DayPlanSummaryStatus = "active" | "locked" | "complete";
+
+export interface DayPlanSummary {
+  plan_key: string;
+  day_index: number;
+  title: string;
+  description: string;
+  approved: boolean;
+  selectable: false;
+  current: boolean;
+  status: DayPlanSummaryStatus;
+  milestone_count: number;
+  step_count: number;
+}
+
+export interface MyDayPlan {
+  enrolled: boolean;
+  status: string | null;
+  refunded: boolean;
+  student_id: string | null;
+  day_key: string | null;
+  timezone: string;
+  rollover_hour: number;
+  day_summaries: DayPlanSummary[];
+  plan: DayPlanPath | null;
+  gamification: MyGamification | null;
+}
+
+export interface MyDayPlanCompleteResponse extends MyDayPlan {
+  ok: true;
+  completed_step_id: string;
+  completion_gamification: BootCampGamificationGrant | null;
+}
+
 // --- Drill Library (Web Component 04) — anonymous-first prescriptive drills ---
 
 export interface DrillCatalogEntry {
@@ -1944,6 +2045,16 @@ export const api = {
   completePathStep: (token: string, stepId: string) =>
     authedRequest<PathCompleteResponse>(
       `/api/me/path/${encodeURIComponent(stepId)}/complete`,
+      token,
+      { method: "POST", body: JSON.stringify({}) },
+    ),
+
+  getMyDayPlan: (token: string, init?: RequestInit) =>
+    authedRequest<MyDayPlan>("/api/me/day-plan", token, init),
+
+  completeMyDayPlanStep: (token: string, stepId: string) =>
+    authedRequest<MyDayPlanCompleteResponse>(
+      `/api/me/day-plan/${encodeURIComponent(stepId)}/complete`,
       token,
       { method: "POST", body: JSON.stringify({}) },
     ),

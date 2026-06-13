@@ -12,7 +12,7 @@
 - [x] Add failing regression coverage for object-shaped recommendation levels and `next_step.primary_label`.
 - [x] Extend the typed API contract for the live diagnostic recommendation shape.
 - [x] Normalize recommendation level/copy/CTA labels from both old and current API shapes.
-- [ ] Run focused test, full tests, lint, build, deploy, live-verify, and checkpoint.
+- [x] Run focused test, full tests, lint, build, deploy, live-verify, and checkpoint.
 
 ## Verification
 
@@ -24,6 +24,15 @@
 - Fresh full suite passed: `node --test tests\*.test.ts` passed 86/86.
 - Fresh `npm run lint` passed.
 - Fresh `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+- Production deploy `dpl_AozaqJ9Q2yTEeNw5bQCU6qS12MGV` is `READY` and aliased to `https://barmatrix.app` and `https://www.barmatrix.app`.
+- Live browser smoke on `https://barmatrix.app/diagnostic/a017791e-90bf-4c50-a46c-b5428d06715d/results` confirmed the API-shaped recommendation renders `L4 · Exam-ready refinement`, the API description, and `START THE METHOD`; it does not render the generic `START HERE` fallback.
+- The same live browser smoke confirmed one `<main>`, `Your Red-Zone Map`, the active-access panel, `do not enroll again`, no horizontal overflow, no runtime error text, and no browser console errors.
+- Live HTTP checks returned 200 for `/diagnostic/a017791e-90bf-4c50-a46c-b5428d06715d/results`, 200 for `/diagnostic`, and 200 for `https://api.barmatrix.app/health`.
+
+## Review
+
+- Status: DEPLOYED AND LIVE-VERIFIED.
+- This is a narrow app/API contract repair for diagnostic recommendation copy and CTA labels. It does not alter checkout, entitlement provisioning, or dashboard APIs.
 
 # Diagnostic Results Access Confirmation Guard - 2026-06-13
 

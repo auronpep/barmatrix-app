@@ -3320,3 +3320,6 @@ Make the restored paid-program tools obvious from the full dashboard so enrolled
 - 2026-06-13: Added `PROGRAM_COMMAND_CENTER` to `app/dashboard/page.tsx` with nine real paid-program route links and a `ProgramCommandCenter` renderer.
 - 2026-06-13: Added `tests/ambassador-dashboard-entry.test.ts` coverage that the full dashboard exposes all restored paid-program tool links.
 - 2026-06-13: Verification passed: `node --test tests\ambassador-dashboard-entry.test.ts`, related dashboard/path tests, `node --test tests\*.test.ts` (75/75), `npm run lint`, and `npm run build`.
+- 2026-06-13: Initial production deployment `dpl_5JoQX6FgqsbP1286sPwctaB2dw5z` exposed the command center on desktop, then live mobile verification found horizontal overflow from the signed-in top navigation.
+- 2026-06-13: Added `tests/nav-mobile-overflow.test.ts` coverage for the phone-width signed-in dashboard CTA, moved Dashboard into the mobile drawer, and hid the top-bar ghost auth CTA at phone width.
+- 2026-06-13: Local verification passed after the mobile fix: `node --test tests\nav-mobile-overflow.test.ts`, `node --test tests\ambassador-dashboard-entry.test.ts`, `git diff --check`, `node --test tests\*.test.ts` (76/76), `npm run lint`, and `npm run build`.

@@ -1220,6 +1220,16 @@ button {
 
 @media (max-width: 640px) {
   :root { --gutter: 20px; }
+  .nav-inner {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+  .nav-cta {
+    gap: 8px;
+  }
+  .nav-cta > .btn.ghost {
+    display: none;
+  }
   .four-col { grid-template-columns: 1fr; }
   .stat-strip { grid-template-columns: 1fr; }
   .stat-strip > div { border-right: none; border-bottom: 1px solid var(--rule); }

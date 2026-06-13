@@ -1,5 +1,77 @@
 # BarMatrix Full Bug Audit
 
+# Live Boot Camp Day-One Verification - 2026-06-13
+
+## Scope
+
+- Verify the live paid Boot Camp flow can open the catalog, create a session, enter Day 1, submit an answer, and advance with feedback.
+
+## Plan
+
+- [x] Open live `/boot-camps` in the signed-in browser session.
+- [x] Open a Boot Camp detail page and start a camp.
+- [x] Open the created session Day 1 route.
+- [x] Submit the first answer and verify feedback plus next-question progress.
+
+## Verification
+
+- Live catalog URL: `https://barmatrix.app/boot-camps?audit=boot_live_20260613`.
+- Catalog rendered `Boot Camps`, populated camp entries, one `<main>`, no horizontal overflow, no runtime error text, and no browser console errors.
+- Live detail URL: `https://barmatrix.app/boot-camps/criminal-4th-am-search-seizure?audit=boot_detail_20260613`.
+- Detail rendered `4th Amendment: Search & Seizure Boot Camp` and `Start camp` with one `<main>`, no horizontal overflow, no runtime error text, and no browser console errors.
+- Clicking `Start camp` created session `02721c8c-143d-48e0-8d8f-dbcd5eba6c4d` and opened `/boot-camps/sessions/02721c8c-143d-48e0-8d8f-dbcd5eba6c4d`.
+- Session rendered Day 1 available, Day 2 and Day 3 locked, and `Start day`.
+- Day 1 URL: `https://barmatrix.app/boot-camps/sessions/02721c8c-143d-48e0-8d8f-dbcd5eba6c4d/days/1?audit=boot_day_20260613`.
+- Day 1 rendered question 1 of 10, answer controls, and disabled submit until an answer was selected.
+- Selecting answer `B` and submitting rendered question 2 of 10 with `Correct`, `Why that answer was right`, and `Next question ->`.
+- Post-submit verification had one `<main>`, no horizontal overflow, no runtime error text, and no browser console errors.
+- Fresh checkpoint browser recheck on the same Day 1 session rendered question 2 of 10, accepted answer `C`, advanced to question 3 of 10, and rendered `CORRECT`, `Why that answer was right`, and `Next question ->`; it had one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+
+## Review
+
+- Status: LIVE-VERIFIED.
+- Boot Camps have a usable paid-user catalog-to-session-to-Day-1 feedback loop in production.
+
+# Red-Zone Detail Decode Repair - 2026-06-13
+
+## Scope
+
+- Fix Red-Zone subject/subtopic detail routes that passed URL-encoded route params into the API and rendered empty zones even when the library showed live attempts/questions.
+- Preserve the existing Red-Zone library and repair-drill handoff behavior.
+
+## Plan
+
+- [x] Reproduce the live subject/subtopic detail defect.
+- [x] Add focused regression coverage for decoded Red-Zone detail route params.
+- [x] Decode `dimension` and `tag` route params before querying the API.
+- [x] Run focused/full app verification, deploy, and live-check fixed subject/subtopic details plus drill handoff.
+
+## Verification
+
+- Live pre-fix library check on `https://barmatrix.app/red-zones?audit=red_live_20260613` showed Real Property with 2 attempts / 400 questions and subtopic `Fair play and substantial justice` as `Drill ready`.
+- Live pre-fix detail checks reproduced the defect:
+  - `/red-zones/subtopic/Fair%20play%20and%20substantial%20justice?audit=red_detail_20260613` rendered `You haven't built this zone yet` and `Questions in this zone · 0`.
+  - `/red-zones/subject/Real%20Property?audit=red_subject_20260613` rendered `You haven't built this zone yet`, `Questions in this zone · 0`, and an encoded `REAL%20PROPERTY DRILL` label.
+- Regression coverage added in `tests/red-zone-detail-routing.test.ts`.
+- Focused test passed: `node --test tests\red-zone-detail-routing.test.ts`.
+- Full suite passed: `node --test tests\*.test.ts` passed 88/88.
+- `npm run lint` passed.
+- `npm run build` passed and generated `/red-zones/[dimension]/[tag]`.
+- `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+- Production deploy `dpl_5aRNwpuz3R1LiuQ2d44x3cZFZopR` is live on `https://barmatrix.app`.
+- API health check passed: `https://api.barmatrix.app/health` returned 200 with `{"ok":true,"db":"up"}`.
+- Live post-deploy subject detail check on `https://barmatrix.app/red-zones/subject/Real%20Property?postdeploy=red_decode_2d9f2e4` rendered `Zone status`, `Attempts 2`, `Questions 400`, `Recent wrong-answer forensics · 2`, and `Questions in this zone · 400`; it did not render `REAL%20PROPERTY` or the empty-zone fallback.
+- Live post-deploy subtopic detail check on `https://barmatrix.app/red-zones/subtopic/Fair%20play%20and%20substantial%20justice?postdeploy=red_decode_2d9f2e4` rendered `Zone status`, `Attempts 1`, `Questions 1`, `CP-260`, `Repair this zone`, `Pj Relatedness Drill`, `Civil Procedure drill`, and `Start repair drill`; it did not render encoded labels or the empty-zone fallback.
+- Clicking `Start repair drill` opened `/drills/civil-procedure`; starting the drill served question `1 / 6`, accepted an answer, and rendered `Correct`, `Why that answer works`, `Rule fit`, and `Next Civil Procedure question`.
+- Post-submit drill verification had one `<main>`, no horizontal overflow, no runtime error text, and no browser console errors.
+- Fresh checkpoint browser recheck confirmed `/red-zones/subject/Real%20Property` and `/red-zones/subtopic/Fair%20play%20and%20substantial%20justice` still render decoded labels, expected attempts/questions, no empty-zone fallback, one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+
+## Review
+
+- Status: DEPLOYED AND LIVE-VERIFIED.
+- Commit: `2d9f2e4 Decode red-zone detail route params`.
+- Deployment: `dpl_5aRNwpuz3R1LiuQ2d44x3cZFZopR`.
+
 # Live Coach Baseline Loop Verification - 2026-06-13
 
 ## Scope

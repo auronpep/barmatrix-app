@@ -23,6 +23,10 @@ describe("J7 guided path dashboard", () => {
     assert.match(hook, /api\.getMyDayPlan/);
     assert.match(hook, /api\.completeMyDayPlanStep/);
     assert.match(apiClient, /\/api\/me\/day-plan/);
+    assert.match(
+      apiClient,
+      /\/api\/me\/day-plan\/steps\/\$\{encodeURIComponent\(stepId\)\}\/complete/,
+    );
     assert.match(apiClient, /selectable: false/);
     assert.match(cards, /First 3 Days/);
     assert.match(cards, /Criminal Law and Procedure Questline/);

@@ -1,5 +1,38 @@
 # BarMatrix Full Bug Audit
 
+# Lead Me Completion Route Repair - 2026-06-13
+
+## Scope
+
+- Fix the paid Lead Me `/dashboard/path` `MARK COMPLETE` action after live browser testing showed the first task did not persist or advance progress.
+- Keep the existing BMO/J7 guided path UI and day-plan API contract intact.
+
+## Plan
+
+- [x] Reproduce the live signed-in `MARK COMPLETE` no-progress behavior.
+- [x] Trace the frontend completion call to the backend day-plan route.
+- [x] Add focused regression coverage for the exact completion URL contract.
+- [x] Patch the client to call `/api/me/day-plan/steps/:stepId/complete`.
+- [x] Run focused, adjacent, full-suite, lint, diff, and production-build checks.
+- [ ] Deploy and live-check production click persistence.
+
+## Verification
+
+- Live pre-fix `/dashboard/path` rendered Day 1 with `MARK COMPLETE`; after clicking the first task, visible progress remained `0%` / `0/50` and the task still showed `MARK COMPLETE`.
+- Root cause: `api.completeMyDayPlanStep()` posted to `/api/me/day-plan/:stepId/complete`, but the API registers `POST /api/me/day-plan/steps/:stepId/complete`.
+- Regression red: `node --test tests\j7-guided-path.test.ts` failed before the patch because the API client did not contain `/api/me/day-plan/steps/${encodeURIComponent(stepId)}/complete`.
+- Focused green: `node --test tests\j7-guided-path.test.ts` passed 1/1 after the patch.
+- Adjacent route/dashboard checks passed: `node --test tests\j7-guided-path.test.ts tests\ambassador-dashboard-entry.test.ts tests\program-loading-headings.test.ts` passed 10/10.
+- Full app suite passed: `node --test tests\*.test.ts` passed 89/89.
+- `npm run lint` passed.
+- `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+- `npm run build` passed and generated `/dashboard/path`.
+
+## Review
+
+- Status: LOCAL-VERIFIED, DEPLOY PENDING.
+- Files changed: `lib/api-client.ts`, `tests/j7-guided-path.test.ts`.
+
 # Paid Workflow Anomaly Recheck - 2026-06-13
 
 ## Scope

@@ -2064,7 +2064,7 @@ export const api = {
 
   completeMyDayPlanStep: (token: string, stepId: string) =>
     authedRequest<MyDayPlanCompleteResponse>(
-      `/api/me/day-plan/${encodeURIComponent(stepId)}/complete`,
+      `/api/me/day-plan/steps/${encodeURIComponent(stepId)}/complete`,
       token,
       { method: "POST", body: JSON.stringify({}) },
     ),

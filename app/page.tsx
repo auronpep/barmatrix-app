@@ -99,12 +99,13 @@ export default function Home() {
           <div className="hero-grid">
             <div>
               <div className="eyebrow-red" style={{ marginBottom: 24 }}>
-                ▌ MBE TRAP DIAGNOSIS · WEB
+                ▌ RED-ZONE MAP · WRONG-ANSWER FORENSICS · GUIDED REPAIR
               </div>
               <h1 className="display display-xl">
-                Master the{" "}
-                <span style={{ fontStyle: "italic" }}>finite universe</span>{" "}
-                of <span style={{ color: "var(--red)" }}>MBE traps.</span>
+                Find the{" "}
+                <span style={{ fontStyle: "italic" }}>MBE red zones</span>{" "}
+                your question sets are{" "}
+                <span style={{ color: "var(--red)" }}>hiding.</span>
               </h1>
               <p className="lede">{HERO.subhead}</p>
               <div className="hero-actions">

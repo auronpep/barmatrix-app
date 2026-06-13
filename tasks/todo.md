@@ -3196,3 +3196,34 @@
 ## Production Deploy Retry
 
 - Vercel created production deployment `dpl_U35KJtpRbrVUUqw53cSBiGaFSxFT` for `a7e51dd` but marked it `BLOCKED` before build logs existed; `main` is being advanced with the previously deployed repository author identity for the next production workflow run.
+
+# BMO Paid Dashboard Restore - 2026-06-12
+
+## Scope
+
+Restore the paid-user dashboard behavior from the old BMO-operated BarMatrix app into the current integrated restore branch. Keep the new diagnostic-first marketing path, but make enrolled users land in the proven J7 "Lead Me" Day 1-3 guided dashboard instead of the older metric/resource dashboard.
+
+## Plan
+
+- [x] Treat `C:\BMO` as the historical operating source and confirm its app/API repo junctions.
+- [x] Read BMO tracker evidence for the last verified paid dashboard release.
+- [x] Compare current restore branch against the BMO/J7 guided dashboard source.
+- [x] Restore the J7 dashboard page, First 3 Days day cards, day-plan hook, and API-client day-plan contract.
+- [x] Run focused dashboard regression tests.
+- [x] Run app lint/build checks.
+- [x] Browser-smoke signed-out dashboard behavior locally.
+- [ ] Browser-smoke enrolled dashboard behavior after deploy.
+- [ ] Commit, deploy, and verify live if checks pass.
+
+## Review Log
+
+- 2026-06-12: User noted the old working BarMatrix system was operated from `C:\BMO`.
+- 2026-06-12: `C:\BMO\app-repo` is a junction to `C:\barmatrix-app`; `C:\BMO\api-repo` is a junction to `C:\barmatrix-api`; `C:\BMO\website-repo` is a junction to `C:\barmatrix-site`.
+- 2026-06-12: BMO tracker evidence identified the last verified paid-user dashboard target as the June 8 J7 guided-path release: enrolled `/dashboard` rendered `First 3 Days`, `Current Task`, Day 1 active, Day 2/3 locked, and `/api/me/day-plan` returned `enrolled: true`.
+- 2026-06-12: Current restore branch lacked `lib\use-day-plan.ts`, `tests\j7-guided-path.test.ts`, and dashboard source markers for `First 3 Days`, `Current Task`, and `day_summaries`.
+- 2026-06-12: Restored the J7 dashboard surface into the current branch: `app\dashboard\page.tsx`, `app\dashboard\day-cards.tsx`, `lib\use-day-plan.ts`, `tests\j7-guided-path.test.ts`, and `/api/me/day-plan` client methods/types.
+- 2026-06-12: Restored the BMO/J7 dashboard shell: removed the competing dashboard program-resource navigation strip and redirected `/dashboard/path`, `/dashboard/mastery`, and `/dashboard/final-sprint` back to `/dashboard`.
+- 2026-06-12: Removed stale public bank language from the current sales path: `finite universe`, `forensic bank`, `question-bank access`, and `resource dashboard`. Homepage now leads with `Find the MBE red zones your question sets are hiding.`
+- 2026-06-12: Focused tests passed: `node --test tests\j7-guided-path.test.ts tests\ambassador-dashboard-entry.test.ts tests\diagnostic-results-enrolled-cta.test.ts`.
+- 2026-06-12: Full app checks passed: `node --test tests\*.test.ts` (73/73), `npm run lint`, `npm run build`, and `git diff --check` with normal Windows line-ending warnings only.
+- 2026-06-12: Local production browser smoke on `http://127.0.0.1:3018` passed for desktop `/`, `/pricing`, `/checkout`, `/checkout/success`, `/dashboard`, `/dashboard/path` and mobile `/`, `/pricing`, `/checkout`, `/dashboard`: one `<main>`, no horizontal overflow, no browser errors, no stale bank language, `/dashboard/path` resolved to `/dashboard`, and signed-out dashboard showed the guided-path shell with sign-in state.

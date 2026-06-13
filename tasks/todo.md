@@ -17,9 +17,9 @@
 - [x] Run baseline restore-app checks: `npm run lint` and `npm run build`.
 - [x] Confirm live API health and cohort status from `https://api.barmatrix.app`.
 - [x] Bring over only selected ABM marketing/sales language that strengthens the current integrated app without weakening the product engine.
-- [ ] Keep real integrated app routes and API-backed product flows as the canonical app: `/diagnostic`, `/dashboard`, `/account`, `/drills`, `/red-zones`, `/boot-camps`, `/timed-sets`, `/mastery`, `/certification`, `/checkout`, `/checkout/success`, `/sign-in`, and `/sign-up`.
+- [x] Keep real integrated app routes and API-backed product flows as the canonical app: `/diagnostic`, `/dashboard`, `/account`, `/drills`, `/red-zones`, `/boot-camps`, `/timed-sets`, `/mastery`, `/certification`, `/checkout`, `/checkout/success`, `/sign-in`, and `/sign-up`.
 - [ ] Verify public copy against BMO drift rules: no discount, no coupon offer, no early-bird language, no public seat number, no guarantee, no official-affiliation claims.
-- [ ] Verify local build and smoke the launch-critical routes before any production deploy.
+- [x] Verify local build and smoke the launch-critical routes before any production deploy.
 - [ ] Deploy from this integrated app worktree only after Vercel project link and production target are intentionally present.
 
 ## Evidence So Far
@@ -36,12 +36,17 @@
 - Local browser smoke passed on `http://127.0.0.1:3000/` and `/pricing`: the new proof-before-price copy rendered, each route had one `<main>`, neither route had horizontal overflow, and no browser warning/error logs were captured.
 - Full app test sweep initially found an existing C3 Mastery copy regression. Fixed `app/mastery/page.tsx` so coverage-pending users see `Tagged coverage pending` and are not sent back by stale `Finish The Method, then work questions` copy.
 - Full app verification now passes: `node --test tests\*.test.ts` passed 71/71, `npm run lint` passed, and `npm run build` passed.
+- Local built-server HTTP smoke passed on `http://127.0.0.1:3017`: `/`, `/diagnostic`, `/diagnostic/session`, `/pricing`, `/checkout`, `/checkout/success`, `/sign-in`, `/sign-up`, `/account`, `/dashboard`, `/practice`, `/drills`, `/red-zones`, `/boot-camps`, `/timed-sets`, `/mastery`, `/certification`, `/terms`, `/privacy`, and `/faq` all returned HTTP 200 with expected page markers and no application-error text.
+- Desktop browser smoke passed for launch-critical integrated routes: `/`, `/diagnostic`, `/pricing`, `/checkout`, `/checkout/success?plan=full&source=pricing&after=dashboard`, `/sign-in?after=dashboard`, `/sign-up?after=dashboard`, `/account`, `/dashboard`, `/practice`, `/red-zones`, `/timed-sets`, and `/mastery` each rendered one `<main>`, one H1, no horizontal overflow, no runtime/application error text, and no relevant warning/error logs.
+- Mobile browser smoke passed at a phone viewport for `/`, `/pricing`, `/checkout`, `/checkout/success?plan=full&source=pricing&after=dashboard`, and `/dashboard` with one `<main>`, one H1, no horizontal overflow, no runtime/application error text, and no relevant warning/error logs.
+- Vercel target preflight verified CLI user `sunnylwood-7609`, project `barmatrix-app`, project ID `prj_LwBgARXTft6aeyoRwhIqEDWh5p4P`, org ID `team_HKHemC6mfIOm0t6aROxfEOug`; GitHub remote `auronpep/barmatrix-app` is private and available with admin permission.
 
 ## Review
 
 - Active conclusion: restore from the integrated Next app, not from the static ABM rebuild. ABM remains useful for selected marketing phrasing and the current-live rollback checkpoint, but it is not the product foundation.
 - First restore slice preserves the integrated app engine and changes only public sales copy plus the tracker/test guard.
 - Second restore slice fixed a pre-existing C3 Mastery readiness test failure so the integrated app branch is a cleaner base for route smoke and eventual restore deploy.
+- Third restore slice verified the integrated app route surface locally. Remaining deploy risk is environment-dependent: the clean worktree has no local Clerk env, so slash sign-in/sign-up show the app fallback locally; production/preview Vercel env must be checked before aliasing restore traffic.
 
 ## Scope
 

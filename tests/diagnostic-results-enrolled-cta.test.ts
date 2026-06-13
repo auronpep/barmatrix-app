@@ -18,6 +18,10 @@ describe("diagnostic results enrolled CTA", () => {
     assert.match(source, /case "enrolled":/);
     assert.match(source, /href="\/dashboard\/path"/);
     assert.match(source, /Continue your repair path/);
+    assert.match(source, /if \(dash\.error\) return "access_unavailable";/);
+    assert.match(source, /case "access_unavailable":/);
+    assert.match(source, /We could not confirm active access from this screen\./);
+    assert.match(source, /href="\/account"/);
     assert.match(source, /buildDiagnosticRecommendation/);
     assert.match(source, /Your top leak is \{rec\.topLeak\} - start here\./);
     assert.match(source, /results\.recommendation\?\.next_step/);

@@ -74,6 +74,7 @@ type BuiltRecommendation = {
 type DiagnosticResultsAccessState =
   | "checking"
   | "signed_out"
+  | "access_unavailable"
   | "not_enrolled"
   | "enrolled";
 
@@ -306,6 +307,7 @@ function resolveDiagnosticResultsAccess(
   if (dash.loading) return "checking";
   if (!dash.signedIn) return "signed_out";
   if (dash.data?.enrolled === true) return "enrolled";
+  if (dash.error) return "access_unavailable";
   return "not_enrolled";
 }
 
@@ -318,6 +320,7 @@ function TopTrapPatterns({
 }) {
   if (patterns.length === 0) {
     const enrolled = accessState === "enrolled";
+    const accessUnavailable = accessState === "access_unavailable";
     return (
       <div className="mt-8 rounded-lg border border-emerald-300 bg-emerald-50 p-6">
         <p className="font-mono text-xs uppercase tracking-wider text-emerald-700">
@@ -326,6 +329,8 @@ function TopTrapPatterns({
         <p className="mt-2 text-zinc-800">
           {enrolled
             ? "You did not fall into a repeated trap pattern on this set. Keep your Red-Zone Map building as you drill."
+            : accessUnavailable
+              ? "You did not fall into a repeated trap pattern on this set. We could not confirm account access from this screen, so open your account before making another enrollment decision."
             : "You did not fall into a repeated trap pattern on this set. Enroll to run the full forensic bank and keep your Red-Zone Map building as you drill."}
         </p>
       </div>
@@ -483,6 +488,34 @@ function ResultsDecisionPanel({
               className="text-sm text-zinc-300 underline hover:text-white"
             >
               Review Red-Zone Map
+            </Link>
+          </div>
+        </div>
+      );
+    case "access_unavailable":
+      return (
+        <div className="mt-8 rounded-lg border border-amber-300 bg-amber-50 p-8 shadow-sm">
+          <p className="font-mono text-xs uppercase tracking-wider text-amber-800">
+            Account check needed
+          </p>
+          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
+            We could not confirm active access from this screen.
+          </h2>
+          <p className="mt-3 text-zinc-700">
+            Your diagnostic map is ready, but the signed-in account check did
+            not return a clean enrollment status. Open your account first; if
+            access is active, continue into the dashboard instead of enrolling
+            again.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <Link href="/account" className="btn red">
+              Open account <span aria-hidden>→</span>
+            </Link>
+            <Link
+              href="/dashboard"
+              className="text-sm text-zinc-700 underline hover:text-zinc-950"
+            >
+              Go to dashboard
             </Link>
           </div>
         </div>

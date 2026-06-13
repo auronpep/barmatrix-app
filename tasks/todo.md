@@ -1,5 +1,29 @@
 # BarMatrix Full Bug Audit
 
+# Diagnostic Results Access Confirmation Guard - 2026-06-13
+
+## Scope
+
+- Prevent diagnostic results from asking a signed-in customer to enroll again when the dashboard entitlement check is unavailable.
+- Keep true anonymous/not-enrolled diagnostic takers on the sales path.
+
+## Plan
+
+- [x] Add failing regression coverage for the signed-in dashboard-error state.
+- [x] Add a distinct access-unavailable state on diagnostic results.
+- [x] Render an account/dashboard recovery panel instead of checkout CTAs when active access cannot be confirmed.
+- [ ] Run focused test, full tests, lint, build, diff check, deploy, and live-verify.
+
+## Verification
+
+- Red test confirmed before implementation: `node --test tests\diagnostic-results-enrolled-cta.test.ts` failed because the dashboard-error access branch did not exist.
+- Focused test passed after implementation: `node --test tests\diagnostic-results-enrolled-cta.test.ts`.
+- Full suite passed: `node --test tests\*.test.ts` passed 86/86.
+- `npm run lint` passed.
+- `npm run build` passed and generated `/diagnostic/[session]/results`.
+- `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+- Local production browser smoke on `http://127.0.0.1:3041/diagnostic/a017791e-90bf-4c50-a46c-b5428d06715d/results` rendered one `<main>`, `Your Red-Zone Map`, no horizontal overflow, no runtime error text, and no browser console errors. The throwaway live API diagnostic result was available directly; the local browser page exercised the results-unavailable fallback cleanly.
+
 # Refund Policy Route Restore - 2026-06-13
 
 ## Scope

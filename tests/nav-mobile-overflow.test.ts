@@ -14,4 +14,14 @@ describe("mobile navigation width", () => {
     assert.match(layout, /href="\/diagnostic" className="btn btn-sm red hide-md"/);
     assert.match(css, /\.nav-cta \.hide-md \{ display: none; \}/);
   });
+
+  it("keeps the signed-in dashboard CTA out of the phone top bar", () => {
+    const mobileNav = readProjectFile("components/mobile-nav.tsx");
+    const css = readProjectFile("app/globals.css");
+
+    assert.match(mobileNav, /href: "\/dashboard\/path", label: "Dashboard"/);
+    assert.match(css, /\.nav-cta > \.btn\.ghost\s*\{[^}]*display:\s*none;/s);
+    assert.match(css, /\.nav-inner \{[^}]*gap: 8px;/s);
+    assert.match(css, /\.nav-cta \{[^}]*gap: 8px;/s);
+  });
 });

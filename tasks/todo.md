@@ -1,5 +1,41 @@
 # BarMatrix Full Bug Audit
 
+# Old Integrated App Marketing Transplant - 2026-06-13
+
+## Scope
+
+- Use the old integrated Next.js app lineage from `origin/main` as the product foundation.
+- Carry forward only production-proven restore fixes from the current live branch: diagnostic-first sales copy, C3 mastery fallback, BMO dashboard/path split, paid program command center, mobile nav overflow fix, and coach starter-baseline labeling.
+- Preserve `C:\ABM` as rollback/reference, not as the product foundation.
+
+## Plan
+
+- [x] Create isolated worktree `C:\barmatrix-app\.worktrees\old-app-marketing-transplant` from `origin/main`.
+- [x] Baseline the old integrated app with tests, lint, build, route inventory, and local browser smoke.
+- [x] Carry forward selected production-proven source commits without pure deployment-record commits.
+- [x] Fix the dashboard cohort-status card so local/API failure does not expose raw `Failed to fetch` copy.
+- [x] Run full tests, lint, build, diff check, local route smoke, and live browser smoke.
+- [x] Deploy production candidate to `https://barmatrix.app`.
+
+## Verification
+
+- Baseline old app showed one known regression: `tests\mastery-coverage-pending-copy.test.ts` failed before carrying forward the proven C3 mastery fix.
+- After transplant and dashboard fallback polish, `node --test tests\*.test.ts` passed 78/78.
+- `npm run lint` passed.
+- `npm run build` passed and generated the full integrated route surface, including `/dashboard`, `/dashboard/path`, `/dashboard/mastery`, `/dashboard/final-sprint`, `/practice`, `/drills`, `/boot-camps`, `/timed-sets`, `/mastery`, `/coach`, and `/certification`.
+- `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+- Local HTTP route smoke on `http://127.0.0.1:3032` returned usable pages for public, checkout, account, dashboard, and paid-program routes.
+- Local browser verification confirmed mobile `/dashboard` no longer exposes raw `Failed to fetch`; it shows friendly cohort status fallback copy instead.
+- Production deploy `dpl_3CYZTWM8TVTxS5u4xDu986M8fdeR` is `READY` and aliased to `https://barmatrix.app` and `https://www.barmatrix.app`.
+- Live HTTP route smoke passed on `https://barmatrix.app`: public routes returned 200, protected account/dashboard/drills routes redirected when anonymous, and no route returned application/runtime error text.
+- Live browser smoke passed on public, checkout, dashboard, dashboard/path, mastery-board, final-sprint, practice, red-zone, boot-camp, timed-set, mastery, coach, and certification surfaces: one `<main>`, no horizontal overflow, no raw `Failed to fetch`, and no application/runtime error text.
+- Signed-in browser state verified `/dashboard/path` renders `Lead Me`, `Day 1: Trap Hunt and C3 Power-Up`, and `Current Task`; `/certification` settles to `C3 Mastery Certification`.
+- Production source tag pushed: `live-old-app-marketing-transplant-2026-06-13-dpl-3CYZTWM`.
+
+## Review
+
+- Status: DEPLOYED AND LIVE-VERIFIED. This is the cleaner old-integrated-app foundation with selected new marketing and proven repair fixes, not the ABM/Vite rebuild path.
+
 # Restore Old Integrated App + New Marketing Layer
 
 ## Scope

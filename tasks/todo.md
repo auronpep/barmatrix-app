@@ -3302,7 +3302,7 @@ Preserve the intended paid-program navigation split: `/dashboard/path` is the pr
 - [x] Remove the `/dashboard` Lead Me takeover while leaving `/dashboard/path` unchanged.
 - [x] Run focused dashboard/path tests.
 - [x] Run full app tests, lint, and production build.
-- [ ] Deploy and live-verify `/dashboard` and `/dashboard/path`.
+- [x] Deploy and live-verify `/dashboard` and `/dashboard/path`.
 
 ## Review Log
 
@@ -3310,3 +3310,6 @@ Preserve the intended paid-program navigation split: `/dashboard/path` is the pr
 - 2026-06-13: Added `tests/ambassador-dashboard-entry.test.ts` coverage that `/dashboard/path` owns `useDayPlan`, while `/dashboard` does not use `usePath`, `PathSurface`, or `next_step` routing.
 - 2026-06-13: Removed the `/dashboard` short-circuit only; `/dashboard/path` continues to render the guided day-plan surface.
 - 2026-06-13: Verification passed: `node --test tests\ambassador-dashboard-entry.test.ts`, `node --test tests\j7-guided-path.test.ts tests\diagnostic-results-enrolled-cta.test.ts tests\sitemap-static-surface.test.ts`, `node --test tests\*.test.ts` (74/74), `npm run lint`, and `npm run build`.
+- 2026-06-13: App commit `e3c22d8` deployed to Vercel production deployment `dpl_FEb55ruxVQg6DN7TPKhppnpaWL36`, aliased to `https://barmatrix.app` and `https://www.barmatrix.app`.
+- 2026-06-13: Anonymous live route smoke passed for `/`, `/checkout/success`, `/foundations`, `/boot-camps`, `/certification`, `/red-zones`; dashboard routes returned protected 307 responses outside the browser session.
+- 2026-06-13: Live in-app browser session verified `/dashboard` rendered `Progress, next drill, and recent wrong-answer forensics.` with no `Lead Me`, while `/dashboard/path` rendered `Lead Me`, `Day 1: Trap Hunt and C3 Power-Up`, and `FIRST 3 DAYS` with no full-dashboard heading.

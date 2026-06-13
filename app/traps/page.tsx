@@ -151,14 +151,14 @@ export default async function TrapsPage({
           <div className={columnsClassName}>
             <TrapColumn
               title="Wrong-answer architecture"
-              caption="How the distractor is built (forensic_tags)"
+              caption="How the distractor is built"
               traps={architecturePage}
               total={architecture.length}
             />
             {hasMisconceptionDimension && (
               <TrapColumn
                 title="Misconception"
-                caption="The student error it preys on (misconception_tags)"
+                caption="The student error it preys on"
                 traps={misconceptionPage}
                 total={visibleMisconception.length}
               />

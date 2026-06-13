@@ -31,6 +31,14 @@ const FALLBACK_NEXT_DRILL = {
   body: "Work the Evidence drill to repair purpose-of-statement mistakes, then return to mixed practice.",
 };
 
+const COHORT_STATUS_LABEL: Record<CohortStatus["public_status"], string> = {
+  open: "Open",
+  limited: "Limited seats",
+  almost_full: "Almost full",
+  last_seats: "Last seats",
+  waitlist: "Waitlist",
+};
+
 const PROGRAM_COMMAND_CENTER = [
   {
     label: "Lead Me",
@@ -421,7 +429,8 @@ function CohortCard({
             {status.public_copy}
           </p>
           <p className="mt-2 font-mono text-xs uppercase tracking-wider text-zinc-700">
-            {status.cohort_code} / {status.public_status}
+            {formatCohortCode(status.cohort_code)} /{" "}
+            {formatCohortPublicStatus(status.public_status)}
           </p>
         </>
       )}
@@ -436,6 +445,22 @@ function CohortCard({
       )}
     </aside>
   );
+}
+
+function formatCohortCode(code: string): string {
+  return code
+    .split(/[_-]+/)
+    .filter(Boolean)
+    .map((word) => {
+      const lower = word.toLowerCase();
+      if (lower === "mbe") return "MBE";
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
+    })
+    .join(" ");
+}
+
+function formatCohortPublicStatus(status: CohortStatus["public_status"]): string {
+  return COHORT_STATUS_LABEL[status] ?? formatCohortCode(status);
 }
 
 function MetricCard({

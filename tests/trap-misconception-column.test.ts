@@ -36,3 +36,12 @@ test("trap catalog cards do not expose raw trap slugs as visible copy", () => {
     /<span className="mt-0\.5 block break-all[^"]*">\s*\{trap\.slug\}\s*<\/span>/,
   );
 });
+
+test("trap catalog captions do not expose API field names", () => {
+  const source = readProjectFile("app/traps/page.tsx");
+
+  assert.match(source, /caption="How the distractor is built"/);
+  assert.match(source, /caption="The student error it preys on"/);
+  assert.doesNotMatch(source, /forensic_tags/);
+  assert.doesNotMatch(source, /misconception_tags/);
+});

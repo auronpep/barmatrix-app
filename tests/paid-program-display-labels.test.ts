@@ -50,4 +50,14 @@ describe("paid program display labels", () => {
       /currentRef\.external_id\s*\?\?\s*currentRef\.question_id\.slice/,
     );
   });
+
+  it("formats cohort codes and statuses before showing dashboard status text", () => {
+    const dashboard = readProjectFile("app/dashboard/page.tsx");
+
+    assert.match(dashboard, /function formatCohortCode/);
+    assert.match(dashboard, /function formatCohortPublicStatus/);
+    assert.match(dashboard, /formatCohortCode\(status\.cohort_code\)/);
+    assert.match(dashboard, /formatCohortPublicStatus\(status\.public_status\)/);
+    assert.doesNotMatch(dashboard, /\{status\.cohort_code\} \/ \{status\.public_status\}/);
+  });
 });

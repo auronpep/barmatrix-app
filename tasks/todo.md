@@ -3394,7 +3394,7 @@ Treat `C:\BMO` / `C:\barmatrix-app` as the old integrated BarMatrix system and k
 - [x] Add focused regressions for confirmed customer-facing defects instead of broad rewrites.
 - [x] Patch only the confirmed defects.
 - [x] Run focused tests, full app tests, lint, build, and browser verification.
-- [ ] Deploy and record a new rollback checkpoint only after verification passes.
+- [x] Deploy and record a new rollback checkpoint only after verification passes.
 
 ## Review Log
 
@@ -3410,3 +3410,8 @@ Treat `C:\BMO` / `C:\barmatrix-app` as the old integrated BarMatrix system and k
 - 2026-06-13: Production deploy `dpl_B7sB3ZEfGs5wnHwmuk7WHS2vRXnn` exposed a remaining dashboard body leak: the card title read `Review Missed Questions`, but body text still said `review_drill. Open the Red-Zone Map to start it.`
 - 2026-06-13: Added the dashboard body leak to `tests\paid-program-display-labels.test.ts` and patched the fallback body to render `Review Missed Questions is ready...` through `formatDrillName(drill.reason)`.
 - 2026-06-13: Re-verification passed: `node --test tests\paid-program-display-labels.test.ts tests\coach-unavailable-reason-copy.test.ts`, `node --test tests\*.test.ts` (81/81), `git diff --check` with normal Windows line-ending warnings only, `npm run lint`, and `npm run build`.
+- 2026-06-13: Production deployment `dpl_HmwJVCwhGC4b7aEvDvb8CgXPQwvL` built successfully and was aliased to `https://barmatrix.app`.
+- 2026-06-13: Live signed-in browser verification passed on `/dashboard`: `Review Missed Questions` title and body rendered, `review_drill` was absent, and there were no raw errors or horizontal overflow.
+- 2026-06-13: Live signed-in browser verification passed on `/drills/contracts`: starting the queue showed `1 / 6`, A-D answers, readable queue label `Types Of Agreements`, no external ID, no raw errors, and no horizontal overflow.
+- 2026-06-13: Live signed-in browser verification passed on `/drills/62ec2e5b-458d-4dd5-9574-e8b546ad80e7`: H1 and runner title rendered `Review Missed Questions`, `review_drill` was absent, and there were no raw errors or horizontal overflow.
+- 2026-06-13: Live signed-in browser verification passed on `/coach`: stale diagnostic CTA was absent, `Feed the Coach with more live attempts.` was present, and the coach start/question state rendered with no raw errors or horizontal overflow.

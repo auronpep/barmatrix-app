@@ -1,5 +1,37 @@
 # BarMatrix Full Bug Audit
 
+# Live Practice And Drill Workflow Verification - 2026-06-13
+
+## Scope
+
+- Verify the live enrolled customer can start a subject practice set and submit an answer.
+- Verify the live enrolled customer can resume a prescribed drill and submit an answer.
+- Separate real launch blockers from browser-automation click noise.
+
+## Plan
+
+- [x] Open live `/practice` in the signed-in browser session.
+- [x] Start Civil Procedure practice and submit one answer.
+- [x] Open live `/drills`, resume an active review drill, and submit one answer.
+- [x] Record route, feedback, layout, and console evidence.
+
+## Verification
+
+- Live practice URL: `https://barmatrix.app/practice?audit=practice_live_after_leadme_20260613`.
+- Practice rendered subject buttons for Civil Procedure, Constitutional Law, Contracts, Criminal Law, Criminal Procedure, Evidence, Real Property, and Torts with one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+- Clicking Civil Procedure loaded `SUBJECT: CIVIL PROCEDURE`, question `1/20`, answer choices, confidence control, and a disabled submit until answer selection.
+- Selecting answer `C` enabled `Submit answer`; submitting rendered `CORRECT`, `RULE FIT`, and `Next question` with one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+- Live drills URL: `https://barmatrix.app/drills?audit=drills_live_after_leadme_20260613`.
+- Drills rendered `Review missed questions`, active `RESUME DRILL` links, prescribed Red-Zone drill cards, one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+- Live review drill URL: `https://barmatrix.app/drills/62ec2e5b-458d-4dd5-9574-e8b546ad80e7?audit=drill_live_after_leadme_20260613`.
+- The review drill rendered `REVIEW MISSED QUESTIONS · QUESTION 1 OF 12`, answer choices, confidence control, and a disabled submit until answer selection.
+- Selecting answer `D` enabled `Submit answer`; submitting advanced to `QUESTION 2 OF 12` and rendered `CORRECT`, `Why that answer was right`, and `Next question ->` with one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+
+## Review
+
+- Status: LIVE-VERIFIED, NO CODE CHANGE.
+- Practice subject flow and review-drill submission flow are working in production for the signed-in enrolled account.
+
 # Lead Me Completion Route Repair - 2026-06-13
 
 ## Scope

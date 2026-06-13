@@ -21,7 +21,11 @@ function readPublicCampaignPages(): Array<{ path: string; source: string }> {
 describe("public campaign surface", () => {
   it("does not expose old demo wording on public campaign pages", () => {
     for (const { path, source } of readPublicCampaignPages()) {
-      assert.doesNotMatch(source, /\bdemo\b/i, path);
+      assert.doesNotMatch(
+        source,
+        /\b(demo|mock|prototype|placeholder)\b|coming soon|under construction|lorem ipsum/i,
+        path,
+      );
     }
   });
 

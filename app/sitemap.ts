@@ -30,6 +30,7 @@ const ROUTES = [
   "/waitlist",
   "/faq",
   "/privacy",
+  "/refund",
   "/terms",
 ] as const;
 

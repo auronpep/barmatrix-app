@@ -1,5 +1,30 @@
 # BarMatrix Full Bug Audit
 
+# Refund Policy Route Restore - 2026-06-13
+
+## Scope
+
+- Restore the buyer-facing refund/dispute policy surface that existed in the ABM launch pages but was missing from the integrated Next app.
+- Make `/refund` a first-class legal route and link it from checkout, the footer, and sitemap.
+
+## Plan
+
+- [x] Add regression coverage for `/refund`, 3-day copy, checkout/footer links, and sitemap inclusion.
+- [x] Add `app/refund/page.tsx` with the 3-day refund window, 2-pay handling, payment-plan switching, and billing/support contacts.
+- [x] Link Refund Policy from checkout FAQ and the global footer.
+- [x] Add `/refund` to the sitemap.
+- [x] Run focused test, full tests, lint, build, and diff check.
+- [ ] Deploy and live-verify `/refund`.
+
+## Verification
+
+- Red test confirmed before implementation: `node --test tests\refund-policy-route.test.ts` failed because `app/refund/page.tsx` did not exist.
+- Focused test passed after implementation: `node --test tests\refund-policy-route.test.ts`.
+- Full suite passed: `node --test tests\*.test.ts` passed 86/86.
+- `npm run lint` passed.
+- `npm run build` passed and listed `/refund` in the production route table.
+- `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+
 # Stripe Public Branding Provider Item - 2026-06-12
 
 ## Scope

@@ -220,6 +220,9 @@ export default function RootLayout({
                       <Link href="/privacy">Privacy</Link>
                     </li>
                     <li>
+                      <Link href="/refund">Refund Policy</Link>
+                    </li>
+                    <li>
                       <Link href="/account">Account</Link>
                     </li>
                   </ul>

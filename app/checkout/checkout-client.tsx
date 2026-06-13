@@ -541,6 +541,9 @@ function CheckoutFaqPanel() {
         <Link href="/terms" className="btn ghost">
           Terms
         </Link>
+        <Link href="/refund" className="btn ghost">
+          Refund Policy
+        </Link>
         <Link href="/account" className="btn ghost">
           Checkout recovery
         </Link>

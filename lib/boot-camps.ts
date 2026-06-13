@@ -16,6 +16,24 @@ export function humanizeTag(tag: string): string {
     .join(" ");
 }
 
+/** Boot camp seed targets can be taxonomy IDs; render them as student-facing focus labels. */
+export function formatBootCampTargetLabel(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return "Boot camp focus";
+
+  const fourthAmendment = trimmed.match(/^CRIM-4A-BOOT-(\d{1,3})$/);
+  if (fourthAmendment) {
+    return `Fourth Amendment Focus ${Number(fourthAmendment[1])}`;
+  }
+
+  const warrantException = trimmed.match(/^CRIM-WE-(\d{1,3})$/);
+  if (warrantException) {
+    return `Warrant Exception Focus ${Number(warrantException[1])}`;
+  }
+
+  return humanizeTag(trimmed);
+}
+
 export interface CampProgress {
   completed: number;
   total: number;

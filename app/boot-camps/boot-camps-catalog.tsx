@@ -8,7 +8,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api, ApiClientError, type BootCampSummary } from "@/lib/api-client";
-import { humanizeTag } from "@/lib/boot-camps";
+import { formatBootCampTargetLabel } from "@/lib/boot-camps";
 import GamificationStrip from "./gamification-strip";
 
 type State =
@@ -137,7 +137,7 @@ function TagGroup({ label, values }: { label: string; values: string[] }) {
             key={value}
             className="border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-700"
           >
-            {humanizeTag(value)}
+            {formatBootCampTargetLabel(value)}
           </span>
         ))}
       </div>

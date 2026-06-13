@@ -748,7 +748,7 @@ function ForensicsCard() {
             </div>
             <span className="arrow">→</span>
           </div>
-          <p className="demo-caption">Illustrative example</p>
+          <p className="proof-caption">Diagnostic output example</p>
         </div>
       </div>
     </div>

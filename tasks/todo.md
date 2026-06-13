@@ -1,5 +1,31 @@
 # BarMatrix Full Bug Audit
 
+# Paid Workflow Anomaly Recheck - 2026-06-13
+
+## Scope
+
+- Recheck suspicious route states from the paid-dashboard sweep after the account loading repair deployed.
+- Separate actual broken states from slow auth/data hydration and case-sensitive smoke-test noise.
+
+## Plan
+
+- [x] Re-poll `/mastery`, `/dashboard/mastery`, `/red-zones`, `/dashboard/final-sprint`, and `/dashboard/path` in the signed-in production browser.
+- [x] Use case-insensitive markers and wait for client-side paid data to settle.
+- [x] Inspect `/red-zones` directly after the initial sweep suggested an empty catalog shell.
+
+## Verification
+
+- `/mastery?anomaly=paid_sweep_20260613` settled to the signed-in C3 Mastery board with dashboard navigation, `Measured on 0 of your 127 attempts`, tagged coverage pending copy, one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+- `/dashboard/mastery?anomaly=paid_sweep_20260613` rendered the restored Pattern Mastery Board with five dimensions, dashboard navigation, one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+- `/dashboard/final-sprint?anomaly=paid_sweep_20260613` rendered the Final Sprint path with Evidence drill links, one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+- `/dashboard/path?anomaly=paid_sweep_20260613` rendered Lead Me Day 1 with daily tasks and `MARK COMPLETE`, one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+- Direct `/red-zones?debug=stuck_catalog_20260613` recheck settled to a populated library: `REPAIR PROGRESS 80%`, `ACTIVE RED ZONES 21`, `TOTAL ZONES 77`, Real Property, Fair play and substantial justice, populated detail links, one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+
+## Review
+
+- Status: LIVE-VERIFIED, NO CODE CHANGE.
+- The remaining anomalies from the broad paid sweep were hydration/timing or uppercase-label smoke-test noise, not confirmed functional blockers.
+
 # Account Loading State Repair - 2026-06-13
 
 ## Scope

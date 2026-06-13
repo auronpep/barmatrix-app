@@ -16,6 +16,8 @@ import {
   type PlacementRemediationTarget,
 } from "@/lib/api-client";
 import { useFoundations } from "@/lib/use-foundations";
+import { useDashboard, type DashboardState } from "@/lib/use-dashboard";
+import { useRecentConfirmedCheckoutAccess } from "@/lib/checkout-access-state";
 import { userFacingResourceError } from "@/lib/user-facing-errors";
 
 const LEVEL_META: Record<
@@ -54,6 +56,15 @@ const LEVEL_META: Record<
   },
 };
 
+type PlacementResultsAccessState =
+  | "checking"
+  | "signed_out"
+  | "access_unavailable"
+  | "recent_checkout"
+  | "account_unconfirmed"
+  | "not_enrolled"
+  | "enrolled";
+
 function getLevelMeta(level: number) {
   return LEVEL_META[level] ?? LEVEL_META[0];
 }
@@ -74,6 +85,9 @@ export default function PlacementResultsPage({
   const [results, setResults] = useState<PlacementResults | null>(null);
   const [error, setError] = useState<string | null>(null);
   const foundations = useFoundations();
+  const dash = useDashboard();
+  const recentCheckoutAccess = useRecentConfirmedCheckoutAccess();
+  const accessState = resolvePlacementResultsAccess(dash, recentCheckoutAccess);
   const methodSlug =
     foundations.data?.progress.next_slug ??
     foundations.data?.lessons[0]?.slug ??
@@ -121,7 +135,11 @@ export default function PlacementResultsPage({
           {results.top_remediation_targets.length > 0 && (
             <RemediationTargets targets={results.top_remediation_targets} />
           )}
-          <ProgramCta methodSlug={methodSlug} results={results} />
+          <ProgramCta
+            methodSlug={methodSlug}
+            results={results}
+            accessState={accessState}
+          />
         </>
       )}
 
@@ -137,6 +155,20 @@ export default function PlacementResultsPage({
       )}
     </section>
   );
+}
+
+function resolvePlacementResultsAccess(
+  dash: DashboardState,
+  recentCheckoutAccess: { checking: boolean; active: boolean },
+): PlacementResultsAccessState {
+  if (dash.loading) return "checking";
+  if (recentCheckoutAccess.checking) return "checking";
+  if (dash.data?.enrolled === true) return "enrolled";
+  if (dash.error) return "access_unavailable";
+  if (dash.signedIn && dash.data && !dash.data.enrolled) return "account_unconfirmed";
+  if (recentCheckoutAccess.active) return "recent_checkout";
+  if (!dash.signedIn) return "signed_out";
+  return "not_enrolled";
 }
 
 function PlacementBadge({ results }: { results: PlacementResults }) {
@@ -336,12 +368,166 @@ function RemediationTargets({
 function ProgramCta({
   methodSlug,
   results,
+  accessState,
 }: {
   methodSlug: string;
   results: PlacementResults;
+  accessState: PlacementResultsAccessState;
 }) {
   const nextStep = placementNextStep(results.placement_level, methodSlug);
   const topLeak = placementTopLeak(results);
+
+  switch (accessState) {
+    case "checking":
+      return (
+        <div className="mt-10 rounded-lg border border-zinc-200 bg-white p-8 shadow-sm">
+          <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
+            Checking account access
+          </p>
+          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
+            We are checking whether this account already has Flagship access.
+          </h2>
+          <p className="mt-3 text-zinc-600">
+            Your placement is ready. If access is active, the next step will
+            take you into the repair path instead of another checkout.
+          </p>
+        </div>
+      );
+    case "enrolled":
+      return (
+        <div className="mt-10 rounded-lg border border-zinc-900 bg-zinc-900 p-8 text-white">
+          <p className="font-mono text-xs uppercase tracking-wider text-red-400">
+            Recommended next step - L{results.placement_level}
+          </p>
+          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
+            This placement is already tied to active Flagship access.
+          </h2>
+          <p className="mt-3 text-zinc-300">
+            Your top leak is {topLeak}. Continue your repair path from{" "}
+            {nextStep.focus}; do not enroll again.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <Link href="/dashboard/path" className="btn red">
+              Continue your repair path <span aria-hidden>→</span>
+            </Link>
+            <Link
+              href={nextStep.href}
+              className="text-sm text-zinc-300 underline hover:text-white"
+            >
+              Open recommended exercise
+            </Link>
+          </div>
+        </div>
+      );
+    case "access_unavailable":
+      return (
+        <div className="mt-10 rounded-lg border border-amber-300 bg-amber-50 p-8 shadow-sm">
+          <p className="font-mono text-xs uppercase tracking-wider text-amber-800">
+            Account check needed
+          </p>
+          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
+            We could not confirm active access from this screen.
+          </h2>
+          <p className="mt-3 text-zinc-700">
+            Your placement is ready. Open your account first; if access is
+            active, continue into the dashboard instead of enrolling again.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <Link href="/account" className="btn red">
+              Open account <span aria-hidden>→</span>
+            </Link>
+            <Link
+              href="/dashboard"
+              className="text-sm text-zinc-700 underline hover:text-zinc-950"
+            >
+              Go to dashboard
+            </Link>
+          </div>
+        </div>
+      );
+    case "recent_checkout":
+      return (
+        <div className="mt-10 rounded-lg border border-amber-300 bg-amber-50 p-8 shadow-sm">
+          <p className="font-mono text-xs uppercase tracking-wider text-amber-800">
+            Account check needed
+          </p>
+          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
+            This browser has a confirmed checkout on record.
+          </h2>
+          <p className="mt-3 text-zinc-700">
+            Your placement is ready. Open your account or sign in with the
+            checkout email before starting another checkout.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <Link href="/account" className="btn red">
+              Open account <span aria-hidden>→</span>
+            </Link>
+            <Link
+              href="/sign-in?after=dashboard"
+              className="text-sm text-zinc-700 underline hover:text-zinc-950"
+            >
+              Sign in
+            </Link>
+          </div>
+        </div>
+      );
+    case "account_unconfirmed":
+      return (
+        <div className="mt-10 rounded-lg border border-amber-300 bg-amber-50 p-8 shadow-sm">
+          <p className="font-mono text-xs uppercase tracking-wider text-amber-800">
+            Account check needed
+          </p>
+          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
+            This signed-in account is not showing active Flagship access yet.
+          </h2>
+          <p className="mt-3 text-zinc-700">
+            Your placement is ready. Open your account to confirm or recover
+            access before another checkout; if this is the same email you used
+            at purchase, the account page is the right next step.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <Link href="/account" className="btn red">
+              Check account access <span aria-hidden>→</span>
+            </Link>
+            <Link
+              href="/support"
+              className="text-sm text-zinc-700 underline hover:text-zinc-950"
+            >
+              Contact support
+            </Link>
+          </div>
+        </div>
+      );
+    case "signed_out":
+      return (
+        <div className="mt-10 rounded-lg border border-zinc-200 bg-white p-8 shadow-sm">
+          <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
+            Account check needed
+          </p>
+          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
+            Sign in before starting another checkout.
+          </h2>
+          <p className="mt-3 text-zinc-600">
+            If you already enrolled, use the email from checkout so BarMatrix
+            can connect this placement to your active account.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <Link href="/sign-in?after=dashboard" className="btn red">
+              Sign in <span aria-hidden>→</span>
+            </Link>
+            <Link
+              href="/checkout"
+              className="text-sm text-zinc-700 underline hover:text-zinc-950"
+            >
+              Enroll if you have not purchased
+            </Link>
+          </div>
+        </div>
+      );
+    case "not_enrolled":
+      break;
+  }
+
   return (
     <div className="mt-10 rounded-lg border border-zinc-900 bg-zinc-900 p-8 text-white">
       <p className="font-mono text-xs uppercase tracking-wider text-red-400">

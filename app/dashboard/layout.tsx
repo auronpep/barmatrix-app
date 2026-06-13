@@ -43,6 +43,8 @@ const PROGRAM_LINKS: readonly NavItem[] = [
   { href: "/boot-camps", label: "Boot Camps" },
   { href: "/red-zones", label: "Red-Zone Map" },
   { href: "/timed-sets", label: "Timed Sets" },
+  { href: "/mobile-apps", label: "Mobile Access" },
+  { href: "/support", label: "Support" },
   { href: "/diagnostic", label: "Diagnostic" },
 ];
 

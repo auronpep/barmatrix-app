@@ -1,5 +1,37 @@
 # BarMatrix Full Bug Audit
 
+# Stripe Public Branding Provider Item - 2026-06-12
+
+## Scope
+
+- Investigate why Stripe Checkout still shows `JWM Services` during BarMatrix enrollment.
+- Keep checkout code safe; do not deploy a Stripe SDK/type bypass that could break live checkout.
+
+## Findings
+
+- Official Stripe docs confirm `branding_settings.display_name` can override the Checkout header, and account public business details control broader customer-facing branding.
+- A live Stripe Checkout probe with `branding_settings.display_name=BarMatrix` showed `BarMatrix` at the top, but the browser title and Link trust copy still showed `JWM Services`.
+- Read-only Stripe account check showed customer-facing account fields still point away from BarMatrix:
+  - Public business name: `JWM Services`
+  - Business website: `https://988Foundation.com`
+  - Dashboard display name: `JWM Services`
+  - Statement descriptor: `JOSH WOOD INC`
+- Stripe rejected own-account public-profile updates through the API; these fields must be changed in Stripe Dashboard.
+- Chrome automation is unavailable in this session, and the in-app browser is not logged into Stripe Dashboard.
+
+## Required Dashboard Action
+
+- Open `https://dashboard.stripe.com/settings/public`.
+- Set public business name to `BarMatrix`.
+- Set business website to `https://barmatrix.app`.
+- Set support email to `support@barmatrix.app`.
+- Create a fresh checkout session and verify `JWM Services` no longer appears.
+
+## Review
+
+- Status: PROVIDER-SIDE PENDING.
+- App worktree and API worktree are clean; no code deploy is required for this branding issue unless Dashboard changes do not clear the stale checkout branding.
+
 # Paid Program Page Heading Repair - 2026-06-12
 
 ## Scope

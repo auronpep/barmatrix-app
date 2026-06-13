@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { formatDrillName } from "@/lib/drills";
 import { useDashboard } from "@/lib/use-dashboard";
 
 type SprintDay = {
@@ -456,10 +457,10 @@ function LiveTargets({ dash }: { dash: ReturnType<typeof useDashboard> }) {
                 className="flex items-center justify-between gap-3 border-b border-zinc-100 pb-3 last:border-b-0 last:pb-0"
               >
                 <span className="min-w-0 break-words text-sm font-medium text-zinc-900">
-                  {d.drill_name}
+                  {formatDrillName(d.drill_name)}
                 </span>
                 <span className="shrink-0 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
-                  {d.status}
+                  {formatSprintDrillStatus(d.status)}
                 </span>
               </li>
             ))}
@@ -475,6 +476,15 @@ function LiveTargets({ dash }: { dash: ReturnType<typeof useDashboard> }) {
       </div>
     </section>
   );
+}
+
+function formatSprintDrillStatus(status: string | null | undefined): string {
+  if (!status) return "Assigned";
+  return status
+    .split(/[_-]+/g)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
 }
 
 function ExamDatePanel({

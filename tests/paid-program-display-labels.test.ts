@@ -29,6 +29,16 @@ describe("paid program display labels", () => {
     assert.doesNotMatch(drillRunner, /title=\{state\.detail\.drill_name\}/);
   });
 
+  it("formats assigned drill names and statuses on the final sprint path", () => {
+    const finalSprint = readProjectFile("app/dashboard/final-sprint/page.tsx");
+
+    assert.match(finalSprint, /import \{ formatDrillName \} from "@\/lib\/drills";/);
+    assert.match(finalSprint, /formatDrillName\(d\.drill_name\)/);
+    assert.match(finalSprint, /formatSprintDrillStatus\(d\.status\)/);
+    assert.doesNotMatch(finalSprint, /\{d\.drill_name\}/);
+    assert.doesNotMatch(finalSprint, /\{d\.status\}/);
+  });
+
   it("does not expose external IDs or UUID fragments in the Contracts live queue label", () => {
     const contracts = readProjectFile("app/drills/contracts/page.tsx");
 

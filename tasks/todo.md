@@ -1,5 +1,29 @@
 # BarMatrix Full Bug Audit
 
+# Final Sprint Drill Label Polish - 2026-06-13
+
+## Scope
+
+- Fix live final-sprint assigned-drill labels that expose API/storage names such as `review_drill`.
+- Keep the existing final-sprint structure and live dashboard data source.
+
+## Plan
+
+- [x] Add failing regression coverage for final-sprint drill name/status formatting.
+- [x] Use the shared drill-name formatter in the final-sprint live targets panel.
+- [x] Format assigned-drill statuses into readable labels.
+- [ ] Run focused/full verification, deploy, live-check, and checkpoint.
+
+## Verification
+
+- Live signed-in route sweep found `/dashboard/final-sprint` rendering raw assigned-drill labels such as `review_drill` and raw status values such as `IN_PROGRESS`.
+- Red test confirmed before implementation: `node --test tests\paid-program-display-labels.test.ts` failed because final sprint did not import/use `formatDrillName` or a status formatter.
+- Focused test passed after implementation: `node --test tests\paid-program-display-labels.test.ts`.
+- Full suite passed: `node --test tests\*.test.ts` passed 87/87.
+- `npm run lint` passed.
+- `npm run build` passed and generated `/dashboard/final-sprint`.
+- `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+
 # Diagnostic Recommendation Shape Repair - 2026-06-13
 
 ## Scope

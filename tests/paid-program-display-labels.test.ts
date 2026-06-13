@@ -71,4 +71,27 @@ describe("paid program display labels", () => {
     assert.match(dashboard, /formatCohortPublicStatus\(status\.public_status\)/);
     assert.doesNotMatch(dashboard, /\{status\.cohort_code\} \/ \{status\.public_status\}/);
   });
+
+  it("keeps paid study surfaces from sounding like unfinished previews", () => {
+    const paidSources = [
+      "components/path/milestone-map.tsx",
+      "app/timed-sets/page.tsx",
+      "app/drills/civil-procedure/page.tsx",
+      "app/drills/constitutional-law/page.tsx",
+      "app/drills/contracts/page.tsx",
+      "app/drills/criminal-law/page.tsx",
+      "app/drills/evidence/page.tsx",
+      "app/drills/real-property/page.tsx",
+      "app/drills/torts/page.tsx",
+    ].map(readProjectFile);
+
+    for (const source of paidSources) {
+      assert.doesNotMatch(source, /Coming soon/);
+      assert.doesNotMatch(source, /Wrong-answer forensics preview/);
+      assert.doesNotMatch(source, /Timed set engine preview/);
+      assert.doesNotMatch(source, /replace this preview/);
+      assert.doesNotMatch(source, /preview card/);
+      assert.doesNotMatch(source, /proof preview/);
+    }
+  });
 });

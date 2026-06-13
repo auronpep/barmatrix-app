@@ -368,7 +368,7 @@ function StartPanel({ onStart }: { onStart: () => void }) {
       </h2>
       <p className="mt-3 max-w-2xl text-zinc-600">
         The first click syncs live Criminal Law questions. After each answer, the
-        right rail changes from an exception-trigger preview into live wrong-answer
+        right rail opens the live wrong-answer
         forensics.
       </p>
       <button
@@ -600,7 +600,7 @@ function ForensicsPanel({
   return (
     <aside className="border border-zinc-200 bg-zinc-50 p-6 lg:sticky lg:top-6">
       <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-        Wrong-answer forensics preview
+        Forensics after submit
       </p>
       <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
         {CRIMINAL_LAW_PREVIEW.trap}
@@ -620,8 +620,8 @@ function ForensicsPanel({
         {CRIMINAL_LAW_PREVIEW.whyFails}
       </ForensicsSection>
       <p className="mt-5 text-sm leading-6 text-zinc-600">
-        Submit an answer to replace this preview with the live attempt
-        forensics, red-zone update, and repair drill assignment.
+        Submit an answer to open the live attempt forensics, red-zone update,
+        and repair drill assignment.
       </p>
     </aside>
   );

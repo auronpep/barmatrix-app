@@ -357,7 +357,7 @@ function StartPanel({ onStart }: { onStart: () => void }) {
       </h2>
       <p className="mt-3 max-w-2xl text-zinc-600">
         The first click syncs live subject questions. After each answer, the
-        right rail changes from the preview card into live wrong-answer
+        right rail opens live wrong-answer
         forensics.
       </p>
       <button
@@ -603,8 +603,8 @@ function ForensicsPanel({
         ))}
       </dl>
       <p className="mt-5 text-sm leading-6 text-zinc-600">
-        Submit an answer to replace this preview with live attempt forensics,
-        red-zone updates, and a repair drill assignment.
+        Submit an answer to open live attempt forensics, red-zone updates, and
+        a repair drill assignment.
       </p>
     </aside>
   );

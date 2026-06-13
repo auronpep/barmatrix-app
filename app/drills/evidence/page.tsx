@@ -343,8 +343,7 @@ function StartPanel({ onStart }: { onStart: () => void }) {
       </h2>
       <p className="mt-3 max-w-2xl text-zinc-600">
         The first click syncs the live Evidence questions. After each answer,
-        the right rail changes from the proof preview into live wrong-answer
-        forensics.
+        the right rail opens live wrong-answer forensics.
       </p>
       <button
         type="button"

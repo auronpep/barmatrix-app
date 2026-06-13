@@ -10,10 +10,18 @@ const hasClerk = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
 
 const isProtectedRoute = createRouteMatcher([
   "/account(.*)",
+  "/boot-camps(.*)",
   "/dashboard(.*)",
   "/drills(.*)",
+  "/flashcards(.*)",
   "/forensics(.*)",
+  "/matrix(.*)",
+  "/misconceptions(.*)",
+  "/practice(.*)",
+  "/question-history(.*)",
   "/questions(.*)",
+  "/study(.*)",
+  "/timed-sets(.*)",
   // /red-zones is a public marketing page (nav-linked) that renders a logged-out
   // empty-state CTA — must NOT be auth-gated, or it 404s without a sign-in page.
 ]);

@@ -3945,7 +3945,7 @@ Keep auditing the restored old-app surfaces on the live branch and remove custom
 - [x] Add a regression for the confirmed display defect.
 - [x] Patch the confirmed route display defect.
 - [x] Run focused tests, full app tests, lint, build, and local browser verification.
-- [ ] Deploy and live-verify the polished route.
+- [x] Deploy and live-verify the polished route.
 
 ### Review Log
 
@@ -3956,6 +3956,8 @@ Keep auditing the restored old-app surfaces on the live branch and remove custom
 - 2026-06-13: Patched `app\tensions\page.tsx` to use the existing `humanizeSubject` utility for subject headings.
 - 2026-06-13: Verification passed: `node --test tests\mobile-content-overflow.test.ts`, `node --test tests\sitemap-static-surface.test.ts tests\paid-program-display-labels.test.ts`, `node --test tests\*.test.ts` (90/90), `npm run lint`, `git diff --check` with normal CRLF warnings only, and `npm run build`.
 - 2026-06-13: Local production browser verification on `http://127.0.0.1:3034/tensions` showed `Civil Procedure` and `Constitutional Law`, no `CIVIL_PROCEDURE` or `CONSTITUTIONAL_LAW`, one `<main>`, no horizontal overflow, and no browser errors.
+- 2026-06-13: Production deployment `dpl_H8YuTi1T3qC9yj4X4rKXy8n1c659` built successfully, was aliased to `https://barmatrix.app` and `https://www.barmatrix.app`, and was tagged `live-tension-subject-labels-2026-06-13-dpl-H8YuTi1`.
+- 2026-06-13: Live browser verification on `https://barmatrix.app/tensions?verify=tension_labels_b235eee` showed readable subject headings, no raw `CIVIL_PROCEDURE` or `CONSTITUTIONAL_LAW`, one `<main>`, no horizontal overflow, no raw error text, and no browser console errors.
 
 ## Plan
 

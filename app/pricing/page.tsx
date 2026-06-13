@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PRICING, FAQ, DISCLAIMER } from "@/lib/copy";
+import { DIAGNOSTIC_FIRST, PRICING, FAQ, DISCLAIMER } from "@/lib/copy";
 import { PricingAnalytics } from "./pricing-analytics";
 
 export const metadata = {
@@ -157,12 +157,14 @@ export default function PricingPage() {
                     lineHeight: 1.55,
                   }}
                 >
-                  The Free MBE Trap Diagnostic builds your Red-Zone Map and
-                  shows you the kind of feedback Flagship gives on every miss.
-                  No card. No commitment.
+                  The Free MBE Trap Diagnostic builds your Red-Zone Map,
+                  names the trap pattern from your own answers, and shows the
+                  same diagnostic-to-repair loop Flagship uses after
+                  enrollment. No card. No commitment.
                 </p>
-                <Link href="/diagnostic" className="btn red">
-                  Take the Free Diagnostic <span className="arrow">→</span>
+                <Link href={DIAGNOSTIC_FIRST.cta.href} className="btn red">
+                  {DIAGNOSTIC_FIRST.cta.label}{" "}
+                  <span className="arrow">→</span>
                 </Link>
               </div>
 

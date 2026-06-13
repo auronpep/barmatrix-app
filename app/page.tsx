@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { HERO, PRICING, PROOF_CARD } from "@/lib/copy";
+import { DIAGNOSTIC_FIRST, HERO, PRICING, PROOF_CARD } from "@/lib/copy";
 
 export const metadata: Metadata = {
   alternates: {
@@ -123,6 +123,32 @@ export default function Home() {
             </div>
 
             <ForensicsCard />
+          </div>
+        </div>
+      </section>
+
+      {/* ============ PROOF BEFORE PRICE ============ */}
+      <section className="section alt">
+        <div className="container">
+          <div className="section-rule">
+            <span className="label">▌ PROOF BEFORE PRICE · 01</span>
+          </div>
+          <div className="two-col" style={{ alignItems: "start" }}>
+            <h2
+              className="display display-md"
+              style={{ margin: 0, maxWidth: "18ch" }}
+            >
+              {DIAGNOSTIC_FIRST.headline}
+            </h2>
+            <div>
+              <p className="body-lg" style={{ marginTop: 8 }}>
+                {DIAGNOSTIC_FIRST.body}
+              </p>
+              <Link href={DIAGNOSTIC_FIRST.cta.href} className="btn red">
+                {DIAGNOSTIC_FIRST.cta.label}{" "}
+                <span className="arrow">→</span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>

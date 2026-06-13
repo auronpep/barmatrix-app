@@ -31,4 +31,13 @@ describe("public campaign surface", () => {
     const sitemap = readProjectFile("app/sitemap.ts");
     assert.match(sitemap, /"\/tiktok"/);
   });
+
+  it("lists every static campaign page in the sitemap", () => {
+    const sitemap = readProjectFile("app/sitemap.ts");
+
+    for (const { path } of readPublicCampaignPages()) {
+      const route = `/${path.replace(/^public\//, "")}`;
+      assert.match(sitemap, new RegExp(`"${route.replaceAll(".", "\\.")}"`), path);
+    }
+  });
 });

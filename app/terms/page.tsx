@@ -32,7 +32,7 @@ export default function TermsPage() {
             </div>
             <div>
               <h3 className="font-medium text-zinc-900">Cohort Access</h3>
-              <p className="mt-1">Enrollment grants access to one designated cohort cycle (currently the July cycle). Cohort capacity is limited. Enrollment closes when capacity is reached or the enrollment window closes, whichever comes first.</p>
+              <p className="mt-1">Enrollment grants access to one designated cohort cycle (currently the July cycle). Checkout verifies live enrollment status before payment. If enrollment is paused, checkout will say so before payment is collected.</p>
             </div>
             <div>
               <h3 className="font-medium text-zinc-900">Payment Processing</h3>

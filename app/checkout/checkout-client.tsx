@@ -555,8 +555,8 @@ function CheckoutFaqPanel() {
 function CapacityReachedPanel() {
   return (
     <div className="price-card flagship">
-      <span className="ribbon">WAITLIST</span>
-      <h2 className="name">Cohort capacity reached</h2>
+      <span className="ribbon">ENROLLMENT PAUSED</span>
+      <h2 className="name">Enrollment is currently paused</h2>
       <p className="summary">
         {CAPACITY_COPY.waitlist} {PRICING.capacityLine}
       </p>
@@ -566,12 +566,12 @@ function CapacityReachedPanel() {
       >
         <div className="meter-row">
           <span className="left">July-cycle cohort</span>
-          <span className="right">Waitlist</span>
+          <span className="right">Paused</span>
         </div>
         <div className="meter-bar">
           <div className="fill" style={{ width: "100%" }} />
         </div>
-        <div className="meter-meta">Checkout pauses when capacity is reached.</div>
+        <div className="meter-meta">Checkout will reopen when enrollment is available.</div>
       </div>
       <Link
         href="/waitlist"
@@ -583,7 +583,7 @@ function CapacityReachedPanel() {
           whiteSpace: "normal",
         }}
       >
-        Join the waitlist <span className="arrow">→</span>
+        Contact support <span className="arrow">→</span>
       </Link>
       <p
         style={{
@@ -594,7 +594,7 @@ function CapacityReachedPanel() {
           textAlign: "center",
         }}
       >
-        You can still take the diagnostic while waiting for the next available seat.
+        You can still take the diagnostic while enrollment is paused.
       </p>
     </div>
   );

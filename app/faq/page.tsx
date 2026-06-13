@@ -25,9 +25,9 @@ const QUICK_ANSWERS = [
   },
   {
     k: "Access",
-    label: "How many seats?",
+    label: "How does enrollment work?",
     value: "One cohort",
-    detail: "Limited July-cycle seats. Enrollment closes at capacity.",
+    detail: "Enrollment is open for the July-cycle guided repair program.",
   },
 ] as const;
 

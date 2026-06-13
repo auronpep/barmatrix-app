@@ -33,9 +33,9 @@ const FALLBACK_NEXT_DRILL = {
 
 const COHORT_STATUS_LABEL: Record<CohortStatus["public_status"], string> = {
   open: "Open",
-  limited: "Limited seats",
-  almost_full: "Almost full",
-  last_seats: "Last seats",
+  limited: "Open",
+  almost_full: "Open",
+  last_seats: "Open",
   waitlist: "Waitlist",
 };
 

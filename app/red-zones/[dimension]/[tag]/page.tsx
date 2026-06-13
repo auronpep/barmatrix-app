@@ -41,8 +41,8 @@ interface FetchResult {
 
 export default function RedZoneDetailPage() {
   const params = useParams<{ dimension: string; tag: string }>();
-  const dimension = firstParam(params?.dimension);
-  const tag = firstParam(params?.tag);
+  const dimension = decodeRouteParam(firstParam(params?.dimension));
+  const tag = decodeRouteParam(firstParam(params?.tag));
   const routeKey = `${dimension}/${tag}`;
   const { isLoaded, isSignedIn, getToken } = useClerkAuth();
   const [result, setResult] = useState<FetchResult | null>(null);
@@ -92,7 +92,7 @@ export default function RedZoneDetailPage() {
       </div>
 
       <h1 className="mt-4 font-serif text-4xl font-semibold tracking-tight sm:text-5xl">
-        {tag ? decodeURIComponent(tag) : "Red zone"}
+        {tag || "Red zone"}
       </h1>
 
       {view.phase === "loading" && (
@@ -331,6 +331,15 @@ function resolveView(
 function firstParam(value: string | string[] | undefined): string {
   if (Array.isArray(value)) return value[0] ?? "";
   return value ?? "";
+}
+
+function decodeRouteParam(value: string): string {
+  if (!value) return "";
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
 }
 
 function normalizeScore(score: number): number {

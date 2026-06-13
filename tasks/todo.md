@@ -3284,3 +3284,7 @@ Restore the older BMO paid dashboard functionality that the first launch repair 
 - `npm run build` passed; Next build output includes `/dashboard`, `/dashboard/path`, `/dashboard/mastery`, and `/dashboard/final-sprint`.
 - Local production server on `http://localhost:3022` rendered `/dashboard/path`, `/dashboard`, `/dashboard/mastery`, `/dashboard/final-sprint`, and `/checkout/success` with no raw errors, one `<main>`, and no horizontal overflow.
 - Deeper DOM check on `/dashboard` confirmed restored nav text: `MY PATH`, `FULL DASHBOARD`, `MASTERY BOARD`, `FINAL SPRINT`, and program links.
+- Production deployment `dpl_7jK8Q3gp1h1Tq1QtDKFYcnSPhK2d` built successfully and aliased to `https://barmatrix.app`.
+- Production tag `live-bmo-paid-tools-2026-06-13-dpl-7jK8Q3g` was pushed for rollback/reference.
+- Live browser smoke on `https://barmatrix.app` passed for `/`, `/checkout/success`, `/dashboard/path`, `/dashboard`, `/dashboard/mastery`, and `/dashboard/final-sprint`: no raw errors, one `<main>`, no horizontal overflow.
+- Live enrolled browser state confirmed `/dashboard/path` rendered `Day 1: Trap Hunt and C3 Power-Up`, `/dashboard` rendered the restored dashboard nav, `/dashboard/mastery` rendered `Your weakest patterns, ranked by dimension.`, and `/dashboard/final-sprint` rendered `The last two weeks become a daily repair plan.`

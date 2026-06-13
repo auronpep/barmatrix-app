@@ -14,7 +14,7 @@
 - [x] Link Refund Policy from checkout FAQ and the global footer.
 - [x] Add `/refund` to the sitemap.
 - [x] Run focused test, full tests, lint, build, and diff check.
-- [ ] Deploy and live-verify `/refund`.
+- [x] Deploy and live-verify `/refund`.
 
 ## Verification
 
@@ -24,6 +24,8 @@
 - `npm run lint` passed.
 - `npm run build` passed and listed `/refund` in the production route table.
 - `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+- Production deploy `dpl_CuCUGubu2SFArnzETFFHSzxoppsm` is `READY` and aliased to `https://barmatrix.app`.
+- Live checks passed: `/refund` returned HTTP 200 with `Refund Policy`, `3-day window`, and `billing@barmatrix.app`; it did not contain `7-day`; `/checkout` and footer pages link to `/refund`; `/sitemap.xml` includes `https://barmatrix.app/refund`.
 
 # Stripe Public Branding Provider Item - 2026-06-12
 

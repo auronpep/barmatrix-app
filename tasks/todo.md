@@ -3251,3 +3251,36 @@ Restore the paid-user dashboard behavior from the old BMO-operated BarMatrix app
 ## Review Results
 
 - Status: DEPLOYED AND LIVE-VERIFIED. The public sales path keeps diagnostic-first marketing, checkout/account routes remain usable, and enrolled users now land on the BMO/J7 guided paid dashboard with customer-facing task labels.
+
+# BMO Paid Functionality Restore - 2026-06-13
+
+## Scope
+
+Restore the older BMO paid dashboard functionality that the first launch repair collapsed, while keeping the diagnostic-first marketing/sales path and Lead Me as the primary paid-user path.
+
+## Plan
+
+- [x] Branch from clean live checkpoint `checkpoint-current-live-bmo-restore-2026-06-12`.
+- [x] Preserve Lead Me by moving the day-plan dashboard from `/dashboard` to `/dashboard/path`.
+- [x] Restore old BMO dashboard overview, mastery board, final sprint, and dashboard nav from `feat/j7-lead-me-path`.
+- [x] Point post-checkout/account/header entry links to `/dashboard/path`.
+- [x] Update focused tests to assert the restored route split.
+- [x] Run full unit/static tests, lint, production build, and browser route smoke.
+
+## Review Log
+
+- 2026-06-13: Created branch `codex/bmo-paid-functionality-restore` from the clean deployed checkpoint worktree.
+- 2026-06-13: `/dashboard/path` now owns the J7 Lead Me day-plan dashboard.
+- 2026-06-13: `/dashboard` now restores the old full dashboard with dashboard metrics, Method entry, C3/mastery entry, next drill, and recent forensics.
+- 2026-06-13: `/dashboard/mastery` and `/dashboard/final-sprint` are restored as real pages instead of redirecting back to `/dashboard`.
+- 2026-06-13: Dashboard nav restored `My Path`, `Full Dashboard`, `Mastery Board`, `Final Sprint`, and program links, with `My Path` first.
+- 2026-06-13: Post-checkout success, account active/error panels, nav auth, and welcome copy now point the primary guided-path CTA at `/dashboard/path`.
+
+## Verification
+
+- `node --test tests\ambassador-dashboard-entry.test.ts tests\j7-guided-path.test.ts tests\diagnostic-first-sales-copy.test.ts` passed.
+- `node --test tests\*.test.ts` passed 73/73.
+- `npm run lint` passed.
+- `npm run build` passed; Next build output includes `/dashboard`, `/dashboard/path`, `/dashboard/mastery`, and `/dashboard/final-sprint`.
+- Local production server on `http://localhost:3022` rendered `/dashboard/path`, `/dashboard`, `/dashboard/mastery`, `/dashboard/final-sprint`, and `/checkout/success` with no raw errors, one `<main>`, and no horizontal overflow.
+- Deeper DOM check on `/dashboard` confirmed restored nav text: `MY PATH`, `FULL DASHBOARD`, `MASTERY BOARD`, `FINAL SPRINT`, and program links.

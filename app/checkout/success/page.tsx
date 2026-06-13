@@ -74,8 +74,8 @@ export default async function CheckoutSuccessPage({
                 <Link href="/foundations" className="btn btn-lg red">
                   Start with The Method <span className="arrow">→</span>
                 </Link>
-                <Link href="/dashboard" className="btn btn-lg red">
-                  Go to Dashboard <span className="arrow">→</span>
+                <Link href="/dashboard/path" className="btn btn-lg red">
+                  Open Lead Me <span className="arrow">→</span>
                 </Link>
               </>
             )}
@@ -134,7 +134,7 @@ function getActivationCopy(kind: CheckoutActivationState["kind"]) {
       eyebrow: "ENROLLMENT CONFIRMED",
       headline: "Your Flagship access is being activated.",
       body:
-        "Stripe has returned checkout completion to BarMatrix. Start with The Method - the 14-lesson core the whole platform runs on - then open your dashboard to begin the repair loop.",
+        "Stripe has returned checkout completion to BarMatrix. Start with The Method - the 14-lesson core the whole platform runs on - then open Lead Me to begin the repair loop.",
     };
   }
 

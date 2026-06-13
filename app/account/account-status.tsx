@@ -21,7 +21,7 @@ export function AccountAccessPanel() {
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
           <Link
-            href="/dashboard"
+            href="/dashboard/path"
             className="rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900"
           >
             Open dashboard
@@ -83,7 +83,7 @@ export function AccountAccessPanel() {
         </p>
         <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
           <Link
-            href="/dashboard"
+            href="/dashboard/path"
             className="rounded-md bg-red-700 px-6 py-3 text-sm font-medium text-white hover:bg-red-900"
           >
             Open dashboard

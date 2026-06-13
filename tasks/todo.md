@@ -12,7 +12,7 @@
 - [x] Add failing regression coverage for the signed-in dashboard-error state.
 - [x] Add a distinct access-unavailable state on diagnostic results.
 - [x] Render an account/dashboard recovery panel instead of checkout CTAs when active access cannot be confirmed.
-- [ ] Run focused test, full tests, lint, build, diff check, deploy, and live-verify.
+- [x] Run focused test, full tests, lint, build, diff check, deploy, and live-verify.
 
 ## Verification
 
@@ -23,6 +23,14 @@
 - `npm run build` passed and generated `/diagnostic/[session]/results`.
 - `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
 - Local production browser smoke on `http://127.0.0.1:3041/diagnostic/a017791e-90bf-4c50-a46c-b5428d06715d/results` rendered one `<main>`, `Your Red-Zone Map`, no horizontal overflow, no runtime error text, and no browser console errors. The throwaway live API diagnostic result was available directly; the local browser page exercised the results-unavailable fallback cleanly.
+- Production deploy `dpl_KT8ExQB6Dca91QJhy8tDSByd1Crd` is `READY` and aliased to `https://barmatrix.app` and `https://www.barmatrix.app`.
+- Live browser smoke on `https://barmatrix.app/diagnostic/a017791e-90bf-4c50-a46c-b5428d06715d/results` rendered one `<main>`, `Your Red-Zone Map`, the active-access panel (`This map is already tied to active Flagship access.`), `do not enroll again`, no horizontal overflow, no runtime error text, and no browser console errors.
+- Live HTTP checks returned 200 for `/diagnostic/a017791e-90bf-4c50-a46c-b5428d06715d/results`, 200 for `/diagnostic`, 307 from anonymous `/dashboard` to sign-in, and 200 for `https://api.barmatrix.app/health`.
+
+## Review
+
+- Status: DEPLOYED AND LIVE-VERIFIED.
+- This is a narrow diagnostic-results guard. It does not alter checkout, entitlement provisioning, or dashboard APIs; it prevents an uncertain signed-in access check from becoming an enrollment prompt.
 
 # Refund Policy Route Restore - 2026-06-13
 

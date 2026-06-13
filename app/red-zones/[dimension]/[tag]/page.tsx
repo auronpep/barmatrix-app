@@ -43,6 +43,7 @@ export default function RedZoneDetailPage() {
   const params = useParams<{ dimension: string; tag: string }>();
   const dimension = decodeRouteParam(firstParam(params?.dimension));
   const tag = decodeRouteParam(firstParam(params?.tag));
+  const displayTag = titleize(tag);
   const routeKey = `${dimension}/${tag}`;
   const { isLoaded, isSignedIn, getToken } = useClerkAuth();
   const [result, setResult] = useState<FetchResult | null>(null);
@@ -92,7 +93,7 @@ export default function RedZoneDetailPage() {
       </div>
 
       <h1 className="mt-4 font-serif text-4xl font-semibold tracking-tight sm:text-5xl">
-        {tag || "Red zone"}
+        {displayTag || "Red zone"}
       </h1>
 
       {view.phase === "loading" && (

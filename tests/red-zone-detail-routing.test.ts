@@ -16,4 +16,12 @@ describe("red-zone detail routing", () => {
     assert.match(source, /function decodeRouteParam\(value: string\): string/);
     assert.doesNotMatch(source, /decodeURIComponent\(tag\) : "Red zone"/);
   });
+
+  it("uses a display label for the red-zone heading instead of the raw route tag", () => {
+    const source = readProjectFile("app/red-zones/[dimension]/[tag]/page.tsx");
+
+    assert.match(source, /const displayTag = titleize\(tag\);/);
+    assert.match(source, /\{displayTag \|\| "Red zone"\}/);
+    assert.doesNotMatch(source, /<h1[^>]*>\s*\{tag \|\| "Red zone"\}\s*<\/h1>/s);
+  });
 });

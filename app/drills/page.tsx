@@ -24,6 +24,7 @@ import { useClerkAuth } from "@/lib/use-clerk-auth";
 import { trackAnalyticsEvent } from "@/lib/analytics";
 import {
   SUBJECT_QUICK_DRILLS,
+  formatCatalogDrillLabel,
   formatDrillName,
   humanizeTag,
   proficiencyBand,
@@ -517,7 +518,7 @@ function CatalogGroup({
             return (
               <article key={key} id={elementId} className="flex flex-col border border-zinc-300 bg-white p-5">
                 <h3 className="font-serif text-xl font-semibold leading-tight text-zinc-950">
-                  {item.label}
+                  {formatCatalogDrillLabel(item.label, item.slug)}
                 </h3>
                 <p className="mt-2 text-sm text-zinc-600">{item.question_count} questions</p>
                 <button

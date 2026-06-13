@@ -51,6 +51,17 @@ describe("paid program display labels", () => {
     );
   });
 
+  it("formats raw drill catalog API labels before rendering catalog cards", () => {
+    const helpers = readProjectFile("lib/drills.ts");
+    const drillLibrary = readProjectFile("app/drills/page.tsx");
+
+    assert.match(helpers, /function formatCatalogDrillLabel/);
+    assert.match(helpers, /CON: "Constitutional Law"/);
+    assert.match(helpers, /\$\{subject\} Targeted Drill \$\{number\}/);
+    assert.match(drillLibrary, /formatCatalogDrillLabel\(item\.label, item\.slug\)/);
+    assert.doesNotMatch(drillLibrary, /\{item\.label\}/);
+  });
+
   it("formats cohort codes and statuses before showing dashboard status text", () => {
     const dashboard = readProjectFile("app/dashboard/page.tsx");
 

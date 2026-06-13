@@ -41,6 +41,7 @@ export default function DashboardPage() {
   if (dayPlan.loading) {
     return (
       <section className="mx-auto max-w-6xl px-6 py-10 sm:py-14">
+        <h1 className="sr-only">Lead Me</h1>
         <div className="border border-zinc-300 bg-white p-6">
           <p className="font-mono text-xs uppercase tracking-wider text-zinc-700">
             Loading

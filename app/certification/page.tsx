@@ -11,6 +11,7 @@ export default function CertificationPage() {
   if (loading) {
     return (
       <Shell>
+        <h1 className="sr-only">C3 Mastery Certification</h1>
         <p className="font-mono text-sm text-zinc-500">Loading certification…</p>
       </Shell>
     );

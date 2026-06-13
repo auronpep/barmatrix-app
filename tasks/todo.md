@@ -1,5 +1,36 @@
 # BarMatrix Full Bug Audit
 
+# Paid Program Page Heading Repair - 2026-06-12
+
+## Scope
+
+- Fix live paid-program surfaces that can temporarily render without a page-level heading while client-side access/status data loads.
+- Keep the visible UI unchanged except for the existing final states.
+- Cover `/dashboard/path` and `/certification`, the two routes found by live browser audit.
+
+## Plan
+
+- [x] Run a live browser route sweep across launch-critical public, checkout, account, dashboard, and study surfaces.
+- [x] Add failing regression coverage for loading-state page headings.
+- [x] Add stable hidden headings to the guided path and certification loading states.
+- [x] Run focused tests, full tests, lint, build, diff check, and local browser smoke.
+
+## Verification
+
+- Live browser sweep found no raw runtime errors, no horizontal overflow, and no console errors across `/`, `/diagnostic`, `/pricing`, `/checkout`, `/checkout?coupon=JESUSLOVESYOU`, `/checkout/success`, `/account`, `/dashboard`, `/dashboard/path`, `/drills`, `/boot-camps`, `/timed-sets`, `/mastery`, `/coach`, and `/certification`; `/dashboard/path` and `/certification` were the only audited surfaces with empty first-heading state during loading.
+- Red test confirmed: `node --test tests\program-loading-headings.test.ts` failed before implementation because the guided path and certification loading branches had no `<h1>`.
+- Focused program tests passed: `node --test tests\program-loading-headings.test.ts tests\ambassador-dashboard-entry.test.ts tests\certification-cta.test.ts tests\certification-runner-locked-state.test.ts`.
+- Full suite passed: `node --test tests\*.test.ts` passed 84/84.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `git diff --check` passed with only the existing Windows LF-to-CRLF warning.
+- Local production browser smoke on `http://127.0.0.1:3028/dashboard/path` and `/certification` confirmed a page-level heading, one `<main>`, no horizontal overflow, no raw runtime error text, and no console errors.
+
+## Review
+
+- Status: LOCAL VERIFIED, READY FOR APP DEPLOY.
+- This is a narrow paid-program polish/accessibility fix; it does not alter checkout, entitlement, API contracts, or paid-study behavior.
+
 # Coupon Checkout Context - 2026-06-12
 
 ## Scope

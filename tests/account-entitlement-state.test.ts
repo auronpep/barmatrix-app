@@ -18,4 +18,16 @@ describe("account entitlement state", () => {
     assert.match(status, /Account active/);
     assert.match(status, /Open dashboard/);
   });
+
+  it("shows a checking account panel before signed-in status resolves", () => {
+    const status = readProjectFile("app/account/account-status.tsx");
+
+    assert.match(status, /if \(dash\.loading\)/);
+    assert.match(status, /Checking account status/);
+    assert.doesNotMatch(
+      status,
+      /if \(dash\.signedIn && dash\.loading\)/,
+      "auth-loading state must not fall through to the signed-out launch placeholder",
+    );
+  });
 });

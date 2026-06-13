@@ -37,15 +37,15 @@ export function AccountAccessPanel() {
     );
   }
 
-  if (dash.signedIn && dash.loading) {
+  if (dash.loading) {
     return (
       <div className="rounded-lg border border-zinc-300 bg-white p-8 text-center shadow-sm sm:p-10">
         <h1 className="font-serif text-2xl font-semibold tracking-tight">
           Checking account status...
         </h1>
         <p className="mt-3 text-zinc-600">
-          Your signed-in account is loading. This panel will update once
-          enrollment status is confirmed.
+          We are checking your signed-in session and enrollment status. This
+          panel will update once your account is confirmed.
         </p>
       </div>
     );
@@ -130,7 +130,7 @@ export function AccountEntitlementPanel({
     ? "Active"
     : confirmedByUrl
       ? "Confirmed"
-      : dash.signedIn && dash.loading
+      : dash.loading
         ? "Checking"
         : dash.signedIn && dash.error
           ? "Unavailable"
@@ -146,6 +146,8 @@ export function AccountEntitlementPanel({
       ? `Session attached - ending ${checkoutSessionId.slice(-8)}`
       : dash.signedIn && dash.data && !dash.data.enrolled
         ? "No active enrollment found"
+        : dash.loading
+          ? "Checking signed-in account"
         : "No checkout session attached";
 
   return (

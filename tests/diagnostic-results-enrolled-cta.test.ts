@@ -10,14 +10,19 @@ describe("diagnostic results enrolled CTA", () => {
   it("renders one recommended next-step CTA instead of dashboard or pricing hubs", () => {
     const source = readProjectFile("app/diagnostic/[session]/results/page.tsx");
 
+    assert.match(source, /import \{ useDashboard, type DashboardState \} from "@\/lib\/use-dashboard";/);
+    assert.match(source, /const dash = useDashboard\(\);/);
+    assert.match(source, /const accessState = resolveDiagnosticResultsAccess\(dash\);/);
     assert.match(source, /<RecommendationCta\s+methodSlug=\{methodSlug\}\s+results=\{results\}/);
+    assert.match(source, /<ResultsDecisionPanel\s+diagnosticId=\{diagnosticId\}\s+results=\{results\}\s+accessState=\{accessState\}/);
+    assert.match(source, /case "enrolled":/);
+    assert.match(source, /href="\/dashboard\/path"/);
+    assert.match(source, /Continue your repair path/);
     assert.match(source, /buildDiagnosticRecommendation/);
     assert.match(source, /Your top leak is \{rec\.topLeak\} - start here\./);
     assert.match(source, /results\.recommendation\?\.next_step/);
     assert.match(source, /redZoneDetailHref\(results\) \?\? "\/red-zones"/);
-    assert.doesNotMatch(source, /useDashboard\(\)/);
     assert.doesNotMatch(source, /Open dashboard/);
-    assert.doesNotMatch(source, /Enroll for/);
     assert.doesNotMatch(source, /How it works/);
   });
 

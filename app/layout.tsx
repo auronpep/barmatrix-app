@@ -91,10 +91,10 @@ export default function RootLayout({
           <div className="tape-strip" aria-hidden="true" />
           <nav className="nav">
             <div className="nav-inner">
-              <Link href="/" className="brand">
-                <span className="mark">B</span>
+              <Link href="/" className="brand" aria-label="BarMatrix home">
+                <span className="mark" aria-hidden="true">B</span>
                 <span>
-                  BarMatrix<span className="dot" />
+                  BarMatrix<span className="dot" aria-hidden="true" />
                 </span>
               </Link>
               <div className="nav-links">
@@ -140,12 +140,13 @@ export default function RootLayout({
                   >
                     <span
                       className="mark"
+                      aria-hidden="true"
                       style={{ background: "white", color: "#0a0a0a" }}
                     >
                       B
                     </span>
                     <span>
-                      BarMatrix<span className="dot" />
+                      BarMatrix<span className="dot" aria-hidden="true" />
                     </span>
                   </div>
                   <p

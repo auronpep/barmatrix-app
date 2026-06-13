@@ -20,6 +20,7 @@ import {
   trackDiagnosticCompletedOnce,
   trackRedZonePreviewViewedOnce,
 } from "@/lib/analytics";
+import { useDashboard, type DashboardState } from "@/lib/use-dashboard";
 import { useFoundations } from "@/lib/use-foundations";
 import { userFacingResourceError } from "@/lib/user-facing-errors";
 import { rememberDiagnosticId } from "@/lib/diagnostic-session";
@@ -69,6 +70,12 @@ type BuiltRecommendation = {
   topLeak: string;
   focus: string;
 };
+
+type DiagnosticResultsAccessState =
+  | "checking"
+  | "signed_out"
+  | "not_enrolled"
+  | "enrolled";
 
 const LEVEL_FALLBACKS: Record<
   number,
@@ -125,6 +132,8 @@ export default function DiagnosticResultsPage({
   const completedEventRef = useRef<string | null>(null);
   const [results, setResults] = useState<DiagnosticResultsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const dash = useDashboard();
+  const accessState = resolveDiagnosticResultsAccess(dash);
   const foundations = useFoundations();
   const methodSlug =
     foundations.data?.progress.next_slug ??
@@ -207,8 +216,15 @@ export default function DiagnosticResultsPage({
       {results && results.answered > 0 && (
         <>
           <SummaryCard results={results} />
-          <TopTrapPatterns patterns={results.top_trap_patterns} />
-          <ResultsDecisionPanel diagnosticId={diagnosticId} results={results} />
+          <TopTrapPatterns
+            patterns={results.top_trap_patterns}
+            accessState={accessState}
+          />
+          <ResultsDecisionPanel
+            diagnosticId={diagnosticId}
+            results={results}
+            accessState={accessState}
+          />
           <DimensionBreakdown byDimension={results.red_zones.by_dimension} />
           <RecommendationCta
             methodSlug={methodSlug}
@@ -284,16 +300,33 @@ function SeverityChip({ severity }: { severity: "high" | "medium" }) {
   );
 }
 
-function TopTrapPatterns({ patterns }: { patterns: DiagnosticTrapPattern[] }) {
+function resolveDiagnosticResultsAccess(
+  dash: DashboardState,
+): DiagnosticResultsAccessState {
+  if (dash.loading) return "checking";
+  if (!dash.signedIn) return "signed_out";
+  if (dash.data?.enrolled === true) return "enrolled";
+  return "not_enrolled";
+}
+
+function TopTrapPatterns({
+  patterns,
+  accessState,
+}: {
+  patterns: DiagnosticTrapPattern[];
+  accessState: DiagnosticResultsAccessState;
+}) {
   if (patterns.length === 0) {
+    const enrolled = accessState === "enrolled";
     return (
       <div className="mt-8 rounded-lg border border-emerald-300 bg-emerald-50 p-6">
         <p className="font-mono text-xs uppercase tracking-wider text-emerald-700">
           No red zones surfaced
         </p>
         <p className="mt-2 text-zinc-800">
-          You did not fall into a repeated trap pattern on this set. Enroll to run
-          the full forensic bank and keep your Red-Zone Map building as you drill.
+          {enrolled
+            ? "You did not fall into a repeated trap pattern on this set. Keep your Red-Zone Map building as you drill."
+            : "You did not fall into a repeated trap pattern on this set. Enroll to run the full forensic bank and keep your Red-Zone Map building as you drill."}
         </p>
       </div>
     );
@@ -400,13 +433,65 @@ function plainEnglishTrapInsight(pattern: DiagnosticTrapPattern): string {
 function ResultsDecisionPanel({
   diagnosticId,
   results,
+  accessState,
 }: {
   diagnosticId: string;
   results: DiagnosticResultsResponse;
+  accessState: DiagnosticResultsAccessState;
 }) {
   const topPattern = results.top_trap_patterns[0];
   const topLeak = resolveTopLeak(results);
   const checkoutHref = checkoutHrefForDiagnostic(diagnosticId);
+
+  switch (accessState) {
+    case "checking":
+      return (
+        <div className="mt-8 rounded-lg border border-zinc-200 bg-white p-8 shadow-sm">
+          <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
+            Checking account access
+          </p>
+          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
+            We are checking whether this account already has Flagship access.
+          </h2>
+          <p className="mt-3 text-zinc-600">
+            Your Red-Zone Map is ready. If access is active, the next step below
+            will take you into the repair path instead of enrollment.
+          </p>
+        </div>
+      );
+    case "enrolled":
+      return (
+        <div className="mt-8 rounded-lg border border-zinc-900 bg-zinc-950 p-8 text-white shadow-sm">
+          <p className="font-mono text-xs uppercase tracking-wider text-red-400">
+            Your repair path is built
+          </p>
+          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
+            This map is already tied to active Flagship access.
+          </h2>
+          <p className="mt-3 text-zinc-300">
+            {topPattern
+              ? plainEnglishTrapInsight(topPattern)
+              : "This diagnostic turned your answers into a repair map instead of a generic score report."}{" "}
+            Continue your repair path from {topLeak}; do not enroll again.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <Link href="/dashboard/path" className="btn red">
+              Continue your repair path <span aria-hidden>→</span>
+            </Link>
+            <Link
+              href="/red-zones"
+              className="text-sm text-zinc-300 underline hover:text-white"
+            >
+              Review Red-Zone Map
+            </Link>
+          </div>
+        </div>
+      );
+    case "signed_out":
+    case "not_enrolled":
+      break;
+  }
+
   return (
     <div className="mt-8 rounded-lg border border-zinc-900 bg-zinc-950 p-8 text-white shadow-sm">
       <p className="font-mono text-xs uppercase tracking-wider text-red-400">

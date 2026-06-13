@@ -3414,6 +3414,30 @@ Restore the older BMO paid dashboard functionality that the first launch repair 
 - Live browser smoke on `https://barmatrix.app` passed for `/`, `/checkout/success`, `/dashboard/path`, `/dashboard`, `/dashboard/mastery`, and `/dashboard/final-sprint`: no raw errors, one `<main>`, no horizontal overflow.
 - Live enrolled browser state confirmed `/dashboard/path` rendered `Day 1: Trap Hunt and C3 Power-Up`, `/dashboard` rendered the restored dashboard nav, `/dashboard/mastery` rendered `Your weakest patterns, ranked by dimension.`, and `/dashboard/final-sprint` rendered `The last two weeks become a daily repair plan.`
 
+# Diagnostic Results Access-Aware CTA - 2026-06-13
+
+## Scope
+
+Fix the post-enrollment diagnostic results page so an enrolled customer who finishes the diagnostic is routed into the paid repair path instead of seeing checkout/enrollment CTAs again.
+
+## Plan
+
+- [x] Confirm the old-core transplant branch is based on the integrated `C:\BMO` / `C:\barmatrix-app` system, not `C:\ABM`.
+- [x] Add regression coverage for access-aware diagnostic results CTAs.
+- [x] Use existing dashboard/account entitlement state to distinguish signed-out leads, signed-in non-enrolled users, loading access checks, and enrolled students.
+- [x] Keep anonymous diagnostic results as a sales path while replacing enrolled-user checkout copy with repair-path links.
+- [x] Run focused tests, full app tests, lint, build, and diff hygiene checks.
+- [ ] Deploy and live-verify the signed-in enrolled diagnostic result path.
+
+## Review Log
+
+- 2026-06-13: Verified `C:\BMO\app-repo` is a junction to `C:\barmatrix-app`, `C:\BMO\api-repo` is a junction to `C:\barmatrix-api`, and `C:\BMO\website-repo` is a junction to `C:\barmatrix-site`.
+- 2026-06-13: Compared `origin/main` old-core commit `86ce44b` with current transplant commit `6a1f596`; route inventory matched, and the diff was scoped to checkout, marketing, dashboard/path, paid labels, and tests rather than a wholesale route replacement.
+- 2026-06-13: Added `tests\diagnostic-results-enrolled-cta.test.ts` assertions requiring `useDashboard()` access state and an enrolled branch linking to `/dashboard/path`.
+- 2026-06-13: Patched `app\diagnostic\[session]\results\page.tsx` so signed-out and signed-in non-enrolled users keep the checkout/save-map pitch, loading users see an access-check panel, and enrolled users see `Continue your repair path` plus Red-Zone Map links with no re-enrollment instruction.
+- 2026-06-13: Also made the no-repeated-pattern result copy access-aware so enrolled students are not told to enroll after a clean diagnostic.
+- 2026-06-13: Verification passed: `node --test tests\diagnostic-results-enrolled-cta.test.ts`, adjacent route/copy tests, `node --test tests\*.test.ts` (85/85), `npm run lint`, `npm run build`, and `git diff --check` with normal Windows line-ending warnings only.
+
 # Dashboard Route Split Hardening - 2026-06-13
 
 ## Scope

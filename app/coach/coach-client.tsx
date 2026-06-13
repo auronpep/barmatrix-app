@@ -51,17 +51,28 @@ export default function CoachClient() {
   }
 
   const { question, coaching, remediation } = current;
+  const isStarterBaseline = coaching.target_mold === "starter_baseline";
   return (
     <div className="mt-6 space-y-5">
       <p className="text-xs uppercase tracking-wide text-zinc-400">Items this session: {served}</p>
       <section aria-live="polite" className="rounded-lg border border-amber-200 bg-amber-50 p-4">
         <h2 className="text-sm font-semibold text-amber-900">Why this question</h2>
         <p className="mt-1 text-sm text-amber-800">
-          Targeting your weak break: <strong>{coaching.name}</strong>{" "}
-          <span className="text-amber-700">({coaching.family.replaceAll("_", " ").toLowerCase()})</span>
-          {coaching.measured
-            ? <> — you bite this {coaching.deficit_pct}% of the time.</>
-            : <> — based on the exam blueprint (not yet measured for you).</>}
+          {isStarterBaseline ? (
+            <>
+              Starting with a baseline question: <strong>{coaching.name}</strong>{" "}
+              <span className="text-amber-700">({coaching.family.replaceAll("_", " ").toLowerCase()})</span>
+              <> — your C3-specific pattern is not measured yet, so this item starts the coaching loop.</>
+            </>
+          ) : (
+            <>
+              Targeting your weak break: <strong>{coaching.name}</strong>{" "}
+              <span className="text-amber-700">({coaching.family.replaceAll("_", " ").toLowerCase()})</span>
+              {coaching.measured
+                ? <> — you bite this {coaching.deficit_pct}% of the time.</>
+                : <> — based on the exam blueprint (not yet measured for you).</>}
+            </>
+          )}
         </p>
         {remediation.lesson_slug && (
           <Link className="mt-2 inline-block text-sm font-medium text-amber-900 underline"

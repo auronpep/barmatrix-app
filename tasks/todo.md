@@ -3323,3 +3323,24 @@ Make the restored paid-program tools obvious from the full dashboard so enrolled
 - 2026-06-13: Initial production deployment `dpl_5JoQX6FgqsbP1286sPwctaB2dw5z` exposed the command center on desktop, then live mobile verification found horizontal overflow from the signed-in top navigation.
 - 2026-06-13: Added `tests/nav-mobile-overflow.test.ts` coverage for the phone-width signed-in dashboard CTA, moved Dashboard into the mobile drawer, and hid the top-bar ghost auth CTA at phone width.
 - 2026-06-13: Local verification passed after the mobile fix: `node --test tests\nav-mobile-overflow.test.ts`, `node --test tests\ambassador-dashboard-entry.test.ts`, `git diff --check`, `node --test tests\*.test.ts` (76/76), `npm run lint`, and `npm run build`.
+- 2026-06-13: Production deployment `dpl_7UqDZJ89RjW4CaRvYxpZ69bt1waA` is aliased to `https://barmatrix.app`; live browser verification passed on `/dashboard` at phone and desktop widths with one `main`, no document horizontal overflow, and all nine paid-program links present.
+- 2026-06-13: Live HTTPS smoke returned 200 for `/`, `/diagnostic`, `/pricing`, `/checkout`, `/checkout/success`, `/sign-in`, and `/sign-up`; anonymous `/account`, `/dashboard`, and `/dashboard/path` redirected to sign-in with return URLs.
+
+# C3 Coach Starter Fallback UI - 2026-06-13
+
+## Scope
+
+Make the paid Coach UI handle the API starter-baseline fallback honestly: when the API serves a live baseline question because C3-specific pattern coverage is not measured yet, the app should describe it as the start of the coaching loop instead of pretending it found a measured weak break.
+
+## Plan
+
+- [x] Add app regression coverage for starter-baseline coach copy and API client shape.
+- [x] Update `CoachClient` to branch on `target_mold === "starter_baseline"`.
+- [x] Add `fork_practice` to the typed coach metadata contract.
+- [x] Run focused coach tests, full app tests, lint, and production build.
+- [ ] Deploy app after the API fallback is live and verify `/coach`.
+
+## Review Log
+
+- 2026-06-13: Added `tests/coach-unavailable-reason-copy.test.ts` coverage for starter-baseline copy and the `fork_practice` response field.
+- 2026-06-13: Verification passed: `node --test tests\coach-unavailable-reason-copy.test.ts`, focused coach/dashboard tests, `node --test tests\*.test.ts` (77/77), `npm run lint`, and `npm run build`.

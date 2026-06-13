@@ -1,5 +1,40 @@
 # BarMatrix Full Bug Audit
 
+# Account Loading State Repair - 2026-06-13
+
+## Scope
+
+- Fix the `/account` first-paint experience for enrolled signed-in users so checkout/account access does not briefly look like the old pre-launch placeholder.
+- Keep the existing enrolled account, entitlement, and billing portal behavior intact.
+
+## Plan
+
+- [x] Reproduce the live `/account` placeholder flash in the signed-in browser.
+- [x] Trace the account route loading branch to `useDashboard`.
+- [x] Add regression coverage for the dashboard/auth loading state.
+- [x] Patch account access and entitlement panels to show checking state while auth/enrollment resolves.
+- [x] Run focused/full verification, deploy, and live-check production.
+
+## Verification
+
+- Live pre-fix `/account?triage=auth_loading_20260613` initially rendered `Sign-in is coming online with the cohort launch`, `PENDING SIGN-IN`, `SIGN IN`, and disabled `Checking sign-in...`, even though the same session resolved to `Your BarMatrix access is active.` about two seconds later.
+- Root cause: `AccountAccessPanel` only handled `dash.signedIn && dash.loading`, so the `useDashboard()` state where Clerk/auth was still loading (`loading: true`, `signedIn: false`) fell through to the signed-out launch placeholder.
+- Regression test red/green: `node --test tests\account-entitlement-state.test.ts` failed before the patch and passed after the patch.
+- Adjacent account/auth tests passed: `node --test tests\account-entitlement-state.test.ts tests\api-client-billing-portal.test.ts tests\clerk-auth-fallback.test.ts tests\auth-401-state.test.ts` passed 14/14.
+- Full app suite passed: `node --test tests\*.test.ts` passed 89/89.
+- `npm run lint` passed.
+- `npm run build` passed and generated `/account`.
+- `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+- Production deploy `dpl_4JUP11nDo6mTrK6DiBx2DJcJMTCm` completed successfully and was aliased to `https://barmatrix.app`.
+- Live post-deploy `/account?postdeploy=account_loading_9bed84e` first painted `Checking account status...` and `CHECKING`, did not show the old launch placeholder or `PENDING SIGN-IN`, then resolved to `ACCOUNT ACTIVE`, `Your BarMatrix access is active.`, `Open dashboard`, and `Review red zones`.
+- Live post-deploy account verification had one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+
+## Review
+
+- Status: DEPLOYED AND LIVE-VERIFIED.
+- Commit: `9bed84e Show coherent account loading state`.
+- Deployment: `dpl_4JUP11nDo6mTrK6DiBx2DJcJMTCm`.
+
 # Live Boot Camp Day-One Verification - 2026-06-13
 
 ## Scope

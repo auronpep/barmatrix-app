@@ -52,7 +52,10 @@ export default function BootCampDetailPage({
   }, [slug]);
 
   const start = async () => {
-    if (!isLoaded) return;
+    if (!isLoaded) {
+      setStartError("Checking sign-in. Try again in a moment.");
+      return;
+    }
     if (!isSignedIn) {
       setStartError("Sign in to start this boot camp.");
       return;
@@ -61,6 +64,11 @@ export default function BootCampDetailPage({
     setStartError(null);
     try {
       const token = await getToken();
+      if (!token) {
+        setStartError("Sign in again to start this boot camp.");
+        setStarting(false);
+        return;
+      }
       const res = await api.startBootCamp(slug, {}, token);
       trackBootcampStarted({ bootcampId: slug, source: "manual" });
       router.push(`/boot-camps/sessions/${res.session_id}`);

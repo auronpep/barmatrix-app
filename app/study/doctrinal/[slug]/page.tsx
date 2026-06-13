@@ -18,7 +18,7 @@ export default function DoctrinalLessonPage() {
   const params = useParams<{ slug: string }>();
   const search = useSearchParams();
   const router = useRouter();
-  const { getToken, isSignedIn } = useClerkAuth();
+  const { getToken, isLoaded, isSignedIn } = useClerkAuth();
 
   const slug =
     typeof params.slug === "string"
@@ -32,6 +32,7 @@ export default function DoctrinalLessonPage() {
   const [methodFallback, setMethodFallback] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [finishError, setFinishError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!slug) return;
@@ -64,12 +65,27 @@ export default function DoctrinalLessonPage() {
 
   async function markComplete() {
     setSaving(true);
+    setFinishError(null);
     try {
+      if (!isLoaded) {
+        setFinishError("Checking sign-in. Try again in a moment.");
+        return;
+      }
+      if (stepId && !isSignedIn) {
+        setFinishError("Sign in again to save this step.");
+        return;
+      }
       if (isSignedIn && stepId) {
         const token = await getToken();
-        if (token) await api.completePathStep(token, stepId).catch(() => undefined);
+        if (!token) {
+          setFinishError("Sign in again to save this step.");
+          return;
+        }
+        await api.completeMyDayPlanStep(token, stepId);
       }
       router.push("/dashboard/path");
+    } catch {
+      setFinishError("We couldn't save that step. Try again.");
     } finally {
       setSaving(false);
     }
@@ -103,6 +119,11 @@ export default function DoctrinalLessonPage() {
           >
             {saving ? "Saving…" : "Mark complete and return"}
           </button>
+          {finishError && (
+            <p className="basis-full text-sm text-red-700" role="alert">
+              {finishError}
+            </p>
+          )}
         </div>
       </Wrap>
     );
@@ -146,6 +167,11 @@ export default function DoctrinalLessonPage() {
         >
           {saving ? "Saving…" : "Mark complete →"}
         </button>
+        {finishError && (
+          <p className="mt-3 text-sm text-red-700" role="alert">
+            {finishError}
+          </p>
+        )}
       </div>
     </Wrap>
   );

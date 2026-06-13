@@ -16,7 +16,7 @@ export default function FlashcardDeckPage() {
   const params = useParams<{ deckId: string }>();
   const search = useSearchParams();
   const router = useRouter();
-  const { getToken, isSignedIn } = useClerkAuth();
+  const { getToken, isLoaded, isSignedIn } = useClerkAuth();
 
   const deckId =
     typeof params.deckId === "string"
@@ -33,6 +33,7 @@ export default function FlashcardDeckPage() {
   const [flipped, setFlipped] = useState(false);
   const [reviewed, setReviewed] = useState<Set<string>>(new Set());
   const [finishing, setFinishing] = useState(false);
+  const [finishError, setFinishError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!deckId) return;
@@ -103,19 +104,30 @@ export default function FlashcardDeckPage() {
 
   async function finish() {
     setFinishing(true);
+    setFinishError(null);
     try {
+      if (!isLoaded) {
+        setFinishError("Checking sign-in. Try again in a moment.");
+        return;
+      }
+      if (stepId && !isSignedIn) {
+        setFinishError("Sign in again to save this card.");
+        return;
+      }
       if (isSignedIn) {
         const token = await getToken();
-        if (token) {
-          await api
-            .completeFlashcardDeck(token, deckId, Array.from(reviewed))
-            .catch(() => undefined);
-          if (stepId) {
-            await api.completeMyDayPlanStep(token, stepId).catch(() => undefined);
-          }
+        if (!token) {
+          setFinishError("Sign in again to save this card.");
+          return;
+        }
+        await api.completeFlashcardDeck(token, deckId, Array.from(reviewed));
+        if (stepId) {
+          await api.completeMyDayPlanStep(token, stepId);
         }
       }
       router.push("/dashboard/path");
+    } catch {
+      setFinishError("We couldn't save that flashcard progress. Try again.");
     } finally {
       setFinishing(false);
     }
@@ -185,6 +197,11 @@ export default function FlashcardDeckPage() {
           </button>
         )}
       </div>
+      {finishError && (
+        <p className="mt-4 border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900" role="alert">
+          {finishError}
+        </p>
+      )}
     </Wrap>
   );
 }

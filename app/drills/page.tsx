@@ -134,10 +134,23 @@ function DrillsPageContent() {
   const startDrill = useCallback(
     async (key: string, payload: DrillStartRequest) => {
       if (busy) return;
-      setBusy(key);
       setStartError(null);
+      if (!authLoaded) {
+        setStartError("Checking sign-in. Try again in a moment.");
+        return;
+      }
+      if (!authSignedIn) {
+        setStartError("Sign in to start a drill.");
+        return;
+      }
+      setBusy(key);
       try {
-        const token = authSignedIn ? await getToken() : null;
+        const token = await getToken();
+        if (!token) {
+          setStartError("Sign in again to start a drill.");
+          setBusy(null);
+          return;
+        }
         const res = await api.startDrill({ ...payload }, token);
         if (!res.drill_id) {
           setStartError(
@@ -162,7 +175,7 @@ function DrillsPageContent() {
         setBusy(null);
       }
     },
-    [busy, router, authSignedIn, getToken],
+    [busy, router, authLoaded, authSignedIn, getToken],
   );
 
   const onTabKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {

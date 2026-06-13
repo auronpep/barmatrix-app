@@ -75,13 +75,19 @@ a {
   text-decoration: none;
 }
 
-button {
-  font-family: inherit;
-  font-size: inherit;
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: inherit;
+/* Layered so Tailwind v4 @layer utilities win: an unlayered reset would beat
+ * layered utilities regardless of specificity, silently dropping utility
+ * `border`/`bg` on custom-styled buttons. Keeping it in @layer base fixes that
+ * at the source (no per-button !important needed). */
+@layer base {
+  button {
+    font-family: inherit;
+    font-size: inherit;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: inherit;
+  }
 }
 
 /* ====== HAIRLINE RED TAPE STRIP ====== */

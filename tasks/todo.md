@@ -3313,3 +3313,23 @@ Preserve the intended paid-program navigation split: `/dashboard/path` is the pr
 - 2026-06-13: App commit `e3c22d8` deployed to Vercel production deployment `dpl_FEb55ruxVQg6DN7TPKhppnpaWL36`, aliased to `https://barmatrix.app` and `https://www.barmatrix.app`.
 - 2026-06-13: Anonymous live route smoke passed for `/`, `/checkout/success`, `/foundations`, `/boot-camps`, `/certification`, `/red-zones`; dashboard routes returned protected 307 responses outside the browser session.
 - 2026-06-13: Live in-app browser session verified `/dashboard` rendered `Progress, next drill, and recent wrong-answer forensics.` with no `Lead Me`, while `/dashboard/path` rendered `Lead Me`, `Day 1: Trap Hunt and C3 Power-Up`, and `FIRST 3 DAYS` with no full-dashboard heading.
+
+# Paid Program Command Center - 2026-06-13
+
+## Scope
+
+Make the restored paid-program tools obvious from the full dashboard so enrolled customers can see the product they bought without hunting through the top navigation.
+
+## Plan
+
+- [x] Add a regression requiring `/dashboard` to surface the restored tools directly.
+- [x] Add a full-dashboard command center with links to Lead Me, Red-Zone Map, Practice, Drills, Boot Camps, Timed Sets, Mastery Board, C3 Coach, and Certification.
+- [x] Keep the section visually consistent with the restored dashboard pattern and avoid changing `/dashboard/path`.
+- [x] Run focused dashboard tests, full app tests, lint, and production build.
+- [ ] Deploy and live-verify the command center on `/dashboard`.
+
+## Review Log
+
+- 2026-06-13: Added `PROGRAM_COMMAND_CENTER` to `app/dashboard/page.tsx` with nine real paid-program route links and a `ProgramCommandCenter` renderer.
+- 2026-06-13: Added `tests/ambassador-dashboard-entry.test.ts` coverage that the full dashboard exposes all restored paid-program tool links.
+- 2026-06-13: Verification passed: `node --test tests\ambassador-dashboard-entry.test.ts`, related dashboard/path tests, `node --test tests\*.test.ts` (75/75), `npm run lint`, and `npm run build`.

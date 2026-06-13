@@ -64,4 +64,25 @@ describe("dashboard guided-path entry", () => {
     assert.doesNotMatch(dashboard, /PathSurface/);
     assert.doesNotMatch(dashboard, /next_step != null/);
   });
+
+  it("surfaces the restored paid-program tools inside the full dashboard", () => {
+    const dashboard = readProjectFile("app/dashboard/page.tsx");
+
+    assert.match(dashboard, /PROGRAM_COMMAND_CENTER/);
+    assert.match(dashboard, /Paid Program Command Center/);
+    for (const href of [
+      "/dashboard/path",
+      "/red-zones",
+      "/practice",
+      "/drills",
+      "/boot-camps",
+      "/timed-sets",
+      "/dashboard/mastery",
+      "/coach",
+      "/certification",
+    ]) {
+      assert.match(dashboard, new RegExp(`href: "${href.replaceAll("/", "\\/")}"`));
+    }
+    assert.match(dashboard, /ProgramCommandCenter/);
+  });
 });

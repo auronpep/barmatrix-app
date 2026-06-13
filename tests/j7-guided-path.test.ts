@@ -7,8 +7,8 @@ function readProjectFile(path: string): string {
 }
 
 describe("J7 guided path dashboard", () => {
-  it("renders the paid dashboard from the API day plan, not a resource hub", () => {
-    const source = readProjectFile("app/dashboard/page.tsx");
+  it("renders the paid path from the API day plan, not a resource hub", () => {
+    const source = readProjectFile("app/dashboard/path/page.tsx");
     const hook = readProjectFile("lib/use-day-plan.ts");
     const cards = readProjectFile("app/dashboard/day-cards.tsx");
     const apiClient = readProjectFile("lib/api-client.ts");

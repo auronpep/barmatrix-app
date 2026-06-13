@@ -7,8 +7,8 @@ function readProjectFile(path: string): string {
 }
 
 describe("dashboard guided-path entry", () => {
-  it("uses the BMO/J7 day-plan dashboard as the paid-user entry point", () => {
-    const source = readProjectFile("app/dashboard/page.tsx");
+  it("uses the BMO/J7 day-plan path as the paid-user entry point", () => {
+    const source = readProjectFile("app/dashboard/path/page.tsx");
 
     assert.match(source, /useDayPlan/);
     assert.match(source, /DayCards/);
@@ -19,28 +19,39 @@ describe("dashboard guided-path entry", () => {
   });
 
   it("does not show a competing empty-dashboard diagnostic CTA while Lead Me owns Day 1", () => {
-    const source = readProjectFile("app/dashboard/page.tsx");
+    const source = readProjectFile("app/dashboard/path/page.tsx");
 
     assert.doesNotMatch(source, /methodEntryPending/);
     assert.doesNotMatch(source, /Take the diagnostic to build your Red-Zone Map/);
   });
 
-  it("removes the dashboard program-resource navigation strip", () => {
+  it("restores the old paid dashboard navigation while keeping My Path first", () => {
     const source = readProjectFile("app/dashboard/layout.tsx");
 
-    assert.match(source, /Today&apos;s Guided Path/);
-    assert.doesNotMatch(source, /PROGRAM_LINKS/);
-    assert.doesNotMatch(source, /href: "\/practice"/);
-    assert.doesNotMatch(source, />Program</);
+    assert.match(source, /VIEW_TABS/);
+    assert.match(source, /href: "\/dashboard\/path", label: "My Path"/);
+    assert.match(source, /href: "\/dashboard", label: "Full Dashboard"/);
+    assert.match(source, /PROGRAM_LINKS/);
+    assert.match(source, /href: "\/practice"/);
+    assert.match(source, />\s*Program\s*</);
   });
 
-  it("gates old dashboard subviews back to the guided dashboard", () => {
+  it("restores old dashboard subviews instead of redirecting them away", () => {
+    const dashboard = readProjectFile("app/dashboard/page.tsx");
     const mastery = readProjectFile("app/dashboard/mastery/page.tsx");
     const finalSprint = readProjectFile("app/dashboard/final-sprint/page.tsx");
     const path = readProjectFile("app/dashboard/path/page.tsx");
 
-    assert.match(mastery, /redirect\("\/dashboard"\)/);
-    assert.match(finalSprint, /redirect\("\/dashboard"\)/);
-    assert.match(path, /redirect\("\/dashboard"\)/);
+    assert.match(dashboard, /useDashboard\(/);
+    assert.match(dashboard, /useFoundations\(/);
+    assert.match(dashboard, /useC3\(/);
+    assert.match(mastery, /PatternMasteryBoardPage/);
+    assert.match(mastery, /useDashboard\(/);
+    assert.match(finalSprint, /FinalSprintPathPage/);
+    assert.match(finalSprint, /SPRINT_DAYS/);
+    assert.match(path, /useDayPlan/);
+    assert.doesNotMatch(mastery, /redirect\("\/dashboard"\)/);
+    assert.doesNotMatch(finalSprint, /redirect\("\/dashboard"\)/);
+    assert.doesNotMatch(path, /redirect\("\/dashboard"\)/);
   });
 });

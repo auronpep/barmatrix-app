@@ -3227,3 +3227,47 @@ Restore the paid-user dashboard behavior from the old BMO-operated BarMatrix app
 - 2026-06-12: Focused tests passed: `node --test tests\j7-guided-path.test.ts tests\ambassador-dashboard-entry.test.ts tests\diagnostic-results-enrolled-cta.test.ts`.
 - 2026-06-12: Full app checks passed: `node --test tests\*.test.ts` (73/73), `npm run lint`, `npm run build`, and `git diff --check` with normal Windows line-ending warnings only.
 - 2026-06-12: Local production browser smoke on `http://127.0.0.1:3018` passed for desktop `/`, `/pricing`, `/checkout`, `/checkout/success`, `/dashboard`, `/dashboard/path` and mobile `/`, `/pricing`, `/checkout`, `/dashboard`: one `<main>`, no horizontal overflow, no browser errors, no stale bank language, `/dashboard/path` resolved to `/dashboard`, and signed-out dashboard showed the guided-path shell with sign-in state.
+- 2026-06-12: App commit `5fe9c2d` (`Restore BMO guided dashboard`) was pushed to private branch `codex/restore-old-app-marketing` and deployed to Vercel production deployment `dpl_5omyrAK5VaCEwywHK8a3HvvYAQqM`, aliased to `https://barmatrix.app` and `https://www.barmatrix.app`.
+- 2026-06-12: Live browser smoke passed for desktop `/`, `/pricing`, `/checkout`, `/checkout/success` and mobile `/`, `/pricing`, `/checkout`: new diagnostic-first headline rendered, no stale bank language, one `<main>`, no horizontal overflow, and no browser errors.
+- 2026-06-12: Live signed-out protected route smoke returned 307 to `/sign-in?redirect_url=...` for `/dashboard`, `/dashboard/path`, `/dashboard/mastery`, and `/dashboard/final-sprint`.
+- 2026-06-12: Live enrolled QA dashboard initially proved the app restoration but exposed an API copy issue: the API still served internal labels like `Diagnostic A question 1` and `Diagnostic A external question 14556`.
+- 2026-06-12: API worktree `C:\barmatrix-api\.worktrees\checkout-clerk-access` commit `ee727b3` (`Clean Lead Me day-plan labels`) was built, manually deployed to Hostinger from the same artifacts using the documented atomic staging/swap pattern after `scripts\deploy.sh` hung at the Windows bash boundary, and production API health returned `{"ok":true,"db":"up"}`.
+- 2026-06-12: Live enrolled QA dashboard after API restart rendered `Lead Me`, `First 3 Days`, Day 1 active, Day 2/3 locked, `Current Task`, and `Illegal arrest remedy trap`; it no longer showed sign-in/enroll prompts, `Diagnostic A external question 14556`, internal content codes, raw errors, browser errors, or horizontal overflow.
+- 2026-06-12: Live enrolled QA diagnostic-results check passed after submitting an 18-question placement session. `/diagnostic/session/<session>/results` rendered `Your C3 Starting Level`, `Recommended Next Step - L1`, and `Start The Method`, with no enrollment pitch, no raw errors, no browser errors, one `<main>`, and no horizontal overflow.
+
+## Review Results
+
+- Status: DEPLOYED AND LIVE-VERIFIED. The public sales path keeps diagnostic-first marketing, checkout/account routes remain usable, and enrolled users now land on the BMO/J7 guided paid dashboard with customer-facing task labels.
+
+# BMO Paid Functionality Restore - 2026-06-13
+
+## Scope
+
+Restore the older BMO paid dashboard functionality that the first launch repair collapsed, while keeping the diagnostic-first marketing/sales path and Lead Me as the primary paid-user path.
+
+## Plan
+
+- [x] Branch from clean live checkpoint `checkpoint-current-live-bmo-restore-2026-06-12`.
+- [x] Preserve Lead Me by moving the day-plan dashboard from `/dashboard` to `/dashboard/path`.
+- [x] Restore old BMO dashboard overview, mastery board, final sprint, and dashboard nav from `feat/j7-lead-me-path`.
+- [x] Point post-checkout/account/header entry links to `/dashboard/path`.
+- [x] Update focused tests to assert the restored route split.
+- [x] Run full unit/static tests, lint, production build, and browser route smoke.
+
+## Review Log
+
+- 2026-06-13: Created branch `codex/bmo-paid-functionality-restore` from the clean deployed checkpoint worktree.
+- 2026-06-13: `/dashboard/path` now owns the J7 Lead Me day-plan dashboard.
+- 2026-06-13: `/dashboard` now restores the old full dashboard with dashboard metrics, Method entry, C3/mastery entry, next drill, and recent forensics.
+- 2026-06-13: `/dashboard/mastery` and `/dashboard/final-sprint` are restored as real pages instead of redirecting back to `/dashboard`.
+- 2026-06-13: Dashboard nav restored `My Path`, `Full Dashboard`, `Mastery Board`, `Final Sprint`, and program links, with `My Path` first.
+- 2026-06-13: Post-checkout success, account active/error panels, nav auth, and welcome copy now point the primary guided-path CTA at `/dashboard/path`.
+
+## Verification
+
+- `node --test tests\ambassador-dashboard-entry.test.ts tests\j7-guided-path.test.ts tests\diagnostic-first-sales-copy.test.ts` passed.
+- `node --test tests\*.test.ts` passed 73/73.
+- `npm run lint` passed.
+- `npm run build` passed; Next build output includes `/dashboard`, `/dashboard/path`, `/dashboard/mastery`, and `/dashboard/final-sprint`.
+- Local production server on `http://localhost:3022` rendered `/dashboard/path`, `/dashboard`, `/dashboard/mastery`, `/dashboard/final-sprint`, and `/checkout/success` with no raw errors, one `<main>`, and no horizontal overflow.
+- Deeper DOM check on `/dashboard` confirmed restored nav text: `MY PATH`, `FULL DASHBOARD`, `MASTERY BOARD`, `FINAL SPRINT`, and program links.

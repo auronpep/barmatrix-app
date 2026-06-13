@@ -43,7 +43,7 @@ describe("mobile content overflow guards", () => {
     assert.match(traps, /className="min-w-0"/);
     assert.match(traps, /className="min-w-0"/);
     assert.match(traps, /className="flex min-w-0 w-full flex-col items-start/);
-    assert.match(traps, /className="mt-0\.5 block break-all/);
+    assert.doesNotMatch(traps, /<span className="mt-0\.5 block break-all[^"]*">\s*\{trap\.slug\}\s*<\/span>/);
 
     assert.match(tensions, /<li[^>]+className="min-w-0"/);
     assert.match(tensions, /className="flex min-w-0 w-full flex-col items-start/);

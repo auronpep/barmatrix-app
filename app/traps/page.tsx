@@ -257,9 +257,6 @@ function TrapRow({ trap }: { trap: TrapEntry }) {
           )}
           <PersonalTrapBadge slug={trap.slug} />
         </span>
-        <span className="mt-0.5 block break-all font-mono text-[11px] text-zinc-400">
-          {trap.slug}
-        </span>
       </span>
       <span className="shrink-0 self-end text-right font-mono text-xs text-zinc-500 sm:self-auto">
         {trap.question_count} q · {trap.choice_count}{" "}

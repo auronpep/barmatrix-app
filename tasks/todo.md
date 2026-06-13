@@ -3942,8 +3942,8 @@ Keep auditing the restored old-app surfaces on the live branch and remove custom
 
 - [x] Run a broad signed-in live route smoke over public, account, dashboard, practice, drills, mastery, coach, certification, timed sets, boot camps, red zones, traps, tensions, foundations, and FAQ surfaces.
 - [x] Classify route-level findings into persistent defects versus normal client loading.
-- [x] Add a regression for the confirmed display defect.
-- [x] Patch the confirmed route display defect.
+- [x] Add regressions for confirmed display defects.
+- [x] Patch confirmed route display defects.
 - [x] Run focused tests, full app tests, lint, build, and local browser verification.
 - [x] Deploy and live-verify the polished route.
 
@@ -3958,6 +3958,12 @@ Keep auditing the restored old-app surfaces on the live branch and remove custom
 - 2026-06-13: Local production browser verification on `http://127.0.0.1:3034/tensions` showed `Civil Procedure` and `Constitutional Law`, no `CIVIL_PROCEDURE` or `CONSTITUTIONAL_LAW`, one `<main>`, no horizontal overflow, and no browser errors.
 - 2026-06-13: Production deployment `dpl_H8YuTi1T3qC9yj4X4rKXy8n1c659` built successfully, was aliased to `https://barmatrix.app` and `https://www.barmatrix.app`, and was tagged `live-tension-subject-labels-2026-06-13-dpl-H8YuTi1`.
 - 2026-06-13: Live browser verification on `https://barmatrix.app/tensions?verify=tension_labels_b235eee` showed readable subject headings, no raw `CIVIL_PROCEDURE` or `CONSTITUTIONAL_LAW`, one `<main>`, no horizontal overflow, no raw error text, and no browser console errors.
+- 2026-06-13: Follow-up action-control probe exposed the same raw-data issue on `/traps`: cards showed readable trap names plus raw slugs such as `overbroad_rule` and `wrong_standard`.
+- 2026-06-13: Added `tests\trap-misconception-column.test.ts` coverage requiring trap card links and profile badges to keep using `trap.slug` while visible card copy no longer renders the raw slug line.
+- 2026-06-13: Red state was observed before the patch: the focused test failed on the visible `{trap.slug}` span.
+- 2026-06-13: Removed the visible slug line from `app\traps\page.tsx` and updated the mobile catalog guard accordingly.
+- 2026-06-13: Verification passed after the trap fix: `node --test tests\trap-misconception-column.test.ts tests\mobile-content-overflow.test.ts`, `node --test tests\sitemap-static-surface.test.ts tests\paid-program-display-labels.test.ts`, `node --test tests\*.test.ts` (91/91), `npm run lint`, `git diff --check` with normal CRLF warnings only, and `npm run build`.
+- 2026-06-13: Local production browser verification on `http://127.0.0.1:3035/traps` showed readable `Overbroad Rule`, no `overbroad_rule` or `wrong_standard`, one `<main>`, no horizontal overflow, no raw error text, and no browser console errors.
 
 ## Plan
 

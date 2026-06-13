@@ -18,6 +18,7 @@ type AttributionState = {
   campaign: string;
   partner: string;
   referral: string;
+  coupon: string | null;
   hasDiagnosticContext: boolean;
 };
 
@@ -30,6 +31,7 @@ export default function CheckoutClient() {
     campaign: "none",
     partner: "none",
     referral: "none",
+    coupon: null,
     hasDiagnosticContext: false,
   });
 
@@ -51,6 +53,7 @@ export default function CheckoutClient() {
             partner: params.get("partner_id") ?? "none",
             referral:
               params.get("referral_click_id") ?? params.get("click_id") ?? "none",
+            coupon: getCouponCode(params),
             hasDiagnosticContext: getDiagnosticId(params) !== null,
           }),
         0,
@@ -62,7 +65,15 @@ export default function CheckoutClient() {
     return () => timeouts.forEach((timeout) => window.clearTimeout(timeout));
   }, []);
 
+  const hasCouponContext = attribution.coupon !== null;
+
   const enroll = async (plan: PaymentPlan) => {
+    if (plan === "two_pay_500_499" && hasCouponContext) {
+      setError("Coupons apply to pay-in-full checkout only.");
+      setPhase("error");
+      return;
+    }
+
     setPhase("redirecting");
     setError(null);
     try {
@@ -147,6 +158,36 @@ export default function CheckoutClient() {
               <span className="label">▌ Choose Your Plan</span>
             </div>
             <CheckoutContextPanel attribution={attribution} />
+            {attribution.coupon && (
+              <div
+                className="info-panel"
+                style={{ marginBottom: 24, background: "var(--paper)" }}
+              >
+                <div className="eyebrow-strong" style={{ marginBottom: 12 }}>
+                  ▌ COUPON CHECKOUT
+                </div>
+                <h2
+                  className="serif"
+                  style={{
+                    fontSize: 24,
+                    lineHeight: 1.15,
+                    margin: "0 0 10px",
+                  }}
+                >
+                  Coupons apply to pay-in-full checkout only.
+                </h2>
+                <p
+                  style={{
+                    margin: 0,
+                    color: "var(--ink-soft)",
+                    lineHeight: 1.55,
+                  }}
+                >
+                  Enter {attribution.coupon} in Stripe after choosing pay in full.
+                  The payment plan is unavailable with a coupon.
+                </p>
+              </div>
+            )}
             <CheckoutProofPanel
               hasDiagnosticContext={attribution.hasDiagnosticContext}
             />
@@ -211,7 +252,7 @@ export default function CheckoutClient() {
                     <button
                       type="button"
                       onClick={() => enroll("two_pay_500_499")}
-                      disabled={phase === "redirecting"}
+                      disabled={phase === "redirecting" || hasCouponContext}
                       className="btn btn-lg red"
                       style={{
                         width: "100%",
@@ -220,9 +261,11 @@ export default function CheckoutClient() {
                         whiteSpace: "normal",
                       }}
                     >
-                      {phase === "redirecting"
-                        ? "Redirecting to Stripe…"
-                        : "Enroll with payment plan - $500 today →"}
+                      {hasCouponContext
+                        ? "Payment plan unavailable with coupon"
+                        : phase === "redirecting"
+                          ? "Redirecting to Stripe…"
+                          : "Enroll with payment plan - $500 today →"}
                     </button>
                   </div>
                 </>
@@ -369,6 +412,7 @@ function CheckoutContextPanel({
           <span>campaign: {attribution.campaign}</span>
           <span>partner: {attribution.partner}</span>
           <span>referral: {attribution.referral}</span>
+          <span>coupon: {attribution.coupon ?? "none"}</span>
           <span>
             diagnostic: {attribution.hasDiagnosticContext ? "attached" : "none"}
           </span>
@@ -559,6 +603,17 @@ function getCurrentSearchParams(): URLSearchParams {
 
 function getReferralClickId(searchParams: URLSearchParams): string | null {
   return searchParams.get("referral_click_id") ?? searchParams.get("click_id");
+}
+
+function getCouponCode(params: URLSearchParams): string | null {
+  return cleanCouponCode(
+    params.get("coupon") ?? params.get("code") ?? params.get("promo"),
+  );
+}
+
+function cleanCouponCode(value: string | null): string | null {
+  const coupon = value?.trim();
+  return coupon ? coupon.toUpperCase() : null;
 }
 
 const DIAGNOSTIC_ID_RE =

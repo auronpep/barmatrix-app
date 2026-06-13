@@ -1,5 +1,36 @@
 # BarMatrix Full Bug Audit
 
+# Coupon Checkout Context - 2026-06-12
+
+## Scope
+
+- Keep coupon traffic on the pay-in-full checkout path because live API policy restricts promotion codes to pay-in-full sessions.
+- Make the app checkout page explain the rule before the visitor reaches Stripe.
+- Disable the payment-plan CTA when a coupon, code, or promo parameter is present.
+
+## Plan
+
+- [x] Add a failing regression test for coupon URL context on `/checkout`.
+- [x] Extend checkout attribution to read `coupon`, `code`, and `promo` URL parameters.
+- [x] Show coupon-context copy that tells visitors to enter the code in Stripe after choosing pay in full.
+- [x] Disable the payment-plan CTA for coupon traffic and guard the two-pay enroll function.
+- [x] Run focused tests, full tests, lint, build, diff check, and local browser smoke.
+
+## Verification
+
+- Red test confirmed: `node --test tests\checkout-coupon-context.test.ts` failed before implementation because coupon handling did not exist.
+- Focused checkout tests passed: `node --test tests\checkout-coupon-context.test.ts tests\checkout-success-state.test.ts tests\diagnostic-first-sales-copy.test.ts tests\noindex-transactional-pages.test.ts`.
+- Full suite passed: `node --test tests\*.test.ts` passed 82/82.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `git diff --check` passed with only the existing Windows LF-to-CRLF warning.
+- Local production browser smoke on `http://127.0.0.1:3027/checkout?coupon=JESUSLOVESYOU&source=codex_coupon_context` confirmed the coupon panel rendered, `JESUSLOVESYOU` was visible, the pay-in-full button stayed enabled, the payment-plan button was disabled with `Payment plan unavailable with coupon`, one `<main>` rendered, no horizontal overflow appeared, and no console errors were captured.
+
+## Review
+
+- Status: LOCAL VERIFIED, READY FOR APP DEPLOY.
+- This pairs with the already-deployed API coupon policy: Stripe promotion codes are available only on pay-in-full checkout, while two-pay checkout still requires first and last name but no longer offers a coupon field.
+
 # Old Integrated App Marketing Transplant - 2026-06-13
 
 ## Scope

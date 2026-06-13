@@ -427,7 +427,12 @@ function CohortCard({
       {!status && !error && (
         <p className="mt-3 text-sm text-zinc-700">Loading cohort status...</p>
       )}
-      {error && <p className="mt-3 font-mono text-xs text-red-800">{error}</p>}
+      {error && (
+        <p className="mt-3 text-sm leading-6 text-zinc-700">
+          Cohort status is temporarily unavailable. Your dashboard still works,
+          and access will refresh when live status reconnects.
+        </p>
+      )}
     </aside>
   );
 }

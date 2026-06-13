@@ -85,4 +85,12 @@ describe("dashboard guided-path entry", () => {
     }
     assert.match(dashboard, /ProgramCommandCenter/);
   });
+
+  it("does not expose raw cohort fetch failures in the dashboard card", () => {
+    const dashboard = readProjectFile("app/dashboard/page.tsx");
+
+    assert.match(dashboard, /Cohort status is temporarily unavailable/);
+    assert.doesNotMatch(dashboard, /<p[^>]*>\{error\}<\/p>/);
+    assert.doesNotMatch(dashboard, /Cohort Status[\s\S]*Failed to fetch/);
+  });
 });

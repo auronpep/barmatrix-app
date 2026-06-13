@@ -18,9 +18,9 @@
 - [x] Confirm live API health and cohort status from `https://api.barmatrix.app`.
 - [x] Bring over only selected ABM marketing/sales language that strengthens the current integrated app without weakening the product engine.
 - [x] Keep real integrated app routes and API-backed product flows as the canonical app: `/diagnostic`, `/dashboard`, `/account`, `/drills`, `/red-zones`, `/boot-camps`, `/timed-sets`, `/mastery`, `/certification`, `/checkout`, `/checkout/success`, `/sign-in`, and `/sign-up`.
-- [ ] Verify public copy against BMO drift rules: no discount, no coupon offer, no early-bird language, no public seat number, no guarantee, no official-affiliation claims.
+- [x] Verify public copy against BMO drift rules: no discount, no coupon offer, no early-bird language, no public seat number, no guarantee, no official-affiliation claims.
 - [x] Verify local build and smoke the launch-critical routes before any production deploy.
-- [ ] Deploy from this integrated app worktree only after Vercel project link and production target are intentionally present.
+- [x] Deploy from this integrated app worktree only after Vercel project link and production target are intentionally present.
 
 ## Evidence So Far
 
@@ -40,6 +40,13 @@
 - Desktop browser smoke passed for launch-critical integrated routes: `/`, `/diagnostic`, `/pricing`, `/checkout`, `/checkout/success?plan=full&source=pricing&after=dashboard`, `/sign-in?after=dashboard`, `/sign-up?after=dashboard`, `/account`, `/dashboard`, `/practice`, `/red-zones`, `/timed-sets`, and `/mastery` each rendered one `<main>`, one H1, no horizontal overflow, no runtime/application error text, and no relevant warning/error logs.
 - Mobile browser smoke passed at a phone viewport for `/`, `/pricing`, `/checkout`, `/checkout/success?plan=full&source=pricing&after=dashboard`, and `/dashboard` with one `<main>`, one H1, no horizontal overflow, no runtime/application error text, and no relevant warning/error logs.
 - Vercel target preflight verified CLI user `sunnylwood-7609`, project `barmatrix-app`, project ID `prj_LwBgARXTft6aeyoRwhIqEDWh5p4P`, org ID `team_HKHemC6mfIOm0t6aROxfEOug`; GitHub remote `auronpep/barmatrix-app` is private and available with admin permission.
+- Preview deployment `dpl_3i6ePyYgRcKLVnnesur2jLeQH3DB` built and rendered the integrated app route surface at `https://barmatrix-g2k3o31nd-sunnylee.vercel.app`. Preview auth showed Clerk fallback because Vercel env scope has Clerk/API variables in Production only.
+- Production restore deployment `dpl_BvGUb6Q1u9B7VRhWgJxNrNdkVFhm` built from this worktree and is aliased to `https://barmatrix.app` and `https://www.barmatrix.app`.
+- Live route contract passed on `https://barmatrix.app`: public launch routes returned HTTP 200; signed-out protected routes `/account`, `/dashboard`, and `/drills` redirected to `/sign-in?redirect_url=...`; no route returned application-error/runtime-error text.
+- Live browser verification confirmed Clerk production env is active: `/sign-in?after=dashboard` rendered Clerk email/password fields and `/sign-up?after=dashboard` rendered Clerk account creation fields, with no `coming online` fallback.
+- Live checkout-success verification confirmed `/checkout/success?plan=full&source=pricing&after=dashboard` renders `Open your account to confirm access.`, includes account and sign-in paths, and has no auth fallback.
+- Live mobile browser smoke passed for `/`, `/pricing`, `/checkout`, `/checkout/success?plan=full&source=pricing&after=dashboard`, and `/sign-in?after=dashboard`: no horizontal overflow, no runtime/application error text, and no Clerk fallback.
+- New integrated-app production checkpoint tag pushed: `live-restore-integrated-app-2026-06-12-dpl-BvGUb6Q1`.
 
 ## Review
 
@@ -47,6 +54,7 @@
 - First restore slice preserves the integrated app engine and changes only public sales copy plus the tracker/test guard.
 - Second restore slice fixed a pre-existing C3 Mastery readiness test failure so the integrated app branch is a cleaner base for route smoke and eventual restore deploy.
 - Third restore slice verified the integrated app route surface locally. Remaining deploy risk is environment-dependent: the clean worktree has no local Clerk env, so slash sign-in/sign-up show the app fallback locally; production/preview Vercel env must be checked before aliasing restore traffic.
+- Fourth restore slice deployed the integrated app to production and verified that production env resolves the Clerk/auth fallback. The previous ABM live rebuild remains recoverable at Vercel deployment `dpl_2DBvda2rJas454RLhyKyz7gph6E4`, ABM branch `codex/launch-stabilization`, tag `live-checkpoint-2026-06-12-dpl-2DBvda2r`.
 
 ## Scope
 

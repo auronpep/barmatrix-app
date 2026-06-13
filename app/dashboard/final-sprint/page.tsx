@@ -269,9 +269,9 @@ export default function FinalSprintPathPage() {
             Confirm your exam date to activate the sprint.
           </h2>
           <p className="mt-3 max-w-2xl text-zinc-700">
-            This preview uses a sample date inside the sprint window. Once a student has a
-            saved exam date, the dashboard can highlight today&apos;s assignment and hold the
-            plan steady for the day.
+            Until you save an exam date, this screen uses a default date inside the sprint
+            window. Once a student has a saved exam date, the dashboard can highlight
+            today&apos;s assignment and hold the plan steady for the day.
           </p>
         </section>
       )}
@@ -519,7 +519,7 @@ function ExamDatePanel({
         <Metric label="Window" value="14d" />
       </div>
       <p className="mt-4 text-sm leading-6 text-zinc-600">
-        {status.message} {value ? "" : `Preview date: ${formatDisplayDate(previewDate)}.`}
+        {status.message} {value ? "" : `Planning date: ${formatDisplayDate(previewDate)}.`}
       </p>
       {!value && (
         <button
@@ -527,7 +527,7 @@ function ExamDatePanel({
           className="btn red btn-sm mt-4"
           onClick={() => onChange(formatDateInput(previewDate))}
         >
-          Use preview date
+          Use planning date
         </button>
       )}
     </aside>

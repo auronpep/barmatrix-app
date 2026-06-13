@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { humanizeSubject } from "@/lib/format-subject";
 import { getTrapDetail } from "@/lib/traps";
 import type { TrapExample, TrapKind } from "@/lib/api-client";
 import { TrapDetailAnalytics } from "../trap-analytics";
@@ -79,7 +80,6 @@ export default async function TrapDetailPage({
       <h1 className="mt-3 font-serif text-4xl font-semibold tracking-tight sm:text-5xl">
         {detail.name}
       </h1>
-      <p className="mt-2 font-mono text-xs text-zinc-400">{detail.slug}</p>
       <p className="mt-4 max-w-2xl text-lg text-zinc-600">
         This trap appears as a wrong-answer choice in {detail.question_count}{" "}
         active {detail.question_count === 1 ? "question" : "questions"}. Spotting how
@@ -94,6 +94,7 @@ export default async function TrapDetailPage({
           </p>
           <ul className="mt-4 space-y-3">
             {detail.subject_distribution.map((entry) => {
+              const subjectLabel = humanizeSubject(entry.subject);
               const pct =
                 maxCount > 0
                   ? Math.round((entry.question_count / maxCount) * 100)
@@ -101,7 +102,7 @@ export default async function TrapDetailPage({
               return (
                 <li key={entry.subject}>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-zinc-800">{entry.subject}</span>
+                    <span className="text-zinc-800">{subjectLabel}</span>
                     <span className="font-mono text-xs text-zinc-500">
                       {entry.question_count}
                     </span>

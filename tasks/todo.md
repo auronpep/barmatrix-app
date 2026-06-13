@@ -3427,7 +3427,7 @@ Fix the post-enrollment diagnostic results page so an enrolled customer who fini
 - [x] Use existing dashboard/account entitlement state to distinguish signed-out leads, signed-in non-enrolled users, loading access checks, and enrolled students.
 - [x] Keep anonymous diagnostic results as a sales path while replacing enrolled-user checkout copy with repair-path links.
 - [x] Run focused tests, full app tests, lint, build, and diff hygiene checks.
-- [ ] Deploy and live-verify the signed-in enrolled diagnostic result path.
+- [x] Deploy and live-verify the signed-in enrolled diagnostic result path.
 
 ## Review Log
 
@@ -3437,6 +3437,10 @@ Fix the post-enrollment diagnostic results page so an enrolled customer who fini
 - 2026-06-13: Patched `app\diagnostic\[session]\results\page.tsx` so signed-out and signed-in non-enrolled users keep the checkout/save-map pitch, loading users see an access-check panel, and enrolled users see `Continue your repair path` plus Red-Zone Map links with no re-enrollment instruction.
 - 2026-06-13: Also made the no-repeated-pattern result copy access-aware so enrolled students are not told to enroll after a clean diagnostic.
 - 2026-06-13: Verification passed: `node --test tests\diagnostic-results-enrolled-cta.test.ts`, adjacent route/copy tests, `node --test tests\*.test.ts` (85/85), `npm run lint`, `npm run build`, and `git diff --check` with normal Windows line-ending warnings only.
+- 2026-06-13: Production deployment `dpl_3mKFLNrKwbz44H4mPx5W2CiN4DjJ` built successfully and was aliased to `https://barmatrix.app`.
+- 2026-06-13: Live browser verification passed on `/dashboard`, `/account`, `/dashboard/path`, `/dashboard/mastery`, and `/certification`: one `<main>`, no raw runtime errors, no horizontal overflow, and paid-program content rendered.
+- 2026-06-13: Created anonymous throwaway diagnostic session `958e4745-95a3-4fff-a426-3302b2edc30f` via public API, recorded 20/20 anonymous attempts, and opened its live results page in the signed-in browser session.
+- 2026-06-13: Live signed-in diagnostic results verification passed: page rendered `Your repair path is built`, `Continue your repair path`, `/dashboard/path`, and `do not enroll again`; `Enroll and save this map` was absent.
 
 # Dashboard Route Split Hardening - 2026-06-13
 

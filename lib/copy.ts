@@ -23,7 +23,7 @@ export const PRICING = {
   includes: [
     "Free MBE Trap Diagnostic",
     "Red-Zone Map",
-    "2,400-question forensic bank",
+    "Forensic question bank",
     "Wrong Answer Forensics",
     "Targeted Red-Zone Drills",
     "Boot Camps",

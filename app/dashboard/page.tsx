@@ -595,7 +595,7 @@ function buildNextDrill(
       body:
         drill.red_zone_tag != null
           ? `Assigned to repair ${titleize(drill.red_zone_tag)}. Open the Red-Zone Map to start it.`
-          : `${drill.reason}. Open the Red-Zone Map to start it.`,
+          : `${formatDrillName(drill.reason)} is ready. Open the Red-Zone Map to start it.`,
     };
   }
   if (zone) {

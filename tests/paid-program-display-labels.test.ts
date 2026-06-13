@@ -17,7 +17,9 @@ describe("paid program display labels", () => {
     assert.match(helpers, /Review Missed Questions/);
 
     assert.match(dashboard, /formatDrillName\(drill\.drill_name\)/);
+    assert.match(dashboard, /formatDrillName\(drill\.reason\)/);
     assert.doesNotMatch(dashboard, /title:\s*drill\.drill_name/);
+    assert.doesNotMatch(dashboard, /\$\{drill\.reason\}/);
 
     assert.match(
       drillRunner,

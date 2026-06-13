@@ -13,6 +13,7 @@ import {
 } from "@/lib/api-client";
 import { useSubmitAttempt } from "@/lib/use-attempts";
 import { BRAND } from "@/lib/copy";
+import { formatStudyLabel } from "@/lib/study-labels";
 
 const SUBJECT = "Real Property";
 const SUBJECT_SLUG = "real-property";
@@ -124,12 +125,7 @@ function humanError(error: unknown): string {
 }
 
 function readableLabel(value: string | null): string {
-  if (!value) return "Pending";
-  return value
-    .replace(/[_-]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  return formatStudyLabel(value);
 }
 
 export default function RealPropertyDrillPage() {
@@ -439,9 +435,9 @@ function QuestionCard({
   return (
     <article className="border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
       <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
-        <span>{question.subject}</span>
-        {question.topic && <span>/ {question.topic}</span>}
-        {question.subtopic && <span>/ {question.subtopic}</span>}
+        <span>{formatStudyLabel(question.subject)}</span>
+        {question.topic && <span>/ {formatStudyLabel(question.topic)}</span>}
+        {question.subtopic && <span>/ {formatStudyLabel(question.subtopic)}</span>}
       </div>
 
       <div className="mt-6 whitespace-pre-line text-base leading-8 text-zinc-800">

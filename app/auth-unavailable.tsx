@@ -1,10 +1,13 @@
+import { resolveAuthReturnPath } from "@/app/auth-return-path";
 import Link from "next/link";
 
 interface AuthUnavailableProps {
   mode: "sign-in" | "sign-up";
+  after?: string | null;
 }
 
-export function AuthUnavailable({ mode }: AuthUnavailableProps) {
+export function AuthUnavailable({ mode, after }: AuthUnavailableProps) {
+  const returnPath = resolveAuthReturnPath(after);
   const title = mode === "sign-up" ? "Account creation is coming online." : "Sign-in is coming online.";
   const body =
     mode === "sign-up"
@@ -22,8 +25,11 @@ export function AuthUnavailable({ mode }: AuthUnavailableProps) {
         </h1>
         <p className="mt-4 text-base leading-7 text-zinc-700">{body}</p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/account" className="btn red">
-            Open Account
+          <Link href={returnPath} className="btn red">
+            Continue after access
+          </Link>
+          <Link href="/account" className="btn ghost">
+            Account status
           </Link>
           <Link href="/diagnostic" className="btn ghost">
             Free Diagnostic

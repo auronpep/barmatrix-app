@@ -103,9 +103,9 @@ export const WELCOME = {
 } as const;
 
 export const ACCOUNT_PLACEHOLDER = {
-  headline: "Account",
-  body: "Sign-in is coming online with the cohort launch. If you've already enrolled, check your email for your access details.",
-  cta: { label: "Back to home", href: "/" },
+  headline: "Open your BarMatrix account.",
+  body: "Sign in with the email used at checkout to connect enrollment, billing, and your guided repair path.",
+  cta: { label: "Sign in", href: "/sign-in?after=account" },
 } as const;
 
 export const DISCLAIMER =

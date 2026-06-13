@@ -27,6 +27,7 @@ const ROUTES = [
   "/subjects/real-property",
   "/subjects/torts",
   "/partners",
+  "/tiktok",
   "/webinar",
   "/waitlist",
   "/faq",

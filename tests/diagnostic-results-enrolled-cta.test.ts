@@ -22,6 +22,11 @@ describe("diagnostic results enrolled CTA", () => {
     assert.match(source, /case "access_unavailable":/);
     assert.match(source, /We could not confirm active access from this screen\./);
     assert.match(source, /href="\/account"/);
+    assert.match(source, /"account_unconfirmed"/);
+    assert.match(source, /if \(dash\.signedIn && dash\.data && !dash\.data\.enrolled\) return "account_unconfirmed";/);
+    assert.match(source, /case "account_unconfirmed":/);
+    assert.match(source, /This signed-in account is not showing active Flagship access yet\./);
+    assert.match(source, /confirm or recover access before another checkout/i);
     assert.match(source, /buildDiagnosticRecommendation/);
     assert.match(source, /Your top leak is \{rec\.topLeak\} - start here\./);
     assert.match(source, /results\.recommendation\?\.next_step/);

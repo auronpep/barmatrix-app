@@ -75,6 +75,7 @@ type DiagnosticResultsAccessState =
   | "checking"
   | "signed_out"
   | "access_unavailable"
+  | "account_unconfirmed"
   | "not_enrolled"
   | "enrolled";
 
@@ -308,6 +309,7 @@ function resolveDiagnosticResultsAccess(
   if (!dash.signedIn) return "signed_out";
   if (dash.data?.enrolled === true) return "enrolled";
   if (dash.error) return "access_unavailable";
+  if (dash.signedIn && dash.data && !dash.data.enrolled) return "account_unconfirmed";
   return "not_enrolled";
 }
 
@@ -320,7 +322,9 @@ function TopTrapPatterns({
 }) {
   if (patterns.length === 0) {
     const enrolled = accessState === "enrolled";
-    const accessUnavailable = accessState === "access_unavailable";
+    const accountCheckNeeded =
+      accessState === "access_unavailable" ||
+      accessState === "account_unconfirmed";
     return (
       <div className="mt-8 rounded-lg border border-emerald-300 bg-emerald-50 p-6">
         <p className="font-mono text-xs uppercase tracking-wider text-emerald-700">
@@ -329,8 +333,8 @@ function TopTrapPatterns({
         <p className="mt-2 text-zinc-800">
           {enrolled
             ? "You did not fall into a repeated trap pattern on this set. Keep your Red-Zone Map building as you drill."
-            : accessUnavailable
-              ? "You did not fall into a repeated trap pattern on this set. We could not confirm account access from this screen, so open your account before making another enrollment decision."
+            : accountCheckNeeded
+              ? "You did not fall into a repeated trap pattern on this set. Open your account to confirm or recover access before another checkout."
             : "You did not fall into a repeated trap pattern on this set. Enroll to run the full forensic bank and keep your Red-Zone Map building as you drill."}
         </p>
       </div>
@@ -516,6 +520,33 @@ function ResultsDecisionPanel({
               className="text-sm text-zinc-700 underline hover:text-zinc-950"
             >
               Go to dashboard
+            </Link>
+          </div>
+        </div>
+      );
+    case "account_unconfirmed":
+      return (
+        <div className="mt-8 rounded-lg border border-amber-300 bg-amber-50 p-8 shadow-sm">
+          <p className="font-mono text-xs uppercase tracking-wider text-amber-800">
+            Account check needed
+          </p>
+          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
+            This signed-in account is not showing active Flagship access yet.
+          </h2>
+          <p className="mt-3 text-zinc-700">
+            Your diagnostic map is ready. Open your account to confirm or
+            recover access before another checkout; if this is the same email
+            you used at purchase, the account page is the right next step.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <Link href="/account" className="btn red">
+              Check account access <span aria-hidden>→</span>
+            </Link>
+            <Link
+              href="/support"
+              className="text-sm text-zinc-700 underline hover:text-zinc-950"
+            >
+              Contact support
             </Link>
           </div>
         </div>

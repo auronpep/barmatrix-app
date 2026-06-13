@@ -12,7 +12,7 @@
 - [x] Add failing regression coverage for final-sprint drill name/status formatting.
 - [x] Use the shared drill-name formatter in the final-sprint live targets panel.
 - [x] Format assigned-drill statuses into readable labels.
-- [ ] Run focused/full verification, deploy, live-check, and checkpoint.
+- [x] Run focused/full verification, deploy, live-check, and checkpoint.
 
 ## Verification
 
@@ -23,6 +23,19 @@
 - `npm run lint` passed.
 - `npm run build` passed and generated `/dashboard/final-sprint`.
 - `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+- First production live check on `dpl_6667LAQwbSd8y3zMGkRGNFdzG8ZL` confirmed `review_drill` was gone, but CSS still rendered status labels as `IN PROGRESS`; fixed before checkpoint.
+- Follow-up focused test passed: `node --test tests\paid-program-display-labels.test.ts`.
+- Follow-up full suite passed: `node --test tests\*.test.ts` passed 87/87.
+- Follow-up `npm run lint` passed.
+- Follow-up `npm run build` passed and generated `/dashboard/final-sprint`.
+- Production deployment `dpl_FuayCdbJF1ahLqrNKzkYAptbpHEc` was ready and aliased to `https://barmatrix.app`.
+- Live signed-in browser verification on `https://barmatrix.app/dashboard/final-sprint` showed `Review Missed Questions` and `In Progress`, did not show `review_drill` or `IN_PROGRESS`, had one `<main>`, no horizontal overflow, no runtime error text, and no console errors.
+- API health check passed: `https://api.barmatrix.app/health` returned 200.
+
+## Review
+
+- Status: deployed and live-verified on production.
+- Checkpoint tag: `live-final-sprint-labels-2026-06-13-dpl-FuayCdb`.
 
 # Diagnostic Recommendation Shape Repair - 2026-06-13
 

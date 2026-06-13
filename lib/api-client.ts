@@ -1418,6 +1418,7 @@ export interface CoachQuestion {
 export interface CoachingMeta {
   target_mold: string; name: string; family: string;
   deficit_pct: number; exposures: number; measured: boolean;
+  fork_practice: boolean;
 }
 export interface CoachRemediation { lesson_slug: string | null; deck_ref: string | null; }
 export type CoachNext =

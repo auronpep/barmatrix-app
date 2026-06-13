@@ -30,6 +30,72 @@ const FALLBACK_NEXT_DRILL = {
   body: "Work the Evidence drill to repair purpose-of-statement mistakes, then return to mixed practice.",
 };
 
+const PROGRAM_COMMAND_CENTER = [
+  {
+    label: "Lead Me",
+    status: "Primary",
+    href: "/dashboard/path",
+    body: "The guided daily path with one active task, streak progress, and the First 3 Days sequence.",
+    cta: "Open My Path",
+  },
+  {
+    label: "Red-Zone Map",
+    status: "Forensics",
+    href: "/red-zones",
+    body: "Review the weak dimensions and tags built from diagnostic and drill attempts.",
+    cta: "Open Map",
+  },
+  {
+    label: "Practice",
+    status: "Active Work",
+    href: "/practice",
+    body: "Run focused question sets that feed attempts back into the repair engine.",
+    cta: "Start Practice",
+  },
+  {
+    label: "Drill Library",
+    status: "Subject Repair",
+    href: "/drills",
+    body: "Launch subject drills and retry missed questions with signed-in progress.",
+    cta: "Open Drills",
+  },
+  {
+    label: "Boot Camps",
+    status: "Multi-day",
+    href: "/boot-camps",
+    body: "Use structured subject repair sequences with daily sets and mastery checks.",
+    cta: "View Camps",
+  },
+  {
+    label: "Timed Sets",
+    status: "Pressure",
+    href: "/timed-sets",
+    body: "Practice under time pressure, then review the traps that surfaced.",
+    cta: "Run Timed Set",
+  },
+  {
+    label: "Mastery Board",
+    status: "Pattern Rank",
+    href: "/dashboard/mastery",
+    body: "See the weakest patterns ranked by dimension and decide what to repair next.",
+    cta: "Open Board",
+  },
+  {
+    label: "C3 Coach",
+    status: "Adaptive",
+    href: "/coach",
+    body: "Get the next C3 skill break when the mastery engine has enough signal.",
+    cta: "Open Coach",
+  },
+  {
+    label: "Certification",
+    status: "Readiness",
+    href: "/certification",
+    body: "Check locked and unlocked competencies after the Method and assigned work.",
+    cta: "View Certification",
+  },
+] as const;
+
 type DisplayZone = {
   dimension: string;
   tag: string;
@@ -126,6 +192,8 @@ export default function DashboardPage() {
         />
       </section>
 
+      <ProgramCommandCenter />
+
       <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)]">
         <ProgressPanel progress={metrics.repair_progress_pct} syncError={dash.error} />
         <NextDrillPanel drill={nextDrill} />
@@ -162,6 +230,50 @@ export default function DashboardPage() {
           </p>
         )}
       </section>
+    </section>
+  );
+}
+
+function ProgramCommandCenter() {
+  return (
+    <section className="mt-8" aria-labelledby="program-command-center">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-zinc-300 pb-4">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-wider text-zinc-700">
+            Paid Program Command Center
+          </p>
+          <h2
+            id="program-command-center"
+            className="mt-2 font-serif text-3xl font-semibold tracking-tight text-zinc-950"
+          >
+            The restored tools are live from here.
+          </h2>
+        </div>
+        <Link href="/dashboard/path" className="btn btn-sm red">
+          Continue Lead Me
+        </Link>
+      </div>
+
+      <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {PROGRAM_COMMAND_CENTER.map((item) => (
+          <article key={item.href} className="flex min-h-52 flex-col border border-zinc-300 bg-white p-5">
+            <div className="flex items-start justify-between gap-3">
+              <h3 className="font-serif text-2xl font-semibold leading-tight text-zinc-950">
+                {item.label}
+              </h3>
+              <span className="shrink-0 border border-zinc-300 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-zinc-600">
+                {item.status}
+              </span>
+            </div>
+            <p className="mt-4 flex-1 text-sm leading-6 text-zinc-700">
+              {item.body}
+            </p>
+            <Link href={item.href} className="mt-5 font-mono text-xs uppercase tracking-wider text-red-700 hover:text-red-900">
+              {item.cta} <span aria-hidden>→</span>
+            </Link>
+          </article>
+        ))}
+      </div>
     </section>
   );
 }

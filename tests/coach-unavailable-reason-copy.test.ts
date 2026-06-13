@@ -25,4 +25,14 @@ describe("coach unavailable copy", () => {
     assert.match(source, /Starting with a baseline question/);
     assert.match(apiTypes, /fork_practice:\s*boolean/);
   });
+
+  it("keeps diagnostic CTA copy out of the live coach session page shell", () => {
+    const page = readProjectFile("app/coach/page.tsx");
+
+    assert.doesNotMatch(
+      page,
+      /The Coach needs a target\. Start with the diagnostic\./,
+    );
+    assert.match(page, /CoachClient/);
+  });
 });

@@ -13,6 +13,7 @@ import {
 import { useDashboard } from "@/lib/use-dashboard";
 import { useFoundations } from "@/lib/use-foundations";
 import { useC3 } from "@/lib/use-c3";
+import { formatDrillName } from "@/lib/drills";
 import type { FoundationsOutline } from "@/lib/api-client";
 
 // Static path guide — the repair loop shape, shown regardless of data state.
@@ -588,7 +589,7 @@ function buildNextDrill(
 ): typeof FALLBACK_NEXT_DRILL {
   if (drill) {
     return {
-      title: drill.drill_name,
+      title: formatDrillName(drill.drill_name),
       subtitle: titleize(drill.red_zone_dimension ?? "Assigned repair"),
       href: "/red-zones",
       body:

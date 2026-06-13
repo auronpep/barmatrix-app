@@ -12,6 +12,26 @@ export function humanizeTag(tag: string | null | undefined): string {
     .join(" ");
 }
 
+const DRILL_NAME_OVERRIDES: Record<string, string> = {
+  review_drill: "Review Missed Questions",
+};
+
+/** API drill names can be storage keys; render a customer-facing label. */
+export function formatDrillName(name: string | null | undefined): string {
+  if (!name) return "Targeted Drill";
+  const normalized = name
+    .replace(/^\d{4,}[_-]+/g, "")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!normalized) return "Targeted Drill";
+
+  const key = normalized.toLowerCase().replace(/\s+/g, "_");
+  if (DRILL_NAME_OVERRIDES[key]) return DRILL_NAME_OVERRIDES[key];
+
+  return normalized.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
 /** A 0-1 proficiency score as a whole percent (clamped). */
 export function proficiencyPct(score: number | null | undefined): number {
   if (typeof score !== "number" || !Number.isFinite(score)) return 0;

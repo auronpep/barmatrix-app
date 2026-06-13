@@ -136,6 +136,10 @@ function readableLabel(value: string | null): string {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+function formatQueueQuestionLabel(question: SubjectQuestionRef): string {
+  return readableLabel(question.subtopic ?? question.topic ?? question.tension_point);
+}
+
 export default function ContractsDrillPage() {
   const submitAttempt = useSubmitAttempt();
   const [phase, setPhase] = useState<Phase>("idle");
@@ -289,7 +293,7 @@ export default function ContractsDrillPage() {
           </p>
           <p className="mt-2 text-sm text-zinc-600">
             {currentRef
-              ? `${currentRef.external_id ?? currentRef.question_id.slice(0, 8)} - ${readableLabel(currentRef.subtopic)}`
+              ? formatQueueQuestionLabel(currentRef)
               : "Start the drill to sync the first Contracts queue."}
           </p>
         </div>

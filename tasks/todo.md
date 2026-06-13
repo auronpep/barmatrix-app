@@ -3380,3 +3380,30 @@ Make the paid Coach UI handle the API starter-baseline fallback honestly: when t
 
 - 2026-06-13: Added `tests/coach-unavailable-reason-copy.test.ts` coverage for starter-baseline copy and the `fork_practice` response field.
 - 2026-06-13: Verification passed: `node --test tests\coach-unavailable-reason-copy.test.ts`, focused coach/dashboard tests, `node --test tests\*.test.ts` (77/77), `npm run lint`, and `npm run build`.
+
+# Old Integrated App Audit - 2026-06-13
+
+## Scope
+
+Treat `C:\BMO` / `C:\barmatrix-app` as the old integrated BarMatrix system and keep `C:\ABM` as a rebuild/reference source only. Continue launch repair from the deployed old-app transplant, preserving the new marketing pitch while restoring paid-program functionality.
+
+## Plan
+
+- [x] Re-anchor current state against `C:\BMO`, the app/API worktrees, and the live deployment checkpoint.
+- [x] Finish the remaining live paid-customer interaction proof for subject drills and boot camp day start.
+- [x] Add focused regressions for confirmed customer-facing defects instead of broad rewrites.
+- [x] Patch only the confirmed defects.
+- [x] Run focused tests, full app tests, lint, build, and browser verification.
+- [ ] Deploy and record a new rollback checkpoint only after verification passes.
+
+## Review Log
+
+- 2026-06-13: Verified `C:\BMO\app-repo` is a junction to `C:\barmatrix-app` and `C:\BMO\api-repo` is a junction to `C:\barmatrix-api`.
+- 2026-06-13: Verified active app worktree `C:\barmatrix-app\.worktrees\old-app-marketing-transplant` is clean on `codex/old-app-marketing-transplant`.
+- 2026-06-13: Verified active API worktree `C:\barmatrix-api\.worktrees\checkout-clerk-access` is clean on `codex/checkout-provisioning-hardening`.
+- 2026-06-13: Live signed-in `/drills/contracts` start action opened a real 1/6 Contracts queue with A-D answers and submit, but exposed an internal item label (`14375_nativity_star_rig - ...`) in the paid UI.
+- 2026-06-13: Live signed-in boot camp flow started `4th Amendment: Search & Seizure Boot Camp`, opened the session hub, and `Start day` reached Day 1 Question 1 of 10 with A-D answers and submit.
+- 2026-06-13: Added regressions for raw drill-name display, Contracts queue ID display, and the stale diagnostic CTA on the Coach page.
+- 2026-06-13: Patched drill display rendering to format raw API `drill_name` values, removed external IDs from the Contracts live queue card, and changed the static Coach CTA to a paid-user continuation prompt.
+- 2026-06-13: Verification passed: `node --test tests\paid-program-display-labels.test.ts tests\coach-unavailable-reason-copy.test.ts`, `node --test tests\*.test.ts` (81/81), `git diff --check` with normal Windows line-ending warnings only, `npm run lint`, and `npm run build`.
+- 2026-06-13: Local production browser smoke on `http://localhost:3026/coach` confirmed the old diagnostic CTA is absent, the new continuation CTA is present, and there is no raw error or horizontal overflow. Local `/drills/contracts` route rendered cleanly; starting the live API queue failed from localhost with `Failed to fetch`, so final Contracts queue proof must happen on `barmatrix.app` after deployment.

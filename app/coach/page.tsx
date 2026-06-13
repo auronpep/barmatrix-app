@@ -127,7 +127,7 @@ export default function CoachPage() {
         </div>
       </section>
 
-      {/* Not enrolled yet — CTA band */}
+      {/* Continue training CTA band */}
       <section
         className="section"
         style={{ background: "var(--ink)", color: "var(--bg)" }}
@@ -137,13 +137,13 @@ export default function CoachPage() {
             className="eyebrow-red"
             style={{ marginBottom: 24, justifyContent: "center" }}
           >
-            ▌ NOT MEASURED YET?
+            ▌ KEEP THE LOOP MOVING
           </div>
           <h2
             className="display display-md"
             style={{ color: "white", margin: "0 auto 20px", maxWidth: "22ch" }}
           >
-            The Coach needs a target. Start with the diagnostic.
+            Feed the Coach with more live attempts.
           </h2>
           <p
             className="body-lg"
@@ -153,8 +153,8 @@ export default function CoachPage() {
               maxWidth: "52ch",
             }}
           >
-            Work The Method and the Free MBE Trap Diagnostic so the Coach can see
-            your breaks — then it knows exactly which question to serve next.
+            Your dashboard, drills, and red-zone map keep adding signal. The
+            Coach uses that work to choose the next break worth repairing.
           </p>
           <div
             style={{
@@ -164,15 +164,15 @@ export default function CoachPage() {
               justifyContent: "center",
             }}
           >
-            <Link href="/diagnostic" className="btn btn-lg red">
-              Take the Free Diagnostic <span className="arrow">→</span>
+            <Link href="/dashboard/path" className="btn btn-lg red">
+              Open My Path <span className="arrow">→</span>
             </Link>
             <Link
-              href="/foundations"
+              href="/drills"
               className="btn btn-lg ghost"
               style={{ color: "white", borderColor: "white" }}
             >
-              Go to The Method
+              Work Drills
             </Link>
           </div>
         </div>

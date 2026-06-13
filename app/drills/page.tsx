@@ -24,6 +24,7 @@ import { useClerkAuth } from "@/lib/use-clerk-auth";
 import { trackAnalyticsEvent } from "@/lib/analytics";
 import {
   SUBJECT_QUICK_DRILLS,
+  formatDrillName,
   humanizeTag,
   proficiencyBand,
   proficiencyPct,
@@ -351,7 +352,7 @@ function PrescribedPanel({
                   {d.red_zone_dimension ? humanizeTag(d.red_zone_dimension) : "In progress"}
                 </p>
                 <h3 className="mt-2 font-serif text-xl font-semibold leading-tight text-zinc-950">
-                  {d.drill_name}
+                  {formatDrillName(d.drill_name)}
                 </h3>
                 <p className="mt-2 text-sm text-zinc-600">{d.question_count} questions</p>
                 <Link href={`/drills/${d.drill_id}`} className="btn btn-sm red mt-4">

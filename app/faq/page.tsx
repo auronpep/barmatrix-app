@@ -48,7 +48,6 @@ export default function FaqPage() {
         <div className="container">
           <div className="hero-meta">
             <span className="stamp">FAQ · LOCKED COPY</span>
-            <span className="stamp">SRC-0029</span>
             <span className="stamp">{FAQ.length} ANSWERS</span>
           </div>
           <div className="eyebrow-red" style={{ marginBottom: 24 }}>

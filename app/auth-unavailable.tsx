@@ -8,11 +8,14 @@ interface AuthUnavailableProps {
 
 export function AuthUnavailable({ mode, after }: AuthUnavailableProps) {
   const returnPath = resolveAuthReturnPath(after);
-  const title = mode === "sign-up" ? "Account creation is coming online." : "Sign-in is coming online.";
+  const title =
+    mode === "sign-up"
+      ? "Create your BarMatrix account."
+      : "Sign in to BarMatrix.";
   const body =
     mode === "sign-up"
-      ? "BarMatrix account creation is being connected for the cohort launch. If you already enrolled, check your email for access details."
-      : "BarMatrix sign-in is being connected for the cohort launch. If you already enrolled, check your email for access details.";
+      ? "Use the email from checkout. If your access email includes an account link, open that link first so enrollment connects automatically."
+      : "Use the email from checkout to reach your dashboard, Red-Zone Map, drills, and account status.";
 
   return (
     <section className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
@@ -26,7 +29,7 @@ export function AuthUnavailable({ mode, after }: AuthUnavailableProps) {
         <p className="mt-4 text-base leading-7 text-zinc-700">{body}</p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href={returnPath} className="btn red">
-            Continue after access
+            Continue to dashboard
           </Link>
           <Link href="/account" className="btn ghost">
             Account status

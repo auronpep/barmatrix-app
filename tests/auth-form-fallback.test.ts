@@ -57,7 +57,10 @@ describe("auth form fallback", () => {
 
     assert.match(unavailable, /const returnPath = resolveAuthReturnPath\(after\);/);
     assert.match(unavailable, /href=\{returnPath\}/);
-    assert.match(unavailable, /Continue after access/);
+    assert.match(unavailable, /Use the email from checkout/);
+    assert.match(unavailable, /Continue to dashboard/);
+    assert.doesNotMatch(unavailable, /coming online/);
+    assert.doesNotMatch(unavailable, /being connected for the cohort launch/);
     assert.match(signIn, /<AuthUnavailable mode="sign-in" after=\{after\} \/>/);
     assert.match(signUp, /<AuthUnavailable mode="sign-up" after=\{after\} \/>/);
   });

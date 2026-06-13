@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { Suspense } from "react";
 import { DISCLAIMER } from "@/lib/copy";
 import { api, type CheckoutStatusResponse } from "@/lib/api-client";
+import { CheckoutSuccessHero } from "./checkout-success-hero";
 import { PurchaseSuccessTracker } from "./purchase-success-tracker";
 
 export const metadata = {
@@ -36,7 +36,6 @@ export default async function CheckoutSuccessPage({
   const sp = await searchParams;
   const checkoutSessionId = sp.checkout_session_id ?? sp.session_id ?? null;
   const activationState = await getCheckoutActivationState(checkoutSessionId);
-  const copy = getActivationCopy(activationState.kind);
   const accountHref = buildAccountHref(
     checkoutSessionId,
     activationState.kind === "confirmed",
@@ -50,46 +49,10 @@ export default async function CheckoutSuccessPage({
         </Suspense>
       )}
 
-      <section className="hero">
-        <div className="container">
-          <div className="hero-meta">
-            <span className="stamp">{copy.stamp}</span>
-            <span className="stamp">BARMATRIX FLAGSHIP</span>
-          </div>
-          <div className="eyebrow-red" style={{ marginBottom: 24 }}>
-            ▌ {copy.eyebrow}
-          </div>
-          <h1
-            className="display display-lg"
-            style={{ margin: "0 0 24px", maxWidth: "20ch" }}
-          >
-            {copy.headline}
-          </h1>
-          <p className="body-lg" style={{ marginBottom: 0 }}>
-            {copy.body}
-          </p>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 32 }}>
-            {activationState.kind === "confirmed" && (
-              <>
-                <Link href="/foundations" className="btn btn-lg red">
-                  Start with The Method <span className="arrow">→</span>
-                </Link>
-                <Link href="/dashboard/path" className="btn btn-lg red">
-                  Open Lead Me <span className="arrow">→</span>
-                </Link>
-              </>
-            )}
-            <Link href={accountHref} className="btn btn-lg red">
-              Open Account <span className="arrow">→</span>
-            </Link>
-            {activationState.kind !== "confirmed" && (
-              <Link href="/checkout" className="btn btn-lg ghost">
-                Back to Checkout <span className="arrow">→</span>
-              </Link>
-            )}
-          </div>
-        </div>
-      </section>
+      <CheckoutSuccessHero
+        activationKind={activationState.kind}
+        accountHref={accountHref}
+      />
 
       <section className="section">
         <div className="container">
@@ -125,36 +88,6 @@ async function getCheckoutActivationState(
   } catch {
     return { kind: "pending", checkoutSessionId, status: null };
   }
-}
-
-function getActivationCopy(kind: CheckoutActivationState["kind"]) {
-  if (kind === "confirmed") {
-    return {
-      stamp: "CHECKOUT COMPLETE",
-      eyebrow: "ENROLLMENT CONFIRMED",
-      headline: "Your Flagship access is being activated.",
-      body:
-        "Stripe has returned checkout completion to BarMatrix. Start with The Method - the 14-lesson core the whole platform runs on - then open Lead Me to begin the repair loop.",
-    };
-  }
-
-  if (kind === "pending") {
-    return {
-      stamp: "CHECKOUT RETURN",
-      eyebrow: "Activation check pending",
-      headline: "We are checking your Flagship activation.",
-      body:
-        "Stripe returned a checkout session, but BarMatrix has not confirmed local access for that session yet. Open your account to check or recover activation.",
-    };
-  }
-
-  return {
-    stamp: "CHECKOUT RETURN",
-    eyebrow: "Checkout verification needed",
-    headline: "Open your account to confirm access.",
-    body:
-      "This return URL is missing a Stripe checkout session ID, so BarMatrix cannot treat it as a completed purchase. If you just enrolled, open your account or contact support with your Stripe receipt.",
-  };
 }
 
 function buildAccountHref(

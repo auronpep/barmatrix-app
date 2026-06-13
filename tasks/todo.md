@@ -25,10 +25,14 @@
 - `npm run build` passed.
 - `git diff --check` passed with only the existing Windows LF-to-CRLF warning.
 - Local production browser smoke on `http://127.0.0.1:3027/checkout?coupon=JESUSLOVESYOU&source=codex_coupon_context` confirmed the coupon panel rendered, `JESUSLOVESYOU` was visible, the pay-in-full button stayed enabled, the payment-plan button was disabled with `Payment plan unavailable with coupon`, one `<main>` rendered, no horizontal overflow appeared, and no console errors were captured.
+- Production deploy `dpl_B5oVpDemJwE4Pze2n8RgG1eKGByt` is `READY` and aliased to `https://barmatrix.app` and `https://www.barmatrix.app`.
+- Live HTTP check on `https://barmatrix.app/checkout?coupon=JESUSLOVESYOU&source=codex_coupon_context` returned 200.
+- Live browser smoke confirmed the coupon panel rendered, `JESUSLOVESYOU` was visible, the pay-in-full button stayed enabled, the payment-plan button was disabled with `Payment plan unavailable with coupon`, one `<main>` rendered, no horizontal overflow appeared, and no console errors were captured.
+- Production source tag pushed: `live-coupon-checkout-context-2026-06-13-dpl-B5oVpDem`.
 
 ## Review
 
-- Status: LOCAL VERIFIED, READY FOR APP DEPLOY.
+- Status: DEPLOYED AND LIVE-VERIFIED.
 - This pairs with the already-deployed API coupon policy: Stripe promotion codes are available only on pay-in-full checkout, while two-pay checkout still requires first and last name but no longer offers a coupon field.
 
 # Old Integrated App Marketing Transplant - 2026-06-13

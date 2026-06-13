@@ -25,6 +25,10 @@ describe("diagnostic results enrolled CTA", () => {
     assert.match(source, /buildDiagnosticRecommendation/);
     assert.match(source, /Your top leak is \{rec\.topLeak\} - start here\./);
     assert.match(source, /results\.recommendation\?\.next_step/);
+    assert.match(source, /apiRecommendation\?\.level\?\.level/);
+    assert.match(source, /apiRecommendation\?\.level\?\.label/);
+    assert.match(source, /apiRecommendation\?\.level\?\.description/);
+    assert.match(source, /nextStep\.primary_label/);
     assert.match(source, /redZoneDetailHref\(results\) \?\? "\/red-zones"/);
     assert.doesNotMatch(source, /Open dashboard/);
     assert.doesNotMatch(source, /How it works/);

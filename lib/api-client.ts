@@ -215,12 +215,21 @@ export interface DiagnosticTrapPattern {
 
 export interface DiagnosticRecommendationNextStep {
   label?: string;
+  primary_label?: string;
+  copy?: string;
   href?: string;
   slug?: string;
 }
 
-export interface DiagnosticRecommendation {
+export interface DiagnosticRecommendationLevel {
   level?: number | string;
+  label?: string;
+  description?: string;
+  route?: string[];
+}
+
+export interface DiagnosticRecommendation {
+  level?: number | string | DiagnosticRecommendationLevel;
   placement_level?: number | string;
   label?: string;
   level_label?: string;

@@ -610,17 +610,27 @@ function buildDiagnosticRecommendation(
   const explicitStep = resolveExplicitStep(results, methodSlug);
   const step = explicitStep ?? recommendedStepForLevel(level, methodSlug, results);
   const apiRecommendation = results.recommendation;
+  const levelLabel =
+    typeof apiRecommendation?.level === "object"
+      ? apiRecommendation?.level?.label
+      : undefined;
+  const levelDescription =
+    typeof apiRecommendation?.level === "object"
+      ? apiRecommendation?.level?.description
+      : undefined;
   return {
     href: step.href,
     ctaLabel: step.label,
     levelBadge: `L${level}`,
     levelLabel:
+      levelLabel ??
       apiRecommendation?.label ??
       apiRecommendation?.level_label ??
       apiRecommendation?.placement_label ??
       results.placement_label ??
       fallback.label,
     levelDescription:
+      levelDescription ??
       apiRecommendation?.description ??
       apiRecommendation?.level_description ??
       apiRecommendation?.placement_description ??
@@ -632,9 +642,19 @@ function buildDiagnosticRecommendation(
 }
 
 function resolveRecommendationLevel(results: DiagnosticResultsResponse): number {
+  const apiRecommendation = results.recommendation;
+  const objectLevel =
+    typeof apiRecommendation?.level === "object"
+      ? apiRecommendation?.level?.level
+      : null;
+  const primitiveLevel =
+    typeof apiRecommendation?.level === "object"
+      ? undefined
+      : apiRecommendation?.level;
   const fromApi = normalizeLevel(
-    results.recommendation?.level ??
-      results.recommendation?.placement_level ??
+    objectLevel ??
+      primitiveLevel ??
+      apiRecommendation?.placement_level ??
       results.level ??
       results.placement_level,
   );
@@ -666,7 +686,7 @@ function resolveExplicitStep(
   if (!href) return null;
   return {
     href,
-    label: nextStep.label ?? "Start here",
+    label: nextStep.label ?? nextStep.primary_label ?? "Start here",
     focus: routeFocusFromHref(href, methodSlug),
   };
 }

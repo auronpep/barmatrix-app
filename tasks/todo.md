@@ -1,5 +1,30 @@
 # BarMatrix Full Bug Audit
 
+# Diagnostic Recommendation Shape Repair - 2026-06-13
+
+## Scope
+
+- Align the diagnostic results recommendation CTA with the live API response shape.
+- Preserve the existing internal route normalization and enrolled/not-enrolled decision panels.
+
+## Plan
+
+- [x] Add failing regression coverage for object-shaped recommendation levels and `next_step.primary_label`.
+- [x] Extend the typed API contract for the live diagnostic recommendation shape.
+- [x] Normalize recommendation level/copy/CTA labels from both old and current API shapes.
+- [ ] Run focused test, full tests, lint, build, deploy, live-verify, and checkpoint.
+
+## Verification
+
+- Red test confirmed before implementation: `node --test tests\diagnostic-results-enrolled-cta.test.ts` failed because object-shaped `recommendation.level` and `next_step.primary_label` were not handled.
+- Focused test passed after implementation: `node --test tests\diagnostic-results-enrolled-cta.test.ts`.
+- `npm run build` initially failed because the new union type could still pass an object into `normalizeLevel`; fixed by splitting object and primitive level branches.
+- Fresh focused test passed after the type fix: `node --test tests\diagnostic-results-enrolled-cta.test.ts`.
+- Fresh `npm run build` passed and generated `/diagnostic/[session]/results`.
+- Fresh full suite passed: `node --test tests\*.test.ts` passed 86/86.
+- Fresh `npm run lint` passed.
+- Fresh `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+
 # Diagnostic Results Access Confirmation Guard - 2026-06-13
 
 ## Scope

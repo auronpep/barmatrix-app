@@ -12,6 +12,10 @@ function protectedRouteBlock(proxy: string): string {
   return match.groups.routes;
 }
 
+function literalPattern(value: string): RegExp {
+  return new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+}
+
 describe("paid program proxy gates", () => {
   it("protects logged-in program engines that are linked from the paid dashboard", () => {
     const routes = protectedRouteBlock(readProjectFile("proxy.ts"));
@@ -21,13 +25,14 @@ describe("paid program proxy gates", () => {
       "/question-history(.*)",
       "/practice(.*)",
       "/boot-camps(.*)",
+      "/certification/(.*)",
       "/timed-sets(.*)",
       "/flashcards(.*)",
       "/study(.*)",
     ];
 
     for (const route of protectedRoutes) {
-      assert.match(routes, new RegExp(JSON.stringify(route)));
+      assert.match(routes, literalPattern(JSON.stringify(route)));
     }
   });
 
@@ -37,13 +42,14 @@ describe("paid program proxy gates", () => {
       "/pricing",
       "/checkout",
       "/diagnostic",
+      "/certification",
       "/red-zones",
       "/support",
       "/mobile-apps",
     ];
 
     for (const route of publicRoutes) {
-      assert.doesNotMatch(routes, new RegExp(JSON.stringify(`${route}(.*)`)));
+      assert.doesNotMatch(routes, literalPattern(JSON.stringify(`${route}(.*)`)));
     }
   });
 });

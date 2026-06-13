@@ -459,7 +459,7 @@ function LiveTargets({ dash }: { dash: ReturnType<typeof useDashboard> }) {
                 <span className="min-w-0 break-words text-sm font-medium text-zinc-900">
                   {formatDrillName(d.drill_name)}
                 </span>
-                <span className="shrink-0 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
+                <span className="shrink-0 font-mono text-[11px] text-zinc-500">
                   {formatSprintDrillStatus(d.status)}
                 </span>
               </li>

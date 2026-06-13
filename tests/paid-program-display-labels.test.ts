@@ -35,6 +35,7 @@ describe("paid program display labels", () => {
     assert.match(finalSprint, /import \{ formatDrillName \} from "@\/lib\/drills";/);
     assert.match(finalSprint, /formatDrillName\(d\.drill_name\)/);
     assert.match(finalSprint, /formatSprintDrillStatus\(d\.status\)/);
+    assert.doesNotMatch(finalSprint, /uppercase tracking-wider text-zinc-500">\s*\{formatSprintDrillStatus\(d\.status\)\}/);
     assert.doesNotMatch(finalSprint, /\{d\.drill_name\}/);
     assert.doesNotMatch(finalSprint, /\{d\.status\}/);
   });

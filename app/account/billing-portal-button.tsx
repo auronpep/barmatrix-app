@@ -22,14 +22,13 @@ export function BillingPortalButton({
   const billingPortal = dash.data?.billing_portal;
   const needsDashboardBillingCheck =
     isLoaded && isSignedIn && dash.loading;
-  const canAttemptStripeCustomerRecovery =
-    dash.data?.enrolled === true &&
-    billingPortal?.unavailable_reason === "stripe_customer_missing";
+  const canAttemptStripePortal =
+    dash.data?.enrolled === true;
   const portalKnownUnavailable =
     isLoaded &&
     isSignedIn &&
     billingPortal?.portal_available === false &&
-    !canAttemptStripeCustomerRecovery;
+    !canAttemptStripePortal;
 
   const openPortal = async () => {
     if (!isLoaded || phase === "redirecting") return;

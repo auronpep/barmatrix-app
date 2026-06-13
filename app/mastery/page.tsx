@@ -137,7 +137,7 @@ export default function MasteryPage() {
                 className="eyebrow-red"
                 style={{ marginBottom: 14 }}
               >
-                ▸ {coveragePending ? "TAGGED COVERAGE PENDING" : "NOT YET MEASURED"}
+                ▸ {coveragePending ? "Tagged coverage pending" : "Not yet measured"}
               </div>
               <p
                 className="serif"
@@ -163,7 +163,7 @@ export default function MasteryPage() {
               >
                 {coveragePending
                   ? "Your attempts are recorded, but C3-tagged question coverage is still being populated. Work practice questions or the diagnostic while the bank is being tagged."
-                  : `Finish The Method first, then work questions or the diagnostic — your mastery lights up after ${data.readiness.mold_floor} exposures per skill.`}
+                  : `Start The Method first, then work questions or the diagnostic — your mastery lights up after ${data.readiness.mold_floor} exposures per skill.`}
               </p>
               <Link
                 href={coveragePending ? "/practice" : "/foundations"}

@@ -659,6 +659,70 @@ export interface DashboardData {
   assigned_drills: DashboardAssignedDrill[];
 }
 
+// --- Command Deck (preview dashboard; GET /api/me/command-deck) ---
+
+export interface CommandDeckStudent {
+  first_name: string;
+  days_to_exam: number | null;
+  streak_days: number;
+  session_done_min: number;
+  session_goal_min: number;
+}
+
+export interface CommandDeckSubjectMastery {
+  subject: string;
+  pct: number;
+  delta: number;
+  attempted: number;
+}
+
+export interface CommandDeckRedZone {
+  rank: number;
+  name: string;
+  subject: string;
+  dimension: string;
+  tag: string;
+  miss_count: number;
+  total_attempts: number;
+  drills_total: number;
+  drills_complete: number;
+  trend: "rising" | "falling" | "flat";
+  last_missed: string;
+  active: boolean;
+}
+
+export interface CommandDeckTrendPoint {
+  day: string;
+  pct: number;
+  attempts: number;
+}
+
+export interface CommandDeckQueueItem {
+  drill_slug: string;
+  title: string;
+  subject: string;
+  reason: string;
+  question_count: number;
+  est_min: number;
+}
+
+export interface CommandDeckTensionMatrix {
+  cols: string[];
+  rows: Array<{ name: string; heat: number[]; attempts: number[] }>;
+}
+
+export interface CommandDeckData {
+  enrolled: boolean;
+  status: string | null;
+  student: CommandDeckStudent;
+  subject_mastery: CommandDeckSubjectMastery[];
+  red_zones: CommandDeckRedZone[];
+  mastery_trend: CommandDeckTrendPoint[];
+  recent_attempts: DashboardRecentAttempt[];
+  next_up: CommandDeckQueueItem | null;
+  tension_matrix: CommandDeckTensionMatrix | null;
+}
+
 // --- Red Zone Library (Clerk-gated, server-derives the student) ---
 
 export interface RedZoneLibraryZone {
@@ -1831,6 +1895,9 @@ export const api = {
 
   getMyDashboard: (token: string) =>
     authedRequest<DashboardData>("/api/me/dashboard", token),
+
+  getMyCommandDeck: (token: string) =>
+    authedRequest<CommandDeckData>("/api/me/command-deck", token),
 
   getMyRedZones: (token: string) =>
     authedRequest<RedZoneLibrary>("/api/me/red-zones", token),

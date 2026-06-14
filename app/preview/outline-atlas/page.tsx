@@ -20,9 +20,9 @@ export default function OutlineAtlasPreviewPage() {
   return (
     <main className="py-8">
       <div className="mx-auto max-w-[1100px] px-4 sm:px-6">
-        <SectionLabel>Preview · the outline atlas</SectionLabel>
+        <SectionLabel>Preview · BarMatrix Blueprint</SectionLabel>
         <h1 className="mt-3 font-serif text-4xl font-semibold leading-tight text-zinc-950">
-          The Outline Atlas
+          BarMatrix Blueprint
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-600">
           The canonical MBE outline as a study reviewer — browse all{" "}

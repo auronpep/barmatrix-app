@@ -233,9 +233,9 @@ export function OutlineAtlas({ data: O, onStartDrill }: OutlineAtlasProps) {
         <div className="flex items-baseline gap-3 border-zinc-700 pr-6 md:border-r">
           <span className="font-serif text-3xl font-bold leading-none tracking-tight">MBE</span>
           <span className="font-mono text-[10px] uppercase leading-tight tracking-[0.14em] text-zinc-400">
-            Master
+            Bar<span className="text-red-500">Matrix</span>
             <br />
-            Outline
+            Blueprint
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">

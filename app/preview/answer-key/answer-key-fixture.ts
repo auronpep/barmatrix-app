@@ -20,6 +20,7 @@ export const DAMASCUS_ALLEY: DebriefData = {
   dominantTrap: "A",
   residual: "D",
   callVerb: "terminate",
+  requestedRelief: "terminate the easement",
   call: "The most likely result in this action is that the court will hold for:",
   callResolution:
     "Remedy-call focus controls. Termination is the wrong remedy for ordinary overuse — so the dominant estate holder, Barnabas, wins.",

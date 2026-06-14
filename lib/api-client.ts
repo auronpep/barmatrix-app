@@ -711,15 +711,23 @@ export interface CommandDeckTensionMatrix {
   rows: Array<{ name: string; heat: number[]; attempts: number[] }>;
 }
 
+export interface CommandDeckCoverage {
+  covered: number;
+  bank_total: number;
+  pct: number;
+}
+
 export interface CommandDeckData {
   enrolled: boolean;
   status: string | null;
   student: CommandDeckStudent;
   subject_mastery: CommandDeckSubjectMastery[];
+  coverage: CommandDeckCoverage;
   red_zones: CommandDeckRedZone[];
   mastery_trend: CommandDeckTrendPoint[];
   recent_attempts: DashboardRecentAttempt[];
   next_up: CommandDeckQueueItem | null;
+  queue: CommandDeckQueueItem[];
   tension_matrix: CommandDeckTensionMatrix | null;
 }
 

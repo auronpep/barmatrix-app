@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/account", "/checkout/success", "/diagnostic/*"],
+      disallow: ["/account", "/checkout/success", "/diagnostic/*", "/preview/operator"],
     },
     sitemap: "https://barmatrix.app/sitemap.xml",
     host: "https://barmatrix.app",

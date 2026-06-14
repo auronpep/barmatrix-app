@@ -12,6 +12,7 @@ import { TrendSpark } from "@/components/preview-dashboard/trend-spark";
 import { TensionMatrix } from "@/components/preview-dashboard/tension-matrix";
 import { RecentFeed } from "@/components/preview-dashboard/recent-feed";
 import { TodayQueue } from "@/components/preview-dashboard/today-queue";
+import { TrapsToReread } from "@/components/preview-dashboard/traps-to-reread";
 
 // Small mono "Open full →" link used in panel action slots.
 function PanelLink({ href, label }: { href: string; label: string }) {
@@ -129,6 +130,17 @@ export function DashboardV2Body({
           flush
         >
           <TrendSpark points={data.mastery_trend} />
+        </Panel>
+      </div>
+
+      {/* RE-READ — recent wrong-answer traps (from the original dashboard) */}
+      <div className="mb-6">
+        <Panel
+          title="▌ Traps to reread before the next set"
+          actions={<PanelLink href="/red-zones" label="Open Red-Zone Map" />}
+          flush
+        >
+          <TrapsToReread items={data.recent_attempts} />
         </Panel>
       </div>
 

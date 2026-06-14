@@ -47,8 +47,15 @@ export default function PreviewDashboardV3Page() {
         <DashboardV2Body
           data={data}
           examDateLabel={examDateLabel(data.student.days_to_exam)}
-          onStartDrill={(slug) =>
-            router.push(slug ? `/drills/${slug}` : "/drills")
+          onStartDrill={() =>
+            // The command-deck queue carries an *assignment* drill_slug, not a
+            // started-drill UUID — and /drills/[drill_id] only loads a started
+            // drill by UUID. Routing to /drills lands on the "Prescribed for
+            // you" tab, which lists these same assigned drills and starts each
+            // through the real POST /api/drills/start flow (kind + payload →
+            // session UUID → runner). Wire one-click start by enriching the
+            // command-deck queue with red_zone_dimension+tag later.
+            router.push("/drills")
           }
           onOpenRoute={(route) => router.push(route)}
         />

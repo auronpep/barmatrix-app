@@ -97,6 +97,8 @@ export interface DebriefData {
   dominantTrap: string;
   residual: string;
   callVerb: string;
+  /** The relief sought, as a clean verb phrase for inline use (e.g. "terminate the easement"). */
+  requestedRelief: string;
   call: string;
   callResolution: string;
   keyLegalQuestion: string;

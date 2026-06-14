@@ -227,8 +227,8 @@ function ForkSection({ data, yourPick }: { data: DebriefData; yourPick: string }
       <div className="text-center">
         <Eyebrow>▌ The call asks one thing</Eyebrow>
         <p className="mx-auto mt-2 max-w-xl font-serif text-xl italic text-zinc-900">
-          {data.call}{" "}
-          <span className="font-bold not-italic text-red-700">{data.callVerb} the easement.</span>
+          Who wins the action to{" "}
+          <span className="font-bold not-italic text-red-700">{data.requestedRelief}</span>?
         </p>
       </div>
 
@@ -366,7 +366,9 @@ function SolveSection({ data }: { data: DebriefData }) {
         <div className="border border-zinc-950 bg-[rgba(194,65,12,0.04)] px-5 py-4">
           <Eyebrow>▌ The call fixes the remedy</Eyebrow>
           <p className="mt-2 font-serif text-lg italic text-zinc-900">
-            {data.call} <span className="font-semibold not-italic text-red-700">{data.callVerb} the easement.</span>
+            The call asks for one remedy only:{" "}
+            <span className="font-semibold not-italic text-red-700">{data.requestedRelief}</span> — not damages,
+            not an injunction.
           </p>
           <p className="mt-2 font-serif text-[14.5px] leading-relaxed text-zinc-700">{data.callResolution}</p>
         </div>
@@ -621,7 +623,7 @@ function RepairSection({
         <button
           type="button"
           onClick={onOpenRedZoneMap}
-          className="ml-auto font-mono text-[11px] uppercase tracking-wide text-red-700 hover:underline"
+          className="ml-auto font-mono text-[11px] uppercase tracking-wide !text-red-700 hover:underline"
         >
           Open Red-Zone Map ↗
         </button>
@@ -694,7 +696,7 @@ function DrillBar({
         <button
           type="button"
           onClick={onContinue}
-          className="!border-0 bg-red-700 px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-wide text-white hover:bg-red-800"
+          className="!border-0 !bg-red-700 px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-wide !text-white hover:!bg-red-800"
         >
           Continue drill →
         </button>

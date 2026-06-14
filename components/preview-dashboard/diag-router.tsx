@@ -61,6 +61,7 @@ export function DiagRouter({ data }: { data: CommandDeckData }) {
         <Link
           key={l.href}
           href={l.href}
+          prefetch={false}
           className="border-b border-r border-[var(--rule-soft)] px-5 py-[18px] transition-colors last:border-r-0 hover:bg-black/[0.025] sm:[&:nth-child(2)]:border-r-0 lg:border-b-0 lg:[&:nth-child(2)]:border-r"
         >
           <div className="mb-3 flex items-center justify-between">

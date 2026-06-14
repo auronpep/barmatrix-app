@@ -13,6 +13,7 @@ import { TensionMatrix } from "@/components/preview-dashboard/tension-matrix";
 import { RecentFeed } from "@/components/preview-dashboard/recent-feed";
 import { TodayQueue } from "@/components/preview-dashboard/today-queue";
 import { TrapsToReread } from "@/components/preview-dashboard/traps-to-reread";
+import { DailyBread } from "@/components/preview-dashboard/daily-bread";
 
 // Small mono "Open full →" link used in panel action slots.
 function PanelLink({ href, label }: { href: string; label: string }) {
@@ -72,6 +73,9 @@ export function DashboardV2Body({
           below and your briefing fills in.
         </div>
       )}
+
+      {/* SPIRIT — daily bread (state-aware scripture, integrated) */}
+      <DailyBread data={data} />
 
       {/* ACT — the move band */}
       {queue.length > 0 ? (

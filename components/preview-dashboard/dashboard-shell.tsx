@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { CommandDeckData, CommandDeckStudent } from "@/lib/api-client";
+import { DashboardMobileNav } from "@/components/preview-dashboard/dashboard-mobile-nav";
 
 interface NavLink {
   href: string;
@@ -68,6 +69,14 @@ export function DashboardShell({
         { href: "/pattern-board", icon: "▤", label: "Pattern Board" },
         { href: "/misconceptions", icon: "✕", label: "Misconceptions" },
         { href: "/question-history", icon: "≡", label: "Question History" },
+      ],
+    },
+    {
+      section: "THE WALK",
+      links: [
+        { href: "/walk", icon: "✝", label: "The Walk" },
+        { href: "/walk#daily-bread", icon: "✦", label: "Daily Bread" },
+        { href: "/walk#prayer", icon: "✎", label: "Prayer Journal" },
       ],
     },
     {
@@ -150,12 +159,15 @@ export function DashboardShell({
       {/* ── Main column ───────────────────────────── */}
       <div className="flex min-w-0 flex-col">
         <header className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-[var(--rule)] bg-[var(--paper,#fffdf7)] px-6 py-4">
-          <div>
+          <div className="flex items-center gap-3">
+            <DashboardMobileNav nav={nav} user={user} />
+            <div>
             <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
               BARMATRIX <span className="text-zinc-300">/</span> {crumb}
             </div>
             <div className="mt-0.5 font-serif text-2xl font-bold tracking-tight text-zinc-950">
               {title}
+            </div>
             </div>
           </div>
           <div className="flex items-center gap-3">

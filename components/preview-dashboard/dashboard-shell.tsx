@@ -140,7 +140,11 @@ export function DashboardShell({
           ))}
         </nav>
 
-        <div className="flex items-center gap-3 border-t border-white/10 px-6 py-4">
+        <Link
+          href="/account"
+          aria-label="Account & billing"
+          className="flex items-center gap-3 border-t border-white/10 px-6 py-4 transition-colors hover:bg-white/[0.05]"
+        >
           <span className="grid h-9 w-9 place-items-center bg-white/10 font-mono text-xs font-bold text-white">
             {user.initials}
           </span>
@@ -152,8 +156,10 @@ export function DashboardShell({
               {user.sublabel}
             </span>
           </span>
-          <span className="font-mono text-zinc-600">▸</span>
-        </div>
+          <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-zinc-500">
+            Account
+          </span>
+        </Link>
       </aside>
 
       {/* ── Main column ───────────────────────────── */}

@@ -7,6 +7,7 @@ import "./globals.css";
 import { AnalyticsEvents } from "./analytics-events";
 import { NavAuth } from "./nav-auth";
 import { MobileNavToggle } from "@/components/mobile-nav";
+import { ChromeGate } from "@/components/chrome-gate";
 import { BRAND, DISCLAIMER, DOMAIN } from "@/lib/copy";
 
 const SITE_DESCRIPTION =
@@ -88,6 +89,7 @@ export default function RootLayout({
         className={`${newsreader.variable} ${plexSans.variable} ${plexMono.variable}`}
       >
         <body>
+          <ChromeGate>
           <div className="tape-strip" aria-hidden="true" />
           <nav className="nav">
             <div className="nav-inner">
@@ -123,6 +125,7 @@ export default function RootLayout({
               </div>
             </div>
           </nav>
+          </ChromeGate>
 
           <Suspense fallback={null}>
             <AnalyticsEvents />
@@ -130,6 +133,7 @@ export default function RootLayout({
 
           <main>{children}</main>
 
+          <ChromeGate>
           <footer className="footer">
             <div className="container">
               <div className="footer-grid">
@@ -237,6 +241,7 @@ export default function RootLayout({
               <p className="disclaimer">{DISCLAIMER}</p>
             </div>
           </footer>
+          </ChromeGate>
         </body>
       </html>
   );

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 const stats = [
-  { num: "2,400", red: ".", lbl: "Questions · fully tagged" },
+  { num: "Every", red: ".", lbl: "Question · forensically tagged" },
   { num: "156", lbl: "Tension points mapped" },
   { num: "07", lbl: "MBE subjects covered" },
 ];

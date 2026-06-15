@@ -284,7 +284,10 @@ export default function PlacementSessionPage({
           question={question}
           result={attemptResult}
           isLast={isLast}
-          isLeadMeTask={Boolean(stepId)}
+          // Only finish the Lead Me day-plan step at the END of the placement
+          // (after all questions are answered). Otherwise the first result
+          // overlay would complete the step and skip the rest of the sequence.
+          isLeadMeTask={Boolean(stepId) && isLast}
           savingLeadMeTask={savingStep}
           onNext={next}
           onFinishLeadMeTask={finishLeadMeTask}

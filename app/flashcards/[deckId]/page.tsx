@@ -170,7 +170,7 @@ export default function FlashcardDeckPage() {
         >
           ← Back
         </button>
-        {idx < total - 1 ? (
+        {!singleCardMode && idx < total - 1 ? (
           <button
             type="button"
             onClick={() => go(1)}

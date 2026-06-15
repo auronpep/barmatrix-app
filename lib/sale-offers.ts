@@ -178,5 +178,6 @@ function firstQueryValue(value: string | string[] | undefined): string | null {
 function normalizeCouponCode(raw: string | null | undefined): string | null {
   if (!raw) return null;
   const code = raw.trim().toUpperCase();
-  return /^[A-Z]{2,32}$/.test(code) ? code : null;
+  // Registered campaign codes can contain digits (e.g. HALFOFF499).
+  return /^[A-Z0-9]{2,32}$/.test(code) ? code : null;
 }

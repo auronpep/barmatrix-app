@@ -32,18 +32,22 @@ export function EnrollmentRecoveryPanel({
 
     checkStatus();
     // Poll every 5 seconds for the first 30 seconds, then every 30 seconds
-    const interval = setInterval(checkStatus, 5000);
-    const longInterval = setTimeout(
+    const interval = window.setInterval(checkStatus, 5000);
+    let slowInterval: number | undefined;
+    const longInterval = window.setTimeout(
       () => {
-        clearInterval(interval);
-        setInterval(checkStatus, 30000);
+        window.clearInterval(interval);
+        slowInterval = window.setInterval(checkStatus, 30000);
       },
       30000,
     );
 
     return () => {
-      clearInterval(interval);
-      clearTimeout(longInterval);
+      window.clearInterval(interval);
+      window.clearTimeout(longInterval);
+      if (slowInterval !== undefined) {
+        window.clearInterval(slowInterval);
+      }
     };
   }, [checkoutSessionId, accountAlreadyActive, accountStatusPending]);
 
@@ -96,7 +100,7 @@ export function EnrollmentRecoveryPanel({
       <button
         onClick={handleRecovery}
         disabled={recovering}
-        className="mt-6 inline-block rounded-md bg-amber-700 px-6 py-3 text-base font-medium text-white hover:bg-amber-800 disabled:opacity-50"
+        className="btn btn-lg red mt-6"
       >
         {recovering ? "Recovering..." : "Recover enrollment"}
       </button>

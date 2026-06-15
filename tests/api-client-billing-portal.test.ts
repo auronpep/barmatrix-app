@@ -207,4 +207,14 @@ describe("BillingPortalButton unavailable-state copy", () => {
     assert.match(button, /dash\.data\?\.enrolled === true/);
     assert.match(button, /&&\s*!canAttemptStripePortal/);
   });
+
+  it("uses the global button class for red billing actions", () => {
+    const button = readFileSync(
+      new URL("../app/account/billing-portal-button.tsx", import.meta.url),
+      "utf8",
+    );
+
+    assert.match(button, /className="btn btn-lg red"/);
+    assert.doesNotMatch(button, /className="[^"]*bg-red-700[^"]*"/);
+  });
 });

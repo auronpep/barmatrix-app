@@ -11,7 +11,7 @@ describe("account entitlement state", () => {
     const page = readProjectFile("app/account/page.tsx");
     const status = readProjectFile("app/account/account-status.tsx");
 
-    assert.match(page, /<AccountAccessPanel \/>/);
+    assert.match(page, /<AccountAccessPanel checkoutSessionId=\{checkoutSessionId\} \/>/);
     assert.match(page, /<AccountEntitlementPanel/);
     assert.match(status, /useDashboard\(\)/);
     assert.match(status, /dash\.data\?\.enrolled/);
@@ -41,5 +41,24 @@ describe("account entitlement state", () => {
     assert.match(copy, /\/sign-in\?after=account/);
     assert.doesNotMatch(copy, /coming online/);
     assert.doesNotMatch(copy, /check your email for your access details/);
+  });
+
+  it("does not treat a bare checkout session id as confirmed access", () => {
+    const status = readProjectFile("app/account/account-status.tsx");
+
+    assert.doesNotMatch(status, /confirmedByUrl/);
+    assert.match(status, /const confirmedReturn = isWelcome && hasCheckoutSession/);
+    assert.match(status, /activation check pending/);
+    assert.match(status, /Checkout return/);
+    assert.match(status, /Check or recover your activation/);
+  });
+
+  it("cleans up both checkout recovery polling intervals", () => {
+    const recovery = readProjectFile("app/account/enrollment-recovery.tsx");
+
+    assert.match(recovery, /let slowInterval: number \| undefined/);
+    assert.match(recovery, /slowInterval = window\.setInterval\(checkStatus, 30000\)/);
+    assert.match(recovery, /window\.clearInterval\(slowInterval\)/);
+    assert.match(recovery, /className="btn btn-lg red mt-6"/);
   });
 });

@@ -70,7 +70,7 @@ export function BillingPortalButton({
       <div className="mt-6">
         <Link
           href="/sign-in"
-          className="inline-flex rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900"
+          className="btn btn-lg red"
         >
           Sign in to manage billing
         </Link>
@@ -88,7 +88,7 @@ export function BillingPortalButton({
         <button
           type="button"
           disabled
-          className="rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white opacity-60"
+          className="btn btn-lg red"
         >
           Checking billing...
         </button>
@@ -121,7 +121,7 @@ export function BillingPortalButton({
         type="button"
         onClick={openPortal}
         disabled={!isLoaded || phase === "redirecting"}
-        className="rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900 disabled:cursor-not-allowed disabled:opacity-60"
+        className="btn btn-lg red"
       >
         {!isLoaded
           ? "Checking sign-in..."

@@ -4,7 +4,11 @@ import Link from "next/link";
 import { ACCOUNT_PLACEHOLDER, WELCOME } from "@/lib/copy";
 import { useDashboard } from "@/lib/use-dashboard";
 
-export function AccountAccessPanel() {
+export function AccountAccessPanel({
+  checkoutSessionId = null,
+}: {
+  checkoutSessionId?: string | null;
+}) {
   const dash = useDashboard();
 
   if (dash.data?.enrolled === true) {
@@ -99,6 +103,38 @@ export function AccountAccessPanel() {
     );
   }
 
+  if (checkoutSessionId) {
+    return (
+      <div className="rounded-lg border border-zinc-300 bg-white p-8 shadow-sm sm:p-10">
+        <p className="font-mono text-xs uppercase tracking-wider text-amber-700">
+          Checkout return
+        </p>
+        <h1 className="mt-4 font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+          Check or recover your activation.
+        </h1>
+        <p className="mt-4 text-zinc-600">
+          BarMatrix found a Stripe checkout session in this return link. If the
+          purchase is complete but access has not appeared yet, use the recovery
+          panel below.
+        </p>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
+          <Link
+            href="/sign-in"
+            className="btn btn-lg red"
+          >
+            Sign in
+          </Link>
+          <Link
+            href="/checkout"
+            className="btn btn-lg ghost"
+          >
+            Back to checkout
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-lg border border-zinc-300 bg-white p-8 text-center shadow-sm sm:p-10">
       <h1 className="font-serif text-2xl font-semibold tracking-tight">
@@ -125,17 +161,19 @@ export function AccountEntitlementPanel({
   const dash = useDashboard();
   const hasCheckoutSession = checkoutSessionId !== null;
   const active = dash.data?.enrolled === true;
-  const confirmedByUrl = isWelcome || hasCheckoutSession;
+  const confirmedReturn = isWelcome && hasCheckoutSession;
   const status = active
     ? "Active"
-    : confirmedByUrl
+    : confirmedReturn
       ? "Confirmed"
-      : dash.loading
+      : hasCheckoutSession || isWelcome
         ? "Checking"
-        : dash.signedIn && dash.error
-          ? "Unavailable"
-          : "Pending sign-in";
-  const statusTone = active || confirmedByUrl
+        : dash.signedIn && dash.loading
+          ? "Checking"
+          : dash.signedIn && dash.error
+            ? "Unavailable"
+            : "Pending sign-in";
+  const statusTone = active || confirmedReturn
     ? "text-emerald-700"
     : dash.signedIn && dash.error
       ? "text-red-700"
@@ -143,7 +181,9 @@ export function AccountEntitlementPanel({
   const sessionLabel = active
     ? "Verified from signed-in account"
     : checkoutSessionId
-      ? `Session attached - ending ${checkoutSessionId.slice(-8)}`
+      ? confirmedReturn
+        ? `Session attached - confirmed return (${checkoutSessionId.slice(-8)})`
+        : `Session attached - activation check pending (${checkoutSessionId.slice(-8)})`
       : dash.signedIn && dash.data && !dash.data.enrolled
         ? "No active enrollment found"
         : dash.loading

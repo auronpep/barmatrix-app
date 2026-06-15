@@ -32,7 +32,11 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
     <section className="mx-auto max-w-5xl px-6 py-16 sm:py-20">
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div>
-          {isWelcome ? <WelcomePanel /> : <AccountAccessPanel />}
+          {isWelcome ? (
+            <WelcomePanel />
+          ) : (
+            <AccountAccessPanel checkoutSessionId={checkoutSessionId} />
+          )}
           <EnrollmentRecoveryPanel checkoutSessionId={checkoutSessionId} />
           <BillingPanel checkoutSessionId={checkoutSessionId} />
         </div>

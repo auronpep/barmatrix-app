@@ -333,7 +333,7 @@ export default function TimedSetsPage() {
       <div className="mb-8 flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
         <span className="rounded border border-zinc-200 px-2 py-1">Timed Set Engine</span>
         <span className="rounded border border-zinc-200 px-2 py-1">17-question mixed set</span>
-        <span className="rounded border border-zinc-200 px-2 py-1">SRC-0026</span>
+        <span className="rounded border border-zinc-200 px-2 py-1">Live mixed bank</span>
       </div>
 
       <div className="mb-10 grid gap-6 border-b border-zinc-200 pb-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-end">
@@ -727,7 +727,7 @@ function EnginePanel({
   return (
     <aside className="border border-zinc-200 bg-zinc-50 p-6 lg:sticky lg:top-6">
       <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-        Timed set engine preview
+        Timed set engine
       </p>
       <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
         {ENGINE_PREVIEW.heading}

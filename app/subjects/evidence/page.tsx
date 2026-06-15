@@ -5,6 +5,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { API_URL } from "@/lib/api-client";
 import { BRAND, PROOF_CARD } from "@/lib/copy";
+import {
+  formatQuestionPreview,
+  formatStudyLabel,
+  formatTensionLabel,
+} from "@/lib/study-labels";
 
 const SUBJECT = "Evidence";
 const SUBJECT_SLUG = "evidence";
@@ -140,17 +145,11 @@ function humanError(error: unknown): string {
 }
 
 function previewText(question: SubjectQuestion): string {
-  const source = question.question_stem ?? question.fact_pattern ?? "Question preview pending.";
-  return source.length > 190 ? `${source.slice(0, 187)}...` : source;
+  return formatQuestionPreview(question.question_stem, question.fact_pattern);
 }
 
 function readableTension(value: string | null): string {
-  if (!value) return "Tension pending";
-  return value
-    .replace(/[_-]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  return formatTensionLabel(value);
 }
 
 function topCounts(
@@ -206,7 +205,10 @@ export default function EvidenceSubjectPage() {
   }, [refreshKey]);
 
   const topics = useMemo(
-    () => topCounts(bank?.questions ?? [], (question) => question.topic),
+    () =>
+      topCounts(bank?.questions ?? [], (question) =>
+        question.topic ? formatStudyLabel(question.topic, SUBJECT) : null,
+      ),
     [bank],
   );
   const tensions = useMemo(
@@ -252,8 +254,8 @@ export default function EvidenceSubjectPage() {
         <div className="container">
           <div className="hero-meta">
             <span className="stamp">MBE SUBJECT</span>
-            <span className="stamp">LIVE BANK</span>
-            <span className="stamp">SRC-0026</span>
+            <span className="stamp">Subject bank</span>
+            <span className="stamp">Live practice</span>
           </div>
           <div className="eyebrow-red" style={{ marginBottom: 24 }}>
             | {BRAND} subject practice
@@ -436,7 +438,7 @@ function StatusPanel({ title }: { title: string }) {
         {title}
       </div>
       <p style={{ margin: 0, color: "var(--ink-soft)" }}>
-        Syncing the first Evidence page from the subject endpoint.
+        Syncing the first Evidence page from the subject bank.
       </p>
     </div>
   );
@@ -450,7 +452,7 @@ function QuestionList({ questions }: { questions: SubjectQuestion[] }) {
           No Evidence questions returned
         </div>
         <p style={{ margin: 0 }}>
-          The route is live, but the subject endpoint did not return a runnable
+          The subject bank is connected, but it did not return a runnable
           queue yet.
         </p>
       </div>
@@ -488,7 +490,7 @@ function QuestionList({ questions }: { questions: SubjectQuestion[] }) {
               className="mono break-anywhere"
               style={{ color: "var(--muted)", fontSize: 12, minWidth: 0 }}
             >
-              {question.topic ?? SUBJECT}
+              {formatStudyLabel(question.topic, SUBJECT)}
             </div>
           </div>
           <p
@@ -509,8 +511,8 @@ function QuestionList({ questions }: { questions: SubjectQuestion[] }) {
               gap: 8,
             }}
           >
-            <Chip>{question.subtopic ?? "Subtopic pending"}</Chip>
-            <Chip>{readableTension(question.tension_point)}</Chip>
+            <Chip>{formatStudyLabel(question.subtopic, "Subtopic pending")}</Chip>
+            <Chip>{formatTensionLabel(question.tension_point)}</Chip>
           </div>
         </article>
       ))}

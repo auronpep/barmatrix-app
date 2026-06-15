@@ -13,6 +13,7 @@ import {
 } from "@/lib/api-client";
 import { useSubmitAttempt } from "@/lib/use-attempts";
 import { BRAND } from "@/lib/copy";
+import { formatStudyLabel } from "@/lib/study-labels";
 
 const SUBJECT = "Constitutional Law";
 const SUBJECT_SLUG = "constitutional-law";
@@ -124,12 +125,7 @@ function humanError(error: unknown): string {
 }
 
 function readableLabel(value: string | null): string {
-  if (!value) return "Pending";
-  return value
-    .replace(/[_-]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  return formatStudyLabel(value);
 }
 
 export default function ConstitutionalLawDrillPage() {
@@ -246,9 +242,9 @@ export default function ConstitutionalLawDrillPage() {
           Constitutional Law drill
         </span>
         <span className="rounded border border-zinc-200 px-2 py-1">
-          Inline forensics
+          Wrong-answer forensics
         </span>
-        <span className="rounded border border-zinc-200 px-2 py-1">SRC-0026</span>
+        <span className="rounded border border-zinc-200 px-2 py-1">Guided review</span>
       </div>
 
       <div className="mb-10 grid gap-6 border-b border-zinc-200 pb-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
@@ -361,7 +357,7 @@ function StartPanel({ onStart }: { onStart: () => void }) {
       </h2>
       <p className="mt-3 max-w-2xl text-zinc-600">
         The first click syncs live subject questions. After each answer, the
-        right rail changes from the preview card into live wrong-answer
+        right rail opens live wrong-answer
         forensics.
       </p>
       <button
@@ -439,9 +435,9 @@ function QuestionCard({
   return (
     <article className="border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
       <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
-        <span>{question.subject}</span>
-        {question.topic && <span>/ {question.topic}</span>}
-        {question.subtopic && <span>/ {question.subtopic}</span>}
+        <span>{formatStudyLabel(question.subject)}</span>
+        {question.topic && <span>/ {formatStudyLabel(question.topic)}</span>}
+        {question.subtopic && <span>/ {formatStudyLabel(question.subtopic)}</span>}
       </div>
 
       <div className="mt-6 whitespace-pre-line text-base leading-8 text-zinc-800">
@@ -599,7 +595,7 @@ function ForensicsPanel({
   return (
     <aside className="border border-zinc-200 bg-zinc-50 p-6 lg:sticky lg:top-6">
       <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-        Inline forensics
+        Wrong-answer forensics
       </p>
       <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
         Gate before merits.
@@ -610,8 +606,8 @@ function ForensicsPanel({
         ))}
       </dl>
       <p className="mt-5 text-sm leading-6 text-zinc-600">
-        Submit an answer to replace this preview with live attempt forensics,
-        red-zone updates, and a repair drill assignment.
+        Submit an answer to open live attempt forensics, red-zone updates, and
+        a repair drill assignment.
       </p>
     </aside>
   );

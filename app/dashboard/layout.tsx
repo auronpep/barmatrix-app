@@ -33,13 +33,18 @@ const VIEW_TABS: readonly NavItem[] = [
 // (no /subjects — it has only per-subject sub-pages, no index, so it 404s).
 const PROGRAM_LINKS: readonly NavItem[] = [
   { href: "/foundations", label: "The Method" },
+  { href: "/matrix", label: "Tension Matrix" },
   { href: "/tensions", label: "Tension Map" },
+  { href: "/misconceptions", label: "Misconceptions" },
+  { href: "/question-history", label: "Question History" },
   { href: "/traps", label: "Trap Taxonomy" },
   { href: "/practice", label: "Practice" },
   { href: "/drills", label: "Drills" },
   { href: "/boot-camps", label: "Boot Camps" },
   { href: "/red-zones", label: "Red-Zone Map" },
   { href: "/timed-sets", label: "Timed Sets" },
+  { href: "/mobile-apps", label: "Mobile Access" },
+  { href: "/support", label: "Support" },
   { href: "/diagnostic", label: "Diagnostic" },
 ];
 
@@ -57,8 +62,14 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname() ?? "";
 
+  // On the exact /dashboard path the v3 command-deck shell provides its own
+  // sidebar+topbar navigation, so suppress the legacy tab chrome there. Nested
+  // views (/dashboard/mastery|final-sprint|path) keep the tab chrome.
+  const showLegacyChrome = pathname !== "/dashboard";
+
   return (
     <div>
+      {showLegacyChrome ? (
       <nav aria-label="Dashboard" className="border-b border-zinc-900 bg-white">
         <div className="mx-auto max-w-7xl px-6">
           <div className="flex items-center gap-1 overflow-x-auto">
@@ -99,6 +110,7 @@ export default function DashboardLayout({
           </div>
         </div>
       </nav>
+      ) : null}
 
       {children}
     </div>

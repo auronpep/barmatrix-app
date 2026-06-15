@@ -17,7 +17,7 @@ export default function WaitlistPage() {
       `Email: ${email || "(not provided)"}`,
       `Context: ${context || "(not provided)"}`,
       "",
-      "Please add me to the BarMatrix waitlist.",
+      "Please send me the next available BarMatrix enrollment step.",
     ].join("\n");
     window.location.href = `mailto:support@barmatrix.app?subject=${encodeURIComponent(
       "BarMatrix waitlist",
@@ -30,8 +30,8 @@ export default function WaitlistPage() {
       <section className="hero">
         <div className="container">
           <div className="hero-meta">
-            <span className="stamp">WAITLIST · JULY 2026 COHORT</span>
-            <span className="stamp">CAPACITY STATE : REACHED</span>
+            <span className="stamp">ENROLLMENT · JULY 2026 COHORT</span>
+            <span className="stamp">STATUS : PAUSED</span>
             <span className="stamp">BARMATRIX FLAGSHIP</span>
           </div>
           <div className="eyebrow-red" style={{ marginBottom: 24 }}>
@@ -41,11 +41,11 @@ export default function WaitlistPage() {
             className="display display-lg"
             style={{ margin: "0 0 24px", maxWidth: "20ch" }}
           >
-            The cohort is full. Join the waitlist for the next available seat.
+            Enrollment is paused. Ask support for the next available start.
           </h1>
           <p className="body-lg" style={{ marginBottom: 0 }}>
-            {PRICING.capacityLine} When the cohort is full, checkout pauses and waitlist
-            requests are handled in order by the launch team.
+            {PRICING.capacityLine} When enrollment is paused, support can confirm
+            the next available start and the right checkout path.
           </p>
         </div>
       </section>
@@ -54,11 +54,11 @@ export default function WaitlistPage() {
         <div className="container">
           <div className="two-col" style={{ alignItems: "start" }}>
             <form className="price-card flagship" onSubmit={submit}>
-              <span className="ribbon">WAITLIST</span>
-              <h2 className="name">Request a seat</h2>
+              <span className="ribbon">SUPPORT</span>
+              <h2 className="name">Request next steps</h2>
               <p className="summary">
-                Send your waitlist request to support. If a seat opens, the launch team
-                will follow up with the next steps.
+                Send your enrollment request to support. The launch team will
+                reply with the current next step.
               </p>
 
               <label className="mono" style={labelStyle} htmlFor="waitlist-name">
@@ -101,7 +101,7 @@ export default function WaitlistPage() {
                 className="btn btn-lg red"
                 style={{ width: "100%", justifyContent: "center", marginTop: 20 }}
               >
-                Open email to join waitlist <span className="arrow">→</span>
+                Open email for next steps <span className="arrow">→</span>
               </button>
 
               {submitted && (
@@ -127,16 +127,16 @@ export default function WaitlistPage() {
                   ▸ WHAT HAPPENS NEXT
                 </div>
                 <ol style={orderedListStyle}>
-                  <li>Checkout remains paused while the cohort is at capacity.</li>
-                  <li>Waitlist requests are reviewed in received order.</li>
-                  <li>If a seat opens, support sends the next enrollment step.</li>
+                  <li>Checkout remains paused while enrollment is unavailable.</li>
+                  <li>Support reviews requests in received order.</li>
+                  <li>Support sends the current enrollment step when it is available.</li>
                 </ol>
               </div>
 
               <div className="scarcity-meter">
                 <div className="meter-row">
                   <span className="left">July-cycle cohort</span>
-                  <span className="right">Waitlist</span>
+                  <span className="right">Paused</span>
                 </div>
                 <div className="meter-bar">
                   <div className="fill" style={{ width: "100%" }} />
@@ -150,7 +150,7 @@ export default function WaitlistPage() {
                 </div>
                 <p style={{ color: "var(--ink-soft)", fontSize: 15, lineHeight: 1.6 }}>
                   You can still take the free diagnostic, review how Red-Zone mapping works,
-                  and keep your email ready for a seat offer.
+                and keep your email ready for the next enrollment step.
                 </p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 20 }}>
                   <Link href="/diagnostic" className="btn red">

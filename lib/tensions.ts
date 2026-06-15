@@ -9,6 +9,7 @@
 import {
   api,
   ApiClientError,
+  type TensionEntry,
   type TensionDetailResponse,
   type TensionListResponse,
 } from "./api-client";
@@ -27,6 +28,30 @@ const EMPTY_CATALOG: TensionListResponse = {
   totals: { tension_count: 0, official_count: 0, observed_count: 0 },
   catalog_ready: false,
 };
+
+export function detailFromTensionCatalogEntry(
+  entry: TensionEntry,
+  catalogReady: boolean,
+): TensionDetailResponse {
+  return {
+    slug: entry.slug,
+    name: entry.name,
+    official: entry.official,
+    tension_point_id: entry.tension_point_id,
+    subject: entry.subject,
+    domain: entry.domain,
+    legal_collision: null,
+    decision_axis: null,
+    common_misconceptions: null,
+    question_count: entry.question_count,
+    subject_distribution: entry.subject
+      ? [{ subject: entry.subject, question_count: entry.question_count }]
+      : [],
+    examples: [],
+    examples_truncated: false,
+    catalog_ready: catalogReady,
+  };
+}
 
 export async function getTensionCatalog(): Promise<TensionListResponse> {
   try {
@@ -54,6 +79,11 @@ export async function getTensionDetail(
     );
   } catch (err) {
     if (err instanceof ApiClientError && err.status === 404) {
+      const catalog = await getTensionCatalog();
+      const entry = catalog.tensions.find((tension) => tension.slug === slug);
+      if (entry) {
+        return detailFromTensionCatalogEntry(entry, catalog.catalog_ready);
+      }
       return null;
     }
     console.error("[tensions] detail fetch failed:", err);

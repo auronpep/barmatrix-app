@@ -7,6 +7,7 @@ import "./globals.css";
 import { AnalyticsEvents } from "./analytics-events";
 import { NavAuth } from "./nav-auth";
 import { MobileNavToggle } from "@/components/mobile-nav";
+import { ChromeGate } from "@/components/chrome-gate";
 import { BRAND, DISCLAIMER, DOMAIN } from "@/lib/copy";
 
 const SITE_DESCRIPTION =
@@ -88,13 +89,14 @@ export default function RootLayout({
         className={`${newsreader.variable} ${plexSans.variable} ${plexMono.variable}`}
       >
         <body>
+          <ChromeGate>
           <div className="tape-strip" aria-hidden="true" />
           <nav className="nav">
             <div className="nav-inner">
-              <Link href="/" className="brand">
-                <span className="mark">B</span>
+              <Link href="/" className="brand" aria-label="BarMatrix home">
+                <span className="mark" aria-hidden="true">B</span>
                 <span>
-                  BarMatrix<span className="dot" />
+                  BarMatrix<span className="dot" aria-hidden="true" />
                 </span>
               </Link>
               <div className="nav-links">
@@ -123,6 +125,7 @@ export default function RootLayout({
               </div>
             </div>
           </nav>
+          </ChromeGate>
 
           <Suspense fallback={null}>
             <AnalyticsEvents />
@@ -130,6 +133,7 @@ export default function RootLayout({
 
           <main>{children}</main>
 
+          <ChromeGate>
           <footer className="footer">
             <div className="container">
               <div className="footer-grid">
@@ -140,12 +144,13 @@ export default function RootLayout({
                   >
                     <span
                       className="mark"
+                      aria-hidden="true"
                       style={{ background: "white", color: "#0a0a0a" }}
                     >
                       B
                     </span>
                     <span>
-                      BarMatrix<span className="dot" />
+                      BarMatrix<span className="dot" aria-hidden="true" />
                     </span>
                   </div>
                   <p
@@ -219,6 +224,9 @@ export default function RootLayout({
                       <Link href="/privacy">Privacy</Link>
                     </li>
                     <li>
+                      <Link href="/refund">Refund Policy</Link>
+                    </li>
+                    <li>
                       <Link href="/account">Account</Link>
                     </li>
                   </ul>
@@ -233,6 +241,7 @@ export default function RootLayout({
               <p className="disclaimer">{DISCLAIMER}</p>
             </div>
           </footer>
+          </ChromeGate>
         </body>
       </html>
   );

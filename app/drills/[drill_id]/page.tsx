@@ -17,7 +17,7 @@ import {
 } from "@/lib/api-client";
 import QuestionRunner, { type RunnerSummary } from "@/components/question-runner";
 import { trackDrillCompleted, trackDrillStarted } from "@/lib/analytics";
-import { humanizeTag, proficiencyPct } from "@/lib/drills";
+import { formatDrillName, humanizeTag, proficiencyPct } from "@/lib/drills";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
 import { userFacingResourceError } from "@/lib/user-facing-errors";
 
@@ -39,6 +39,8 @@ export default function DrillRunnerPage({
   const router = useRouter();
   const [retrying, setRetrying] = useState(false);
   const [retryError, setRetryError] = useState<string | null>(null);
+  const drillDisplayName =
+    state.phase === "ready" ? formatDrillName(state.detail.drill_name) : "";
 
   const onRetryMissed = async () => {
     if (retrying) return;
@@ -215,7 +217,7 @@ export default function DrillRunnerPage({
                   : "Targeted drill"}
               </p>
               <h1 className="mt-2 font-serif text-3xl font-semibold tracking-tight text-zinc-950">
-                {state.detail.drill_name}
+                {drillDisplayName}
               </h1>
               {state.detail.red_zone_tag && (
                 <p className="mt-2 text-sm leading-6 text-zinc-600">
@@ -231,7 +233,7 @@ export default function DrillRunnerPage({
             <QuestionRunner
               questionIds={state.detail.question_ids}
               setId={drillId}
-              title={state.detail.drill_name}
+              title={drillDisplayName}
               completeLabel={finishing ? "Saving…" : "Finish drill"}
               onComplete={onComplete}
             />
@@ -274,6 +276,7 @@ function MasteryCard({
   retrying: boolean;
   retryError: string | null;
 }) {
+  const drillDisplayName = formatDrillName(detail.drill_name);
   const pct =
     result.total > 0 ? Math.round((result.correct / result.total) * 100) : 0;
   return (
@@ -295,7 +298,7 @@ function MasteryCard({
       </h1>
       <p className="mt-3 text-sm leading-7 text-zinc-700">
         {result.mastered
-          ? `You cleared the ${pct}% mastery bar on ${detail.drill_name}.`
+          ? `You cleared the ${pct}% mastery bar on ${drillDisplayName}.`
           : `You scored ${pct}%. Re-run this drill or pick another red zone to keep repairing.`}
       </p>
 

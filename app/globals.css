@@ -666,7 +666,7 @@ button:disabled {
   font-family: var(--mono);
   font-size: 18px;
 }
-.demo-caption {
+.proof-caption {
   margin: 10px 0 0;
   font-family: var(--mono);
   font-size: 10px;
@@ -1205,9 +1205,212 @@ button:disabled {
   background: var(--bg-alt);
 }
 
+/* ====== DYNAMIC SALE PAGE ====== */
+.sale-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 430px);
+  gap: 56px;
+  align-items: center;
+}
+.sale-ticket {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 28px;
+  background: var(--ink);
+  color: var(--paper);
+  border: 1px solid var(--ink);
+  box-shadow: 12px 12px 0 var(--red);
+}
+.sale-ticket::before,
+.sale-ticket::after {
+  content: "";
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  height: 1px;
+  background: rgba(255, 253, 247, 0.22);
+}
+.sale-ticket::before { top: 84px; }
+.sale-ticket::after { bottom: 112px; }
+.ticket-rule {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted-light);
+}
+.ticket-price {
+  font-family: var(--serif);
+  font-size: clamp(76px, 9vw, 128px);
+  font-weight: 800;
+  line-height: 0.9;
+  color: white;
+}
+.ticket-subline {
+  margin-top: -6px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted-light);
+}
+.ticket-code {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+  border-top: 1px dashed rgba(255, 253, 247, 0.28);
+  border-bottom: 1px dashed rgba(255, 253, 247, 0.28);
+}
+.ticket-code span,
+.ticket-savings span {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-light);
+}
+.ticket-code strong {
+  overflow-wrap: anywhere;
+  font-family: var(--mono);
+  font-size: clamp(18px, 3vw, 28px);
+  letter-spacing: 0.04em;
+  color: var(--highlighter);
+}
+.ticket-savings {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 18px;
+  font-size: 16px;
+}
+.sale-ticket .btn {
+  justify-content: center;
+  border-color: white;
+}
+.sale-ticket p {
+  margin: 0;
+  color: var(--muted-light);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.sale-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.sale-feature {
+  min-height: 220px;
+  padding: 24px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+}
+.sale-feature h2 {
+  margin: 0 0 14px;
+  font-family: var(--serif);
+  font-size: 30px;
+  line-height: 1;
+}
+.sale-feature p {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+.sale-proof-band {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
+  gap: 42px;
+  align-items: center;
+  padding: 34px;
+  border-top: 4px solid var(--ink);
+  border-bottom: 4px solid var(--ink);
+  background: var(--highlighter-soft);
+}
+.sale-proof-band h2 {
+  margin: 0 0 12px;
+  font-size: clamp(32px, 5vw, 58px);
+  line-height: 0.95;
+}
+.sale-proof-band p {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+.sale-proof-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--ink);
+  background: var(--paper);
+}
+.sale-proof-steps span {
+  min-height: 96px;
+  display: grid;
+  place-items: center;
+  padding: 14px;
+  border-right: 1px solid var(--ink);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.25;
+  text-align: center;
+  text-transform: uppercase;
+}
+.sale-proof-steps span:last-child {
+  border-right: none;
+  background: var(--red);
+  color: white;
+}
+.sale-faq {
+  border-top: 1px solid var(--ink);
+}
+.sale-faq-row {
+  padding: 22px 0;
+  border-bottom: 1px solid var(--ink);
+}
+.sale-faq-row h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+.sale-faq-row p {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+.sale-final {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.55fr) auto;
+  gap: 28px;
+  align-items: center;
+  padding: 32px;
+  background: var(--ink);
+  color: var(--paper);
+}
+.sale-final h2 {
+  margin: 0;
+  font-size: clamp(38px, 6vw, 72px);
+  line-height: 0.95;
+  color: var(--paper);
+}
+.sale-final p {
+  margin: 0;
+  color: var(--muted-light);
+  line-height: 1.5;
+}
+
 /* ====== RESPONSIVE ====== */
 @media (max-width: 960px) {
   .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+  .sale-hero-grid,
+  .sale-proof-band,
+  .sale-final {
+    grid-template-columns: 1fr;
+  }
+  .sale-feature-grid {
+    grid-template-columns: 1fr;
+  }
   .two-col { grid-template-columns: 1fr; gap: 32px; }
   .three-col { grid-template-columns: 1fr; }
   .four-col { grid-template-columns: repeat(2, 1fr); }
@@ -1224,6 +1427,37 @@ button:disabled {
 
 @media (max-width: 640px) {
   :root { --gutter: 20px; }
+  .nav-inner {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+  .nav-cta {
+    gap: 8px;
+  }
+  .sale-ticket {
+    padding: 22px;
+    box-shadow: 8px 8px 0 var(--red);
+  }
+  .sale-proof-band,
+  .sale-final {
+    padding: 24px;
+  }
+  .sale-proof-steps {
+    grid-template-columns: 1fr 1fr;
+  }
+  .sale-proof-steps span:nth-child(2) {
+    border-right: none;
+  }
+  .sale-proof-steps span:nth-child(1),
+  .sale-proof-steps span:nth-child(2) {
+    border-bottom: 1px solid var(--ink);
+  }
+  .ticket-savings {
+    grid-template-columns: 1fr;
+  }
+  .nav-cta > .btn.ghost {
+    display: none;
+  }
   .four-col { grid-template-columns: 1fr; }
   .stat-strip { grid-template-columns: 1fr; }
   .stat-strip > div { border-right: none; border-bottom: 1px solid var(--rule); }
@@ -1231,7 +1465,7 @@ button:disabled {
   .footer-grid { grid-template-columns: 1fr; }
   .footer-bottom { flex-direction: column; gap: 12px; align-items: flex-start; }
 
-  /* R3-09: forensics demo card — metadata row: switch to 2×2 grid with clear gap */
+  /* R3-09: forensics metadata card — switch to 2x2 grid with clear gap */
   .q-meta {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px 20px;

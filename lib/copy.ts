@@ -5,12 +5,12 @@ export const BRAND = "BarMatrix";
 export const DOMAIN = "barmatrix.app";
 
 export const HERO = {
-  headline: "Master the finite universe of MBE traps.",
+  headline: "Find the MBE red zones your question sets are hiding.",
   subhead:
-    "BarMatrix diagnoses the wrong-answer patterns behind your missed MBE questions and assigns targeted repair drills so you stop practicing randomly and start repairing the traps that keep costing you points.",
-  primaryCta: { label: "Take the Free MBE Trap Diagnostic", href: "/diagnostic" },
-  secondaryCta: { label: "See Wrong Answer Forensics", href: "/how-it-works" },
-  flagshipLine: "BarMatrix Flagship — $999. Limited July-cycle cohort seats available.",
+    "BarMatrix diagnoses the wrong-answer patterns behind your missed MBE questions, builds a Red-Zone Map, and turns the highest-priority miss pattern into one guided repair task at a time.",
+  primaryCta: { label: "Start the Free Diagnostic", href: "/diagnostic" },
+  secondaryCta: { label: "See How Repair Works", href: "/how-it-works" },
+  flagshipLine: "BarMatrix Flagship - $999, or $500 today + $499 in 30 days.",
 } as const;
 
 export const PRICING = {
@@ -19,7 +19,7 @@ export const PRICING = {
   priceCents: 99900,
   paymentPlanLabel: "Payment plan: $500 today + $499 in 30 days",
   paymentPlanTotalCents: 99900,
-  capacityLine: "Limited seats available. Enrollment closes when capacity is reached.",
+  capacityLine: "Enrollment is open for the July-cycle guided repair program.",
   includes: [
     "Free MBE Trap Diagnostic",
     "Red-Zone Map",
@@ -37,11 +37,11 @@ export const PRICING = {
 // Dynamic capacity bands, per BARMATRIX/engineering/SCHEMA_ONE_COHORT.sql cohort_public_status view (SRC-0024).
 // The actual band is returned by GET /api/cohort/status — these constants are the fallback when no API yet.
 export const CAPACITY_COPY = {
-  open: "July-cycle cohort enrollment is open. Limited seats available.",
-  limited: "Limited July-cycle cohort seats available.",
-  almost_full: "The July-cycle cohort is almost full.",
-  last_seats: "Last July-cycle cohort seats available.",
-  waitlist: "Cohort capacity reached. Join the waitlist.",
+  open: "July-cycle cohort enrollment is open.",
+  limited: "July-cycle cohort enrollment is open.",
+  almost_full: "July-cycle cohort enrollment is open.",
+  last_seats: "July-cycle cohort enrollment is open.",
+  waitlist: "Enrollment is currently paused. Contact support for the next available start.",
 } as const;
 
 export const PROOF_CARD = {
@@ -53,10 +53,18 @@ export const PROOF_CARD = {
   nextDrill: "Hearsay Purpose-of-Offer Drill",
 } as const;
 
+export const DIAGNOSTIC_FIRST = {
+  eyebrow: "Proof before price",
+  headline: "The diagnostic should prove the method before checkout.",
+  body:
+    "Start free because the proof should come before the price: BarMatrix reads your own misses back to you, names the trap pattern, and shows the same diagnostic-to-repair loop Flagship uses after enrollment.",
+  cta: { label: "Start the free diagnostic", href: "/diagnostic" },
+} as const;
+
 export const FAQ: Array<{ q: string; a: string }> = [
   {
     q: "What is BarMatrix?",
-    a: "BarMatrix is an MBE-focused diagnostic repair system. It maps recurring trap patterns, explains why attractive wrong answers pull students in, and assigns targeted drills.",
+    a: "BarMatrix is a diagnostic-first MBE repair system. It starts with a free diagnostic and Red-Zone Map, then turns the highest-priority miss pattern into one guided repair task at a time.",
   },
   { q: "What is the price?", a: "BarMatrix Flagship is $999." },
   {
@@ -64,12 +72,16 @@ export const FAQ: Array<{ q: string; a: string }> = [
     a: "Yes. The payment plan is $500 today and $499 in 30 days.",
   },
   {
-    q: "Is enrollment limited?",
-    a: "Yes. The July-cycle cohort has limited seats. Enrollment closes when capacity is reached.",
+    q: "How does enrollment work?",
+    a: "Enrollment is open for the July-cycle guided repair program. If enrollment is ever paused, checkout will say so before payment.",
   },
   {
     q: "Is this a full bar course?",
-    a: "No. BarMatrix is multiple-choice-only and is designed to complement a full bar course.",
+    a: "No. BarMatrix is multiple-choice-only and is designed as a companion repair system for the MBE side. It does not replace essay preparation, performance-test preparation, or your broader bar plan.",
+  },
+  {
+    q: "Why start with the diagnostic before purchase?",
+    a: "The diagnostic is the proof step. It shows the red zones, wrong-answer traps, and repair priority before asking you to decide whether Flagship is worth buying.",
   },
 ];
 
@@ -83,18 +95,18 @@ export const APP_STATUS = {
 
 export const WELCOME = {
   badge: "Enrollment confirmed",
-  headline: "You're in the July cohort.",
-  body: "Check your email for your access details — we'll send your onboarding link, study schedule, and Red-Zone Map walkthrough within the next few minutes.",
+  headline: "Your guided repair path is ready.",
+  body: "Your first screen is the guided daily path: one active MBE repair task, a small milestone map, and no resource-browsing decisions.",
   flagshipLine: "BarMatrix Flagship · One July-cycle cohort.",
-  primaryCta: { label: "Take the diagnostic now", href: "/diagnostic" },
-  secondaryCta: { label: "What's next", href: "/how-it-works" },
+  primaryCta: { label: "Open the guided repair path", href: "/dashboard/path" },
+  secondaryCta: { label: "Start the free diagnostic", href: "/diagnostic" },
 } as const;
 
 export const ACCOUNT_PLACEHOLDER = {
-  headline: "Account",
-  body: "Sign-in is coming online with the cohort launch. If you've already enrolled, check your email for your access details.",
-  cta: { label: "Back to home", href: "/" },
+  headline: "Open your BarMatrix account.",
+  body: "Sign in with the email used at checkout to connect enrollment, billing, and your guided repair path.",
+  cta: { label: "Sign in", href: "/sign-in?after=account" },
 } as const;
 
 export const DISCLAIMER =
-  "BarMatrix is an independent educational product. It is not affiliated with, endorsed by, sponsored by, or licensed by NCBE, the State Bar of California, or any bar authority. BarMatrix is multiple-choice only and does not replace essay preparation, performance-test preparation, legal advice, or official bar-admission guidance. No score, pass result, or exam outcome is guaranteed. Questions are original unless expressly identified as licensed material.";
+  "BarMatrix is an independent educational product. It is multiple-choice only and does not replace essay preparation, performance-test preparation, legal advice, or bar-admission guidance. No exam outcome is promised. New diagnostic and guided-path content is being authored as replacement BarMatrix content unless expressly identified as licensed material.";

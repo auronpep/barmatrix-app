@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { PRICING, FAQ, DISCLAIMER } from "@/lib/copy";
+import { DIAGNOSTIC_FIRST, PRICING, FAQ, DISCLAIMER } from "@/lib/copy";
 import { PricingAnalytics } from "./pricing-analytics";
 
 export const metadata = {
   title: "Pricing — BarMatrix Flagship $999",
   description:
-    "BarMatrix Flagship is $999 with a payment plan of $500 today and $499 in 30 days. One July-cycle cohort. Limited seats available.",
+    "BarMatrix Flagship is $999 with a payment plan of $500 today and $499 in 30 days. Enrollment is open for the July-cycle guided repair program.",
 };
 
 export default function PricingPage() {
@@ -59,7 +59,7 @@ export default function PricingPage() {
               <span className="ribbon">JULY 2026 COHORT</span>
               <h2 className="name">{PRICING.flagshipName}</h2>
               <p className="summary">
-                One cohort. Full MBE trap-repair access. Limited seats.
+                One cohort. Full MBE trap-repair access. Web access live now.
               </p>
               <div className="price">
                 <span className="num">{PRICING.priceLabel}</span>
@@ -101,7 +101,7 @@ export default function PricingPage() {
                   className="eyebrow"
                   style={{ marginBottom: 12, color: "var(--ink)" }}
                 >
-                  ▸ CAPACITY POLICY
+                  ▸ ENROLLMENT POLICY
                 </div>
                 <h3
                   className="serif"
@@ -122,9 +122,9 @@ export default function PricingPage() {
                     lineHeight: 1.55,
                   }}
                 >
-                  The July-cycle cohort is limited. When capacity is reached,
-                  checkout pauses and the waitlist opens; we do not show a
-                  percentage meter unless it is backed by live cohort data.
+                  Checkout verifies live enrollment status before payment. If
+                  enrollment is ever paused, the checkout page will say so
+                  before Stripe opens.
                 </p>
               </div>
 
@@ -157,12 +157,14 @@ export default function PricingPage() {
                     lineHeight: 1.55,
                   }}
                 >
-                  The Free MBE Trap Diagnostic builds your Red-Zone Map and
-                  shows you the kind of feedback Flagship gives on every miss.
-                  No card. No commitment.
+                  The Free MBE Trap Diagnostic builds your Red-Zone Map,
+                  names the trap pattern from your own answers, and shows the
+                  same diagnostic-to-repair loop Flagship uses after
+                  enrollment. No card. No commitment.
                 </p>
-                <Link href="/diagnostic" className="btn red">
-                  Take the Free Diagnostic <span className="arrow">→</span>
+                <Link href={DIAGNOSTIC_FIRST.cta.href} className="btn red">
+                  {DIAGNOSTIC_FIRST.cta.label}{" "}
+                  <span className="arrow">→</span>
                 </Link>
               </div>
 

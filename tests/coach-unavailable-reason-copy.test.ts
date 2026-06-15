@@ -16,4 +16,23 @@ describe("coach unavailable copy", () => {
     assert.match(source, /c3_not_provisioned/);
     assert.match(source, /C3 Coach is waiting on tagged question coverage/);
   });
+
+  it("labels starter-baseline coach questions honestly", () => {
+    const source = readProjectFile("app/coach/coach-client.tsx");
+    const apiTypes = readProjectFile("lib/api-client.ts");
+
+    assert.match(source, /target_mold === "starter_baseline"/);
+    assert.match(source, /Starting with a baseline question/);
+    assert.match(apiTypes, /fork_practice:\s*boolean/);
+  });
+
+  it("keeps diagnostic CTA copy out of the live coach session page shell", () => {
+    const page = readProjectFile("app/coach/page.tsx");
+
+    assert.doesNotMatch(
+      page,
+      /The Coach needs a target\. Start with the diagnostic\./,
+    );
+    assert.match(page, /CoachClient/);
+  });
 });

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { formatDrillName } from "@/lib/drills";
 import { useDashboard } from "@/lib/use-dashboard";
 
 type SprintDay = {
@@ -268,9 +269,9 @@ export default function FinalSprintPathPage() {
             Confirm your exam date to activate the sprint.
           </h2>
           <p className="mt-3 max-w-2xl text-zinc-700">
-            This preview uses a sample date inside the sprint window. Once a student has a
-            saved exam date, the dashboard can highlight today&apos;s assignment and hold the
-            plan steady for the day.
+            Until you save an exam date, this screen uses a default date inside the sprint
+            window. Once a student has a saved exam date, the dashboard can highlight
+            today&apos;s assignment and hold the plan steady for the day.
           </p>
         </section>
       )}
@@ -456,10 +457,10 @@ function LiveTargets({ dash }: { dash: ReturnType<typeof useDashboard> }) {
                 className="flex items-center justify-between gap-3 border-b border-zinc-100 pb-3 last:border-b-0 last:pb-0"
               >
                 <span className="min-w-0 break-words text-sm font-medium text-zinc-900">
-                  {d.drill_name}
+                  {formatDrillName(d.drill_name)}
                 </span>
-                <span className="shrink-0 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
-                  {d.status}
+                <span className="shrink-0 font-mono text-[11px] text-zinc-500">
+                  {formatSprintDrillStatus(d.status)}
                 </span>
               </li>
             ))}
@@ -475,6 +476,15 @@ function LiveTargets({ dash }: { dash: ReturnType<typeof useDashboard> }) {
       </div>
     </section>
   );
+}
+
+function formatSprintDrillStatus(status: string | null | undefined): string {
+  if (!status) return "Assigned";
+  return status
+    .split(/[_-]+/g)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
 }
 
 function ExamDatePanel({
@@ -509,7 +519,7 @@ function ExamDatePanel({
         <Metric label="Window" value="14d" />
       </div>
       <p className="mt-4 text-sm leading-6 text-zinc-600">
-        {status.message} {value ? "" : `Preview date: ${formatDisplayDate(previewDate)}.`}
+        {status.message} {value ? "" : `Planning date: ${formatDisplayDate(previewDate)}.`}
       </p>
       {!value && (
         <button
@@ -517,7 +527,7 @@ function ExamDatePanel({
           className="btn red btn-sm mt-4"
           onClick={() => onChange(formatDateInput(previewDate))}
         >
-          Use preview date
+          Use planning date
         </button>
       )}
     </aside>

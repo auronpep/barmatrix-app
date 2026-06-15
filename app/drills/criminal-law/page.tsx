@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, type ReactNode } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useRef, useState, type ReactNode } from "react";
 import {
   api,
   API_URL,
@@ -12,7 +13,9 @@ import {
   type QuestionPayload,
 } from "@/lib/api-client";
 import { useSubmitAttempt } from "@/lib/use-attempts";
+import { useClerkAuth } from "@/lib/use-clerk-auth";
 import { BRAND } from "@/lib/copy";
+import { formatStudyLabel } from "@/lib/study-labels";
 
 const SUBJECTS = ["Criminal Law", "Criminal Procedure"] as const;
 const SUBJECT_LABEL = "Criminal Law & Procedure";
@@ -138,16 +141,23 @@ function humanError(error: unknown): string {
 }
 
 function readableLabel(value: string | null): string {
-  if (!value) return "Pending";
-  return value
-    .replace(/[_-]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  return formatStudyLabel(value);
 }
 
 export default function CriminalLawDrillPage() {
+  return (
+    <Suspense fallback={<StatusPanel title="Loading Criminal Law drill" />}>
+      <CriminalLawDrillClient />
+    </Suspense>
+  );
+}
+
+function CriminalLawDrillClient() {
+  const router = useRouter();
+  const search = useSearchParams();
   const submitAttempt = useSubmitAttempt();
+  const { getToken, isSignedIn } = useClerkAuth();
+  const stepId = search.get("step");
   const [phase, setPhase] = useState<Phase>("idle");
   const [queue, setQueue] = useState<SubjectQuestionRef[]>([]);
   const [index, setIndex] = useState(0);
@@ -157,6 +167,7 @@ export default function CriminalLawDrillPage() {
   const [attempt, setAttempt] = useState<AttemptResponse | null>(null);
   const [forensics, setForensics] = useState<ForensicsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [savingLeadMeTask, setSavingLeadMeTask] = useState(false);
   const setIdRef = useRef<string | null>(null);
   const startedAtRef = useRef(0);
 
@@ -253,14 +264,32 @@ export default function CriminalLawDrillPage() {
     void loadQuestion(index + 1);
   };
 
+  const finishLeadMeTask = async () => {
+    if (!stepId) return;
+    setSavingLeadMeTask(true);
+    setError(null);
+    try {
+      if (isSignedIn) {
+        const token = await getToken();
+        if (token) await api.completeMyDayPlanStep(token, stepId);
+      }
+      router.push("/dashboard/path");
+    } catch (nextError) {
+      setError(humanError(nextError));
+      setPhase("error");
+    } finally {
+      setSavingLeadMeTask(false);
+    }
+  };
+
   return (
     <section className="mx-auto max-w-7xl px-6 py-10 sm:py-14">
       <div className="mb-8 flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-zinc-700">
         <span className="rounded border border-zinc-200 px-2 py-1">
           Criminal Law drill
         </span>
-        <span className="rounded border border-zinc-200 px-2 py-1">Inline forensics</span>
-        <span className="rounded border border-zinc-200 px-2 py-1">SRC-0026</span>
+        <span className="rounded border border-zinc-200 px-2 py-1">Wrong-answer forensics</span>
+        <span className="rounded border border-zinc-200 px-2 py-1">Guided review</span>
       </div>
 
       <div className="mb-10 grid gap-6 border-b border-zinc-200 pb-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
@@ -352,8 +381,10 @@ export default function CriminalLawDrillPage() {
             phase={phase}
             attempt={attempt}
             forensics={forensics}
-            onNext={next}
+            onNext={stepId ? finishLeadMeTask : next}
             isLast={isLast}
+            isLeadMeTask={Boolean(stepId)}
+            savingLeadMeTask={savingLeadMeTask}
           />
         </div>
       )}
@@ -372,7 +403,7 @@ function StartPanel({ onStart }: { onStart: () => void }) {
       </h2>
       <p className="mt-3 max-w-2xl text-zinc-600">
         The first click syncs live Criminal Law questions. After each answer, the
-        right rail changes from an exception-trigger preview into live wrong-answer
+        right rail opens the live wrong-answer
         forensics.
       </p>
       <button
@@ -445,9 +476,9 @@ function QuestionCard({
   return (
     <article className="border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
       <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
-        <span>{question.subject}</span>
-        {question.topic && <span>/ {question.topic}</span>}
-        {question.subtopic && <span>/ {question.subtopic}</span>}
+        <span>{formatStudyLabel(question.subject)}</span>
+        {question.topic && <span>/ {formatStudyLabel(question.topic)}</span>}
+        {question.subtopic && <span>/ {formatStudyLabel(question.subtopic)}</span>}
       </div>
 
       <div className="mt-6 whitespace-pre-line text-base leading-8 text-zinc-800">
@@ -524,12 +555,16 @@ function ForensicsPanel({
   forensics,
   onNext,
   isLast,
+  isLeadMeTask,
+  savingLeadMeTask,
 }: {
   phase: Phase;
   attempt: AttemptResponse | null;
   forensics: ForensicsResponse | null;
   onNext: () => void;
   isLast: boolean;
+  isLeadMeTask: boolean;
+  savingLeadMeTask: boolean;
 }) {
   if (phase === "forensics" && attempt && forensics) {
     return (
@@ -593,9 +628,16 @@ function ForensicsPanel({
         <button
           type="button"
           onClick={onNext}
+          disabled={savingLeadMeTask}
           className="btn btn-lg red mt-6 w-full justify-center"
         >
-          {isLast ? "Finish drill" : "Next Criminal Law question"}
+          {savingLeadMeTask
+            ? "Saving..."
+            : isLeadMeTask
+              ? "Finish Lead Me task"
+              : isLast
+                ? "Finish drill"
+                : "Next Criminal Law question"}
         </button>
       </aside>
     );
@@ -604,7 +646,7 @@ function ForensicsPanel({
   return (
     <aside className="border border-zinc-200 bg-zinc-50 p-6 lg:sticky lg:top-6">
       <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-        Inline forensics preview
+        Forensics after submit
       </p>
       <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
         {CRIMINAL_LAW_PREVIEW.trap}
@@ -624,8 +666,8 @@ function ForensicsPanel({
         {CRIMINAL_LAW_PREVIEW.whyFails}
       </ForensicsSection>
       <p className="mt-5 text-sm leading-6 text-zinc-600">
-        Submit an answer to replace this preview with the live attempt
-        forensics, red-zone update, and repair drill assignment.
+        Submit an answer to open the live attempt forensics, red-zone update,
+        and repair drill assignment.
       </p>
     </aside>
   );

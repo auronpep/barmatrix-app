@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
-const DEFAULT_PARTNER_ID = "partner-demo";
+const DEFAULT_PARTNER_ID = "approved-partner-id";
 const DEFAULT_CAMPAIGN_ID = "july-study-plan";
 
 export function ReferralShareClient() {
@@ -48,8 +48,8 @@ export function ReferralShareClient() {
               Create a tracked partner link in one step.
             </h1>
             <p className="mt-4 max-w-3xl text-base leading-7 text-zinc-700 sm:text-lg">
-              Add a partner ID and campaign ID to the page URL, then share the
-              generated diagnostic link with the required disclosure.
+              Add a real partner ID and campaign ID to the page URL, then share
+              the generated diagnostic link with the required disclosure.
             </p>
           </div>
 

@@ -24,6 +24,8 @@ import { useClerkAuth } from "@/lib/use-clerk-auth";
 import { trackAnalyticsEvent } from "@/lib/analytics";
 import {
   SUBJECT_QUICK_DRILLS,
+  formatCatalogDrillLabel,
+  formatDrillName,
   humanizeTag,
   proficiencyBand,
   proficiencyPct,
@@ -132,10 +134,23 @@ function DrillsPageContent() {
   const startDrill = useCallback(
     async (key: string, payload: DrillStartRequest) => {
       if (busy) return;
-      setBusy(key);
       setStartError(null);
+      if (!authLoaded) {
+        setStartError("Checking sign-in. Try again in a moment.");
+        return;
+      }
+      if (!authSignedIn) {
+        setStartError("Sign in to start a drill.");
+        return;
+      }
+      setBusy(key);
       try {
-        const token = authSignedIn ? await getToken() : null;
+        const token = await getToken();
+        if (!token) {
+          setStartError("Sign in again to start a drill.");
+          setBusy(null);
+          return;
+        }
         const res = await api.startDrill({ ...payload }, token);
         if (!res.drill_id) {
           setStartError(
@@ -160,7 +175,7 @@ function DrillsPageContent() {
         setBusy(null);
       }
     },
-    [busy, router, authSignedIn, getToken],
+    [busy, router, authLoaded, authSignedIn, getToken],
   );
 
   const onTabKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -351,7 +366,7 @@ function PrescribedPanel({
                   {d.red_zone_dimension ? humanizeTag(d.red_zone_dimension) : "In progress"}
                 </p>
                 <h3 className="mt-2 font-serif text-xl font-semibold leading-tight text-zinc-950">
-                  {d.drill_name}
+                  {formatDrillName(d.drill_name)}
                 </h3>
                 <p className="mt-2 text-sm text-zinc-600">{d.question_count} questions</p>
                 <Link href={`/drills/${d.drill_id}`} className="btn btn-sm red mt-4">
@@ -516,7 +531,7 @@ function CatalogGroup({
             return (
               <article key={key} id={elementId} className="flex flex-col border border-zinc-300 bg-white p-5">
                 <h3 className="font-serif text-xl font-semibold leading-tight text-zinc-950">
-                  {item.label}
+                  {formatCatalogDrillLabel(item.label, item.slug)}
                 </h3>
                 <p className="mt-2 text-sm text-zinc-600">{item.question_count} questions</p>
                 <button

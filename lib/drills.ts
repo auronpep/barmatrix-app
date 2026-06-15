@@ -12,6 +12,61 @@ export function humanizeTag(tag: string | null | undefined): string {
     .join(" ");
 }
 
+const DRILL_NAME_OVERRIDES: Record<string, string> = {
+  review_drill: "Review Missed Questions",
+};
+
+const SUBJECT_CODE_LABELS: Record<string, string> = {
+  CIV: "Civil Procedure",
+  CIVPRO: "Civil Procedure",
+  CP: "Civil Procedure",
+  CON: "Constitutional Law",
+  CONT: "Contracts",
+  K: "Contracts",
+  CONST: "Constitutional Law",
+  CRIM: "Criminal Law",
+  EVID: "Evidence",
+  EVD: "Evidence",
+  PROP: "Real Property",
+  RP: "Real Property",
+  TORT: "Torts",
+};
+
+/** API drill names can be storage keys; render a customer-facing label. */
+export function formatDrillName(name: string | null | undefined): string {
+  if (!name) return "Targeted Drill";
+  const normalized = name
+    .replace(/^\d{4,}[_-]+/g, "")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!normalized) return "Targeted Drill";
+
+  const key = normalized.toLowerCase().replace(/\s+/g, "_");
+  if (DRILL_NAME_OVERRIDES[key]) return DRILL_NAME_OVERRIDES[key];
+
+  return normalized.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+/** API catalog labels can be taxonomy IDs; render them as product labels. */
+export function formatCatalogDrillLabel(
+  label: string | null | undefined,
+  slug?: string | null,
+): string {
+  const source = label?.trim() || slug?.trim();
+  if (!source) return "Targeted Drill";
+
+  const normalized = source.replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
+  const codeMatch = normalized.match(/^([A-Z]{2,7})\s+[A-Z0-9]{1,8}\s+(\d{1,4})$/);
+  if (codeMatch) {
+    const subject = SUBJECT_CODE_LABELS[codeMatch[1]] ?? "MBE";
+    const number = String(Number(codeMatch[2]));
+    return `${subject} Targeted Drill ${number}`;
+  }
+
+  return formatDrillName(source);
+}
+
 /** A 0-1 proficiency score as a whole percent (clamped). */
 export function proficiencyPct(score: number | null | undefined): number {
   if (typeof score !== "number" || !Number.isFinite(score)) return 0;

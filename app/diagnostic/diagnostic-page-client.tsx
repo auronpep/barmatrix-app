@@ -114,7 +114,7 @@ export function DiagnosticPageClient() {
                 {[
                   "Personal Red-Zone Map of your top trap families",
                   "Forensic tags on each of your specific misses",
-                  "Sample assigned drills so you can see Flagship feedback",
+                  "Assigned repair drills tied to your diagnostic misses",
                   "Companion path with your existing bar course",
                 ].map((t) => (
                   <li

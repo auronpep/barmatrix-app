@@ -43,10 +43,18 @@ describe("mobile content overflow guards", () => {
     assert.match(traps, /className="min-w-0"/);
     assert.match(traps, /className="min-w-0"/);
     assert.match(traps, /className="flex min-w-0 w-full flex-col items-start/);
-    assert.match(traps, /className="mt-0\.5 block break-all/);
+    assert.doesNotMatch(traps, /<span className="mt-0\.5 block break-all[^"]*">\s*\{trap\.slug\}\s*<\/span>/);
 
     assert.match(tensions, /<li[^>]+className="min-w-0"/);
     assert.match(tensions, /className="flex min-w-0 w-full flex-col items-start/);
     assert.match(tensions, /className="min-w-0 break-words/);
+  });
+
+  it("formats tension subject headings instead of exposing DB enum values", () => {
+    const tensions = readProjectFile("app/tensions/page.tsx");
+
+    assert.match(tensions, /import \{ humanizeSubject \} from "@\/lib\/format-subject";/);
+    assert.match(tensions, /\{humanizeSubject\(subject\)\}/);
+    assert.doesNotMatch(tensions, /<h2[^>]*>\s*\{subject\}\s*<\/h2>/);
   });
 });

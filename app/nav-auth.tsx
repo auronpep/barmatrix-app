@@ -12,7 +12,7 @@ export function NavAuth() {
   if (isLoaded && isSignedIn) {
     return (
       <>
-        <Link href="/dashboard" className="btn btn-sm ghost">
+        <Link href="/dashboard/path" className="btn btn-sm ghost">
           Dashboard
         </Link>
         <UserButton />

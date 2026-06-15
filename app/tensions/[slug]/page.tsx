@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getTensionDetail } from "@/lib/tensions";
-import type { TensionExample } from "@/lib/api-client";
+import { humanizeSubject } from "@/lib/format-subject";
+import {
+  detailFromTensionCatalogEntry,
+  getTensionCatalog,
+  getTensionDetail,
+} from "@/lib/tensions";
+import type { TensionDetailResponse, TensionExample } from "@/lib/api-client";
 import { TensionDetailAnalytics } from "../tension-analytics";
 import { TensionQuestionsClient } from "./tension-questions-client";
 
@@ -14,7 +19,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const detail = await getTensionDetail(slug);
+  const detail = await getTensionDetailOrCatalogFallback(slug);
   if (!detail) {
     return { title: "Tension not found" };
   }
@@ -32,7 +37,7 @@ export default async function TensionDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const detail = await getTensionDetail(slug);
+  const detail = await getTensionDetailOrCatalogFallback(slug);
   if (!detail) {
     notFound();
   }
@@ -56,7 +61,7 @@ export default async function TensionDetailPage({
       <div className="mt-4 flex flex-wrap items-center gap-2">
         {detail.subject && (
           <span className="rounded-full border border-zinc-300 bg-white px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-zinc-600">
-            {detail.subject}
+            {humanizeSubject(detail.subject)}
           </span>
         )}
         {detail.domain && (
@@ -78,7 +83,6 @@ export default async function TensionDetailPage({
       <h1 className="mt-3 font-serif text-4xl font-semibold tracking-tight sm:text-5xl">
         {detail.name}
       </h1>
-      <p className="mt-2 font-mono text-xs text-zinc-400">{detail.slug}</p>
 
       {!detail.catalog_ready && (
         <p className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
@@ -133,6 +137,7 @@ export default async function TensionDetailPage({
           </p>
           <ul className="mt-4 space-y-3">
             {detail.subject_distribution.map((entry) => {
+              const subjectLabel = humanizeSubject(entry.subject);
               const pct =
                 maxCount > 0
                   ? Math.round((entry.question_count / maxCount) * 100)
@@ -140,7 +145,7 @@ export default async function TensionDetailPage({
               return (
                 <li key={entry.subject}>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-zinc-800">{entry.subject}</span>
+                    <span className="text-zinc-800">{subjectLabel}</span>
                     <span className="font-mono text-xs text-zinc-500">
                       {entry.question_count}
                     </span>
@@ -148,7 +153,7 @@ export default async function TensionDetailPage({
                   <div
                     className="mt-1 h-1.5 w-full rounded-full bg-zinc-100"
                     role="progressbar"
-                    aria-label={`${entry.subject}: ${entry.question_count} questions (${pct}% of maximum)`}
+                    aria-label={`${subjectLabel}: ${entry.question_count} questions (${pct}% of maximum)`}
                     aria-valuenow={entry.question_count}
                     aria-valuemax={maxCount}
                   >
@@ -224,6 +229,17 @@ export default async function TensionDetailPage({
       </div>
     </section>
   );
+}
+
+async function getTensionDetailOrCatalogFallback(
+  slug: string,
+): Promise<TensionDetailResponse | null> {
+  const detail = await getTensionDetail(slug);
+  if (detail) return detail;
+
+  const catalog = await getTensionCatalog();
+  const entry = catalog.tensions.find((tension) => tension.slug === slug);
+  return entry ? detailFromTensionCatalogEntry(entry, catalog.catalog_ready) : null;
 }
 
 function TensionExampleCard({

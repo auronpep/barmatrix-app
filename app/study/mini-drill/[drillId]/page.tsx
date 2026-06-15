@@ -19,7 +19,7 @@ export default function MiniDrillPage() {
   const params = useParams<{ drillId: string }>();
   const search = useSearchParams();
   const router = useRouter();
-  const { getToken, isSignedIn } = useClerkAuth();
+  const { getToken, isLoaded, isSignedIn } = useClerkAuth();
 
   const drillId =
     typeof params.drillId === "string"
@@ -34,6 +34,7 @@ export default function MiniDrillPage() {
   const [qIdx, setQIdx] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [finishing, setFinishing] = useState(false);
+  const [finishError, setFinishError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!drillId) return;
@@ -92,14 +93,27 @@ export default function MiniDrillPage() {
 
   async function finish() {
     setFinishing(true);
+    setFinishError(null);
     try {
+      if (!isLoaded) {
+        setFinishError("Checking sign-in. Try again in a moment.");
+        return;
+      }
+      if (stepId && !isSignedIn) {
+        setFinishError("Sign in again to save this step.");
+        return;
+      }
       if (isSignedIn && stepId) {
         const token = await getToken();
-        if (token) {
-          await api.completePathStep(token, stepId).catch(() => undefined);
+        if (!token) {
+          setFinishError("Sign in again to save this step.");
+          return;
         }
+        await api.completeMyDayPlanStep(token, stepId);
       }
       router.push("/dashboard/path");
+    } catch {
+      setFinishError("We couldn't save that step. Try again.");
     } finally {
       setFinishing(false);
     }
@@ -133,6 +147,11 @@ export default function MiniDrillPage() {
           finishing={finishing}
         />
       ) : null}
+      {finishError && (
+        <p className="mt-5 border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900" role="alert">
+          {finishError}
+        </p>
+      )}
     </Wrap>
   );
 }

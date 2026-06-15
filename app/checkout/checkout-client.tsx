@@ -18,6 +18,7 @@ type AttributionState = {
   campaign: string;
   partner: string;
   referral: string;
+  coupon: string | null;
   hasDiagnosticContext: boolean;
 };
 
@@ -30,6 +31,7 @@ export default function CheckoutClient() {
     campaign: "none",
     partner: "none",
     referral: "none",
+    coupon: null,
     hasDiagnosticContext: false,
   });
 
@@ -51,6 +53,7 @@ export default function CheckoutClient() {
             partner: params.get("partner_id") ?? "none",
             referral:
               params.get("referral_click_id") ?? params.get("click_id") ?? "none",
+            coupon: getCouponCode(params),
             hasDiagnosticContext: getDiagnosticId(params) !== null,
           }),
         0,
@@ -62,7 +65,15 @@ export default function CheckoutClient() {
     return () => timeouts.forEach((timeout) => window.clearTimeout(timeout));
   }, []);
 
+  const hasCouponContext = attribution.coupon !== null;
+
   const enroll = async (plan: PaymentPlan) => {
+    if (plan === "two_pay_500_499" && hasCouponContext) {
+      setError("Coupons apply to pay-in-full checkout only.");
+      setPhase("error");
+      return;
+    }
+
     setPhase("redirecting");
     setError(null);
     try {
@@ -73,7 +84,7 @@ export default function CheckoutClient() {
       }
 
       const checkoutSearchParams = getCurrentSearchParams();
-      const attribution = trackCheckoutStarted({
+      const trackedAttribution = trackCheckoutStarted({
         payment_plan: plan,
         searchParams: checkoutSearchParams,
         cohort_id: DEFAULT_LAUNCH_COHORT_ID,
@@ -81,10 +92,11 @@ export default function CheckoutClient() {
       const session = await api.createCheckoutSession({
         product_code: "barmatrix_flagship_999",
         payment_plan: plan,
-        partner_id: attribution.partner_id === "none" ? null : attribution.partner_id,
+        partner_id: trackedAttribution.partner_id === "none" ? null : trackedAttribution.partner_id,
         referral_click_id: getReferralClickId(checkoutSearchParams),
         diagnostic_id: getDiagnosticId(checkoutSearchParams),
-        ...buildCheckoutReturnUrls(plan, attribution),
+        coupon_code: plan === "pay_in_full" ? getCouponCode(checkoutSearchParams) : null,
+        ...buildCheckoutReturnUrls(plan, trackedAttribution),
       });
       window.location.assign(session.checkout_url);
     } catch (err) {
@@ -122,9 +134,9 @@ export default function CheckoutClient() {
           </h1>
           <p className="body-lg" style={{ marginBottom: 0 }}>
             BarMatrix Flagship is a multiple-choice-only MBE repair system.
-            Access includes the diagnostic, question-bank access, Wrong Answer
-            Forensics, Red-Zone Map, assigned drills, boot camp modules, timed
-            mixed sets, and full web dashboard access.
+            Access includes the diagnostic, Red-Zone Map, Wrong Answer
+            Forensics, guided daily repair tasks, assigned drills, boot camp
+            modules, timed mixed sets, and full web dashboard access.
           </p>
           <div
             className="hero-actions"
@@ -147,6 +159,36 @@ export default function CheckoutClient() {
               <span className="label">▌ Choose Your Plan</span>
             </div>
             <CheckoutContextPanel attribution={attribution} />
+            {attribution.coupon && (
+              <div
+                className="info-panel"
+                style={{ marginBottom: 24, background: "var(--paper)" }}
+              >
+                <div className="eyebrow-strong" style={{ marginBottom: 12 }}>
+                  ▌ COUPON CHECKOUT
+                </div>
+                <h2
+                  className="serif"
+                  style={{
+                    fontSize: 24,
+                    lineHeight: 1.15,
+                    margin: "0 0 10px",
+                  }}
+                >
+                  Coupons apply to pay-in-full checkout only.
+                </h2>
+                <p
+                  style={{
+                    margin: 0,
+                    color: "var(--ink-soft)",
+                    lineHeight: 1.55,
+                  }}
+                >
+                  Code {attribution.coupon} will be applied automatically after
+                  choosing pay in full. The payment plan is unavailable with a coupon.
+                </p>
+              </div>
+            )}
             <CheckoutProofPanel
               hasDiagnosticContext={attribution.hasDiagnosticContext}
             />
@@ -211,7 +253,7 @@ export default function CheckoutClient() {
                     <button
                       type="button"
                       onClick={() => enroll("two_pay_500_499")}
-                      disabled={phase === "redirecting"}
+                      disabled={phase === "redirecting" || hasCouponContext}
                       className="btn btn-lg red"
                       style={{
                         width: "100%",
@@ -220,9 +262,11 @@ export default function CheckoutClient() {
                         whiteSpace: "normal",
                       }}
                     >
-                      {phase === "redirecting"
-                        ? "Redirecting to Stripe…"
-                        : "Enroll with payment plan - $500 today →"}
+                      {hasCouponContext
+                        ? "Payment plan unavailable with coupon"
+                        : phase === "redirecting"
+                          ? "Redirecting to Stripe…"
+                          : "Enroll with payment plan - $500 today →"}
                     </button>
                   </div>
                 </>
@@ -369,6 +413,7 @@ function CheckoutContextPanel({
           <span>campaign: {attribution.campaign}</span>
           <span>partner: {attribution.partner}</span>
           <span>referral: {attribution.referral}</span>
+          <span>coupon: {attribution.coupon ?? "none"}</span>
           <span>
             diagnostic: {attribution.hasDiagnosticContext ? "attached" : "none"}
           </span>
@@ -497,6 +542,9 @@ function CheckoutFaqPanel() {
         <Link href="/terms" className="btn ghost">
           Terms
         </Link>
+        <Link href="/refund" className="btn ghost">
+          Refund Policy
+        </Link>
         <Link href="/account" className="btn ghost">
           Checkout recovery
         </Link>
@@ -508,8 +556,8 @@ function CheckoutFaqPanel() {
 function CapacityReachedPanel() {
   return (
     <div className="price-card flagship">
-      <span className="ribbon">WAITLIST</span>
-      <h2 className="name">Cohort capacity reached</h2>
+      <span className="ribbon">ENROLLMENT PAUSED</span>
+      <h2 className="name">Enrollment is currently paused</h2>
       <p className="summary">
         {CAPACITY_COPY.waitlist} {PRICING.capacityLine}
       </p>
@@ -519,12 +567,12 @@ function CapacityReachedPanel() {
       >
         <div className="meter-row">
           <span className="left">July-cycle cohort</span>
-          <span className="right">Waitlist</span>
+          <span className="right">Paused</span>
         </div>
         <div className="meter-bar">
           <div className="fill" style={{ width: "100%" }} />
         </div>
-        <div className="meter-meta">Checkout pauses when capacity is reached.</div>
+        <div className="meter-meta">Checkout will reopen when enrollment is available.</div>
       </div>
       <Link
         href="/waitlist"
@@ -536,7 +584,7 @@ function CapacityReachedPanel() {
           whiteSpace: "normal",
         }}
       >
-        Join the waitlist <span className="arrow">→</span>
+        Contact support <span className="arrow">→</span>
       </Link>
       <p
         style={{
@@ -547,7 +595,7 @@ function CapacityReachedPanel() {
           textAlign: "center",
         }}
       >
-        You can still take the diagnostic while waiting for the next available seat.
+        You can still take the diagnostic while enrollment is paused.
       </p>
     </div>
   );
@@ -559,6 +607,17 @@ function getCurrentSearchParams(): URLSearchParams {
 
 function getReferralClickId(searchParams: URLSearchParams): string | null {
   return searchParams.get("referral_click_id") ?? searchParams.get("click_id");
+}
+
+function getCouponCode(params: URLSearchParams): string | null {
+  return cleanCouponCode(
+    params.get("coupon") ?? params.get("code") ?? params.get("promo"),
+  );
+}
+
+function cleanCouponCode(value: string | null): string | null {
+  const coupon = value?.trim();
+  return coupon ? coupon.toUpperCase() : null;
 }
 
 const DIAGNOSTIC_ID_RE =

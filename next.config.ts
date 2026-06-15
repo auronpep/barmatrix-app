@@ -88,6 +88,36 @@ const SECURITY_HEADERS = [
   },
 ];
 
+const LEGACY_STATIC_REDIRECTS = [
+  ["/about.html", "/about"],
+  ["/account.html", "/account"],
+  ["/boot-camps.html", "/boot-camps"],
+  ["/certification.html", "/certification"],
+  ["/checkout.html", "/checkout"],
+  ["/dashboard.html", "/dashboard"],
+  ["/diagnostic.html", "/diagnostic"],
+  ["/faq.html", "/faq"],
+  ["/foundations.html", "/foundations"],
+  ["/login.html", "/sign-in"],
+  ["/mastery.html", "/mastery"],
+  ["/partners.html", "/partners"],
+  ["/pricing.html", "/pricing"],
+  ["/privacy.html", "/privacy"],
+  ["/red-zones.html", "/red-zones"],
+  ["/referral.html", "/referral"],
+  ["/refund.html", "/refund"],
+  ["/signin.html", "/sign-in"],
+  ["/signup.html", "/sign-up"],
+  ["/support.html", "/support"],
+  ["/terms.html", "/terms"],
+  ["/timed-sets.html", "/timed-sets"],
+  ["/tensions.html", "/tensions"],
+  ["/traps.html", "/traps"],
+  ["/waitlist.html", "/waitlist"],
+  ["/webinar.html", "/webinar"],
+  ["/welcome", "/account?welcome=1"],
+] as const;
+
 // Vercel hosts both static and server-rendered pages — keep SSR available
 // for future dynamic pages (cohort capacity, dashboard, drills, forensics).
 // Image optimization is on by default on Vercel; no extra config needed.
@@ -110,11 +140,11 @@ const nextConfig: NextConfig = {
         destination: "https://barmatrix.app/:path*",
         permanent: true,
       },
-      {
-        source: "/webinar.html",
-        destination: "/webinar",
+      ...LEGACY_STATIC_REDIRECTS.map(([source, destination]) => ({
+        source,
+        destination,
         permanent: true,
-      },
+      })),
     ];
   },
 };

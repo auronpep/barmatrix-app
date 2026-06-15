@@ -1,5 +1,601 @@
 # BarMatrix Full Bug Audit
 
+# Live Practice And Drill Workflow Verification - 2026-06-13
+
+## Scope
+
+- Verify the live enrolled customer can start a subject practice set and submit an answer.
+- Verify the live enrolled customer can resume a prescribed drill and submit an answer.
+- Separate real launch blockers from browser-automation click noise.
+
+## Plan
+
+- [x] Open live `/practice` in the signed-in browser session.
+- [x] Start Civil Procedure practice and submit one answer.
+- [x] Open live `/drills`, resume an active review drill, and submit one answer.
+- [x] Record route, feedback, layout, and console evidence.
+
+## Verification
+
+- Live practice URL: `https://barmatrix.app/practice?audit=practice_live_after_leadme_20260613`.
+- Practice rendered subject buttons for Civil Procedure, Constitutional Law, Contracts, Criminal Law, Criminal Procedure, Evidence, Real Property, and Torts with one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+- Clicking Civil Procedure loaded `SUBJECT: CIVIL PROCEDURE`, question `1/20`, answer choices, confidence control, and a disabled submit until answer selection.
+- Selecting answer `C` enabled `Submit answer`; submitting rendered `CORRECT`, `RULE FIT`, and `Next question` with one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+- Live drills URL: `https://barmatrix.app/drills?audit=drills_live_after_leadme_20260613`.
+- Drills rendered `Review missed questions`, active `RESUME DRILL` links, prescribed Red-Zone drill cards, one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+- Live review drill URL: `https://barmatrix.app/drills/62ec2e5b-458d-4dd5-9574-e8b546ad80e7?audit=drill_live_after_leadme_20260613`.
+- The review drill rendered `REVIEW MISSED QUESTIONS · QUESTION 1 OF 12`, answer choices, confidence control, and a disabled submit until answer selection.
+- Selecting answer `D` enabled `Submit answer`; submitting advanced to `QUESTION 2 OF 12` and rendered `CORRECT`, `Why that answer was right`, and `Next question ->` with one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+
+## Review
+
+- Status: LIVE-VERIFIED, NO CODE CHANGE.
+- Practice subject flow and review-drill submission flow are working in production for the signed-in enrolled account.
+
+# Lead Me Completion Route Repair - 2026-06-13
+
+## Scope
+
+- Fix the paid Lead Me `/dashboard/path` `MARK COMPLETE` action after live browser testing showed the first task did not persist or advance progress.
+- Keep the existing BMO/J7 guided path UI and day-plan API contract intact.
+
+## Plan
+
+- [x] Reproduce the live signed-in `MARK COMPLETE` no-progress behavior.
+- [x] Trace the frontend completion call to the backend day-plan route.
+- [x] Add focused regression coverage for the exact completion URL contract.
+- [x] Patch the client to call `/api/me/day-plan/steps/:stepId/complete`.
+- [x] Run focused, adjacent, full-suite, lint, diff, and production-build checks.
+- [x] Deploy and live-check production click persistence.
+
+## Verification
+
+- Live pre-fix `/dashboard/path` rendered Day 1 with `MARK COMPLETE`; after clicking the first task, visible progress remained `0%` / `0/50` and the task still showed `MARK COMPLETE`.
+- Root cause: `api.completeMyDayPlanStep()` posted to `/api/me/day-plan/:stepId/complete`, but the API registers `POST /api/me/day-plan/steps/:stepId/complete`.
+- Regression red: `node --test tests\j7-guided-path.test.ts` failed before the patch because the API client did not contain `/api/me/day-plan/steps/${encodeURIComponent(stepId)}/complete`.
+- Focused green: `node --test tests\j7-guided-path.test.ts` passed 1/1 after the patch.
+- Adjacent route/dashboard checks passed: `node --test tests\j7-guided-path.test.ts tests\ambassador-dashboard-entry.test.ts tests\program-loading-headings.test.ts` passed 10/10.
+- Full app suite passed: `node --test tests\*.test.ts` passed 89/89.
+- `npm run lint` passed.
+- `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+- `npm run build` passed and generated `/dashboard/path`.
+- Production deploy `dpl_BpyBUpDBVFtHSMZnYNWch6jn1Umg` completed successfully and was aliased to `https://barmatrix.app`.
+- Live post-deploy `/dashboard/path?postdeploy=leadme_complete_9842a97` settled to Day 1 with `0%`, `0/50`, the active task `Illegal arrest remedy trap`, one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+- Clicking the visible `MARK COMPLETE` button advanced the persisted day-plan state to `2%`, `1/50`, `1/10`, changed the active task to `Grand jury exclusionary-rule posture`, and removed the completed `Illegal arrest remedy trap` from the active slot.
+- Reloading the same live route preserved `2%`, `1/50`, and `Grand jury exclusionary-rule posture`, proving backend persistence rather than only local UI state.
+
+## Review
+
+- Status: DEPLOYED AND LIVE-VERIFIED.
+- Commit: `9842a97 Fix Lead Me day-plan completion route`.
+- Deployment: `dpl_BpyBUpDBVFtHSMZnYNWch6jn1Umg`.
+- Files changed: `lib/api-client.ts`, `tests/j7-guided-path.test.ts`.
+
+# Paid Workflow Anomaly Recheck - 2026-06-13
+
+## Scope
+
+- Recheck suspicious route states from the paid-dashboard sweep after the account loading repair deployed.
+- Separate actual broken states from slow auth/data hydration and case-sensitive smoke-test noise.
+
+## Plan
+
+- [x] Re-poll `/mastery`, `/dashboard/mastery`, `/red-zones`, `/dashboard/final-sprint`, and `/dashboard/path` in the signed-in production browser.
+- [x] Use case-insensitive markers and wait for client-side paid data to settle.
+- [x] Inspect `/red-zones` directly after the initial sweep suggested an empty catalog shell.
+
+## Verification
+
+- `/mastery?anomaly=paid_sweep_20260613` settled to the signed-in C3 Mastery board with dashboard navigation, `Measured on 0 of your 127 attempts`, tagged coverage pending copy, one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+- `/dashboard/mastery?anomaly=paid_sweep_20260613` rendered the restored Pattern Mastery Board with five dimensions, dashboard navigation, one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+- `/dashboard/final-sprint?anomaly=paid_sweep_20260613` rendered the Final Sprint path with Evidence drill links, one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+- `/dashboard/path?anomaly=paid_sweep_20260613` rendered Lead Me Day 1 with daily tasks and `MARK COMPLETE`, one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+- Direct `/red-zones?debug=stuck_catalog_20260613` recheck settled to a populated library: `REPAIR PROGRESS 80%`, `ACTIVE RED ZONES 21`, `TOTAL ZONES 77`, Real Property, Fair play and substantial justice, populated detail links, one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+
+## Review
+
+- Status: LIVE-VERIFIED, NO CODE CHANGE.
+- The remaining anomalies from the broad paid sweep were hydration/timing or uppercase-label smoke-test noise, not confirmed functional blockers.
+
+# Account Loading State Repair - 2026-06-13
+
+## Scope
+
+- Fix the `/account` first-paint experience for enrolled signed-in users so checkout/account access does not briefly look like the old pre-launch placeholder.
+- Keep the existing enrolled account, entitlement, and billing portal behavior intact.
+
+## Plan
+
+- [x] Reproduce the live `/account` placeholder flash in the signed-in browser.
+- [x] Trace the account route loading branch to `useDashboard`.
+- [x] Add regression coverage for the dashboard/auth loading state.
+- [x] Patch account access and entitlement panels to show checking state while auth/enrollment resolves.
+- [x] Run focused/full verification, deploy, and live-check production.
+
+## Verification
+
+- Live pre-fix `/account?triage=auth_loading_20260613` initially rendered `Sign-in is coming online with the cohort launch`, `PENDING SIGN-IN`, `SIGN IN`, and disabled `Checking sign-in...`, even though the same session resolved to `Your BarMatrix access is active.` about two seconds later.
+- Root cause: `AccountAccessPanel` only handled `dash.signedIn && dash.loading`, so the `useDashboard()` state where Clerk/auth was still loading (`loading: true`, `signedIn: false`) fell through to the signed-out launch placeholder.
+- Regression test red/green: `node --test tests\account-entitlement-state.test.ts` failed before the patch and passed after the patch.
+- Adjacent account/auth tests passed: `node --test tests\account-entitlement-state.test.ts tests\api-client-billing-portal.test.ts tests\clerk-auth-fallback.test.ts tests\auth-401-state.test.ts` passed 14/14.
+- Full app suite passed: `node --test tests\*.test.ts` passed 89/89.
+- `npm run lint` passed.
+- `npm run build` passed and generated `/account`.
+- `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+- Production deploy `dpl_4JUP11nDo6mTrK6DiBx2DJcJMTCm` completed successfully and was aliased to `https://barmatrix.app`.
+- Live post-deploy `/account?postdeploy=account_loading_9bed84e` first painted `Checking account status...` and `CHECKING`, did not show the old launch placeholder or `PENDING SIGN-IN`, then resolved to `ACCOUNT ACTIVE`, `Your BarMatrix access is active.`, `Open dashboard`, and `Review red zones`.
+- Live post-deploy account verification had one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+
+## Review
+
+- Status: DEPLOYED AND LIVE-VERIFIED.
+- Commit: `9bed84e Show coherent account loading state`.
+- Deployment: `dpl_4JUP11nDo6mTrK6DiBx2DJcJMTCm`.
+
+# Live Boot Camp Day-One Verification - 2026-06-13
+
+## Scope
+
+- Verify the live paid Boot Camp flow can open the catalog, create a session, enter Day 1, submit an answer, and advance with feedback.
+
+## Plan
+
+- [x] Open live `/boot-camps` in the signed-in browser session.
+- [x] Open a Boot Camp detail page and start a camp.
+- [x] Open the created session Day 1 route.
+- [x] Submit the first answer and verify feedback plus next-question progress.
+
+## Verification
+
+- Live catalog URL: `https://barmatrix.app/boot-camps?audit=boot_live_20260613`.
+- Catalog rendered `Boot Camps`, populated camp entries, one `<main>`, no horizontal overflow, no runtime error text, and no browser console errors.
+- Live detail URL: `https://barmatrix.app/boot-camps/criminal-4th-am-search-seizure?audit=boot_detail_20260613`.
+- Detail rendered `4th Amendment: Search & Seizure Boot Camp` and `Start camp` with one `<main>`, no horizontal overflow, no runtime error text, and no browser console errors.
+- Clicking `Start camp` created session `02721c8c-143d-48e0-8d8f-dbcd5eba6c4d` and opened `/boot-camps/sessions/02721c8c-143d-48e0-8d8f-dbcd5eba6c4d`.
+- Session rendered Day 1 available, Day 2 and Day 3 locked, and `Start day`.
+- Day 1 URL: `https://barmatrix.app/boot-camps/sessions/02721c8c-143d-48e0-8d8f-dbcd5eba6c4d/days/1?audit=boot_day_20260613`.
+- Day 1 rendered question 1 of 10, answer controls, and disabled submit until an answer was selected.
+- Selecting answer `B` and submitting rendered question 2 of 10 with `Correct`, `Why that answer was right`, and `Next question ->`.
+- Post-submit verification had one `<main>`, no horizontal overflow, no runtime error text, and no browser console errors.
+- Fresh checkpoint browser recheck on the same Day 1 session rendered question 2 of 10, accepted answer `C`, advanced to question 3 of 10, and rendered `CORRECT`, `Why that answer was right`, and `Next question ->`; it had one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+
+## Review
+
+- Status: LIVE-VERIFIED.
+- Boot Camps have a usable paid-user catalog-to-session-to-Day-1 feedback loop in production.
+
+# Red-Zone Detail Decode Repair - 2026-06-13
+
+## Scope
+
+- Fix Red-Zone subject/subtopic detail routes that passed URL-encoded route params into the API and rendered empty zones even when the library showed live attempts/questions.
+- Preserve the existing Red-Zone library and repair-drill handoff behavior.
+
+## Plan
+
+- [x] Reproduce the live subject/subtopic detail defect.
+- [x] Add focused regression coverage for decoded Red-Zone detail route params.
+- [x] Decode `dimension` and `tag` route params before querying the API.
+- [x] Run focused/full app verification, deploy, and live-check fixed subject/subtopic details plus drill handoff.
+
+## Verification
+
+- Live pre-fix library check on `https://barmatrix.app/red-zones?audit=red_live_20260613` showed Real Property with 2 attempts / 400 questions and subtopic `Fair play and substantial justice` as `Drill ready`.
+- Live pre-fix detail checks reproduced the defect:
+  - `/red-zones/subtopic/Fair%20play%20and%20substantial%20justice?audit=red_detail_20260613` rendered `You haven't built this zone yet` and `Questions in this zone · 0`.
+  - `/red-zones/subject/Real%20Property?audit=red_subject_20260613` rendered `You haven't built this zone yet`, `Questions in this zone · 0`, and an encoded `REAL%20PROPERTY DRILL` label.
+- Regression coverage added in `tests/red-zone-detail-routing.test.ts`.
+- Focused test passed: `node --test tests\red-zone-detail-routing.test.ts`.
+- Full suite passed: `node --test tests\*.test.ts` passed 88/88.
+- `npm run lint` passed.
+- `npm run build` passed and generated `/red-zones/[dimension]/[tag]`.
+- `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+- Production deploy `dpl_5aRNwpuz3R1LiuQ2d44x3cZFZopR` is live on `https://barmatrix.app`.
+- API health check passed: `https://api.barmatrix.app/health` returned 200 with `{"ok":true,"db":"up"}`.
+- Live post-deploy subject detail check on `https://barmatrix.app/red-zones/subject/Real%20Property?postdeploy=red_decode_2d9f2e4` rendered `Zone status`, `Attempts 2`, `Questions 400`, `Recent wrong-answer forensics · 2`, and `Questions in this zone · 400`; it did not render `REAL%20PROPERTY` or the empty-zone fallback.
+- Live post-deploy subtopic detail check on `https://barmatrix.app/red-zones/subtopic/Fair%20play%20and%20substantial%20justice?postdeploy=red_decode_2d9f2e4` rendered `Zone status`, `Attempts 1`, `Questions 1`, `CP-260`, `Repair this zone`, `Pj Relatedness Drill`, `Civil Procedure drill`, and `Start repair drill`; it did not render encoded labels or the empty-zone fallback.
+- Clicking `Start repair drill` opened `/drills/civil-procedure`; starting the drill served question `1 / 6`, accepted an answer, and rendered `Correct`, `Why that answer works`, `Rule fit`, and `Next Civil Procedure question`.
+- Post-submit drill verification had one `<main>`, no horizontal overflow, no runtime error text, and no browser console errors.
+- Fresh checkpoint browser recheck confirmed `/red-zones/subject/Real%20Property` and `/red-zones/subtopic/Fair%20play%20and%20substantial%20justice` still render decoded labels, expected attempts/questions, no empty-zone fallback, one `<main>`, no horizontal overflow, no runtime error text, and no browser warning/error logs.
+
+## Review
+
+- Status: DEPLOYED AND LIVE-VERIFIED.
+- Commit: `2d9f2e4 Decode red-zone detail route params`.
+- Deployment: `dpl_5aRNwpuz3R1LiuQ2d44x3cZFZopR`.
+
+# Live Coach Baseline Loop Verification - 2026-06-13
+
+## Scope
+
+- Verify the live paid C3 Coach is no longer a dead coverage-pending stop for the signed-in enrolled account.
+- Prove the user can start a baseline coaching item and submit an answer through the production app/API.
+
+## Plan
+
+- [x] Open live `/coach` in the signed-in browser session.
+- [x] Start the coaching session from the visible `Start coaching` control.
+- [x] Submit an answer and verify feedback renders.
+- [x] Record live route, layout, and console evidence.
+
+## Verification
+
+- Live URL: `https://barmatrix.app/coach?audit=coach_live_20260613`.
+- Initial page rendered one `<main>`, no horizontal overflow, no runtime error text, no coverage-pending dead end, and no browser console errors.
+- Clicking `Start coaching` rendered a baseline coach item with `Starting with a baseline question: Starter C3 Baseline (issue sense)` and `Submit answer`.
+- Submitting answer choice `A` rendered `Correct`, `Why that answer was right`, and `Next question`.
+- Post-submit verification had one `<main>`, no horizontal overflow, no runtime error text, and no browser console errors.
+
+## Review
+
+- Status: LIVE-VERIFIED.
+- C3 Coach now provides a usable baseline coaching loop while deeper authored C3 mold-tag coverage continues to mature.
+
+# Live Certification M1 Submit Verification - 2026-06-13
+
+## Scope
+
+- Verify the live paid certification route can load a competency, accept answers, grade, and show remediation without a sync/persistence failure.
+
+## Plan
+
+- [x] Open live `/certification` in the signed-in browser session.
+- [x] Open `/certification/M1`.
+- [x] Select one answer for all ten M1 items.
+- [x] Submit for grading and verify the result page.
+
+## Verification
+
+- Live certification index URL: `https://barmatrix.app/certification?audit=cert_live_20260613`.
+- Index rendered `C3 Mastery Certification`, all ten competency entries, one `<main>`, no horizontal overflow, no runtime error text, no `sync pending` / `not saved` marker, and no browser console errors.
+- Live M1 URL: `https://barmatrix.app/certification/M1?audit=cert_m1_live_20260613`.
+- M1 rendered ten radio-answer items and `Submit for grading`.
+- Selected `NOT-TRUE` for all ten items, submitted, and the results page rendered `M1 · Results`, `Score 5`, item-by-item correct/missed rows, and `Repair -> lesson-01` / `Repair -> lesson-02`.
+- Post-submit verification had one `<main>`, no horizontal overflow, no runtime error text, no `sync pending` / `not saved` marker, and no browser console errors.
+
+## Review
+
+- Status: LIVE-VERIFIED.
+- Certification is currently a preview/sample-item certification loop, but the live route is usable and graded instead of broken or unsaved.
+
+# Live Timed Set Submit Verification - 2026-06-13
+
+## Scope
+
+- Verify the live paid timed-set engine starts a mixed set, accepts an answer, and opens the feedback loop.
+
+## Plan
+
+- [x] Open live `/timed-sets` in the signed-in browser session.
+- [x] Start the 17-question mixed timed set.
+- [x] Select an answer and submit.
+- [x] Verify graded feedback and next-step CTA.
+
+## Verification
+
+- Live URL: `https://barmatrix.app/timed-sets?audit=timed_live_20260613`.
+- Initial timed-set page rendered `Timed Set Engine`, `17-question mixed set`, one `<main>`, no horizontal overflow, no runtime error text, and no browser console errors.
+- Clicking `Start timed mixed set` rendered question `1/17`, kept the subject hidden before submit, showed a running `29:56` clock, and disabled `Submit answer` until an answer was selected.
+- Selecting answer `C` enabled `Submit answer`.
+- Submitting rendered `Correct`, `Transfer held under time`, `Rule fit`, and `Next timed question`.
+- Post-submit verification had one `<main>`, no horizontal overflow, no runtime error text, and no browser console errors.
+
+## Review
+
+- Status: LIVE-VERIFIED.
+- Timed Sets are usable for the first-question timed transfer loop in production.
+
+# Final Sprint Drill Label Polish - 2026-06-13
+
+## Scope
+
+- Fix live final-sprint assigned-drill labels that expose API/storage names such as `review_drill`.
+- Keep the existing final-sprint structure and live dashboard data source.
+
+## Plan
+
+- [x] Add failing regression coverage for final-sprint drill name/status formatting.
+- [x] Use the shared drill-name formatter in the final-sprint live targets panel.
+- [x] Format assigned-drill statuses into readable labels.
+- [x] Run focused/full verification, deploy, live-check, and checkpoint.
+
+## Verification
+
+- Live signed-in route sweep found `/dashboard/final-sprint` rendering raw assigned-drill labels such as `review_drill` and raw status values such as `IN_PROGRESS`.
+- Red test confirmed before implementation: `node --test tests\paid-program-display-labels.test.ts` failed because final sprint did not import/use `formatDrillName` or a status formatter.
+- Focused test passed after implementation: `node --test tests\paid-program-display-labels.test.ts`.
+- Full suite passed: `node --test tests\*.test.ts` passed 87/87.
+- `npm run lint` passed.
+- `npm run build` passed and generated `/dashboard/final-sprint`.
+- `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+- First production live check on `dpl_6667LAQwbSd8y3zMGkRGNFdzG8ZL` confirmed `review_drill` was gone, but CSS still rendered status labels as `IN PROGRESS`; fixed before checkpoint.
+- Follow-up focused test passed: `node --test tests\paid-program-display-labels.test.ts`.
+- Follow-up full suite passed: `node --test tests\*.test.ts` passed 87/87.
+- Follow-up `npm run lint` passed.
+- Follow-up `npm run build` passed and generated `/dashboard/final-sprint`.
+- Production deployment `dpl_FuayCdbJF1ahLqrNKzkYAptbpHEc` was ready and aliased to `https://barmatrix.app`.
+- Live signed-in browser verification on `https://barmatrix.app/dashboard/final-sprint` showed `Review Missed Questions` and `In Progress`, did not show `review_drill` or `IN_PROGRESS`, had one `<main>`, no horizontal overflow, no runtime error text, and no console errors.
+- API health check passed: `https://api.barmatrix.app/health` returned 200.
+
+## Review
+
+- Status: deployed and live-verified on production.
+- Checkpoint tag: `live-final-sprint-labels-2026-06-13-dpl-FuayCdb`.
+
+# Diagnostic Recommendation Shape Repair - 2026-06-13
+
+## Scope
+
+- Align the diagnostic results recommendation CTA with the live API response shape.
+- Preserve the existing internal route normalization and enrolled/not-enrolled decision panels.
+
+## Plan
+
+- [x] Add failing regression coverage for object-shaped recommendation levels and `next_step.primary_label`.
+- [x] Extend the typed API contract for the live diagnostic recommendation shape.
+- [x] Normalize recommendation level/copy/CTA labels from both old and current API shapes.
+- [x] Run focused test, full tests, lint, build, deploy, live-verify, and checkpoint.
+
+## Verification
+
+- Red test confirmed before implementation: `node --test tests\diagnostic-results-enrolled-cta.test.ts` failed because object-shaped `recommendation.level` and `next_step.primary_label` were not handled.
+- Focused test passed after implementation: `node --test tests\diagnostic-results-enrolled-cta.test.ts`.
+- `npm run build` initially failed because the new union type could still pass an object into `normalizeLevel`; fixed by splitting object and primitive level branches.
+- Fresh focused test passed after the type fix: `node --test tests\diagnostic-results-enrolled-cta.test.ts`.
+- Fresh `npm run build` passed and generated `/diagnostic/[session]/results`.
+- Fresh full suite passed: `node --test tests\*.test.ts` passed 86/86.
+- Fresh `npm run lint` passed.
+- Fresh `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+- Production deploy `dpl_AozaqJ9Q2yTEeNw5bQCU6qS12MGV` is `READY` and aliased to `https://barmatrix.app` and `https://www.barmatrix.app`.
+- Live browser smoke on `https://barmatrix.app/diagnostic/a017791e-90bf-4c50-a46c-b5428d06715d/results` confirmed the API-shaped recommendation renders `L4 · Exam-ready refinement`, the API description, and `START THE METHOD`; it does not render the generic `START HERE` fallback.
+- The same live browser smoke confirmed one `<main>`, `Your Red-Zone Map`, the active-access panel, `do not enroll again`, no horizontal overflow, no runtime error text, and no browser console errors.
+- Live HTTP checks returned 200 for `/diagnostic/a017791e-90bf-4c50-a46c-b5428d06715d/results`, 200 for `/diagnostic`, and 200 for `https://api.barmatrix.app/health`.
+
+## Review
+
+- Status: DEPLOYED AND LIVE-VERIFIED.
+- This is a narrow app/API contract repair for diagnostic recommendation copy and CTA labels. It does not alter checkout, entitlement provisioning, or dashboard APIs.
+
+# Diagnostic Results Access Confirmation Guard - 2026-06-13
+
+## Scope
+
+- Prevent diagnostic results from asking a signed-in customer to enroll again when the dashboard entitlement check is unavailable.
+- Keep true anonymous/not-enrolled diagnostic takers on the sales path.
+
+## Plan
+
+- [x] Add failing regression coverage for the signed-in dashboard-error state.
+- [x] Add a distinct access-unavailable state on diagnostic results.
+- [x] Render an account/dashboard recovery panel instead of checkout CTAs when active access cannot be confirmed.
+- [x] Run focused test, full tests, lint, build, diff check, deploy, and live-verify.
+
+## Verification
+
+- Red test confirmed before implementation: `node --test tests\diagnostic-results-enrolled-cta.test.ts` failed because the dashboard-error access branch did not exist.
+- Focused test passed after implementation: `node --test tests\diagnostic-results-enrolled-cta.test.ts`.
+- Full suite passed: `node --test tests\*.test.ts` passed 86/86.
+- `npm run lint` passed.
+- `npm run build` passed and generated `/diagnostic/[session]/results`.
+- `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+- Local production browser smoke on `http://127.0.0.1:3041/diagnostic/a017791e-90bf-4c50-a46c-b5428d06715d/results` rendered one `<main>`, `Your Red-Zone Map`, no horizontal overflow, no runtime error text, and no browser console errors. The throwaway live API diagnostic result was available directly; the local browser page exercised the results-unavailable fallback cleanly.
+- Production deploy `dpl_KT8ExQB6Dca91QJhy8tDSByd1Crd` is `READY` and aliased to `https://barmatrix.app` and `https://www.barmatrix.app`.
+- Live browser smoke on `https://barmatrix.app/diagnostic/a017791e-90bf-4c50-a46c-b5428d06715d/results` rendered one `<main>`, `Your Red-Zone Map`, the active-access panel (`This map is already tied to active Flagship access.`), `do not enroll again`, no horizontal overflow, no runtime error text, and no browser console errors.
+- Live HTTP checks returned 200 for `/diagnostic/a017791e-90bf-4c50-a46c-b5428d06715d/results`, 200 for `/diagnostic`, 307 from anonymous `/dashboard` to sign-in, and 200 for `https://api.barmatrix.app/health`.
+
+## Review
+
+- Status: DEPLOYED AND LIVE-VERIFIED.
+- This is a narrow diagnostic-results guard. It does not alter checkout, entitlement provisioning, or dashboard APIs; it prevents an uncertain signed-in access check from becoming an enrollment prompt.
+
+# Refund Policy Route Restore - 2026-06-13
+
+## Scope
+
+- Restore the buyer-facing refund/dispute policy surface that existed in the ABM launch pages but was missing from the integrated Next app.
+- Make `/refund` a first-class legal route and link it from checkout, the footer, and sitemap.
+
+## Plan
+
+- [x] Add regression coverage for `/refund`, 3-day copy, checkout/footer links, and sitemap inclusion.
+- [x] Add `app/refund/page.tsx` with the 3-day refund window, 2-pay handling, payment-plan switching, and billing/support contacts.
+- [x] Link Refund Policy from checkout FAQ and the global footer.
+- [x] Add `/refund` to the sitemap.
+- [x] Run focused test, full tests, lint, build, and diff check.
+- [x] Deploy and live-verify `/refund`.
+
+## Verification
+
+- Red test confirmed before implementation: `node --test tests\refund-policy-route.test.ts` failed because `app/refund/page.tsx` did not exist.
+- Focused test passed after implementation: `node --test tests\refund-policy-route.test.ts`.
+- Full suite passed: `node --test tests\*.test.ts` passed 86/86.
+- `npm run lint` passed.
+- `npm run build` passed and listed `/refund` in the production route table.
+- `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+- Production deploy `dpl_CuCUGubu2SFArnzETFFHSzxoppsm` is `READY` and aliased to `https://barmatrix.app`.
+- Live checks passed: `/refund` returned HTTP 200 with `Refund Policy`, `3-day window`, and `billing@barmatrix.app`; it did not contain `7-day`; `/checkout` and footer pages link to `/refund`; `/sitemap.xml` includes `https://barmatrix.app/refund`.
+
+# Stripe Public Branding Provider Item - 2026-06-12
+
+## Scope
+
+- Investigate why Stripe Checkout still shows `JWM Services` during BarMatrix enrollment.
+- Keep checkout code safe; do not deploy a Stripe SDK/type bypass that could break live checkout.
+
+## Findings
+
+- Official Stripe docs confirm `branding_settings.display_name` can override the Checkout header, and account public business details control broader customer-facing branding.
+- A live Stripe Checkout probe with `branding_settings.display_name=BarMatrix` showed `BarMatrix` at the top, but the browser title and Link trust copy still showed `JWM Services`.
+- Read-only Stripe account check showed customer-facing account fields still point away from BarMatrix:
+  - Public business name: `JWM Services`
+  - Business website: `https://988Foundation.com`
+  - Dashboard display name: `JWM Services`
+  - Statement descriptor: `JOSH WOOD INC`
+- Stripe rejected own-account public-profile updates through the API; these fields must be changed in Stripe Dashboard.
+- Chrome automation is unavailable in this session, and the in-app browser is not logged into Stripe Dashboard.
+
+## Required Dashboard Action
+
+- Open `https://dashboard.stripe.com/settings/public`.
+- Set public business name to `BarMatrix`.
+- Set business website to `https://barmatrix.app`.
+- Set support email to `support@barmatrix.app`.
+- Create a fresh checkout session and verify `JWM Services` no longer appears.
+
+## Review
+
+- Status: PROVIDER-SIDE PENDING.
+- App worktree and API worktree are clean; no code deploy is required for this branding issue unless Dashboard changes do not clear the stale checkout branding.
+
+# Paid Program Page Heading Repair - 2026-06-12
+
+## Scope
+
+- Fix live paid-program surfaces that can temporarily render without a page-level heading while client-side access/status data loads.
+- Keep the visible UI unchanged except for the existing final states.
+- Cover `/dashboard/path` and `/certification`, the two routes found by live browser audit.
+
+## Plan
+
+- [x] Run a live browser route sweep across launch-critical public, checkout, account, dashboard, and study surfaces.
+- [x] Add failing regression coverage for loading-state page headings.
+- [x] Add stable hidden headings to the guided path and certification loading states.
+- [x] Run focused tests, full tests, lint, build, diff check, and local browser smoke.
+
+## Verification
+
+- Live browser sweep found no raw runtime errors, no horizontal overflow, and no console errors across `/`, `/diagnostic`, `/pricing`, `/checkout`, `/checkout?coupon=JESUSLOVESYOU`, `/checkout/success`, `/account`, `/dashboard`, `/dashboard/path`, `/drills`, `/boot-camps`, `/timed-sets`, `/mastery`, `/coach`, and `/certification`; `/dashboard/path` and `/certification` were the only audited surfaces with empty first-heading state during loading.
+- Red test confirmed: `node --test tests\program-loading-headings.test.ts` failed before implementation because the guided path and certification loading branches had no `<h1>`.
+- Focused program tests passed: `node --test tests\program-loading-headings.test.ts tests\ambassador-dashboard-entry.test.ts tests\certification-cta.test.ts tests\certification-runner-locked-state.test.ts`.
+- Full suite passed: `node --test tests\*.test.ts` passed 84/84.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `git diff --check` passed with only the existing Windows LF-to-CRLF warning.
+- Local production browser smoke on `http://127.0.0.1:3028/dashboard/path` and `/certification` confirmed a page-level heading, one `<main>`, no horizontal overflow, no raw runtime error text, and no console errors.
+- Production deploy `dpl_3PmcSfNkWDkmZqLQrzYuJB38R9Fj` is `READY` and aliased to `https://barmatrix.app` and `https://www.barmatrix.app`.
+- Live HTTP checks returned 200 for `https://barmatrix.app/dashboard/path` and `/certification`.
+- Live browser smoke confirmed both routes have a page-level heading during the loading state, then settle to visible headings: `Day 1: Trap Hunt and C3 Power-Up` on `/dashboard/path` and `C3 Mastery Certification` on `/certification`.
+- Production source tag pushed: `live-program-loading-headings-2026-06-13-dpl-3PmcSfN`.
+
+## Review
+
+- Status: DEPLOYED AND LIVE-VERIFIED.
+- This is a narrow paid-program polish/accessibility fix; it does not alter checkout, entitlement, API contracts, or paid-study behavior.
+
+# Coupon Checkout Context - 2026-06-12
+
+## Scope
+
+- Keep coupon traffic on the pay-in-full checkout path because live API policy restricts promotion codes to pay-in-full sessions.
+- Make the app checkout page explain the rule before the visitor reaches Stripe.
+- Disable the payment-plan CTA when a coupon, code, or promo parameter is present.
+
+## Plan
+
+- [x] Add a failing regression test for coupon URL context on `/checkout`.
+- [x] Extend checkout attribution to read `coupon`, `code`, and `promo` URL parameters.
+- [x] Show coupon-context copy that tells visitors to enter the code in Stripe after choosing pay in full.
+- [x] Disable the payment-plan CTA for coupon traffic and guard the two-pay enroll function.
+- [x] Run focused tests, full tests, lint, build, diff check, and local browser smoke.
+
+## Verification
+
+- Red test confirmed: `node --test tests\checkout-coupon-context.test.ts` failed before implementation because coupon handling did not exist.
+- Focused checkout tests passed: `node --test tests\checkout-coupon-context.test.ts tests\checkout-success-state.test.ts tests\diagnostic-first-sales-copy.test.ts tests\noindex-transactional-pages.test.ts`.
+- Full suite passed: `node --test tests\*.test.ts` passed 82/82.
+- `npm run lint` passed.
+- `npm run build` passed.
+- `git diff --check` passed with only the existing Windows LF-to-CRLF warning.
+- Local production browser smoke on `http://127.0.0.1:3027/checkout?coupon=JESUSLOVESYOU&source=codex_coupon_context` confirmed the coupon panel rendered, `JESUSLOVESYOU` was visible, the pay-in-full button stayed enabled, the payment-plan button was disabled with `Payment plan unavailable with coupon`, one `<main>` rendered, no horizontal overflow appeared, and no console errors were captured.
+- Production deploy `dpl_B5oVpDemJwE4Pze2n8RgG1eKGByt` is `READY` and aliased to `https://barmatrix.app` and `https://www.barmatrix.app`.
+- Live HTTP check on `https://barmatrix.app/checkout?coupon=JESUSLOVESYOU&source=codex_coupon_context` returned 200.
+- Live browser smoke confirmed the coupon panel rendered, `JESUSLOVESYOU` was visible, the pay-in-full button stayed enabled, the payment-plan button was disabled with `Payment plan unavailable with coupon`, one `<main>` rendered, no horizontal overflow appeared, and no console errors were captured.
+- Production source tag pushed: `live-coupon-checkout-context-2026-06-13-dpl-B5oVpDem`.
+
+## Review
+
+- Status: DEPLOYED AND LIVE-VERIFIED.
+- This pairs with the already-deployed API coupon policy: Stripe promotion codes are available only on pay-in-full checkout, while two-pay checkout still requires first and last name but no longer offers a coupon field.
+
+# Old Integrated App Marketing Transplant - 2026-06-13
+
+## Scope
+
+- Use the old integrated Next.js app lineage from `origin/main` as the product foundation.
+- Carry forward only production-proven restore fixes from the current live branch: diagnostic-first sales copy, C3 mastery fallback, BMO dashboard/path split, paid program command center, mobile nav overflow fix, and coach starter-baseline labeling.
+- Preserve `C:\ABM` as rollback/reference, not as the product foundation.
+
+## Plan
+
+- [x] Create isolated worktree `C:\barmatrix-app\.worktrees\old-app-marketing-transplant` from `origin/main`.
+- [x] Baseline the old integrated app with tests, lint, build, route inventory, and local browser smoke.
+- [x] Carry forward selected production-proven source commits without pure deployment-record commits.
+- [x] Fix the dashboard cohort-status card so local/API failure does not expose raw `Failed to fetch` copy.
+- [x] Run full tests, lint, build, diff check, local route smoke, and live browser smoke.
+- [x] Deploy production candidate to `https://barmatrix.app`.
+
+## Verification
+
+- Baseline old app showed one known regression: `tests\mastery-coverage-pending-copy.test.ts` failed before carrying forward the proven C3 mastery fix.
+- After transplant and dashboard fallback polish, `node --test tests\*.test.ts` passed 78/78.
+- `npm run lint` passed.
+- `npm run build` passed and generated the full integrated route surface, including `/dashboard`, `/dashboard/path`, `/dashboard/mastery`, `/dashboard/final-sprint`, `/practice`, `/drills`, `/boot-camps`, `/timed-sets`, `/mastery`, `/coach`, and `/certification`.
+- `git diff --check` passed with only normal Windows LF-to-CRLF warnings.
+- Local HTTP route smoke on `http://127.0.0.1:3032` returned usable pages for public, checkout, account, dashboard, and paid-program routes.
+- Local browser verification confirmed mobile `/dashboard` no longer exposes raw `Failed to fetch`; it shows friendly cohort status fallback copy instead.
+- Production deploy `dpl_3CYZTWM8TVTxS5u4xDu986M8fdeR` is `READY` and aliased to `https://barmatrix.app` and `https://www.barmatrix.app`.
+- Live HTTP route smoke passed on `https://barmatrix.app`: public routes returned 200, protected account/dashboard/drills routes redirected when anonymous, and no route returned application/runtime error text.
+- Live browser smoke passed on public, checkout, dashboard, dashboard/path, mastery-board, final-sprint, practice, red-zone, boot-camp, timed-set, mastery, coach, and certification surfaces: one `<main>`, no horizontal overflow, no raw `Failed to fetch`, and no application/runtime error text.
+- Signed-in browser state verified `/dashboard/path` renders `Lead Me`, `Day 1: Trap Hunt and C3 Power-Up`, and `Current Task`; `/certification` settles to `C3 Mastery Certification`.
+- Production source tag pushed: `live-old-app-marketing-transplant-2026-06-13-dpl-3CYZTWM`.
+
+## Review
+
+- Status: DEPLOYED AND LIVE-VERIFIED. This is the cleaner old-integrated-app foundation with selected new marketing and proven repair fixes, not the ABM/Vite rebuild path.
+
+# Restore Old Integrated App + New Marketing Layer
+
+## Scope
+
+- Use `C:\barmatrix-app` as the restoration base because it is the integrated Next.js product app with Clerk, API-backed diagnostic sessions, dashboard, account, red zones, drills, boot camps, mastery, certification, checkout, analytics, and deployed Vercel wiring.
+- Treat `C:\BMO` as the operations and product source of truth for rules, stack, API contracts, locked offer language, and drift control.
+- Treat `C:\ABM` as the current live rebuild checkpoint and marketing/reference layer only. Do not continue rebuilding product functionality inside ABM.
+- Preserve the current live rebuild checkpoint at `auronpep/ABM` branch `codex/launch-stabilization`, commit `2a90f5d`, tag `live-checkpoint-2026-06-12-dpl-2DBvda2r`.
+
+## Plan
+
+- [x] Create isolated restore worktree `C:\barmatrix-app\.worktrees\restore-old-app-marketing` on branch `codex/restore-old-app-marketing` from `origin/main`.
+- [x] Verify `auronpep/barmatrix-app` is private before remote write decisions.
+- [x] Read local Next.js 16 docs before editing.
+- [x] Run baseline restore-app checks: `npm run lint` and `npm run build`.
+- [x] Confirm live API health and cohort status from `https://api.barmatrix.app`.
+- [x] Bring over only selected ABM marketing/sales language that strengthens the current integrated app without weakening the product engine.
+- [ ] Keep real integrated app routes and API-backed product flows as the canonical app: `/diagnostic`, `/dashboard`, `/account`, `/drills`, `/red-zones`, `/boot-camps`, `/timed-sets`, `/mastery`, `/certification`, `/checkout`, `/checkout/success`, `/sign-in`, and `/sign-up`.
+- [ ] Verify public copy against BMO drift rules: no discount, no coupon offer, no early-bird language, no public seat number, no guarantee, no official-affiliation claims.
+- [ ] Verify local build and smoke the launch-critical routes before any production deploy.
+- [ ] Deploy from this integrated app worktree only after Vercel project link and production target are intentionally present.
+
+## Evidence So Far
+
+- `C:\barmatrix-app` README identifies this repo as the production Next.js web app and points to `C:\BMO\BARMATRIX` for locked offer, stack, copy, taxonomy, schema, and operating rules.
+- `C:\BMO\STATE.md` identifies `C:\barmatrix-app` as `app-repo` and `C:\barmatrix-api` as `api-repo`; BMO is the orchestration layer, not the deployed app.
+- `C:\BMO\BARMATRIX\engineering\STACK_AND_DEPLOYMENT.md` confirms Next.js 16 on Vercel, Hostinger Node/Express API, Hostinger MySQL/MariaDB, Clerk, Stripe, PostHog, Resend, and Sentry.
+- `C:\BMO\BARMATRIX\RULES.md` requires every paid user to receive entitlement immediately after successful checkout and requires the dashboard to show what to do next.
+- Baseline restore worktree verification passed: `npm run lint`; `npm run build`.
+- Live API checks passed: `/health` returned `{"ok":true,"db":"up"}` and `/api/cohort/status` returned current public cohort copy.
+- Added `tests/diagnostic-first-sales-copy.test.ts`; red state confirmed before implementation and green state passed after implementation.
+- Integrated ABM's strongest diagnostic-first sales idea into the real app: `app/page.tsx` now has a proof-before-price bridge, and `app/pricing/page.tsx` explains that the free diagnostic shows the same diagnostic-to-repair loop used after enrollment.
+- Post-change verification passed: `node --test tests\diagnostic-first-sales-copy.test.ts`, `npm run lint`, and `npm run build`.
+- Local browser smoke passed on `http://127.0.0.1:3000/` and `/pricing`: the new proof-before-price copy rendered, each route had one `<main>`, neither route had horizontal overflow, and no browser warning/error logs were captured.
+- Full app test sweep initially found an existing C3 Mastery copy regression. Fixed `app/mastery/page.tsx` so coverage-pending users see `Tagged coverage pending` and are not sent back by stale `Finish The Method, then work questions` copy.
+- Full app verification now passes: `node --test tests\*.test.ts` passed 71/71, `npm run lint` passed, and `npm run build` passed.
+
+## Review
+
+- Active conclusion: restore from the integrated Next app, not from the static ABM rebuild. ABM remains useful for selected marketing phrasing and the current-live rollback checkpoint, but it is not the product foundation.
+- First restore slice preserves the integrated app engine and changes only public sales copy plus the tracker/test guard.
+- Second restore slice fixed a pre-existing C3 Mastery readiness test failure so the integrated app branch is a cleaner base for route smoke and eventual restore deploy.
+
 ## Scope
 
 - Audit the local BarMatrix study web app from the rendered UI and project runtime evidence.
@@ -3153,3 +3749,249 @@
 ## Production Deploy Retry
 
 - Vercel created production deployment `dpl_U35KJtpRbrVUUqw53cSBiGaFSxFT` for `a7e51dd` but marked it `BLOCKED` before build logs existed; `main` is being advanced with the previously deployed repository author identity for the next production workflow run.
+
+# BMO Paid Dashboard Restore - 2026-06-12
+
+## Scope
+
+Restore the paid-user dashboard behavior from the old BMO-operated BarMatrix app into the current integrated restore branch. Keep the new diagnostic-first marketing path, but make enrolled users land in the proven J7 "Lead Me" Day 1-3 guided dashboard instead of the older metric/resource dashboard.
+
+## Plan
+
+- [x] Treat `C:\BMO` as the historical operating source and confirm its app/API repo junctions.
+- [x] Read BMO tracker evidence for the last verified paid dashboard release.
+- [x] Compare current restore branch against the BMO/J7 guided dashboard source.
+- [x] Restore the J7 dashboard page, First 3 Days day cards, day-plan hook, and API-client day-plan contract.
+- [x] Run focused dashboard regression tests.
+- [x] Run app lint/build checks.
+- [x] Browser-smoke signed-out dashboard behavior locally.
+- [ ] Browser-smoke enrolled dashboard behavior after deploy.
+- [ ] Commit, deploy, and verify live if checks pass.
+
+## Review Log
+
+- 2026-06-12: User noted the old working BarMatrix system was operated from `C:\BMO`.
+- 2026-06-12: `C:\BMO\app-repo` is a junction to `C:\barmatrix-app`; `C:\BMO\api-repo` is a junction to `C:\barmatrix-api`; `C:\BMO\website-repo` is a junction to `C:\barmatrix-site`.
+- 2026-06-12: BMO tracker evidence identified the last verified paid-user dashboard target as the June 8 J7 guided-path release: enrolled `/dashboard` rendered `First 3 Days`, `Current Task`, Day 1 active, Day 2/3 locked, and `/api/me/day-plan` returned `enrolled: true`.
+- 2026-06-12: Current restore branch lacked `lib\use-day-plan.ts`, `tests\j7-guided-path.test.ts`, and dashboard source markers for `First 3 Days`, `Current Task`, and `day_summaries`.
+- 2026-06-12: Restored the J7 dashboard surface into the current branch: `app\dashboard\page.tsx`, `app\dashboard\day-cards.tsx`, `lib\use-day-plan.ts`, `tests\j7-guided-path.test.ts`, and `/api/me/day-plan` client methods/types.
+- 2026-06-12: Restored the BMO/J7 dashboard shell: removed the competing dashboard program-resource navigation strip and redirected `/dashboard/path`, `/dashboard/mastery`, and `/dashboard/final-sprint` back to `/dashboard`.
+- 2026-06-12: Removed stale public bank language from the current sales path: `finite universe`, `forensic bank`, `question-bank access`, and `resource dashboard`. Homepage now leads with `Find the MBE red zones your question sets are hiding.`
+- 2026-06-12: Focused tests passed: `node --test tests\j7-guided-path.test.ts tests\ambassador-dashboard-entry.test.ts tests\diagnostic-results-enrolled-cta.test.ts`.
+- 2026-06-12: Full app checks passed: `node --test tests\*.test.ts` (73/73), `npm run lint`, `npm run build`, and `git diff --check` with normal Windows line-ending warnings only.
+- 2026-06-12: Local production browser smoke on `http://127.0.0.1:3018` passed for desktop `/`, `/pricing`, `/checkout`, `/checkout/success`, `/dashboard`, `/dashboard/path` and mobile `/`, `/pricing`, `/checkout`, `/dashboard`: one `<main>`, no horizontal overflow, no browser errors, no stale bank language, `/dashboard/path` resolved to `/dashboard`, and signed-out dashboard showed the guided-path shell with sign-in state.
+- 2026-06-12: App commit `5fe9c2d` (`Restore BMO guided dashboard`) was pushed to private branch `codex/restore-old-app-marketing` and deployed to Vercel production deployment `dpl_5omyrAK5VaCEwywHK8a3HvvYAQqM`, aliased to `https://barmatrix.app` and `https://www.barmatrix.app`.
+- 2026-06-12: Live browser smoke passed for desktop `/`, `/pricing`, `/checkout`, `/checkout/success` and mobile `/`, `/pricing`, `/checkout`: new diagnostic-first headline rendered, no stale bank language, one `<main>`, no horizontal overflow, and no browser errors.
+- 2026-06-12: Live signed-out protected route smoke returned 307 to `/sign-in?redirect_url=...` for `/dashboard`, `/dashboard/path`, `/dashboard/mastery`, and `/dashboard/final-sprint`.
+- 2026-06-12: Live enrolled QA dashboard initially proved the app restoration but exposed an API copy issue: the API still served internal labels like `Diagnostic A question 1` and `Diagnostic A external question 14556`.
+- 2026-06-12: API worktree `C:\barmatrix-api\.worktrees\checkout-clerk-access` commit `ee727b3` (`Clean Lead Me day-plan labels`) was built, manually deployed to Hostinger from the same artifacts using the documented atomic staging/swap pattern after `scripts\deploy.sh` hung at the Windows bash boundary, and production API health returned `{"ok":true,"db":"up"}`.
+- 2026-06-12: Live enrolled QA dashboard after API restart rendered `Lead Me`, `First 3 Days`, Day 1 active, Day 2/3 locked, `Current Task`, and `Illegal arrest remedy trap`; it no longer showed sign-in/enroll prompts, `Diagnostic A external question 14556`, internal content codes, raw errors, browser errors, or horizontal overflow.
+- 2026-06-12: Live enrolled QA diagnostic-results check passed after submitting an 18-question placement session. `/diagnostic/session/<session>/results` rendered `Your C3 Starting Level`, `Recommended Next Step - L1`, and `Start The Method`, with no enrollment pitch, no raw errors, no browser errors, one `<main>`, and no horizontal overflow.
+
+## Review Results
+
+- Status: DEPLOYED AND LIVE-VERIFIED. The public sales path keeps diagnostic-first marketing, checkout/account routes remain usable, and enrolled users now land on the BMO/J7 guided paid dashboard with customer-facing task labels.
+
+# BMO Paid Functionality Restore - 2026-06-13
+
+## Scope
+
+Restore the older BMO paid dashboard functionality that the first launch repair collapsed, while keeping the diagnostic-first marketing/sales path and Lead Me as the primary paid-user path.
+
+## Plan
+
+- [x] Branch from clean live checkpoint `checkpoint-current-live-bmo-restore-2026-06-12`.
+- [x] Preserve Lead Me by moving the day-plan dashboard from `/dashboard` to `/dashboard/path`.
+- [x] Restore old BMO dashboard overview, mastery board, final sprint, and dashboard nav from `feat/j7-lead-me-path`.
+- [x] Point post-checkout/account/header entry links to `/dashboard/path`.
+- [x] Update focused tests to assert the restored route split.
+- [x] Run full unit/static tests, lint, production build, and browser route smoke.
+
+## Review Log
+
+- 2026-06-13: Created branch `codex/bmo-paid-functionality-restore` from the clean deployed checkpoint worktree.
+- 2026-06-13: `/dashboard/path` now owns the J7 Lead Me day-plan dashboard.
+- 2026-06-13: `/dashboard` now restores the old full dashboard with dashboard metrics, Method entry, C3/mastery entry, next drill, and recent forensics.
+- 2026-06-13: `/dashboard/mastery` and `/dashboard/final-sprint` are restored as real pages instead of redirecting back to `/dashboard`.
+- 2026-06-13: Dashboard nav restored `My Path`, `Full Dashboard`, `Mastery Board`, `Final Sprint`, and program links, with `My Path` first.
+- 2026-06-13: Post-checkout success, account active/error panels, nav auth, and welcome copy now point the primary guided-path CTA at `/dashboard/path`.
+
+## Verification
+
+- `node --test tests\ambassador-dashboard-entry.test.ts tests\j7-guided-path.test.ts tests\diagnostic-first-sales-copy.test.ts` passed.
+- `node --test tests\*.test.ts` passed 73/73.
+- `npm run lint` passed.
+- `npm run build` passed; Next build output includes `/dashboard`, `/dashboard/path`, `/dashboard/mastery`, and `/dashboard/final-sprint`.
+- Local production server on `http://localhost:3022` rendered `/dashboard/path`, `/dashboard`, `/dashboard/mastery`, `/dashboard/final-sprint`, and `/checkout/success` with no raw errors, one `<main>`, and no horizontal overflow.
+- Deeper DOM check on `/dashboard` confirmed restored nav text: `MY PATH`, `FULL DASHBOARD`, `MASTERY BOARD`, `FINAL SPRINT`, and program links.
+- Production deployment `dpl_7jK8Q3gp1h1Tq1QtDKFYcnSPhK2d` built successfully and aliased to `https://barmatrix.app`.
+- Production tag `live-bmo-paid-tools-2026-06-13-dpl-7jK8Q3g` was pushed for rollback/reference.
+- Live browser smoke on `https://barmatrix.app` passed for `/`, `/checkout/success`, `/dashboard/path`, `/dashboard`, `/dashboard/mastery`, and `/dashboard/final-sprint`: no raw errors, one `<main>`, no horizontal overflow.
+- Live enrolled browser state confirmed `/dashboard/path` rendered `Day 1: Trap Hunt and C3 Power-Up`, `/dashboard` rendered the restored dashboard nav, `/dashboard/mastery` rendered `Your weakest patterns, ranked by dimension.`, and `/dashboard/final-sprint` rendered `The last two weeks become a daily repair plan.`
+
+# Diagnostic Results Access-Aware CTA - 2026-06-13
+
+## Scope
+
+Fix the post-enrollment diagnostic results page so an enrolled customer who finishes the diagnostic is routed into the paid repair path instead of seeing checkout/enrollment CTAs again.
+
+## Plan
+
+- [x] Confirm the old-core transplant branch is based on the integrated `C:\BMO` / `C:\barmatrix-app` system, not `C:\ABM`.
+- [x] Add regression coverage for access-aware diagnostic results CTAs.
+- [x] Use existing dashboard/account entitlement state to distinguish signed-out leads, signed-in non-enrolled users, loading access checks, and enrolled students.
+- [x] Keep anonymous diagnostic results as a sales path while replacing enrolled-user checkout copy with repair-path links.
+- [x] Run focused tests, full app tests, lint, build, and diff hygiene checks.
+- [x] Deploy and live-verify the signed-in enrolled diagnostic result path.
+
+## Review Log
+
+- 2026-06-13: Verified `C:\BMO\app-repo` is a junction to `C:\barmatrix-app`, `C:\BMO\api-repo` is a junction to `C:\barmatrix-api`, and `C:\BMO\website-repo` is a junction to `C:\barmatrix-site`.
+- 2026-06-13: Compared `origin/main` old-core commit `86ce44b` with current transplant commit `6a1f596`; route inventory matched, and the diff was scoped to checkout, marketing, dashboard/path, paid labels, and tests rather than a wholesale route replacement.
+- 2026-06-13: Added `tests\diagnostic-results-enrolled-cta.test.ts` assertions requiring `useDashboard()` access state and an enrolled branch linking to `/dashboard/path`.
+- 2026-06-13: Patched `app\diagnostic\[session]\results\page.tsx` so signed-out and signed-in non-enrolled users keep the checkout/save-map pitch, loading users see an access-check panel, and enrolled users see `Continue your repair path` plus Red-Zone Map links with no re-enrollment instruction.
+- 2026-06-13: Also made the no-repeated-pattern result copy access-aware so enrolled students are not told to enroll after a clean diagnostic.
+- 2026-06-13: Verification passed: `node --test tests\diagnostic-results-enrolled-cta.test.ts`, adjacent route/copy tests, `node --test tests\*.test.ts` (85/85), `npm run lint`, `npm run build`, and `git diff --check` with normal Windows line-ending warnings only.
+- 2026-06-13: Production deployment `dpl_3mKFLNrKwbz44H4mPx5W2CiN4DjJ` built successfully and was aliased to `https://barmatrix.app`.
+- 2026-06-13: Live browser verification passed on `/dashboard`, `/account`, `/dashboard/path`, `/dashboard/mastery`, and `/certification`: one `<main>`, no raw runtime errors, no horizontal overflow, and paid-program content rendered.
+- 2026-06-13: Created anonymous throwaway diagnostic session `958e4745-95a3-4fff-a426-3302b2edc30f` via public API, recorded 20/20 anonymous attempts, and opened its live results page in the signed-in browser session.
+- 2026-06-13: Live signed-in diagnostic results verification passed: page rendered `Your repair path is built`, `Continue your repair path`, `/dashboard/path`, and `do not enroll again`; `Enroll and save this map` was absent.
+
+# Dashboard Route Split Hardening - 2026-06-13
+
+## Scope
+
+Preserve the intended paid-program navigation split: `/dashboard/path` is the primary Lead Me guided path, while `/dashboard` remains the full old dashboard for metrics, red-zone state, next drill, and recent forensics.
+
+## Plan
+
+- [x] Prove the current source still lets `/dashboard` short-circuit into Lead Me.
+- [x] Add a regression that keeps `usePath` and `PathSurface` out of `/dashboard`.
+- [x] Remove the `/dashboard` Lead Me takeover while leaving `/dashboard/path` unchanged.
+- [x] Run focused dashboard/path tests.
+- [x] Run full app tests, lint, and production build.
+- [ ] Deploy and live-verify `/dashboard` and `/dashboard/path`.
+
+## Review Log
+
+- 2026-06-13: Found `app/dashboard/page.tsx` still importing `usePath` and `PathSurface`; enrolled users with a path `next_step` could be shown Lead Me from `/dashboard`, hiding the restored full dashboard.
+- 2026-06-13: Added `tests/ambassador-dashboard-entry.test.ts` coverage that `/dashboard/path` owns `useDayPlan`, while `/dashboard` does not use `usePath`, `PathSurface`, or `next_step` routing.
+- 2026-06-13: Removed the `/dashboard` short-circuit only; `/dashboard/path` continues to render the guided day-plan surface.
+- 2026-06-13: Verification passed: `node --test tests\ambassador-dashboard-entry.test.ts`, `node --test tests\j7-guided-path.test.ts tests\diagnostic-results-enrolled-cta.test.ts tests\sitemap-static-surface.test.ts`, `node --test tests\*.test.ts` (74/74), `npm run lint`, and `npm run build`.
+- 2026-06-13: App commit `e3c22d8` deployed to Vercel production deployment `dpl_FEb55ruxVQg6DN7TPKhppnpaWL36`, aliased to `https://barmatrix.app` and `https://www.barmatrix.app`.
+- 2026-06-13: Anonymous live route smoke passed for `/`, `/checkout/success`, `/foundations`, `/boot-camps`, `/certification`, `/red-zones`; dashboard routes returned protected 307 responses outside the browser session.
+- 2026-06-13: Live in-app browser session verified `/dashboard` rendered `Progress, next drill, and recent wrong-answer forensics.` with no `Lead Me`, while `/dashboard/path` rendered `Lead Me`, `Day 1: Trap Hunt and C3 Power-Up`, and `FIRST 3 DAYS` with no full-dashboard heading.
+
+# Paid Program Command Center - 2026-06-13
+
+## Scope
+
+Make the restored paid-program tools obvious from the full dashboard so enrolled customers can see the product they bought without hunting through the top navigation.
+
+## Plan
+
+- [x] Add a regression requiring `/dashboard` to surface the restored tools directly.
+- [x] Add a full-dashboard command center with links to Lead Me, Red-Zone Map, Practice, Drills, Boot Camps, Timed Sets, Mastery Board, C3 Coach, and Certification.
+- [x] Keep the section visually consistent with the restored dashboard pattern and avoid changing `/dashboard/path`.
+- [x] Run focused dashboard tests, full app tests, lint, and production build.
+- [ ] Deploy and live-verify the command center on `/dashboard`.
+
+## Review Log
+
+- 2026-06-13: Added `PROGRAM_COMMAND_CENTER` to `app/dashboard/page.tsx` with nine real paid-program route links and a `ProgramCommandCenter` renderer.
+- 2026-06-13: Added `tests/ambassador-dashboard-entry.test.ts` coverage that the full dashboard exposes all restored paid-program tool links.
+- 2026-06-13: Verification passed: `node --test tests\ambassador-dashboard-entry.test.ts`, related dashboard/path tests, `node --test tests\*.test.ts` (75/75), `npm run lint`, and `npm run build`.
+- 2026-06-13: Initial production deployment `dpl_5JoQX6FgqsbP1286sPwctaB2dw5z` exposed the command center on desktop, then live mobile verification found horizontal overflow from the signed-in top navigation.
+- 2026-06-13: Added `tests/nav-mobile-overflow.test.ts` coverage for the phone-width signed-in dashboard CTA, moved Dashboard into the mobile drawer, and hid the top-bar ghost auth CTA at phone width.
+- 2026-06-13: Local verification passed after the mobile fix: `node --test tests\nav-mobile-overflow.test.ts`, `node --test tests\ambassador-dashboard-entry.test.ts`, `git diff --check`, `node --test tests\*.test.ts` (76/76), `npm run lint`, and `npm run build`.
+- 2026-06-13: Production deployment `dpl_7UqDZJ89RjW4CaRvYxpZ69bt1waA` is aliased to `https://barmatrix.app`; live browser verification passed on `/dashboard` at phone and desktop widths with one `main`, no document horizontal overflow, and all nine paid-program links present.
+- 2026-06-13: Live HTTPS smoke returned 200 for `/`, `/diagnostic`, `/pricing`, `/checkout`, `/checkout/success`, `/sign-in`, and `/sign-up`; anonymous `/account`, `/dashboard`, and `/dashboard/path` redirected to sign-in with return URLs.
+
+# C3 Coach Starter Fallback UI - 2026-06-13
+
+## Scope
+
+Make the paid Coach UI handle the API starter-baseline fallback honestly: when the API serves a live baseline question because C3-specific pattern coverage is not measured yet, the app should describe it as the start of the coaching loop instead of pretending it found a measured weak break.
+
+## Plan
+
+- [x] Add app regression coverage for starter-baseline coach copy and API client shape.
+- [x] Update `CoachClient` to branch on `target_mold === "starter_baseline"`.
+- [x] Add `fork_practice` to the typed coach metadata contract.
+- [x] Run focused coach tests, full app tests, lint, and production build.
+- [ ] Deploy app after the API fallback is live and verify `/coach`.
+
+## Review Log
+
+- 2026-06-13: Added `tests/coach-unavailable-reason-copy.test.ts` coverage for starter-baseline copy and the `fork_practice` response field.
+- 2026-06-13: Verification passed: `node --test tests\coach-unavailable-reason-copy.test.ts`, focused coach/dashboard tests, `node --test tests\*.test.ts` (77/77), `npm run lint`, and `npm run build`.
+
+# Old Integrated App Audit - 2026-06-13
+
+## Scope
+
+Treat `C:\BMO` / `C:\barmatrix-app` as the old integrated BarMatrix system and keep `C:\ABM` as a rebuild/reference source only. Continue launch repair from the deployed old-app transplant, preserving the new marketing pitch while restoring paid-program functionality.
+
+## Follow-up Route Polish - 2026-06-13
+
+### Scope
+
+Keep auditing the restored old-app surfaces on the live branch and remove customer-facing raw database labels or empty/loading shells that make the paid program feel unfinished.
+
+### Plan
+
+- [x] Run a broad signed-in live route smoke over public, account, dashboard, practice, drills, mastery, coach, certification, timed sets, boot camps, red zones, traps, tensions, foundations, and FAQ surfaces.
+- [x] Classify route-level findings into persistent defects versus normal client loading.
+- [x] Add regressions for confirmed display defects.
+- [x] Patch confirmed route display defects.
+- [x] Run focused tests, full app tests, lint, build, and local browser verification.
+- [x] Deploy and live-verify the polished route.
+
+### Review Log
+
+- 2026-06-13: Live browser audit on `https://barmatrix.app` confirmed `/account`, `/dashboard`, `/dashboard/path`, `/dashboard/mastery`, `/dashboard/final-sprint`, `/practice`, `/drills`, `/drills/civil-procedure`, `/drills/contracts`, `/drills/criminal-law`, `/mastery`, `/coach`, `/certification`, `/timed-sets`, `/boot-camps`, `/red-zones`, `/traps`, `/tensions`, and `/foundations` rendered one `<main>`, no browser errors, no horizontal overflow, no stale checkout CTA, no `review_drill`, no raw external IDs, and no raw `undefined`/`NaN` after client loading settled.
+- 2026-06-13: The live audit exposed one persistent display-quality issue: `/tensions` rendered raw DB enum subject headings such as `CIVIL_PROCEDURE` and `CONSTITUTIONAL_LAW` alongside readable labels.
+- 2026-06-13: Added `tests\mobile-content-overflow.test.ts` coverage requiring `app\tensions\page.tsx` to use `humanizeSubject(subject)` instead of rendering `{subject}` directly.
+- 2026-06-13: Red state was observed before the patch: the focused test failed because `app\tensions\page.tsx` did not import `humanizeSubject` and rendered `{subject}` in the subject-group heading.
+- 2026-06-13: Patched `app\tensions\page.tsx` to use the existing `humanizeSubject` utility for subject headings.
+- 2026-06-13: Verification passed: `node --test tests\mobile-content-overflow.test.ts`, `node --test tests\sitemap-static-surface.test.ts tests\paid-program-display-labels.test.ts`, `node --test tests\*.test.ts` (90/90), `npm run lint`, `git diff --check` with normal CRLF warnings only, and `npm run build`.
+- 2026-06-13: Local production browser verification on `http://127.0.0.1:3034/tensions` showed `Civil Procedure` and `Constitutional Law`, no `CIVIL_PROCEDURE` or `CONSTITUTIONAL_LAW`, one `<main>`, no horizontal overflow, and no browser errors.
+- 2026-06-13: Production deployment `dpl_H8YuTi1T3qC9yj4X4rKXy8n1c659` built successfully, was aliased to `https://barmatrix.app` and `https://www.barmatrix.app`, and was tagged `live-tension-subject-labels-2026-06-13-dpl-H8YuTi1`.
+- 2026-06-13: Live browser verification on `https://barmatrix.app/tensions?verify=tension_labels_b235eee` showed readable subject headings, no raw `CIVIL_PROCEDURE` or `CONSTITUTIONAL_LAW`, one `<main>`, no horizontal overflow, no raw error text, and no browser console errors.
+- 2026-06-13: Follow-up action-control probe exposed the same raw-data issue on `/traps`: cards showed readable trap names plus raw slugs such as `overbroad_rule` and `wrong_standard`.
+- 2026-06-13: Added `tests\trap-misconception-column.test.ts` coverage requiring trap card links and profile badges to keep using `trap.slug` while visible card copy no longer renders the raw slug line.
+- 2026-06-13: Red state was observed before the patch: the focused test failed on the visible `{trap.slug}` span.
+- 2026-06-13: Removed the visible slug line from `app\traps\page.tsx` and updated the mobile catalog guard accordingly.
+- 2026-06-13: Verification passed after the trap fix: `node --test tests\trap-misconception-column.test.ts tests\mobile-content-overflow.test.ts`, `node --test tests\sitemap-static-surface.test.ts tests\paid-program-display-labels.test.ts`, `node --test tests\*.test.ts` (91/91), `npm run lint`, `git diff --check` with normal CRLF warnings only, and `npm run build`.
+- 2026-06-13: Local production browser verification on `http://127.0.0.1:3035/traps` showed readable `Overbroad Rule`, no `overbroad_rule` or `wrong_standard`, one `<main>`, no horizontal overflow, no raw error text, and no browser console errors.
+- 2026-06-13: Production deployment `dpl_6oN4oFJh7qGRyC2dRV1Hay3Xa68F` built successfully, was aliased to `https://barmatrix.app` and `https://www.barmatrix.app`, and was tagged `live-trap-slug-polish-2026-06-13-dpl-6oN4oFJ`.
+- 2026-06-13: Live browser verification on `https://barmatrix.app/traps?verify=trap_slug_polish_346cd4a` showed readable `Overbroad Rule`, no `overbroad_rule` or `wrong_standard`, one `<main>`, no horizontal overflow, no raw error text, and no browser console errors.
+
+## Plan
+
+- [x] Re-anchor current state against `C:\BMO`, the app/API worktrees, and the live deployment checkpoint.
+- [x] Finish the remaining live paid-customer interaction proof for subject drills and boot camp day start.
+- [x] Add focused regressions for confirmed customer-facing defects instead of broad rewrites.
+- [x] Patch only the confirmed defects.
+- [x] Run focused tests, full app tests, lint, build, and browser verification.
+- [x] Deploy and record a new rollback checkpoint only after verification passes.
+
+## Review Log
+
+- 2026-06-13: Verified `C:\BMO\app-repo` is a junction to `C:\barmatrix-app` and `C:\BMO\api-repo` is a junction to `C:\barmatrix-api`.
+- 2026-06-13: Verified active app worktree `C:\barmatrix-app\.worktrees\old-app-marketing-transplant` is clean on `codex/old-app-marketing-transplant`.
+- 2026-06-13: Verified active API worktree `C:\barmatrix-api\.worktrees\checkout-clerk-access` is clean on `codex/checkout-provisioning-hardening`.
+- 2026-06-13: Live signed-in `/drills/contracts` start action opened a real 1/6 Contracts queue with A-D answers and submit, but exposed an internal item label (`14375_nativity_star_rig - ...`) in the paid UI.
+- 2026-06-13: Live signed-in boot camp flow started `4th Amendment: Search & Seizure Boot Camp`, opened the session hub, and `Start day` reached Day 1 Question 1 of 10 with A-D answers and submit.
+- 2026-06-13: Added regressions for raw drill-name display, Contracts queue ID display, and the stale diagnostic CTA on the Coach page.
+- 2026-06-13: Patched drill display rendering to format raw API `drill_name` values, removed external IDs from the Contracts live queue card, and changed the static Coach CTA to a paid-user continuation prompt.
+- 2026-06-13: Verification passed: `node --test tests\paid-program-display-labels.test.ts tests\coach-unavailable-reason-copy.test.ts`, `node --test tests\*.test.ts` (81/81), `git diff --check` with normal Windows line-ending warnings only, `npm run lint`, and `npm run build`.
+- 2026-06-13: Local production browser smoke on `http://localhost:3026/coach` confirmed the old diagnostic CTA is absent, the new continuation CTA is present, and there is no raw error or horizontal overflow. Local `/drills/contracts` route rendered cleanly; starting the live API queue failed from localhost with `Failed to fetch`, so final Contracts queue proof must happen on `barmatrix.app` after deployment.
+- 2026-06-13: Production deploy `dpl_B7sB3ZEfGs5wnHwmuk7WHS2vRXnn` exposed a remaining dashboard body leak: the card title read `Review Missed Questions`, but body text still said `review_drill. Open the Red-Zone Map to start it.`
+- 2026-06-13: Added the dashboard body leak to `tests\paid-program-display-labels.test.ts` and patched the fallback body to render `Review Missed Questions is ready...` through `formatDrillName(drill.reason)`.
+- 2026-06-13: Re-verification passed: `node --test tests\paid-program-display-labels.test.ts tests\coach-unavailable-reason-copy.test.ts`, `node --test tests\*.test.ts` (81/81), `git diff --check` with normal Windows line-ending warnings only, `npm run lint`, and `npm run build`.
+- 2026-06-13: Production deployment `dpl_HmwJVCwhGC4b7aEvDvb8CgXPQwvL` built successfully and was aliased to `https://barmatrix.app`.
+- 2026-06-13: Live signed-in browser verification passed on `/dashboard`: `Review Missed Questions` title and body rendered, `review_drill` was absent, and there were no raw errors or horizontal overflow.
+- 2026-06-13: Live signed-in browser verification passed on `/drills/contracts`: starting the queue showed `1 / 6`, A-D answers, readable queue label `Types Of Agreements`, no external ID, no raw errors, and no horizontal overflow.
+- 2026-06-13: Live signed-in browser verification passed on `/drills/62ec2e5b-458d-4dd5-9574-e8b546ad80e7`: H1 and runner title rendered `Review Missed Questions`, `review_drill` was absent, and there were no raw errors or horizontal overflow.
+- 2026-06-13: Live signed-in browser verification passed on `/coach`: stale diagnostic CTA was absent, `Feed the Coach with more live attempts.` was present, and the coach start/question state rendered with no raw errors or horizontal overflow.

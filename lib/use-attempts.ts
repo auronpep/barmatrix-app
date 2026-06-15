@@ -24,8 +24,17 @@ function useAuthedSubmit(): SubmitAttempt {
   const { isLoaded, isSignedIn, getToken } = useAuth();
   return useCallback<SubmitAttempt>(
     async (payload) => {
-      const token = isLoaded && isSignedIn ? await getToken() : null;
-      return api.submitAttempt(payload, token);
+      if (!isLoaded) {
+        throw new Error("Checking sign-in. Try again in a moment.");
+      }
+      if (isSignedIn) {
+        const token = await getToken();
+        if (!token) {
+          throw new Error("Sign in again to save this attempt.");
+        }
+        return api.submitAttempt(payload, token);
+      }
+      return api.submitAttempt(payload);
     },
     [isLoaded, isSignedIn, getToken],
   );

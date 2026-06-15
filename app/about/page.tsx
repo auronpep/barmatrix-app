@@ -73,7 +73,6 @@ export default function AboutPage() {
             <span className="border border-zinc-200 px-2 py-1">About BarMatrix</span>
             <span className="border border-zinc-200 px-2 py-1">Founded 2026</span>
             <span className="border border-zinc-200 px-2 py-1">Vera Brooks</span>
-            <span className="border border-zinc-200 px-2 py-1">SRC-0029</span>
           </div>
           <p className="font-mono text-xs uppercase tracking-wider text-red-700">
             Founder and method

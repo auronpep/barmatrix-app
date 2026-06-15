@@ -54,6 +54,7 @@ export interface CheckoutSessionRequest {
   partner_id?: string | null;
   referral_click_id?: string | null;
   diagnostic_id?: string | null;
+  coupon_code?: string | null;
   success_url?: string;
   cancel_url?: string;
 }
@@ -215,12 +216,21 @@ export interface DiagnosticTrapPattern {
 
 export interface DiagnosticRecommendationNextStep {
   label?: string;
+  primary_label?: string;
+  copy?: string;
   href?: string;
   slug?: string;
 }
 
-export interface DiagnosticRecommendation {
+export interface DiagnosticRecommendationLevel {
   level?: number | string;
+  label?: string;
+  description?: string;
+  route?: string[];
+}
+
+export interface DiagnosticRecommendation {
+  level?: number | string | DiagnosticRecommendationLevel;
   placement_level?: number | string;
   label?: string;
   level_label?: string;
@@ -649,6 +659,78 @@ export interface DashboardData {
   assigned_drills: DashboardAssignedDrill[];
 }
 
+// --- Command Deck (preview dashboard; GET /api/me/command-deck) ---
+
+export interface CommandDeckStudent {
+  first_name: string;
+  days_to_exam: number | null;
+  streak_days: number;
+  session_done_min: number;
+  session_goal_min: number;
+}
+
+export interface CommandDeckSubjectMastery {
+  subject: string;
+  pct: number;
+  delta: number;
+  attempted: number;
+}
+
+export interface CommandDeckRedZone {
+  rank: number;
+  name: string;
+  subject: string;
+  dimension: string;
+  tag: string;
+  miss_count: number;
+  total_attempts: number;
+  drills_total: number;
+  drills_complete: number;
+  trend: "rising" | "falling" | "flat";
+  last_missed: string;
+  active: boolean;
+}
+
+export interface CommandDeckTrendPoint {
+  day: string;
+  pct: number;
+  attempts: number;
+}
+
+export interface CommandDeckQueueItem {
+  drill_slug: string;
+  title: string;
+  subject: string;
+  reason: string;
+  question_count: number;
+  est_min: number;
+}
+
+export interface CommandDeckTensionMatrix {
+  cols: string[];
+  rows: Array<{ name: string; heat: number[]; attempts: number[] }>;
+}
+
+export interface CommandDeckCoverage {
+  covered: number;
+  bank_total: number;
+  pct: number;
+}
+
+export interface CommandDeckData {
+  enrolled: boolean;
+  status: string | null;
+  student: CommandDeckStudent;
+  subject_mastery: CommandDeckSubjectMastery[];
+  coverage: CommandDeckCoverage;
+  red_zones: CommandDeckRedZone[];
+  mastery_trend: CommandDeckTrendPoint[];
+  recent_attempts: DashboardRecentAttempt[];
+  next_up: CommandDeckQueueItem | null;
+  queue: CommandDeckQueueItem[];
+  tension_matrix: CommandDeckTensionMatrix | null;
+}
+
 // --- Red Zone Library (Clerk-gated, server-derives the student) ---
 
 export interface RedZoneLibraryZone {
@@ -890,6 +972,107 @@ export interface MyGamification {
   current_streak: number;
   longest_streak: number;
   badges: MyGamificationBadge[];
+}
+
+// --- J7 Lead Me daily plan (Clerk-gated, paid-user path) ---
+
+export type DayPlanStepSource = "daily" | "catchup";
+
+export interface DayPlanContentRef {
+  type: string;
+  id: string;
+  label?: string;
+  href?: string;
+}
+
+export interface DayPlanAction {
+  label: string;
+  href?: string;
+}
+
+export interface DayPlanMainItem {
+  main_item_id: string;
+  order: number;
+  title: string;
+  description: string;
+  selectable: false;
+  step_count: number;
+  completed_steps: number;
+  status: "complete" | "current" | "upcoming";
+}
+
+export interface DayPlanStep {
+  step_id: string;
+  order: number;
+  main_item_id: string;
+  kind: string;
+  title: string;
+  prompt: string;
+  estimated_seconds: number;
+  content_ref: DayPlanContentRef;
+  action: DayPlanAction;
+  xp: number;
+  source: DayPlanStepSource;
+  completed: boolean;
+  catchup?: {
+    catchup_id: string;
+    original_day_key: string;
+    original_step_id: string;
+  };
+}
+
+export interface DayPlanPath {
+  plan_key: string;
+  day_index: number;
+  title: string;
+  main_items: DayPlanMainItem[];
+  steps: DayPlanStep[];
+  current_step: DayPlanStep | null;
+  metrics: {
+    total_daily_steps: number;
+    completed_daily_steps: number;
+    progress_pct: number;
+  };
+  catchup: {
+    pending_count: number;
+    injected_count: number;
+    max_per_day: number;
+    per_completed_milestone: number;
+  };
+}
+
+export type DayPlanSummaryStatus = "active" | "locked" | "complete";
+
+export interface DayPlanSummary {
+  plan_key: string;
+  day_index: number;
+  title: string;
+  description: string;
+  approved: boolean;
+  selectable: false;
+  current: boolean;
+  status: DayPlanSummaryStatus;
+  milestone_count: number;
+  step_count: number;
+}
+
+export interface MyDayPlan {
+  enrolled: boolean;
+  status: string | null;
+  refunded: boolean;
+  student_id: string | null;
+  day_key: string | null;
+  timezone: string;
+  rollover_hour: number;
+  day_summaries: DayPlanSummary[];
+  plan: DayPlanPath | null;
+  gamification: MyGamification | null;
+}
+
+export interface MyDayPlanCompleteResponse extends MyDayPlan {
+  ok: true;
+  completed_step_id: string;
+  completion_gamification: BootCampGamificationGrant | null;
 }
 
 // --- Drill Library (Web Component 04) — anonymous-first prescriptive drills ---
@@ -1317,6 +1500,7 @@ export interface CoachQuestion {
 export interface CoachingMeta {
   target_mold: string; name: string; family: string;
   deficit_pct: number; exposures: number; measured: boolean;
+  fork_practice: boolean;
 }
 export interface CoachRemediation { lesson_slug: string | null; deck_ref: string | null; }
 export type CoachNext =
@@ -1720,6 +1904,9 @@ export const api = {
   getMyDashboard: (token: string) =>
     authedRequest<DashboardData>("/api/me/dashboard", token),
 
+  getMyCommandDeck: (token: string) =>
+    authedRequest<CommandDeckData>("/api/me/command-deck", token),
+
   getMyRedZones: (token: string) =>
     authedRequest<RedZoneLibrary>("/api/me/red-zones", token),
 
@@ -1948,6 +2135,16 @@ export const api = {
       { method: "POST", body: JSON.stringify({}) },
     ),
 
+  getMyDayPlan: (token: string, init?: RequestInit) =>
+    authedRequest<MyDayPlan>("/api/me/day-plan", token, init),
+
+  completeMyDayPlanStep: (token: string, stepId: string) =>
+    authedRequest<MyDayPlanCompleteResponse>(
+      `/api/me/day-plan/steps/${encodeURIComponent(stepId)}/complete`,
+      token,
+      { method: "POST", body: JSON.stringify({}) },
+    ),
+
   // Public flashcard deck content.
   getFlashcardDeck: (deckId: string, init?: RequestInit) =>
     request<FlashcardDeckResponse>(
@@ -1955,8 +2152,8 @@ export const api = {
       init,
     ),
 
-  // Record reviewed cards (enrolled). XP for the path step is granted separately
-  // by completePathStep (which reads the review count).
+  // Record reviewed cards (enrolled). Lead Me task XP is granted separately
+  // by completeMyDayPlanStep.
   completeFlashcardDeck: (token: string, deckId: string, cardsReviewed: string[]) =>
     authedRequest<FlashcardCompleteResponse>(
       `/api/me/flashcards/${encodeURIComponent(deckId)}/complete`,

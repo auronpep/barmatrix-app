@@ -13,6 +13,7 @@ import {
 } from "@/lib/api-client";
 import { useSubmitAttempt } from "@/lib/use-attempts";
 import { BRAND, PROOF_CARD } from "@/lib/copy";
+import { formatStudyLabel } from "@/lib/study-labels";
 
 const SUBJECT = "Evidence";
 const DRILL_LIMIT = 6;
@@ -116,12 +117,7 @@ function humanError(error: unknown): string {
 }
 
 function readableLabel(value: string | null): string {
-  if (!value) return "Pending";
-  return value
-    .replace(/[_-]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  return formatStudyLabel(value);
 }
 
 export default function EvidenceDrillPage() {
@@ -235,8 +231,8 @@ export default function EvidenceDrillPage() {
     <section className="mx-auto max-w-7xl px-6 py-10 sm:py-14">
       <div className="mb-8 flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
         <span className="rounded border border-zinc-200 px-2 py-1">Evidence drill</span>
-        <span className="rounded border border-zinc-200 px-2 py-1">Inline forensics</span>
-        <span className="rounded border border-zinc-200 px-2 py-1">SRC-0026</span>
+        <span className="rounded border border-zinc-200 px-2 py-1">Wrong-answer forensics</span>
+        <span className="rounded border border-zinc-200 px-2 py-1">Guided review</span>
       </div>
 
       <div className="mb-10 grid gap-6 border-b border-zinc-200 pb-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
@@ -347,8 +343,7 @@ function StartPanel({ onStart }: { onStart: () => void }) {
       </h2>
       <p className="mt-3 max-w-2xl text-zinc-600">
         The first click syncs the live Evidence questions. After each answer,
-        the right rail changes from the proof preview into live wrong-answer
-        forensics.
+        the right rail opens live wrong-answer forensics.
       </p>
       <button
         type="button"
@@ -420,9 +415,9 @@ function QuestionCard({
   return (
     <article className="border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
       <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
-        <span>{question.subject}</span>
-        {question.topic && <span>/ {question.topic}</span>}
-        {question.subtopic && <span>/ {question.subtopic}</span>}
+        <span>{formatStudyLabel(question.subject)}</span>
+        {question.topic && <span>/ {formatStudyLabel(question.topic)}</span>}
+        {question.subtopic && <span>/ {formatStudyLabel(question.subtopic)}</span>}
       </div>
 
       <div className="mt-6 whitespace-pre-line text-base leading-8 text-zinc-800">
@@ -578,7 +573,7 @@ function ForensicsPanel({
   return (
     <aside className="border border-zinc-200 bg-zinc-50 p-6 lg:sticky lg:top-6">
       <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-        Inline forensics
+        Wrong-answer forensics
       </p>
       <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
         {PROOF_CARD.trap}

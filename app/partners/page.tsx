@@ -39,7 +39,7 @@ export default function PartnersPage() {
         <div className="mx-auto max-w-3xl px-6">
           <h2 className="font-serif text-2xl font-semibold">Approved short copy for partners</h2>
           <blockquote className="mt-6 rounded-lg border-l-4 border-zinc-900 bg-white p-6 font-serif text-lg italic text-zinc-800">
-            &ldquo;BarMatrix is a premium MBE repair system that diagnoses wrong-answer patterns and assigns targeted drills. It is built for students whose MBE review has plateaued or whose full course is not isolating the traps behind their misses. Limited July-cycle cohort seats are available.&rdquo;
+            &ldquo;BarMatrix is a premium MBE repair system that diagnoses wrong-answer patterns and assigns targeted drills. It is built for students whose MBE review has plateaued or whose full course is not isolating the traps behind their misses. Enrollment is open for the July-cycle guided repair program.&rdquo;
           </blockquote>
           <p className="mt-4 text-sm text-zinc-600">
             Required disclosure (paste verbatim alongside your link):

@@ -12,7 +12,7 @@
 
 import { use, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   api,
   ApiClientError,
@@ -21,6 +21,7 @@ import {
   type PlacementAttemptResponse,
   type PlacementQuestion,
 } from "@/lib/api-client";
+import { useClerkAuth } from "@/lib/use-clerk-auth";
 
 type Phase =
   | "loading"
@@ -110,6 +111,9 @@ export default function PlacementSessionPage({
 }) {
   const { sessionId } = use(params);
   const router = useRouter();
+  const search = useSearchParams();
+  const { getToken, isSignedIn } = useClerkAuth();
+  const stepId = search.get("step");
 
   const [questions, setQuestions] = useState<PlacementQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -119,6 +123,7 @@ export default function PlacementSessionPage({
   const [confidence, setConfidence] = useState(50);
   const [mechanism, setMechanism] = useState<C3Mechanism | null>(null);
   const [attemptResult, setAttemptResult] = useState<PlacementAttemptResponse | null>(null);
+  const [savingStep, setSavingStep] = useState(false);
   const startedAtRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -223,6 +228,24 @@ export default function PlacementSessionPage({
     }
   };
 
+  const finishLeadMeTask = async () => {
+    if (!stepId) return;
+    setSavingStep(true);
+    setErrorMsg(null);
+    try {
+      if (isSignedIn) {
+        const token = await getToken();
+        if (token) await api.completeMyDayPlanStep(token, stepId);
+      }
+      router.push("/dashboard/path");
+    } catch (err) {
+      setErrorMsg(humanError(err));
+      setPhase("error");
+    } finally {
+      setSavingStep(false);
+    }
+  };
+
   return (
     <section className="mx-auto max-w-3xl px-6 py-12">
       <h1 className="sr-only">C3 Placement Assessment</h1>
@@ -261,7 +284,13 @@ export default function PlacementSessionPage({
           question={question}
           result={attemptResult}
           isLast={isLast}
+          // Only finish the Lead Me day-plan step at the END of the placement
+          // (after all questions are answered). Otherwise the first result
+          // overlay would complete the step and skip the rest of the sequence.
+          isLeadMeTask={Boolean(stepId) && isLast}
+          savingLeadMeTask={savingStep}
           onNext={next}
+          onFinishLeadMeTask={finishLeadMeTask}
         />
       )}
     </section>
@@ -519,12 +548,18 @@ function ResultOverlay({
   question,
   result,
   isLast,
+  isLeadMeTask,
+  savingLeadMeTask,
   onNext,
+  onFinishLeadMeTask,
 }: {
   question: PlacementQuestion;
   result: PlacementAttemptResponse;
   isLast: boolean;
+  isLeadMeTask: boolean;
+  savingLeadMeTask: boolean;
   onNext: () => void;
+  onFinishLeadMeTask: () => void;
 }) {
   return (
     <div
@@ -572,10 +607,17 @@ function ResultOverlay({
 
       <button
         type="button"
-        onClick={onNext}
+        onClick={isLeadMeTask ? onFinishLeadMeTask : onNext}
+        disabled={savingLeadMeTask}
         className="mt-8 rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900"
       >
-        {isLast ? "See placement results →" : "Next question →"}
+        {savingLeadMeTask
+          ? "Saving..."
+          : isLeadMeTask
+            ? "Finish Lead Me task →"
+            : isLast
+              ? "See placement results →"
+              : "Next question →"}
       </button>
     </div>
   );

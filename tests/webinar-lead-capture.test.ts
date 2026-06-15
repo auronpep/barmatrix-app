@@ -31,8 +31,7 @@ describe("webinar lead capture surface", () => {
     const legacyLanding = readProjectFile("public/lp-red-zone.html");
 
     assert.match(sitemap, /"\/webinar"/);
-    assert.match(config, /source: "\/webinar\.html"/);
-    assert.match(config, /destination: "\/webinar"/);
+    assert.match(config, /\["\/webinar\.html", "\/webinar"\]/);
     assert.match(legacyLanding, /href="\/webinar">Next Webinar/);
   });
 });

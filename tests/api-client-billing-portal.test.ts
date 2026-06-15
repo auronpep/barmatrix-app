@@ -196,4 +196,15 @@ describe("BillingPortalButton unavailable-state copy", () => {
     assert.doesNotMatch(dashboardCheck, /!checkoutSessionId/);
     assert.doesNotMatch(unavailableCheck, /!checkoutSessionId/);
   });
+
+  it("keeps Stripe portal attempts available for active enrolled accounts", () => {
+    const button = readFileSync(
+      new URL("../app/account/billing-portal-button.tsx", import.meta.url),
+      "utf8",
+    );
+
+    assert.match(button, /canAttemptStripePortal/);
+    assert.match(button, /dash\.data\?\.enrolled === true/);
+    assert.match(button, /&&\s*!canAttemptStripePortal/);
+  });
 });

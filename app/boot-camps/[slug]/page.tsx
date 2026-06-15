@@ -7,7 +7,7 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api, ApiClientError, type BootCampDetail } from "@/lib/api-client";
-import { humanizeTag } from "@/lib/boot-camps";
+import { formatBootCampTargetLabel } from "@/lib/boot-camps";
 import { trackBootcampStarted } from "@/lib/analytics";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
 import { userFacingResourceError } from "@/lib/user-facing-errors";
@@ -52,7 +52,10 @@ export default function BootCampDetailPage({
   }, [slug]);
 
   const start = async () => {
-    if (!isLoaded) return;
+    if (!isLoaded) {
+      setStartError("Checking sign-in. Try again in a moment.");
+      return;
+    }
     if (!isSignedIn) {
       setStartError("Sign in to start this boot camp.");
       return;
@@ -61,6 +64,11 @@ export default function BootCampDetailPage({
     setStartError(null);
     try {
       const token = await getToken();
+      if (!token) {
+        setStartError("Sign in again to start this boot camp.");
+        setStarting(false);
+        return;
+      }
       const res = await api.startBootCamp(slug, {}, token);
       trackBootcampStarted({ bootcampId: slug, source: "manual" });
       router.push(`/boot-camps/sessions/${res.session_id}`);
@@ -184,7 +192,7 @@ function TagGroup({ label, values }: { label: string; values: string[] }) {
             key={value}
             className="border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-700"
           >
-            {humanizeTag(value)}
+            {formatBootCampTargetLabel(value)}
           </span>
         ))}
       </div>

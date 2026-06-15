@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { HERO, PRICING, PROOF_CARD } from "@/lib/copy";
+import { DIAGNOSTIC_FIRST, HERO, PRICING, PROOF_CARD } from "@/lib/copy";
 
 export const metadata: Metadata = {
   alternates: {
@@ -99,12 +99,13 @@ export default function Home() {
           <div className="hero-grid">
             <div>
               <div className="eyebrow-red" style={{ marginBottom: 24 }}>
-                ▌ MBE TRAP DIAGNOSIS · WEB
+                ▌ RED-ZONE MAP · WRONG-ANSWER FORENSICS · GUIDED REPAIR
               </div>
               <h1 className="display display-xl">
-                Master the{" "}
-                <span style={{ fontStyle: "italic" }}>finite universe</span>{" "}
-                of <span style={{ color: "var(--red)" }}>MBE traps.</span>
+                Find the{" "}
+                <span style={{ fontStyle: "italic" }}>MBE red zones</span>{" "}
+                your question sets are{" "}
+                <span style={{ color: "var(--red)" }}>hiding.</span>
               </h1>
               <p className="lede">{HERO.subhead}</p>
               <div className="hero-actions">
@@ -123,6 +124,32 @@ export default function Home() {
             </div>
 
             <ForensicsCard />
+          </div>
+        </div>
+      </section>
+
+      {/* ============ PROOF BEFORE PRICE ============ */}
+      <section className="section alt">
+        <div className="container">
+          <div className="section-rule">
+            <span className="label">▌ PROOF BEFORE PRICE · 01</span>
+          </div>
+          <div className="two-col" style={{ alignItems: "start" }}>
+            <h2
+              className="display display-md"
+              style={{ margin: 0, maxWidth: "18ch" }}
+            >
+              {DIAGNOSTIC_FIRST.headline}
+            </h2>
+            <div>
+              <p className="body-lg" style={{ marginTop: 8 }}>
+                {DIAGNOSTIC_FIRST.body}
+              </p>
+              <Link href={DIAGNOSTIC_FIRST.cta.href} className="btn red">
+                {DIAGNOSTIC_FIRST.cta.label}{" "}
+                <span className="arrow">→</span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -508,7 +535,7 @@ export default function Home() {
                     "Personal Red-Zone Map (dashboard)",
                     "Top trap patterns ranked by attractiveness",
                     "Forensic tags explaining why each miss was attractive",
-                    "Sample assigned drills — try before you buy",
+                    "Assigned repair drills tied to your diagnostic misses",
                     "Companion path with your existing bar course",
                   ].map((t, i, arr) => (
                     <li
@@ -721,7 +748,7 @@ function ForensicsCard() {
             </div>
             <span className="arrow">→</span>
           </div>
-          <p className="demo-caption">Illustrative example</p>
+          <p className="proof-caption">Diagnostic output example</p>
         </div>
       </div>
     </div>

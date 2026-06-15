@@ -20,9 +20,11 @@ import {
   trackDiagnosticCompletedOnce,
   trackRedZonePreviewViewedOnce,
 } from "@/lib/analytics";
+import { useDashboard, type DashboardState } from "@/lib/use-dashboard";
 import { useFoundations } from "@/lib/use-foundations";
 import { userFacingResourceError } from "@/lib/user-facing-errors";
 import { rememberDiagnosticId } from "@/lib/diagnostic-session";
+import { useRecentConfirmedCheckoutAccess } from "@/lib/checkout-access-state";
 import { AnchorStack } from "@/components/anchor-card";
 import { humanizeSubject } from "@/lib/format-subject";
 
@@ -69,6 +71,15 @@ type BuiltRecommendation = {
   topLeak: string;
   focus: string;
 };
+
+type DiagnosticResultsAccessState =
+  | "checking"
+  | "signed_out"
+  | "access_unavailable"
+  | "recent_checkout"
+  | "account_unconfirmed"
+  | "not_enrolled"
+  | "enrolled";
 
 const LEVEL_FALLBACKS: Record<
   number,
@@ -125,6 +136,9 @@ export default function DiagnosticResultsPage({
   const completedEventRef = useRef<string | null>(null);
   const [results, setResults] = useState<DiagnosticResultsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const dash = useDashboard();
+  const recentCheckoutAccess = useRecentConfirmedCheckoutAccess();
+  const accessState = resolveDiagnosticResultsAccess(dash, recentCheckoutAccess);
   const foundations = useFoundations();
   const methodSlug =
     foundations.data?.progress.next_slug ??
@@ -207,8 +221,15 @@ export default function DiagnosticResultsPage({
       {results && results.answered > 0 && (
         <>
           <SummaryCard results={results} />
-          <TopTrapPatterns patterns={results.top_trap_patterns} />
-          <ResultsDecisionPanel diagnosticId={diagnosticId} results={results} />
+          <TopTrapPatterns
+            patterns={results.top_trap_patterns}
+            accessState={accessState}
+          />
+          <ResultsDecisionPanel
+            diagnosticId={diagnosticId}
+            results={results}
+            accessState={accessState}
+          />
           <DimensionBreakdown byDimension={results.red_zones.by_dimension} />
           <RecommendationCta
             methodSlug={methodSlug}
@@ -284,16 +305,44 @@ function SeverityChip({ severity }: { severity: "high" | "medium" }) {
   );
 }
 
-function TopTrapPatterns({ patterns }: { patterns: DiagnosticTrapPattern[] }) {
+function resolveDiagnosticResultsAccess(
+  dash: DashboardState,
+  recentCheckoutAccess: { checking: boolean; active: boolean },
+): DiagnosticResultsAccessState {
+  if (dash.loading) return "checking";
+  if (recentCheckoutAccess.checking) return "checking";
+  if (dash.data?.enrolled === true) return "enrolled";
+  if (dash.error) return "access_unavailable";
+  if (dash.signedIn && dash.data && !dash.data.enrolled) return "account_unconfirmed";
+  if (recentCheckoutAccess.active) return "recent_checkout";
+  if (!dash.signedIn) return "signed_out";
+  return "not_enrolled";
+}
+
+function TopTrapPatterns({
+  patterns,
+  accessState,
+}: {
+  patterns: DiagnosticTrapPattern[];
+  accessState: DiagnosticResultsAccessState;
+}) {
   if (patterns.length === 0) {
+    const enrolled = accessState === "enrolled";
+    const accountCheckNeeded =
+      accessState === "access_unavailable" ||
+      accessState === "recent_checkout" ||
+      accessState === "account_unconfirmed";
     return (
       <div className="mt-8 rounded-lg border border-emerald-300 bg-emerald-50 p-6">
         <p className="font-mono text-xs uppercase tracking-wider text-emerald-700">
           No red zones surfaced
         </p>
         <p className="mt-2 text-zinc-800">
-          You did not fall into a repeated trap pattern on this set. Enroll to run
-          the full forensic bank and keep your Red-Zone Map building as you drill.
+          {enrolled
+            ? "You did not fall into a repeated trap pattern on this set. Keep your Red-Zone Map building as you drill."
+            : accountCheckNeeded
+              ? "You did not fall into a repeated trap pattern on this set. Open your account to confirm or recover access before another checkout."
+            : "You did not fall into a repeated trap pattern on this set. Enroll to run the full forensic bank and keep your Red-Zone Map building as you drill."}
         </p>
       </div>
     );
@@ -400,13 +449,146 @@ function plainEnglishTrapInsight(pattern: DiagnosticTrapPattern): string {
 function ResultsDecisionPanel({
   diagnosticId,
   results,
+  accessState,
 }: {
   diagnosticId: string;
   results: DiagnosticResultsResponse;
+  accessState: DiagnosticResultsAccessState;
 }) {
   const topPattern = results.top_trap_patterns[0];
   const topLeak = resolveTopLeak(results);
   const checkoutHref = checkoutHrefForDiagnostic(diagnosticId);
+
+  switch (accessState) {
+    case "checking":
+      return (
+        <div className="mt-8 rounded-lg border border-zinc-200 bg-white p-8 shadow-sm">
+          <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
+            Checking account access
+          </p>
+          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
+            We are checking whether this account already has Flagship access.
+          </h2>
+          <p className="mt-3 text-zinc-600">
+            Your Red-Zone Map is ready. If access is active, the next step below
+            will take you into the repair path instead of enrollment.
+          </p>
+        </div>
+      );
+    case "enrolled":
+      return (
+        <div className="mt-8 rounded-lg border border-zinc-900 bg-zinc-950 p-8 text-white shadow-sm">
+          <p className="font-mono text-xs uppercase tracking-wider text-red-400">
+            Your repair path is built
+          </p>
+          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
+            This map is already tied to active Flagship access.
+          </h2>
+          <p className="mt-3 text-zinc-300">
+            {topPattern
+              ? plainEnglishTrapInsight(topPattern)
+              : "This diagnostic turned your answers into a repair map instead of a generic score report."}{" "}
+            Continue your repair path from {topLeak}; do not enroll again.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <Link href="/dashboard/path" className="btn red">
+              Continue your repair path <span aria-hidden>→</span>
+            </Link>
+            <Link
+              href="/red-zones"
+              className="text-sm text-zinc-300 underline hover:text-white"
+            >
+              Review Red-Zone Map
+            </Link>
+          </div>
+        </div>
+      );
+    case "access_unavailable":
+      return (
+        <div className="mt-8 rounded-lg border border-amber-300 bg-amber-50 p-8 shadow-sm">
+          <p className="font-mono text-xs uppercase tracking-wider text-amber-800">
+            Account check needed
+          </p>
+          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
+            We could not confirm active access from this screen.
+          </h2>
+          <p className="mt-3 text-zinc-700">
+            Your diagnostic map is ready, but the signed-in account check did
+            not return a clean enrollment status. Open your account first; if
+            access is active, continue into the dashboard instead of enrolling
+            again.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <Link href="/account" className="btn red">
+              Open account <span aria-hidden>→</span>
+            </Link>
+            <Link
+              href="/dashboard"
+              className="text-sm text-zinc-700 underline hover:text-zinc-950"
+            >
+              Go to dashboard
+            </Link>
+          </div>
+        </div>
+      );
+    case "recent_checkout":
+      return (
+        <div className="mt-8 rounded-lg border border-amber-300 bg-amber-50 p-8 shadow-sm">
+          <p className="font-mono text-xs uppercase tracking-wider text-amber-800">
+            Account check needed
+          </p>
+          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
+            This browser has a confirmed checkout on record.
+          </h2>
+          <p className="mt-3 text-zinc-700">
+            Your diagnostic map is ready. Open your account or sign in with the
+            checkout email before starting another checkout.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <Link href="/account" className="btn red">
+              Open account <span aria-hidden>→</span>
+            </Link>
+            <Link
+              href="/sign-in?after=dashboard"
+              className="text-sm text-zinc-700 underline hover:text-zinc-950"
+            >
+              Sign in
+            </Link>
+          </div>
+        </div>
+      );
+    case "account_unconfirmed":
+      return (
+        <div className="mt-8 rounded-lg border border-amber-300 bg-amber-50 p-8 shadow-sm">
+          <p className="font-mono text-xs uppercase tracking-wider text-amber-800">
+            Account check needed
+          </p>
+          <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
+            This signed-in account is not showing active Flagship access yet.
+          </h2>
+          <p className="mt-3 text-zinc-700">
+            Your diagnostic map is ready. Open your account to confirm or
+            recover access before another checkout; if this is the same email
+            you used at purchase, the account page is the right next step.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <Link href="/account" className="btn red">
+              Check account access <span aria-hidden>→</span>
+            </Link>
+            <Link
+              href="/support"
+              className="text-sm text-zinc-700 underline hover:text-zinc-950"
+            >
+              Contact support
+            </Link>
+          </div>
+        </div>
+      );
+    case "signed_out":
+    case "not_enrolled":
+      break;
+  }
+
   return (
     <div className="mt-8 rounded-lg border border-zinc-900 bg-zinc-950 p-8 text-white shadow-sm">
       <p className="font-mono text-xs uppercase tracking-wider text-red-400">
@@ -492,17 +674,27 @@ function buildDiagnosticRecommendation(
   const explicitStep = resolveExplicitStep(results, methodSlug);
   const step = explicitStep ?? recommendedStepForLevel(level, methodSlug, results);
   const apiRecommendation = results.recommendation;
+  const levelLabel =
+    typeof apiRecommendation?.level === "object"
+      ? apiRecommendation?.level?.label
+      : undefined;
+  const levelDescription =
+    typeof apiRecommendation?.level === "object"
+      ? apiRecommendation?.level?.description
+      : undefined;
   return {
     href: step.href,
     ctaLabel: step.label,
     levelBadge: `L${level}`,
     levelLabel:
+      levelLabel ??
       apiRecommendation?.label ??
       apiRecommendation?.level_label ??
       apiRecommendation?.placement_label ??
       results.placement_label ??
       fallback.label,
     levelDescription:
+      levelDescription ??
       apiRecommendation?.description ??
       apiRecommendation?.level_description ??
       apiRecommendation?.placement_description ??
@@ -514,9 +706,19 @@ function buildDiagnosticRecommendation(
 }
 
 function resolveRecommendationLevel(results: DiagnosticResultsResponse): number {
+  const apiRecommendation = results.recommendation;
+  const objectLevel =
+    typeof apiRecommendation?.level === "object"
+      ? apiRecommendation?.level?.level
+      : null;
+  const primitiveLevel =
+    typeof apiRecommendation?.level === "object"
+      ? undefined
+      : apiRecommendation?.level;
   const fromApi = normalizeLevel(
-    results.recommendation?.level ??
-      results.recommendation?.placement_level ??
+    objectLevel ??
+      primitiveLevel ??
+      apiRecommendation?.placement_level ??
       results.level ??
       results.placement_level,
   );
@@ -548,7 +750,7 @@ function resolveExplicitStep(
   if (!href) return null;
   return {
     href,
-    label: nextStep.label ?? "Start here",
+    label: nextStep.label ?? nextStep.primary_label ?? "Start here",
     focus: routeFocusFromHref(href, methodSlug),
   };
 }

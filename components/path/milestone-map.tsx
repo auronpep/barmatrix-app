@@ -4,7 +4,7 @@ import type { PathMilestone } from "@/lib/api-client";
 // (no choices) — it just shows where the prescribed path is taking the student.
 function status(m: PathMilestone): { text: string; cls: string } {
   if (m.completed) return { text: "Done", cls: "border-emerald-700 text-emerald-800" };
-  if (!m.available) return { text: "Coming soon", cls: "border-zinc-300 text-zinc-500" };
+  if (!m.available) return { text: "Locked", cls: "border-zinc-300 text-zinc-500" };
   return { text: "Ahead", cls: "border-zinc-400 text-zinc-700" };
 }
 

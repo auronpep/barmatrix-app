@@ -133,7 +133,7 @@ function SettingsPanel() {
         />
       </div>
       <Link
-        href="mailto:support@barmatrix.app"
+        href="/support"
         className="mt-6 inline-flex rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-900 hover:border-zinc-500"
       >
         Contact support

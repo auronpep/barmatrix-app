@@ -13,6 +13,7 @@ import {
 } from "@/lib/api-client";
 import { useSubmitAttempt } from "@/lib/use-attempts";
 import { BRAND } from "@/lib/copy";
+import { formatStudyLabel } from "@/lib/study-labels";
 
 const SUBJECT = "Contracts";
 const DRILL_LIMIT = 6;
@@ -128,12 +129,11 @@ function humanError(error: unknown): string {
 }
 
 function readableLabel(value: string | null): string {
-  if (!value) return "Pending";
-  return value
-    .replace(/[_-]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  return formatStudyLabel(value);
+}
+
+function formatQueueQuestionLabel(question: SubjectQuestionRef): string {
+  return readableLabel(question.subtopic ?? question.topic ?? question.tension_point);
 }
 
 export default function ContractsDrillPage() {
@@ -247,8 +247,8 @@ export default function ContractsDrillPage() {
     <section className="mx-auto max-w-7xl px-6 py-10 sm:py-14">
       <div className="mb-8 flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
         <span className="rounded border border-zinc-200 px-2 py-1">Contracts drill</span>
-        <span className="rounded border border-zinc-200 px-2 py-1">Inline forensics</span>
-        <span className="rounded border border-zinc-200 px-2 py-1">SRC-0026</span>
+        <span className="rounded border border-zinc-200 px-2 py-1">Wrong-answer forensics</span>
+        <span className="rounded border border-zinc-200 px-2 py-1">Guided review</span>
       </div>
 
       <div className="mb-10 grid gap-6 border-b border-zinc-200 pb-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
@@ -289,7 +289,7 @@ export default function ContractsDrillPage() {
           </p>
           <p className="mt-2 text-sm text-zinc-600">
             {currentRef
-              ? `${currentRef.external_id ?? currentRef.question_id.slice(0, 8)} - ${readableLabel(currentRef.subtopic)}`
+              ? formatQueueQuestionLabel(currentRef)
               : "Start the drill to sync the first Contracts queue."}
           </p>
         </div>
@@ -359,7 +359,7 @@ function StartPanel({ onStart }: { onStart: () => void }) {
       </h2>
       <p className="mt-3 max-w-2xl text-zinc-600">
         The first click syncs live Contracts questions. After each answer, the
-        right rail changes from a form-battle preview into live wrong-answer
+        right rail opens the live wrong-answer
         forensics.
       </p>
       <button
@@ -432,9 +432,9 @@ function QuestionCard({
   return (
     <article className="border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
       <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
-        <span>{question.subject}</span>
-        {question.topic && <span>/ {question.topic}</span>}
-        {question.subtopic && <span>/ {question.subtopic}</span>}
+        <span>{formatStudyLabel(question.subject)}</span>
+        {question.topic && <span>/ {formatStudyLabel(question.topic)}</span>}
+        {question.subtopic && <span>/ {formatStudyLabel(question.subtopic)}</span>}
       </div>
 
       <div className="mt-6 whitespace-pre-line text-base leading-8 text-zinc-800">
@@ -591,7 +591,7 @@ function ForensicsPanel({
   return (
     <aside className="border border-zinc-200 bg-zinc-50 p-6 lg:sticky lg:top-6">
       <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-        Inline forensics preview
+        Forensics after submit
       </p>
       <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
         {CONTRACTS_PREVIEW.trap}
@@ -608,8 +608,8 @@ function ForensicsPanel({
         {CONTRACTS_PREVIEW.whyFails}
       </ForensicsSection>
       <p className="mt-5 text-sm leading-6 text-zinc-600">
-        Submit an answer to replace this preview with the live attempt
-        forensics, red-zone update, and repair drill assignment.
+        Submit an answer to open the live attempt forensics, red-zone update,
+        and repair drill assignment.
       </p>
     </aside>
   );

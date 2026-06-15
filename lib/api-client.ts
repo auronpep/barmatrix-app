@@ -704,6 +704,8 @@ export interface CommandDeckQueueItem {
   reason: string;
   question_count: number;
   est_min: number;
+  red_zone_dimension?: string | null;
+  red_zone_tag?: string | null;
 }
 
 export interface CommandDeckTensionMatrix {

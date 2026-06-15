@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { api, type CommandDeckQueueItem } from "@/lib/api-client";
 import { useCommandDeck } from "@/lib/use-command-deck";
+import { useClerkAuth } from "@/lib/use-clerk-auth";
 import { DashboardShell } from "@/components/preview-dashboard/dashboard-shell";
 import { DashboardV2Body } from "@/components/preview-dashboard/dashboard-v2-body";
 
@@ -27,7 +29,34 @@ function initialsOf(firstName: string): string {
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { getToken } = useClerkAuth();
   const { loading, signedIn, data, error } = useCommandDeck();
+
+  // One-click start: launch the queued red-zone drill via the real
+  // POST /api/drills/start flow, then route to the runner. Always degrades to
+  // the /drills "Prescribed" tab (the working two-click path) if the item isn't
+  // red-zone-typed, the token is missing, or the start call fails — so the
+  // primary CTA can never dead-end.
+  const startDrill = async (item: CommandDeckQueueItem) => {
+    if (!item?.red_zone_dimension || !item?.red_zone_tag) {
+      router.push("/drills");
+      return;
+    }
+    try {
+      const token = await getToken();
+      const res = await api.startDrill(
+        {
+          kind: "prescribed_red_zone",
+          red_zone_dimension: item.red_zone_dimension,
+          red_zone_tag: item.red_zone_tag,
+        },
+        token,
+      );
+      router.push(res?.drill_id ? `/drills/${res.drill_id}` : "/drills");
+    } catch {
+      router.push("/drills");
+    }
+  };
 
   // Full shell only renders once we have the student's enrolled deck data.
   if (signedIn && data && data.enrolled) {
@@ -48,14 +77,7 @@ export default function DashboardPage() {
         <DashboardV2Body
           data={data}
           examDateLabel={examDateLabel(data.student.days_to_exam)}
-          onStartDrill={() =>
-            // The command-deck queue carries an *assignment* drill_slug, not a
-            // started-drill UUID — and /drills/[drill_id] only loads a started
-            // drill by UUID. Routing to /drills lands on the "Prescribed for
-            // you" tab, which lists these same assigned drills and starts each
-            // through the real POST /api/drills/start flow.
-            router.push("/drills")
-          }
+          onStartDrill={startDrill}
           onOpenRoute={(route) => router.push(route)}
         />
       </DashboardShell>

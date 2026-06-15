@@ -72,6 +72,14 @@ export function DashboardShell({
       ],
     },
     {
+      section: "VIEWS",
+      links: [
+        { href: "/dashboard/path", icon: "↳", label: "My Path" },
+        { href: "/dashboard/mastery", icon: "◆", label: "Mastery Board" },
+        { href: "/dashboard/final-sprint", icon: "⚑", label: "Final Sprint" },
+      ],
+    },
+    {
       section: "THE WALK",
       links: [
         { href: "/walk", icon: "✝", label: "The Walk" },

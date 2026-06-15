@@ -63,9 +63,7 @@ export default function PreviewDashboardV2Page() {
           <DashboardV2Body
             data={data}
             examDateLabel={examDateLabel(data.student.days_to_exam)}
-            onStartDrill={(slug) =>
-              router.push(slug ? `/drills/${slug}` : "/drills")
-            }
+            onStartDrill={() => router.push("/drills")}
             onOpenRoute={(route) => router.push(route)}
           />
         </>

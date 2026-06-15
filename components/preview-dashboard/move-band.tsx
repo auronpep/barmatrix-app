@@ -14,7 +14,7 @@ export function MoveBand({
   onStart,
 }: {
   queue: CommandDeckQueueItem[];
-  onStart: (slug: string) => void;
+  onStart: (item: CommandDeckQueueItem) => void;
 }) {
   const next = queue[0];
   if (!next) return null;
@@ -25,7 +25,7 @@ export function MoveBand({
     <div className="mb-6 grid grid-cols-1 items-stretch bg-zinc-950 text-zinc-300 lg:grid-cols-[1.3fr_1fr_auto]">
       <button
         type="button"
-        onClick={() => onStart(next.drill_slug)}
+        onClick={() => onStart(next)}
         className="border-b border-white/10 bg-transparent px-6 py-5 text-left transition-colors hover:bg-[rgba(200,16,46,0.1)] lg:border-b-0 lg:border-r"
       >
         <div className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--red)]">
@@ -66,7 +66,7 @@ export function MoveBand({
 
       <button
         type="button"
-        onClick={() => onStart(next.drill_slug)}
+        onClick={() => onStart(next)}
         className="flex items-center justify-center bg-[var(--red)] px-9 py-4 font-sans text-[15px] font-semibold uppercase tracking-wide text-white transition-colors hover:bg-[var(--red-deep)]"
       >
         Start →

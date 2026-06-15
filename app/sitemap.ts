@@ -37,6 +37,16 @@ const ROUTES = [
   "/terms",
 ] as const;
 
+const NICHE_ROUTES = [
+  "/for",
+  "/for/repeat-takers",
+  "/for/failed-by-a-few-points",
+  "/for/working-professionals",
+  "/for/foreign-trained-attorneys",
+  "/for/full-course-supplement",
+  "/for/california-july-2026",
+] as const;
+
 const CAMPAIGN_ROUTES = [
   "/campaign.html",
   "/lp-failed-by-6.html",
@@ -73,11 +83,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: route === "/" ? ("weekly" as const) : ("monthly" as const),
     priority: route === "/" ? 1 : 0.7,
   }));
+  const nicheRoutes = NICHE_ROUTES.map((route) => ({
+    url: `https://barmatrix.app${route}`,
+    lastModified: LAST_MODIFIED,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  }));
   const campaignRoutes = CAMPAIGN_ROUTES.map((route) => ({
     url: `https://barmatrix.app${route}`,
     lastModified: LAST_MODIFIED,
     changeFrequency: "weekly" as const,
     priority: route === "/campaign.html" ? 0.8 : 0.65,
   }));
-  return [...appRoutes, ...campaignRoutes];
+  return [...appRoutes, ...nicheRoutes, ...campaignRoutes];
 }

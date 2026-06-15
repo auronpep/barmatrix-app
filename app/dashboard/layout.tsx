@@ -62,8 +62,14 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname() ?? "";
 
+  // On the exact /dashboard path the v3 command-deck shell provides its own
+  // sidebar+topbar navigation, so suppress the legacy tab chrome there. Nested
+  // views (/dashboard/mastery|final-sprint|path) keep the tab chrome.
+  const showLegacyChrome = pathname !== "/dashboard";
+
   return (
     <div>
+      {showLegacyChrome ? (
       <nav aria-label="Dashboard" className="border-b border-zinc-900 bg-white">
         <div className="mx-auto max-w-7xl px-6">
           <div className="flex items-center gap-1 overflow-x-auto">
@@ -104,6 +110,7 @@ export default function DashboardLayout({
           </div>
         </div>
       </nav>
+      ) : null}
 
       {children}
     </div>

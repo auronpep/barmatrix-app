@@ -5,9 +5,9 @@ export const BRAND = "BarMatrix";
 export const DOMAIN = "barmatrix.app";
 
 export const HERO = {
-  headline: "Master the finite universe of MBE traps.",
+  headline: "Master the MBE by learning why you miss.",
   subhead:
-    "BarMatrix diagnoses the wrong-answer patterns behind your missed MBE questions and assigns targeted repair drills so you stop practicing randomly and start repairing the traps that keep costing you points.",
+    "BarMatrix uses the C3 method to diagnose the wrong-answer patterns behind your missed MBE questions, map your red zones, and assign the next repair drill instead of sending you back into random practice.",
   primaryCta: { label: "Take the Free MBE Trap Diagnostic", href: "/diagnostic" },
   secondaryCta: { label: "See Wrong Answer Forensics", href: "/how-it-works" },
   flagshipLine: "BarMatrix Flagship — $999. Limited July-cycle cohort seats available.",
@@ -23,7 +23,7 @@ export const PRICING = {
   includes: [
     "Free MBE Trap Diagnostic",
     "Red-Zone Map",
-    "2,400-question forensic bank",
+    "C3 wrong-answer repair method",
     "Wrong Answer Forensics",
     "Targeted Red-Zone Drills",
     "Boot Camps",
@@ -56,7 +56,7 @@ export const PROOF_CARD = {
 export const FAQ: Array<{ q: string; a: string }> = [
   {
     q: "What is BarMatrix?",
-    a: "BarMatrix is an MBE-focused diagnostic repair system. It maps recurring trap patterns, explains why attractive wrong answers pull students in, and assigns targeted drills.",
+    a: "BarMatrix is a diagnostic-first MBE repair system for California MBE test takers. It maps recurring trap patterns, explains why attractive wrong answers pull students off call, and assigns targeted drills.",
   },
   { q: "What is the price?", a: "BarMatrix Flagship is $999." },
   {
@@ -65,11 +65,19 @@ export const FAQ: Array<{ q: string; a: string }> = [
   },
   {
     q: "Is enrollment limited?",
-    a: "Yes. The July-cycle cohort has limited seats. Enrollment closes when capacity is reached.",
+    a: "Yes. The July-cycle cohort has limited seats, and enrollment closes when capacity is reached.",
   },
   {
     q: "Is this a full bar course?",
-    a: "No. BarMatrix is multiple-choice-only and is designed to complement a full bar course.",
+    a: "No. BarMatrix is multiple-choice-only and is designed to pair with full bar prep as a diagnostic repair layer.",
+  },
+  {
+    q: "Do you have official NCBE or State Bar endorsement?",
+    a: "No. BarMatrix is an independent educational product and is not affiliated with or endorsed by NCBE, the State Bar of California, or any bar authority.",
+  },
+  {
+    q: "What results should I expect and what should I not expect?",
+    a: "Expect clearer visibility into your recurring trap patterns and a guided repair path. We do not make pass-rate, score-increase, or outcome guarantees.",
   },
 ];
 

@@ -105,6 +105,31 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/tiktok",
+        destination: "/tiktok.html",
+        permanent: true,
+      },
+      {
+        source: "/lp-red-zone",
+        destination: "/lp-red-zone.html",
+        permanent: true,
+      },
+      {
+        source: "/lp-red-zone-drills",
+        destination: "/lp-red-zone-drills.html",
+        permanent: true,
+      },
+      {
+        source: "/lp-wrong-answer-forensics",
+        destination: "/lp-wrong-answer-forensics.html",
+        permanent: true,
+      },
+      {
+        source: "/lp-crimpro-vehicle-search",
+        destination: "/lp-crimpro-vehicle-search.html",
+        permanent: true,
+      },
+      {
         source: "/:path*",
         has: [{ type: "host", value: "www.barmatrix.app" }],
         destination: "https://barmatrix.app/:path*",

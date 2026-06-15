@@ -7,9 +7,9 @@ import { api, ApiClientError } from "@/lib/api-client";
 type SubmitState = "idle" | "submitting" | "saved" | "error";
 
 const ROLE_OPTIONS = [
-  "Bar exam student",
-  "Repeat taker",
+  "California MBE candidate",
   "Working student",
+  "Returning candidate",
   "Tutor or partner",
   "Other",
 ];
@@ -66,7 +66,7 @@ export function WebinarLeadForm() {
       setMessage(
         result.status === "ignored"
           ? "Your request has been received."
-          : "Saved. No automated email was sent; BarMatrix will use this only when the next webinar session is scheduled.",
+          : "Saved. No automated email was sent; BarMatrix will use this only when the next diagnostic walkthrough is scheduled.",
       );
     } catch (err) {
       const detail =
@@ -85,8 +85,8 @@ export function WebinarLeadForm() {
       <span className="ribbon">NEXT SESSION</span>
       <h2 className="name">Get the next webinar notice</h2>
       <p className="summary">
-        Leave your email and prep context. The next webinar is not scheduled yet, and
-        this form does not send an automated confirmation.
+        Leave your email and prep context. The next diagnostic-focused webinar is not
+        scheduled yet, and this form does not send an automated confirmation.
       </p>
 
       <label className="mono" style={labelStyle} htmlFor="webinar-name">
@@ -165,14 +165,14 @@ export function WebinarLeadForm() {
       </div>
 
       <label className="mono" style={labelStyle} htmlFor="webinar-context">
-        What should the next session cover?
+        What should the next diagnostic walkthrough cover?
       </label>
       <textarea
         id="webinar-context"
         value={context}
         onChange={(event) => setContext(event.target.value)}
         rows={4}
-        placeholder="Hearsay, timing, repeat-taker strategy, wrong-answer forensics..."
+        placeholder="Wrong-answer forensics, timing traps, California MBE topics to prioritize..."
         style={{ ...inputStyle, resize: "vertical" }}
       />
 
@@ -195,8 +195,8 @@ export function WebinarLeadForm() {
           style={{ marginTop: 4 }}
         />
         <span>
-          Use this email only to notify me when the next BarMatrix webinar session is
-          scheduled.
+          Use this email only to notify me when the next BarMatrix diagnostic
+          walkthrough is scheduled.
         </span>
       </label>
 

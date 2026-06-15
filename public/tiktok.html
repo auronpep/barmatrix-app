@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23c8102e'/%3E%3Ctext x='16' y='24' font-family='Georgia,serif' font-size='22' font-weight='900' fill='white' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E"/>
+  <meta name="description" content="30 launch-sprint TikTok scripts. Internal library." />
+  <meta property="og:title" content="BarMatrix · TikTok Scripts" />
+  <meta property="og:description" content="30 launch-sprint TikTok scripts. Internal library." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'%3E%3Crect width='1200' height='630' fill='%230a0a0a'/%3E%3Crect width='1200' height='12' fill='%23c8102e'/%3E%3Ctext x='100' y='280' font-family='Georgia,serif' font-size='90' font-weight='700' fill='white'%3EBarMatrix.%3C/text%3E%3Ctext x='100' y='370' font-family='Georgia,serif' font-size='52' font-weight='700' fill='%23c8102e' font-style='italic'%3EDiagnose. Repair.%3C/text%3E%3Ctext x='100' y='550' font-family='monospace' font-size='22' fill='%23a39e93' letter-spacing='4'%3E%E2%96%8C MBE TRAP DIAGNOSIS %C2%B7 WEB ACCESS LIVE NOW%3C/text%3E%3C/svg%3E" />
+  <meta name="twitter:card" content="summary_large_image" />
+<title>BarMatrix — TikTok Script Library (Internal)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+body{background:#1c1a16;margin:0;padding:32px;color:#c8c4ba}
+.tt-header{max-width:1500px;margin:0 auto 32px;display:flex;justify-content:space-between;align-items:end;gap:32px;padding-bottom:24px;border-bottom:1px solid #2a2a2a}
+.tt-header .brand{display:flex;align-items:baseline;gap:8px;font-family:var(--serif);font-weight:800;font-size:24px;color:#fff;letter-spacing:-0.01em}
+.tt-header .brand .mark{width:30px;height:30px;background:var(--red);display:grid;place-items:center;font-family:var(--serif);font-weight:900;font-size:18px;transform:translateY(3px);color:#fff}
+.tt-header .brand .dot{width:5px;height:5px;background:var(--red);display:inline-block;margin-left:3px;transform:translateY(-3px)}
+.tt-header .title{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--red);text-transform:uppercase;font-weight:600;margin-top:6px}
+.tt-header h1{font-family:var(--serif);font-weight:700;font-size:36px;color:#fff;letter-spacing:-0.02em;margin:2px 0 0}
+.tt-header .desc{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:#6b6862;max-width:50ch;text-align:right;text-transform:uppercase}
+.tt-grid{max-width:1500px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:24px}
+.tt-card{background:#f6f3ec;color:#0a0a0a;border:1px solid #0a0a0a;box-shadow:6px 6px 0 var(--red)}
+.tt-meta-strip{padding:8px 14px;background:#1c1a16;color:#c8c4ba;display:grid;grid-template-columns:1fr auto auto;gap:8px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;align-items:center}
+.tt-meta-strip .id{color:#6b6862}
+.tt-meta-strip .tag{font-weight:600;padding:2px 6px;background:var(--red);color:#fff}
+.tt-meta-strip .tag.hook{background:var(--ink);color:#f6f3ec}
+.tt-meta-strip .dur{color:#a39e93}
+.tt-body{padding:24px}
+.tt-hook{font-family:var(--serif);font-weight:700;font-size:24px;letter-spacing:-0.015em;line-height:1.2;margin:0 0 18px;color:#0a0a0a}
+.tt-hook em{color:var(--red);font-style:italic}
+.tt-script{border-left:3px solid var(--red);padding-left:14px;margin-bottom:18px}
+.tt-beat{display:grid;grid-template-columns:60px 1fr;gap:12px;padding:10px 0;border-bottom:1px dashed rgba(10,10,10,.15);font-size:13px;line-height:1.45}
+.tt-beat:last-child{border-bottom:none}
+.tt-beat .ts{font-family:var(--mono);font-weight:700;font-size:11px;color:var(--red);letter-spacing:.05em;padding-top:2px}
+.tt-beat .said{font-family:var(--serif);font-style:italic;color:#0a0a0a}
+.tt-cta-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:18px;border-top:1px solid rgba(10,10,10,.15)}
+.tt-cta-row>div .lbl{font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:#6b6862;font-weight:600;text-transform:uppercase;margin-bottom:4px}
+.tt-cta-row>div .v{font-family:var(--serif);font-size:14px;font-weight:600;line-height:1.35}
+.tt-disclosure{margin-top:14px;padding:10px 12px;background:#fff066;font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:#0a0a0a;line-height:1.5}
+.tt-disclosure strong{font-family:var(--mono);letter-spacing:.15em;text-transform:uppercase;font-weight:700}
+.cat-tag{font-family:var(--mono);font-size:9px;letter-spacing:.15em;padding:2px 6px;font-weight:700;text-transform:uppercase}
+.cat-tag.trap{background:#c8102e;color:#fff}
+.cat-tag.story{background:#1f6f3a;color:#fff}
+.cat-tag.demo{background:#0a0a0a;color:#f6f3ec}
+.cat-tag.testimonial{background:#c2410c;color:#fff}
+</style></head><body data-screen-label="TikTok Scripts">
+<div class="tt-header">
+  <div>
+    <div class="brand"><span class="mark">B</span>BarMatrix<span class="dot"></span></div>
+    <div class="title">▌ TIKTOK SCRIPT LIBRARY · V1 · INTERNAL</div>
+    <h1>30 launch-sprint scripts.</h1>
+  </div>
+  <div class="desc">For founder + approved partners · 30–60 sec format · all include FTC disclosure · pick 3-5 per week and rotate</div>
+</div>
+
+<div class="tt-grid">
+
+  <div class="tt-card">
+    <div class="tt-meta-strip"><span><span class="tag">TT-001</span><span class="id"> · WEEK 1 · MON</span></span><span class="cat-tag trap">TRAP REVEAL</span><span class="dur">38 SEC</span></div>
+    <div class="tt-body">
+      <h3 class="tt-hook">"42% of bar examinees pick this. <em>It used to be right.</em>"</h3>
+      <div class="tt-script">
+        <div class="tt-beat"><span class="ts">0:00</span><span class="said">Cold open: question on screen. "An officer searched a locked toolbox in the trunk during a lawful traffic stop. Granting the motion to suppress was..."</span></div>
+        <div class="tt-beat"><span class="ts">0:08</span><span class="said">"42% of the focus group said 'grant.' They picked Chadwick — the 1977 rule."</span></div>
+        <div class="tt-beat"><span class="ts">0:18</span><span class="said">"Chadwick got overruled by Acevedo in 1991. Different rule. Same fact pattern. Same trap."</span></div>
+        <div class="tt-beat"><span class="ts">0:28</span><span class="said">"BarMatrix tags this as 'Stale Rule.' If you keep falling for it, your repair drill is already queued. Link in bio."</span></div>
+      </div>
+      <div class="tt-cta-row"><div><div class="lbl">CTA</div><div class="v">"Link in bio · take the diagnostic"</div></div><div><div class="lbl">HASHTAGS</div><div class="v">#barexam #mbe #lawschool #barprep #july2026</div></div></div>
+      <div class="tt-disclosure"><strong>FTC ▸ </strong>I may receive compensation if you purchase through my link.</div>
+    </div>
+  </div>
+
+  <div class="tt-card">
+    <div class="tt-meta-strip"><span><span class="tag">TT-002</span><span class="id"> · WEEK 1 · TUE</span></span><span class="cat-tag story">FOUNDER STORY</span><span class="dur">45 SEC</span></div>
+    <div class="tt-body">
+      <h3 class="tt-hook">"I tutored bar exams for 11 years. <em>Same 40 traps. Every cycle.</em>"</h3>
+      <div class="tt-script">
+        <div class="tt-beat"><span class="ts">0:00</span><span class="said">"Eleven years tutoring the bar in California. 600+ students. Here's what I noticed —"</span></div>
+        <div class="tt-beat"><span class="ts">0:10</span><span class="said">"The students who failed didn't fail because they didn't know the rules. They failed because the same wrong answers kept pulling them in."</span></div>
+        <div class="tt-beat"><span class="ts">0:22</span><span class="said">"I started naming the shapes. Stale Rule. Wrong Timing. Decisionmaker Inversion. Forty-seven of them, total."</span></div>
+        <div class="tt-beat"><span class="ts">0:35</span><span class="said">"Once you can name a wrong answer, you stop falling for it. That's BarMatrix."</span></div>
+      </div>
+      <div class="tt-cta-row"><div><div class="lbl">CTA</div><div class="v">"Free diagnostic · 12 questions · barmatrix.app"</div></div><div><div class="lbl">HASHTAGS</div><div class="v">#barexam #repeattaker #barprep #founderstory</div></div></div>
+      <div class="tt-disclosure"><strong>FTC ▸ </strong>I built this product.</div>
+    </div>
+  </div>
+
+  <div class="tt-card">
+    <div class="tt-meta-strip"><span><span class="tag">TT-003</span><span class="id"> · WEEK 1 · WED</span></span><span class="cat-tag demo">LIVE DEMO</span><span class="dur">52 SEC</span></div>
+    <div class="tt-body">
+      <h3 class="tt-hook">"This question pulls in <em>69% of attorneys.</em> Watch."</h3>
+      <div class="tt-script">
+        <div class="tt-beat"><span class="ts">0:00</span><span class="said">"Moses offers a note Ruth wrote after a car crash, saying the blue truck ran the light. Moses wants the judge to consider a sworn statement to prove the note's foundation. Who decides?"</span></div>
+        <div class="tt-beat"><span class="ts">0:15</span><span class="said">"Most students say jury. 69% of the focus group said judge — and they were right. But they hesitated."</span></div>
+        <div class="tt-beat"><span class="ts">0:28</span><span class="said">"BarMatrix shows you: the judge decides preliminary questions under FRE 104(a), AND the judge isn't bound by the hearsay rules to do so."</span></div>
+        <div class="tt-beat"><span class="ts">0:42</span><span class="said">"You weren't wrong because you don't know the rules. You were wrong because no one ever made the decisionmaker question vivid."</span></div>
+      </div>
+      <div class="tt-cta-row"><div><div class="lbl">CTA</div><div class="v">"Try the same Q in the diagnostic"</div></div><div><div class="lbl">HASHTAGS</div><div class="v">#mbe #evidence #barexam #fre104</div></div></div>
+      <div class="tt-disclosure"><strong>FTC ▸ </strong>I may receive compensation if you purchase through my link.</div>
+    </div>
+  </div>
+
+  <div class="tt-card">
+    <div class="tt-meta-strip"><span><span class="tag">TT-004</span><span class="id"> · WEEK 1 · THU</span></span><span class="cat-tag testimonial">REPEAT-TAKER</span><span class="dur">41 SEC</span></div>
+    <div class="tt-body">
+      <h3 class="tt-hook">"Second time around, I did 4,000 more questions. <em>I missed the same 40 traps.</em>"</h3>
+      <div class="tt-script">
+        <div class="tt-beat"><span class="ts">0:00</span><span class="said">"I failed by 3 points my first time. So I did what everyone says. More questions. More questions. More questions."</span></div>
+        <div class="tt-beat"><span class="ts">0:12</span><span class="said">"Second time, I failed by 4 points. I'd done 4,000 more questions and I missed the same shape of wrong answer 40+ times."</span></div>
+        <div class="tt-beat"><span class="ts">0:24</span><span class="said">"Third time, I diagnosed the traps first. Drilled only those. Closed them one at a time."</span></div>
+        <div class="tt-beat"><span class="ts">0:34</span><span class="said">"Passed by 18 points. Volume wasn't the answer. Diagnosis was."</span></div>
+      </div>
+      <div class="tt-cta-row"><div><div class="lbl">CTA</div><div class="v">"Repeat takers landing page · link in bio"</div></div><div><div class="lbl">HASHTAGS</div><div class="v">#repeattaker #barexam #barprep #mbe</div></div></div>
+      <div class="tt-disclosure"><strong>FTC ▸ </strong>I may receive compensation if you purchase through my link.</div>
+    </div>
+  </div>
+
+  <div class="tt-card">
+    <div class="tt-meta-strip"><span><span class="tag">TT-005</span><span class="id"> · WEEK 2 · MON</span></span><span class="cat-tag trap">TRAP REVEAL</span><span class="dur">35 SEC</span></div>
+    <div class="tt-body">
+      <h3 class="tt-hook">"The 'medical diagnosis' exception. <em>Is not what you think.</em>"</h3>
+      <div class="tt-script">
+        <div class="tt-beat"><span class="ts">0:00</span><span class="said">"Plaintiff says to a paramedic at the scene: 'my back is killing me.' Defense objects, hearsay. What exception?"</span></div>
+        <div class="tt-beat"><span class="ts">0:10</span><span class="said">"31% of the cohort says medical-diagnosis exception. 36% — the correct answer — says then-existing physical condition."</span></div>
+        <div class="tt-beat"><span class="ts">0:22</span><span class="said">"They're siblings, not synonyms. Medical-diagnosis requires the statement be made FOR purposes of diagnosis. 'My back hurts' isn't that."</span></div>
+        <div class="tt-beat"><span class="ts">0:32</span><span class="said">"BarMatrix tags this 'Wrong Exception.' Repair drill is queued."</span></div>
+      </div>
+      <div class="tt-cta-row"><div><div class="lbl">CTA</div><div class="v">"Link in bio"</div></div><div><div class="lbl">HASHTAGS</div><div class="v">#evidence #hearsay #mbe #barexam</div></div></div>
+      <div class="tt-disclosure"><strong>FTC ▸ </strong>I may receive compensation if you purchase through my link.</div>
+    </div>
+  </div>
+
+  <div class="tt-card">
+    <div class="tt-meta-strip"><span><span class="tag">TT-006</span><span class="id"> · WEEK 2 · TUE</span></span><span class="cat-tag demo">SCREEN DEMO</span><span class="dur">48 SEC</span></div>
+    <div class="tt-body">
+      <h3 class="tt-hook">"This is what happens after you miss a question on BarMatrix. <em>Not 'incorrect.'</em>"</h3>
+      <div class="tt-script">
+        <div class="tt-beat"><span class="ts">0:00</span><span class="said">"Screen recording of drill mode. Student picks answer A on the Moses/Ruth question."</span></div>
+        <div class="tt-beat"><span class="ts">0:08</span><span class="said">"Boom — forensics overlay. 'Choice A was the jury-decides trap. Decisionmaker Inversion. 16% of cohort fell for it.'"</span></div>
+        <div class="tt-beat"><span class="ts">0:22</span><span class="said">"Below the explanation: focus-group bar chart, tension point, rule spine, AND the next drill is queued."</span></div>
+        <div class="tt-beat"><span class="ts">0:36</span><span class="said">"Most bar prep says 'wrong, here's why.' BarMatrix says 'wrong, here's the trap shape, here's the drill that closes it.'"</span></div>
+      </div>
+      <div class="tt-cta-row"><div><div class="lbl">CTA</div><div class="v">"Free diagnostic · barmatrix.app"</div></div><div><div class="lbl">HASHTAGS</div><div class="v">#barprep #mbe #lawschool #productdemo</div></div></div>
+      <div class="tt-disclosure"><strong>FTC ▸ </strong>I may receive compensation if you purchase through my link.</div>
+    </div>
+  </div>
+
+</div>
+
+<div style="max-width:1500px;margin:48px auto 0;padding-top:24px;border-top:1px solid #2a2a2a;display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:#6b6862;text-transform:uppercase">
+  <span>▌ 6 OF 30 SCRIPTS SHOWN · REMAINING 24 IN AIRTABLE</span>
+  <span>EVERY POST REQUIRES FTC DISCLOSURE</span>
+  <span>BARMATRIX V1 · INTERNAL ONLY</span>
+</div>
+</body></html>

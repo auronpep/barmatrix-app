@@ -7,7 +7,7 @@ import { WebinarLeadForm } from "./webinar-lead-form";
 export const metadata: Metadata = {
   title: "Next Webinar Notice",
   description:
-    "BarMatrix webinar interest form. The next session is not scheduled yet; sign up to be notified when it is.",
+    "BarMatrix webinar interest form for California MBE test-taker diagnostic walkthroughs. The next session is not scheduled yet; sign up to be notified when it is.",
   alternates: {
     canonical: "/webinar",
   },
@@ -24,15 +24,15 @@ export default function WebinarPage() {
             <span className="stamp">BARMATRIX FLAGSHIP</span>
           </div>
           <div className="eyebrow-red" style={{ marginBottom: 24 }}>
-            ▌ NEXT BARMATRIX WEBINAR
+            ▌ CALIFORNIA MBE DIAGNOSTIC WEBINAR
           </div>
           <h1 className="display display-lg" style={{ margin: "0 0 24px", maxWidth: "22ch" }}>
-            The next webinar is not scheduled yet.
+            The next live diagnostic walkthrough is not scheduled yet.
           </h1>
           <p className="body-lg" style={{ marginBottom: 0 }}>
-            Add your email and prep context if you want to be informed when the
-            next session is placed on the calendar. BarMatrix will not send an
-            automated confirmation from this form.
+            Add your email and prep context to be notified when a live
+            California-MBE-focused diagnostic walkthrough is scheduled. This form
+            does not send an automated confirmation.
           </p>
         </div>
       </section>
@@ -63,7 +63,7 @@ export default function WebinarPage() {
                 <p style={{ color: "var(--ink-soft)", fontSize: 15, lineHeight: 1.6 }}>
                   You can still run the free diagnostic now. It identifies the trap
                   patterns behind your missed MBE answers and points you toward the
-                  repair layer the webinar will cover.
+                  repair layer the webinar walkthrough will cover.
                 </p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 20 }}>
                   <Link href="/diagnostic" className="btn red">
@@ -77,7 +77,7 @@ export default function WebinarPage() {
 
               <div className="scarcity-meter">
                 <div className="meter-row">
-                  <span className="left">Next webinar</span>
+                  <span className="left">Next diagnostic walkthrough</span>
                   <span className="right">Unscheduled</span>
                 </div>
                 <div className="meter-bar">

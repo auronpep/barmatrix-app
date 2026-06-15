@@ -7,7 +7,7 @@ import { CAPACITY_COPY, DISCLAIMER, PRICING } from "@/lib/copy";
 export default function WaitlistPage() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
-  const [context, setContext] = useState("California July-cycle MBE prep");
+  const [context, setContext] = useState("California MBE diagnostic readiness");
   const [submitted, setSubmitted] = useState(false);
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
@@ -35,17 +35,19 @@ export default function WaitlistPage() {
             <span className="stamp">BARMATRIX FLAGSHIP</span>
           </div>
           <div className="eyebrow-red" style={{ marginBottom: 24 }}>
-            ▌ {CAPACITY_COPY.waitlist}
+            ▌ CALIFORNIA MBE — {CAPACITY_COPY.waitlist}
           </div>
           <h1
             className="display display-lg"
             style={{ margin: "0 0 24px", maxWidth: "20ch" }}
           >
-            The cohort is full. Join the waitlist for the next available seat.
+            The California July-cycle cohort is full. Join the waitlist for the
+            next available seat.
           </h1>
           <p className="body-lg" style={{ marginBottom: 0 }}>
-            {PRICING.capacityLine} When the cohort is full, checkout pauses and waitlist
-            requests are handled in order by the launch team.
+            {PRICING.capacityLine} When the cohort is full, checkout pauses and
+            waitlist requests are handled in order by the launch team for
+            California MBE access.
           </p>
         </div>
       </section>
@@ -129,7 +131,8 @@ export default function WaitlistPage() {
                 <ol style={orderedListStyle}>
                   <li>Checkout remains paused while the cohort is at capacity.</li>
                   <li>Waitlist requests are reviewed in received order.</li>
-                  <li>If a seat opens, support sends the next enrollment step.</li>
+                  <li>If a seat opens, support sends the next enrollment step for
+                  California MBE diagnostic participation.</li>
                 </ol>
               </div>
 
@@ -149,8 +152,9 @@ export default function WaitlistPage() {
                   ▸ STILL USEFUL NOW
                 </div>
                 <p style={{ color: "var(--ink-soft)", fontSize: 15, lineHeight: 1.6 }}>
-                  You can still take the free diagnostic, review how Red-Zone mapping works,
-                  and keep your email ready for a seat offer.
+                  You can still take the free diagnostic, review how Red-Zone mapping
+                  works, and keep your email ready for a California-focused seat
+                  offer.
                 </p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 20 }}>
                   <Link href="/diagnostic" className="btn red">

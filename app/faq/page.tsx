@@ -4,7 +4,7 @@ import { FAQ, DISCLAIMER } from "@/lib/copy";
 export const metadata = {
   title: "FAQ — BarMatrix",
   description:
-    "Frequently asked questions about BarMatrix Flagship: pricing, cohort access, course companion use, and refund terms.",
+    "Frequently asked questions for California MBE test takers: pricing, cohort access, method scope, and refunds.",
 };
 
 export default function FaqPage() {
@@ -13,9 +13,9 @@ export default function FaqPage() {
       <section className="hero">
         <div className="container">
           <div className="hero-meta">
-            <span className="stamp">LOCKED COPY</span>
+            <span className="stamp">MBE-FIRST FAQ</span>
             <span className="stamp">SRC-0029</span>
-            <span className="stamp">{FAQ.length} ANSWERS</span>
+            <span className="stamp">{FAQ.length} CLARITY BLOCKS</span>
           </div>
           <div className="eyebrow-red" style={{ marginBottom: 24 }}>
             ▌ FAQ
@@ -28,7 +28,8 @@ export default function FaqPage() {
             <span style={{ fontStyle: "italic" }}>questions.</span>
           </h1>
           <p className="body-lg" style={{ marginBottom: 0 }}>
-            The answers below are rendered from the locked BarMatrix FAQ copy.
+            The answers below address the objections and method-level questions
+            that come up before starting the diagnostic-first repair flow.
             Don&apos;t see your question?{" "}
             <Link
               href="mailto:support@barmatrix.app"
@@ -36,11 +37,25 @@ export default function FaqPage() {
                 borderBottom: "1px solid var(--ink)",
                 paddingBottom: 1,
               }}
-            >
+          >
               Email support
             </Link>
             .
           </p>
+          <div
+            className="mt-8 rounded-lg border border-zinc-200 bg-zinc-50 p-5"
+            style={{ maxWidth: 760 }}
+          >
+            <p className="font-mono text-xs uppercase tracking-wider text-zinc-600">
+              Proof and claim policy
+            </p>
+            <p className="mt-3 text-sm leading-6 text-zinc-700">
+              BarMatrix is a diagnostic-first California MBE repair system only.
+              We do not guarantee pass rates, outcomes, or score increases, and
+              we are not officially affiliated with NCBE, the State Bar, or other
+              bar authorities.
+            </p>
+          </div>
         </div>
       </section>
 

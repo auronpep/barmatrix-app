@@ -5,7 +5,7 @@ import { PricingAnalytics } from "./pricing-analytics";
 export const metadata = {
   title: "Pricing — BarMatrix Flagship $999",
   description:
-    "BarMatrix Flagship is $999 with a payment plan of $500 today and $499 in 30 days. One July-cycle cohort. Limited seats available.",
+    "BarMatrix Flagship is $999 with a payment plan of $500 today and $499 in 30 days. California MBE diagnostic-first access for one July-cycle cohort.",
 };
 
 export default function PricingPage() {
@@ -70,13 +70,13 @@ export default function PricingPage() {
                   <li key={item}>{item}</li>
                 ))}
               </ul>
-              <Link
-                href="/checkout"
-                className="btn btn-lg red"
-                style={{ width: "100%", justifyContent: "center" }}
-              >
-                Enroll in Flagship <span className="arrow">→</span>
-              </Link>
+          <Link
+            href="/checkout"
+            className="btn btn-lg red"
+            style={{ width: "100%", justifyContent: "center" }}
+          >
+            Continue with full access <span className="arrow">→</span>
+          </Link>
               <p
                 className="mono"
                 style={{
@@ -105,7 +105,7 @@ export default function PricingPage() {
                   <div className="fill" style={{ width: "62%" }} />
                 </div>
                 <div className="meter-meta">
-                  Enrollment closes when capacity is reached.
+                  Intake closes when capacity is reached.
                 </div>
               </div>
 
@@ -117,7 +117,7 @@ export default function PricingPage() {
                   className="eyebrow-strong"
                   style={{ marginBottom: 12 }}
                 >
-                  ▸ START FREE
+                ▸ START WITH DIAGNOSTIC-FIRST ACCESS
                 </div>
                 <h3
                   className="serif"

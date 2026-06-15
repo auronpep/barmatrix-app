@@ -35,6 +35,7 @@ const ROUTES = [
 
 const CAMPAIGN_ROUTES = [
   "/campaign.html",
+  "/lp-red-zone.html",
   "/lp-diagnostic-map.html",
   "/lp-wrong-answer-forensics.html",
   "/lp-red-zone-drills.html",
@@ -55,6 +56,7 @@ const CAMPAIGN_ROUTES = [
   "/lp-conlaw-standing.html",
   "/lp-property-recording.html",
   "/lp-reddit-barprep.html",
+  "/tiktok",
 ] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {

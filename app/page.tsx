@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 const stats = [
-  { num: "2,400", red: ".", lbl: "Questions · fully tagged" },
+  { num: "12", red: ".", lbl: "Diagnostic questions to map your red zones" },
   { num: "156", lbl: "Tension points mapped" },
   { num: "07", lbl: "MBE subjects covered" },
 ];
@@ -102,9 +102,8 @@ export default function Home() {
                 ▌ MBE TRAP DIAGNOSIS · WEB
               </div>
               <h1 className="display display-xl">
-                Master the{" "}
-                <span style={{ fontStyle: "italic" }}>finite universe</span>{" "}
-                of <span style={{ color: "var(--red)" }}>MBE traps.</span>
+                Master the MBE by learning{" "}
+                <span style={{ fontStyle: "italic" }}>why you miss.</span>
               </h1>
               <p className="lede">{HERO.subhead}</p>
               <div className="hero-actions">

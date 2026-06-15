@@ -4,14 +4,14 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "The BarMatrix founder story: eleven years of bar tutoring condensed into an MBE trap diagnosis and repair system.",
+    "The BarMatrix founder story: eleven years of California MBE tutoring condensed into a trap-diagnosis and repair system.",
   alternates: {
     canonical: "/about",
   },
   openGraph: {
     title: "About BarMatrix",
     description:
-      "Eleven years of bar tutoring condensed into an MBE trap diagnosis and repair system.",
+      "Eleven years of California MBE tutoring condensed into an MBE trap diagnosis and repair system.",
     url: "/about",
     images: ["/og-image.svg"],
   },
@@ -19,13 +19,13 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "About BarMatrix",
     description:
-      "Eleven years of bar tutoring condensed into an MBE trap diagnosis and repair system.",
+      "Eleven years of California MBE tutoring condensed into an MBE trap diagnosis and repair system.",
     images: ["/og-image.svg"],
   },
 };
 
 const STATS = [
-  { value: "11", label: "years tutoring CA bar", accent: false },
+  { value: "11", label: "years tutoring California MBE", accent: false },
   { value: "600+", label: "students through the method", accent: false },
   { value: "47", label: "trap shapes tagged in v1", accent: true },
   { value: "156", label: "tension points mapped", accent: false },
@@ -102,7 +102,7 @@ export default function AboutPage() {
             </p>
             <p className="mt-4 text-sm leading-6 text-zinc-600">
               MBE Tension Matrix Method. Wrong-answer architecture. Diagnostic
-              repair for repeatable trap patterns.
+              repair for recurring trap patterns.
             </p>
           </aside>
 
@@ -113,9 +113,9 @@ export default function AboutPage() {
               </p>
               <div className="mt-5 grid gap-5 text-base leading-7 text-zinc-700">
                 <p>
-                  The repeated finding was simple: students often did not fail
-                  because they knew no rules. They failed because the same shapes
-                  of wrong answers kept pulling them in.
+                  The repeated finding was simple: California MBE candidates often did
+                  not fail because they knew no rules. They failed because the same
+                  shapes of wrong answers kept pulling them in.
                 </p>
                 <p>
                   A vehicle-search miss in Criminal Procedure, a UCC merchant
@@ -179,12 +179,12 @@ export default function AboutPage() {
 
             <section className="border-l-4 border-red-700 bg-zinc-950 p-7 text-white">
               <p className="max-w-3xl font-serif text-2xl italic leading-9">
-                &quot;Second time around, I did more questions. I missed the same
-                traps. The third time, I diagnosed the traps first - and stopped
+                &quot;I did more questions, and I missed the same traps.
+                The next time, I diagnosed the trap pattern first - and stopped
                 the bleeding.&quot;
               </p>
               <p className="mt-4 font-mono text-[11px] uppercase tracking-wider text-zinc-400">
-                Composite of repeat-taker patterns BarMatrix is built for
+                Composite of California MBE diagnostic patterns BarMatrix is built for
               </p>
             </section>
 
@@ -206,7 +206,8 @@ export default function AboutPage() {
                 <p className="mt-3 leading-7 text-zinc-600">
                   BarMatrix is multiple-choice only by design. It complements a
                   full bar course by diagnosing the MBE traps students keep
-                  repeating and assigning targeted repair drills.
+                  repeating and assigning targeted repair drills for California practice
+                  sessions.
                 </p>
               </div>
             </section>

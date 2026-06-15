@@ -4,7 +4,7 @@ import { DISCLAIMER } from "@/lib/copy";
 export const metadata = {
   title: "Partner with BarMatrix — Influencer & tutor program",
   description:
-    "Help students stop repeating MBE traps. Apply to refer BarMatrix to your audience and earn per qualified referral. FTC-compliant disclosure required.",
+    "Help California MBE test takers avoid recurring trap patterns. Apply to refer BarMatrix to your audience and earn per qualified referral. FTC-compliant disclosure required.",
 };
 
 const partnerSegments = [
@@ -31,7 +31,10 @@ export default function PartnersPage() {
           Partner with BarMatrix
         </h1>
         <p className="mt-6 text-lg text-zinc-600">
-          Help students stop repeating the same MBE traps. BarMatrix is a premium MBE wrong-answer intelligence system — diagnostic-first and drill-assigned. We work with creators, tutors, and bar-prep organizations who can recommend it accurately.
+          Help California MBE candidates move from confusion to repair. BarMatrix is a
+          premium MBE wrong-answer intelligence system — diagnostic-first and
+          drill-assigned. We work with creators, tutors, and bar-prep
+          organizations who can recommend it accurately.
         </p>
       </section>
 
@@ -39,7 +42,10 @@ export default function PartnersPage() {
         <div className="mx-auto max-w-3xl px-6">
           <h2 className="font-serif text-2xl font-semibold">Approved short copy for partners</h2>
           <blockquote className="mt-6 rounded-lg border-l-4 border-zinc-900 bg-white p-6 font-serif text-lg italic text-zinc-800">
-            &ldquo;BarMatrix is a premium MBE repair system that diagnoses wrong-answer patterns and assigns targeted drills. It is built for students whose MBE review has plateaued or whose full course is not isolating the traps behind their misses. Limited July-cycle cohort seats are available.&rdquo;
+            &ldquo;BarMatrix is a premium MBE repair system that diagnoses wrong-answer
+            patterns and assigns targeted drills. It is built for California MBE
+            candidates who want the next specific diagnostic repair step before moving
+            deeper into prep. Limited July-cycle cohort seats are available.&rdquo;
           </blockquote>
           <p className="mt-4 text-sm text-zinc-600">
             Required disclosure (paste verbatim alongside your link):

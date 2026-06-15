@@ -180,6 +180,9 @@ export default function RootLayout({
                     <li>
                       <Link href="/app">Open App</Link>
                     </li>
+                    <li>
+                      <Link href="/walk">Daily Walk</Link>
+                    </li>
                   </ul>
                 </div>
                 <div>

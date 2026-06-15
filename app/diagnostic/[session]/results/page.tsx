@@ -4,17 +4,20 @@
 //
 // Renders a real, computed Red-Zone *preview* from the session's own attempts
 // (GET /api/diagnostic/:id/results, keyed by set_id = diagnostic id). This works
-// for anonymous pre-enrollment takers and is NOT persisted — saving the map and
-// unlocking repair drills is what enrollment buys. The persistent user_red_zones
-// surface stays gated; this is the lead-magnet preview the funnel promises.
+// for anonymous pre-access takers and is NOT persisted — saving the map and
+// opening full repair drills is what full access activates. The persistent
+// user_red_zones surface stays gated; this is the lead-magnet preview the
+// funnel promises.
 
 import { use, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   api,
+  ApiClientError,
   type DiagnosticResultsResponse,
   type DiagnosticTrapPattern,
   type DiagnosticRedZoneEntry,
+  type DiagnosticRecommendation,
 } from "@/lib/api-client";
 import {
   trackDiagnosticCompletedOnce,
@@ -23,6 +26,7 @@ import {
 import { PRICING } from "@/lib/copy";
 import { useDashboard, type DashboardState } from "@/lib/use-dashboard";
 import { userFacingResourceError } from "@/lib/user-facing-errors";
+import { rememberDiagnosticId } from "@/lib/diagnostic-session";
 
 const DIMENSION_LABELS: Record<string, string> = {
   subject: "By subject",
@@ -65,6 +69,10 @@ export default function DiagnosticResultsPage({
 
   useEffect(() => {
     let active = true;
+
+    // Remember this diagnostic so checkout can carry it and fulfillment can
+    // claim it onto the buyer's new student record.
+    rememberDiagnosticId(diagnosticId);
 
     const trackCompletion = (
       response: DiagnosticResultsResponse | null,
@@ -122,6 +130,9 @@ export default function DiagnosticResultsPage({
         Your Red-Zone Map
       </h1>
       <p className="mt-4 text-lg text-zinc-600">
+        Built for California MBE takers who want a diagnostic-first path.
+      </p>
+      <p className="mt-2 text-zinc-600">
         {results && results.answered > 0
           ? `The trap patterns most likely costing you points, ranked from ${results.answered} diagnostic question${results.answered === 1 ? "" : "s"}.`
           : "The trap patterns most likely costing you points, ranked from your answers."}
@@ -135,9 +146,13 @@ export default function DiagnosticResultsPage({
       {results && results.answered > 0 && (
         <>
           <SummaryCard results={results} />
+          <RecommendationCard recommendation={results.recommendation} />
+          {dashboard.data?.enrolled !== true && (
+            <LeadCaptureCard diagnosticId={diagnosticId} />
+          )}
           <TopTrapPatterns patterns={results.top_trap_patterns} />
           <DimensionBreakdown byDimension={results.red_zones.by_dimension} />
-          <ResultsCta dashboard={dashboard} />
+          <ResultsCta dashboard={dashboard} diagnosticId={diagnosticId} />
         </>
       )}
 
@@ -152,6 +167,46 @@ export default function DiagnosticResultsPage({
         </div>
       )}
     </section>
+  );
+}
+
+function RecommendationCard({
+  recommendation,
+}: {
+  recommendation: DiagnosticRecommendation;
+}) {
+  const leakLabel = recommendation.top_leak
+    ? humanizeTag(recommendation.top_leak.tag)
+    : "No repeated trap";
+
+  return (
+    <div className="mt-8 rounded-lg border border-zinc-900 bg-zinc-950 p-6 text-white shadow-sm">
+      <p className="font-mono text-xs uppercase tracking-wider text-red-400">
+        Recommended start
+      </p>
+      <div className="mt-3 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h2 className="font-serif text-2xl font-semibold tracking-tight">
+            {recommendation.level.label}
+          </h2>
+          <p className="mt-3 text-sm leading-6 text-zinc-300">
+            {recommendation.level.description}
+          </p>
+          <p className="mt-4 font-mono text-[11px] uppercase tracking-wide text-zinc-400">
+            Top leak · {leakLabel}
+          </p>
+          <p className="mt-2 text-sm leading-6 text-zinc-300">
+            {recommendation.next_step.copy}
+          </p>
+        </div>
+        <Link
+          href={recommendation.next_step.href}
+          className="btn red shrink-0 text-center"
+        >
+          {recommendation.next_step.primary_label}
+        </Link>
+      </div>
+    </div>
   );
 }
 
@@ -215,8 +270,9 @@ function TopTrapPatterns({ patterns }: { patterns: DiagnosticTrapPattern[] }) {
           No red zones surfaced
         </p>
         <p className="mt-2 text-zinc-800">
-          You did not fall into a repeated trap pattern on this set. Enroll to run
-          the full forensic bank and keep your Red-Zone Map building as you drill.
+          You did not fall into a repeated trap pattern on this set. Continue
+          with the full repair path to run the full forensic bank and keep your
+          Red-Zone Map building as you repair.
         </p>
       </div>
     );
@@ -294,7 +350,13 @@ function DimensionBreakdown({
   );
 }
 
-function ResultsCta({ dashboard }: { dashboard: DashboardState }) {
+function ResultsCta({
+  dashboard,
+  diagnosticId,
+}: {
+  dashboard: DashboardState;
+  diagnosticId: string;
+}) {
   if (dashboard.data?.enrolled === true) {
     return <EnrolledCta />;
   }
@@ -306,7 +368,7 @@ function ResultsCta({ dashboard }: { dashboard: DashboardState }) {
           Next step · Account
         </p>
         <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
-          Checking your enrollment...
+          Checking your access...
         </h2>
         <p className="mt-3 text-zinc-600">
           Once your account status loads, this screen will point you to the right
@@ -320,7 +382,7 @@ function ResultsCta({ dashboard }: { dashboard: DashboardState }) {
     return <AccountCta />;
   }
 
-  return <EnrollCta />;
+  return <AccessCta diagnosticId={diagnosticId} />;
 }
 
 function EnrolledCta() {
@@ -361,7 +423,7 @@ function AccountCta() {
         Open your dashboard to continue.
       </h2>
       <p className="mt-3 text-zinc-300">
-        We could not confirm enrollment from this screen, but your signed-in
+        We could not confirm full access from this screen, but your signed-in
         dashboard can route you to the right next step.
       </p>
       <div className="mt-6 flex flex-wrap gap-3">
@@ -379,23 +441,27 @@ function AccountCta() {
   );
 }
 
-function EnrollCta() {
+function AccessCta({ diagnosticId }: { diagnosticId: string }) {
+  // Go straight to checkout at the moment of peak intent (the student just saw
+  // their weaknesses), carrying the diagnostic id so the purchase claims this
+  // access to their diagnostics and progress.
+  const checkoutHref = `/checkout?diagnostic_id=${encodeURIComponent(diagnosticId)}`;
   return (
     <div className="mt-10 rounded-lg border border-zinc-900 bg-zinc-900 p-8 text-white">
       <p className="font-mono text-xs uppercase tracking-wider text-red-400">
-        Next step · Enroll
+        Next step · Continue
       </p>
       <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
-        Save your Red-Zone Map and start closing these traps.
+        Continue your guided repair path.
       </h2>
       <p className="mt-3 text-zinc-300">
-        Enrolling saves this map to your account and unlocks your repair drills,
-        the full 2,400-question forensic bank, Wrong Answer Forensics on every
-        miss, and full web access.
+        A full access plan links this diagnostic summary to your account and connects it to
+        repair drills, the full 2,400-question forensic bank, Wrong Answer
+        Forensics on every miss, and full web access.
       </p>
       <div className="mt-6 flex flex-wrap gap-3">
-        <Link href="/pricing" className="btn red">
-          Enroll for {PRICING.priceLabel}
+        <Link href={checkoutHref} className="btn red">
+          Get guided access for {PRICING.priceLabel}
         </Link>
         <Link
           href="/how-it-works"
@@ -404,6 +470,112 @@ function EnrollCta() {
           How it works
         </Link>
       </div>
+    </div>
+  );
+}
+
+// Soft email capture for anonymous / not-yet-onboarded takers. Results stay fully
+// visible above — this does NOT gate them — but it gives the funnel a contactable
+// lead and, when the email later matches a purchase, lets fulfillment claim this
+// diagnostic onto the new account.
+function LeadCaptureCard({ diagnosticId }: { diagnosticId: string }) {
+  const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot
+  const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">(
+    "idle",
+  );
+  const [message, setMessage] = useState<string | null>(null);
+
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (status === "saving") return;
+    setStatus("saving");
+    setMessage(null);
+    try {
+      const res = await api.createDiagnosticLead({
+        email,
+        diagnostic_id: diagnosticId,
+        source_page: "/diagnostic/results",
+        website: website || null,
+      });
+      setStatus("saved");
+      setMessage(res.message);
+    } catch (err) {
+      setStatus("error");
+      setMessage(
+        err instanceof ApiClientError
+          ? "We could not send your results just now. Try again in a moment."
+          : "Something went wrong. Try again in a moment.",
+      );
+    }
+  };
+
+  if (status === "saved") {
+    return (
+      <div className="mt-8 rounded-lg border border-emerald-300 bg-emerald-50 p-6">
+        <p className="font-mono text-xs uppercase tracking-wider text-emerald-700">
+          Diagnostic results saved
+        </p>
+        <p className="mt-2 text-zinc-800">
+        {message ??
+            "Saved. Continue with this same email and your diagnostic progress carries straight into your dashboard."}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-8 rounded-lg border border-zinc-300 bg-white p-6 shadow-sm">
+      <p className="font-mono text-xs uppercase tracking-wider text-red-700">
+        Save your results
+      </p>
+      <h2 className="mt-2 font-serif text-2xl font-semibold tracking-tight text-zinc-900">
+        Email me my diagnostic results
+      </h2>
+      <p className="mt-2 text-sm leading-6 text-zinc-600">
+        Keep these results and pick up where you left off. Continue later with
+        the same email and this diagnostic progress carries straight into your dashboard.
+      </p>
+      <form
+        onSubmit={submit}
+        className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center"
+      >
+        <label className="sr-only" htmlFor="diagnostic-lead-email">
+          Email address
+        </label>
+        <input
+          id="diagnostic-lead-email"
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+          className="w-full flex-1 rounded-md border border-zinc-300 px-4 py-2.5 text-sm text-zinc-900 focus:border-zinc-900 focus:outline-none"
+        />
+        {/* Honeypot: hidden from real users, bots fill it and get a no-op. */}
+        <input
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          value={website}
+          onChange={(e) => setWebsite(e.target.value)}
+          className="hidden"
+        />
+        <button
+          type="submit"
+          disabled={status === "saving"}
+          className="btn red shrink-0 disabled:opacity-60"
+        >
+          {status === "saving" ? "Saving…" : "Email my results"}
+        </button>
+      </form>
+      {status === "error" && message && (
+        <p className="mt-3 text-sm text-red-700">{message}</p>
+      )}
+      <p className="mt-3 font-mono text-[11px] uppercase tracking-wide text-zinc-400">
+        No spam · just your results
+      </p>
     </div>
   );
 }

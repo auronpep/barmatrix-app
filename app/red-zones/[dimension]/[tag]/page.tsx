@@ -3,7 +3,7 @@
 // Red Zone detail — one weak area, opened from the Red Zone Library. Shows the
 // zone's stats, the questions inside it, the recent wrong-answer forensics that
 // built it, and a one-click repair drill into the existing /drills/{subject}
-// runner. Auth + enrollment states mirror the library index.
+// runner. Auth + access states mirror the library index.
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -118,12 +118,12 @@ function ReadyView({ data }: { data: RedZoneDetail }) {
     return (
       <div className="mt-12 rounded-lg border border-zinc-300 bg-zinc-50 p-8">
         <p className="text-zinc-800">
-          Enroll to unlock your Red Zone Library and the repair drill for this
-          zone.
+          Full access is required to open your California MBE Red Zone Library and
+          the repair drill for this zone.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link href="/checkout" className="rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900">
-            Enroll now
+            Get full access
           </Link>
           <Link href="/diagnostic" className="rounded-md border border-zinc-300 px-6 py-3 text-base font-medium text-zinc-900 hover:bg-zinc-100">
             Take the diagnostic
@@ -297,7 +297,9 @@ function Stat({ label, value }: { label: string; value: string }) {
 function SignedOut() {
   return (
     <div className="mt-12 rounded-lg border border-zinc-300 bg-zinc-50 p-8">
-      <p className="text-zinc-800">Sign in to open this red zone and its repair drill.</p>
+      <p className="text-zinc-800">
+        Sign in to open this California MBE red zone and its repair drill.
+      </p>
       <div className="mt-6 flex flex-wrap gap-3">
         <Link href="/sign-in" className="rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900">
           Sign in

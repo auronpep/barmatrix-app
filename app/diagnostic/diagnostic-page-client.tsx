@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, ApiClientError, type DiagnosticStartResponse } from "@/lib/api-client";
 import { getAttributionProperties, trackDiagnosticStarted } from "@/lib/analytics";
+import { rememberDiagnosticId } from "@/lib/diagnostic-session";
 
 type Phase = "intro" | "starting" | "empty_bank" | "error";
 
@@ -53,6 +54,7 @@ export function DiagnosticPageClient() {
         return;
       }
       cacheSession(result);
+      rememberDiagnosticId(result.diagnostic_id);
       router.push(`/diagnostic/${result.diagnostic_id}/0`);
     } catch (err) {
       const message =
@@ -150,7 +152,7 @@ export function DiagnosticPageClient() {
                       className="eyebrow-strong"
                       style={{ marginBottom: 16 }}
                     >
-                      ▸ TRAP-WEIGHTED · 12 QUESTIONS
+                      ▸ TRAP-WEIGHTED · 20 QUESTIONS
                     </div>
                     <p
                       style={{

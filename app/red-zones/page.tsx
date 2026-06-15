@@ -5,8 +5,8 @@
 // this page resolves the Clerk identity (via useRedZoneLibrary) and links each
 // zone to its detail + repair drill.
 //
-// States: loading -> signed-out (public CTA) -> signed-in-not-enrolled (enroll)
-// -> enrolled-empty (diagnostic) -> ready (heat + per-dimension zone lists).
+// States: loading -> signed-out (public CTA) -> signed-in-not-access
+// -> access-needed (diagnostic) -> ready (heat + per-dimension zone lists).
 
 import { useEffect, useMemo } from "react";
 import Link from "next/link";
@@ -43,7 +43,7 @@ export default function RedZonesPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="font-mono text-xs uppercase tracking-wider text-red-700">
-            Red Zone Library
+            California MBE Red Zone Library
           </p>
           <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight sm:text-5xl">
             Every weak area, ready to repair
@@ -54,10 +54,10 @@ export default function RedZonesPage() {
         </Link>
       </div>
       <p className="mt-4 max-w-2xl text-lg text-zinc-600">
-        Your wrong answers grouped by subject, subtopic, and tension point. Open
-        any zone to see the questions inside it, the traps that built it, and a
-        targeted repair drill. The lower the proficiency, the more attention the
-        zone needs.
+        Built for California MBE takers, your wrong answers are grouped by
+        subject, subtopic, and tension point. Open any zone to see the questions
+        inside it, the traps that built it, and a targeted repair drill. The
+        lower the proficiency, the more attention the zone needs.
       </p>
 
       {lib.loading && (
@@ -108,7 +108,7 @@ function resolveBanner(lib: ReturnType<typeof useRedZoneLibrary>): Banner {
   if (!lib.signedIn) {
     return {
       tone: "info",
-      text: "Sign in to open your Red Zone Library. New here? Take the free diagnostic to build it.",
+      text: "Sign in to open your California MBE Red Zone Library. New here? Take the free diagnostic to build it.",
       ctas: [
         { href: "/sign-in", label: "Sign in", primary: true },
         { href: "/diagnostic", label: "Take the diagnostic" },
@@ -121,12 +121,12 @@ function resolveBanner(lib: ReturnType<typeof useRedZoneLibrary>): Banner {
       text:
         lib.data.status === "suspended" || lib.data.refunded
           ? "Your access is paused. Update billing or contact support to restore your Red Zone Library."
-          : "You're signed in but not enrolled yet. Enroll to unlock your full Red Zone Library and repair drills.",
+          : "You're signed in, but full access is required to open your complete California MBE Red Zone Library and repair drills.",
       ctas:
         lib.data.status === "suspended"
           ? [{ href: "/account", label: "Manage billing", primary: true }]
           : [
-              { href: "/checkout", label: "Enroll now", primary: true },
+              { href: "/checkout", label: "Get full access", primary: true },
               { href: "/diagnostic", label: "Take the diagnostic" },
             ],
     };
@@ -134,7 +134,7 @@ function resolveBanner(lib: ReturnType<typeof useRedZoneLibrary>): Banner {
   if (lib.data?.enrolled && (lib.data.dimensions?.length ?? 0) === 0) {
     return {
       tone: "info",
-      text: "You're enrolled. Take the diagnostic to build your Red Zone Library and unlock targeted drills.",
+      text: "You're signed in with full access. Take the diagnostic to build your California MBE Red Zone Library and access targeted drills.",
       ctas: [{ href: "/diagnostic", label: "Take the diagnostic", primary: true }],
     };
   }

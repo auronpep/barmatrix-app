@@ -8,6 +8,7 @@ import {
   trackCheckoutStarted,
   type StoredAttribution,
 } from "@/lib/analytics";
+import { getRememberedDiagnosticId } from "@/lib/diagnostic-session";
 import { PRICING, DISCLAIMER, CAPACITY_COPY } from "@/lib/copy";
 
 type Phase = "ready" | "redirecting" | "error" | "capacity";
@@ -58,7 +59,7 @@ export default function CheckoutClient() {
     return () => timeouts.forEach((timeout) => window.clearTimeout(timeout));
   }, []);
 
-  const enroll = async (plan: PaymentPlan) => {
+  const startCheckout = async (plan: PaymentPlan) => {
     setPhase("redirecting");
     setError(null);
     try {
@@ -79,6 +80,7 @@ export default function CheckoutClient() {
         payment_plan: plan,
         partner_id: attribution.partner_id === "none" ? null : attribution.partner_id,
         referral_click_id: getReferralClickId(checkoutSearchParams),
+        diagnostic_id: getDiagnosticId(checkoutSearchParams),
         ...buildCheckoutReturnUrls(plan, attribution),
       });
       window.location.assign(session.checkout_url);
@@ -99,12 +101,12 @@ export default function CheckoutClient() {
       <section className="hero">
         <div className="container">
           <div className="hero-meta">
-            <span className="stamp">ENROLLMENT · JULY 2026 COHORT</span>
-            <span className="stamp">BARMATRIX FLAGSHIP</span>
+            <span className="stamp">CALIFORNIA MBE · JULY 2026 COHORT</span>
+            <span className="stamp">BARMATRIX FLAGSHIP ACCESS</span>
             <span className="stamp">EDITION : LAUNCH</span>
           </div>
           <div className="eyebrow-red" style={{ marginBottom: 24 }}>
-            ▌ ENROLL IN {PRICING.flagshipName.toUpperCase()}
+            ▌ DIAGNOSTIC-FIRST FOR CALIFORNIA MBE
           </div>
           <h1
             className="display display-lg"
@@ -129,7 +131,7 @@ export default function CheckoutClient() {
               Run free diagnostic first
             </Link>
             <Link href="/account" className="btn btn-lg ghost">
-              Already enrolled? Open account
+              Already have access? Open account
             </Link>
           </div>
         </div>
@@ -155,7 +157,7 @@ export default function CheckoutClient() {
                     <span className="ribbon">RECOMMENDED</span>
                     <h2 className="name">Pay in full</h2>
                     <p className="summary">
-                      One charge. Immediate access to the full Flagship cohort.
+                      One charge. Immediate guided access to your repair stack.
                     </p>
                     <div className="price">
                       <span className="num">{PRICING.priceLabel}</span>
@@ -163,7 +165,7 @@ export default function CheckoutClient() {
                     <div className="plan">$999 USD · one-time</div>
                     <button
                       type="button"
-                      onClick={() => enroll("pay_in_full")}
+                      onClick={() => startCheckout("pay_in_full")}
                       disabled={phase === "redirecting"}
                       className="btn btn-lg red"
                       style={{
@@ -175,7 +177,7 @@ export default function CheckoutClient() {
                     >
                       {phase === "redirecting"
                         ? "Redirecting to Stripe…"
-                        : "Enroll in BarMatrix Flagship - $999 →"}
+                        : "Get full access for $999 →"}
                     </button>
                   </div>
 
@@ -202,7 +204,7 @@ export default function CheckoutClient() {
                     <div className="plan">{PRICING.paymentPlanLabel}</div>
                     <button
                       type="button"
-                      onClick={() => enroll("two_pay_500_499")}
+                      onClick={() => startCheckout("two_pay_500_499")}
                       disabled={phase === "redirecting"}
                       className="btn btn-lg red"
                       style={{
@@ -214,7 +216,7 @@ export default function CheckoutClient() {
                     >
                       {phase === "redirecting"
                         ? "Redirecting to Stripe…"
-                        : "Enroll with payment plan - $500 today →"}
+                        : "Continue with payment plan - $500 today →"}
                     </button>
                   </div>
                 </>
@@ -260,7 +262,7 @@ export default function CheckoutClient() {
                   >
                     support@barmatrix.app
                   </Link>{" "}
-                  and we&apos;ll resolve it. You are not enrolled or charged by
+                  and we&apos;ll resolve it. You are not charged by
                   BarMatrix unless Stripe shows a completed checkout and returns
                   you to the success page.
                 </p>
@@ -298,7 +300,7 @@ function CheckoutContextPanel({
       style={{ marginBottom: 24, background: "var(--paper)" }}
     >
       <div className="eyebrow-strong" style={{ marginBottom: 14 }}>
-        ▌ BEFORE YOU ENROLL
+        ▌ BEFORE YOU START
       </div>
       <div
         style={{
@@ -373,7 +375,7 @@ function CheckoutFaqPanel() {
     },
     {
       q: "Refund window",
-      a: "You may request a full refund within 3 days of enrollment if the Terms refund limits have not been exceeded.",
+      a: "You may request a full refund within 3 days of completion if the Terms refund limits have not been exceeded.",
     },
     {
       q: "Course companion",
@@ -481,6 +483,18 @@ function getCurrentSearchParams(): URLSearchParams {
 
 function getReferralClickId(searchParams: URLSearchParams): string | null {
   return searchParams.get("referral_click_id") ?? searchParams.get("click_id");
+}
+
+const DIAGNOSTIC_ID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Prefer the id passed on the URL from the results page; fall back to the one
+// remembered in localStorage when the diagnostic was taken. Validate the shape
+// so a junk value never reaches the API (server also re-validates).
+function getDiagnosticId(searchParams: URLSearchParams): string | null {
+  const fromUrl = searchParams.get("diagnostic_id");
+  const candidate = fromUrl ?? getRememberedDiagnosticId();
+  return candidate && DIAGNOSTIC_ID_RE.test(candidate) ? candidate : null;
 }
 
 function buildCheckoutReturnUrls(plan: PaymentPlan, attribution: StoredAttribution) {

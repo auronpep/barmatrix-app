@@ -3,7 +3,8 @@ import { BRAND, DOMAIN, FAQ, PRICING } from "@/lib/copy";
 
 export const metadata = {
   title: "Checkout - BarMatrix",
-  description: "Choose your BarMatrix Flagship payment plan.",
+  description:
+    "Start with the free diagnostic then continue with full BarMatrix access for California MBE takers.",
   robots: { index: false, follow: false },
 };
 
@@ -13,7 +14,7 @@ export default function CheckoutPage() {
     "@type": "Product",
     name: PRICING.flagshipName,
     description:
-      "A web-live MBE multiple-choice diagnostic and repair layer with Red-Zone Map, Wrong Answer Forensics, assigned drills, boot camps, timed sets, and dashboard access.",
+      "A web-live diagnostic-first California MBE repair layer with Red-Zone Map, Wrong Answer Forensics, assigned drills, boot camps, timed sets, and dashboard access.",
     brand: {
       "@type": "Brand",
       name: BRAND,
@@ -31,7 +32,7 @@ export default function CheckoutPage() {
     ...FAQ,
     {
       q: "What is the refund window?",
-      a: "You may request a full refund within 3 days of enrollment if the Terms refund limits have not been exceeded.",
+      a: "You may request a full refund within 3 days of checkout completion if the Terms refund limits have not been exceeded.",
     },
     {
       q: "What if Stripe completes but I do not see access?",

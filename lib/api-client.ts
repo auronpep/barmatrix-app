@@ -132,6 +132,17 @@ export interface QuestionPayload {
   choices: QuestionChoice[];
 }
 
+// Confusion-Capture: which choices the student knew were wrong vs was deciding
+// between, keyed by STABLE choice_id (letters are session-relative under answer
+// shuffle). Optional on every attempt; also editable retrospectively via PATCH.
+export type ConfusionSource = "pre_submit" | "retrospective" | "revised";
+
+export interface ConfusionCapturePayload {
+  eliminated: string[]; // choice_ids the student knew were wrong
+  deciding_between: string[]; // choice_ids the student was torn between
+  source: ConfusionSource;
+}
+
 export interface AttemptRequest {
   question_id: string;
   selected_letter: Letter;
@@ -139,6 +150,7 @@ export interface AttemptRequest {
   time_seconds: number;
   platform?: "web" | "ios" | "android";
   set_id?: string;
+  confusion?: ConfusionCapturePayload;
 }
 
 export interface AttemptResponse {
@@ -178,6 +190,54 @@ export interface RedZoneEntry {
 export interface RedZonesResponse {
   by_dimension: Record<string, RedZoneEntry[]>;
   message?: string;
+}
+
+// --- Confusion analytics (GET /api/me/confusion) + retrospective PATCH ---
+
+export interface ConfusionEliminatedKey {
+  attempt_id: string;
+  external_id: string | null;
+  subject: string | null;
+  subtopic: string | null;
+  letter: string;
+  trap_name: string;
+}
+
+export interface ConfusionPair {
+  key: string;
+  external_id: string | null;
+  subject: string | null;
+  subtopic: string | null;
+  correct_letter: string | null;
+  distractor_letter: string;
+  trap_name: string;
+  count: number;
+}
+
+export interface ConfusionSignals {
+  captured_attempts: number;
+  lucky_guess_count: number;
+  lucky_guess_rate: number;
+  eliminated_key_count: number;
+  coin_flip_wrong_count: number;
+  eliminated_key: ConfusionEliminatedKey[];
+  top_confusion_pairs: ConfusionPair[];
+}
+
+export interface MyConfusion {
+  enrolled: boolean;
+  student_id: string | null;
+  signals: ConfusionSignals;
+}
+
+export interface ConfusionUpdateResponse {
+  ok: boolean;
+  persisted: boolean;
+  reason?: string;
+  attempt_id?: string;
+  eliminated?: string[];
+  deciding_between?: string[];
+  source?: ConfusionSource;
 }
 
 // --- diagnostic results (computed Red-Zone preview, anonymous-safe) ---
@@ -1884,6 +1944,25 @@ export const api = {
     request<ForensicsResponse>(
       `/api/attempts/${encodeURIComponent(attemptId)}/forensics`,
     ),
+
+  // Retrospective edit of the confusion set on the answer page (authed only —
+  // a caller can edit only their own attempt). Pre-submit capture rides on
+  // submitAttempt's `confusion` field instead.
+  updateConfusion: (
+    attemptId: string,
+    payload: ConfusionCapturePayload,
+    token: string,
+  ) =>
+    authedRequest<ConfusionUpdateResponse>(
+      `/api/attempts/${encodeURIComponent(attemptId)}/confusion`,
+      token,
+      { method: "PATCH", body: JSON.stringify(payload) },
+    ),
+
+  // Per-student confusion analytics (lucky-guess rate, eliminated-the-key,
+  // top confusion pairs).
+  getMyConfusion: (token: string) =>
+    authedRequest<MyConfusion>("/api/me/confusion", token),
 
   getRedZones: (studentId?: string) =>
     request<RedZonesResponse>(

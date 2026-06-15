@@ -18,6 +18,12 @@ import {
 } from "@/lib/api-client";
 import { trackForensicsViewed, trackQuestionAttempted } from "@/lib/analytics";
 import { useSubmitAttempt } from "@/lib/use-attempts";
+import { useUpdateConfusion, type UpdateConfusion } from "@/lib/use-update-confusion";
+import ConfusionCapture, {
+  EMPTY_CONFUSION,
+  hasAnyConfusion,
+  type ConfusionValue,
+} from "@/components/confusion-capture";
 
 type Phase = "loading" | "presenting" | "submitting" | "forensics" | "error" | "done";
 
@@ -70,12 +76,14 @@ export default function QuestionRunner({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [selected, setSelected] = useState<Letter | null>(null);
   const [confidence, setConfidence] = useState(3);
+  const [confusion, setConfusion] = useState<ConfusionValue>(EMPTY_CONFUSION);
   const [attempt, setAttempt] = useState<AttemptResponse | null>(null);
   const [forensics, setForensics] = useState<ForensicsResponse | null>(null);
   const [correct, setCorrect] = useState(initialCorrect);
   const [answered, setAnswered] = useState(priorAnswered);
   const startedAtRef = useRef(0);
   const submitAttempt = useSubmitAttempt();
+  const updateConfusion = useUpdateConfusion();
 
   const currentQid = pending[index];
   const isLast = index >= pending.length - 1;
@@ -91,6 +99,7 @@ export default function QuestionRunner({
       if (!active) return;
       setSelected(null);
       setConfidence(3);
+      setConfusion(EMPTY_CONFUSION);
       setAttempt(null);
       setForensics(null);
       setErrorMsg(null);
@@ -128,6 +137,15 @@ export default function QuestionRunner({
         time_seconds: timeSeconds,
         platform: "web",
         set_id: setId,
+        // Pre-submit confusion capture (clean signal, before the key is shown).
+        // Omitted entirely when untouched so older behavior is unchanged.
+        confusion: hasAnyConfusion(confusion)
+          ? {
+              eliminated: confusion.eliminated,
+              deciding_between: confusion.decidingBetween,
+              source: "pre_submit",
+            }
+          : undefined,
       });
       setAttempt(resp);
       setAnswered((n) => n + 1);
@@ -204,15 +222,21 @@ export default function QuestionRunner({
           onSelect={setSelected}
           confidence={confidence}
           onConfidenceChange={setConfidence}
+          confusion={confusion}
+          onConfusionChange={setConfusion}
           disabled={phase === "submitting"}
           onSubmit={submit}
         />
       )}
 
-      {phase === "forensics" && attempt && forensics && (
+      {phase === "forensics" && attempt && forensics && question && (
         <ForensicsCard
           attempt={attempt}
           forensics={forensics}
+          question={question}
+          selectedLetter={selected}
+          initialConfusion={confusion}
+          updateConfusion={updateConfusion}
           onNext={next}
           nextLabel={isLast ? completeLabel : "Next question →"}
         />
@@ -262,6 +286,8 @@ function QuestionCard({
   onSelect,
   confidence,
   onConfidenceChange,
+  confusion,
+  onConfusionChange,
   disabled,
   onSubmit,
 }: {
@@ -270,6 +296,8 @@ function QuestionCard({
   onSelect: (letter: Letter) => void;
   confidence: number;
   onConfidenceChange: (value: number) => void;
+  confusion: ConfusionValue;
+  onConfusionChange: (next: ConfusionValue) => void;
   disabled: boolean;
   onSubmit: () => void;
 }) {
@@ -312,6 +340,17 @@ function QuestionCard({
         })}
       </ul>
 
+      {selected !== null && (
+        <ConfusionCapture
+          choices={question.choices}
+          value={confusion}
+          onChange={onConfusionChange}
+          mode="pre_submit"
+          selectedLetter={selected}
+          disabled={disabled}
+        />
+      )}
+
       <div className="mt-8">
         <label className="block text-sm font-medium text-zinc-800">
           Confidence: <span className="font-mono">{confidence}</span> / 5
@@ -349,11 +388,19 @@ function QuestionCard({
 function ForensicsCard({
   attempt,
   forensics,
+  question,
+  selectedLetter,
+  initialConfusion,
+  updateConfusion,
   onNext,
   nextLabel,
 }: {
   attempt: AttemptResponse;
   forensics: ForensicsResponse;
+  question: QuestionPayload;
+  selectedLetter: Letter | null;
+  initialConfusion: ConfusionValue;
+  updateConfusion: UpdateConfusion;
   onNext: () => void;
   nextLabel: string;
 }) {
@@ -373,6 +420,15 @@ function ForensicsCard({
           ? "Correct"
           : `Wrong Answer Forensics · correct answer was ${attempt.correct_answer ?? "—"}`}
       </p>
+
+      <RetrospectiveConfusion
+        attemptId={attempt.attempt_id}
+        question={question}
+        selectedLetter={selectedLetter}
+        correctLetter={attempt.correct_answer}
+        initial={initialConfusion}
+        updateConfusion={updateConfusion}
+      />
 
       {attempt.correct ? (
         <>
@@ -417,6 +473,107 @@ function ForensicsCard({
       >
         {nextLabel}
       </button>
+    </div>
+  );
+}
+
+// The answer-page "review your eliminations" affordance: re-shows the question
+// near the top and lets the student confirm/expand what they ruled out vs were
+// torn between. Prefilled from the pre-submit capture; Save persists via PATCH
+// (a no-op for anonymous callers, whose pre-submit tags already rode along).
+function RetrospectiveConfusion({
+  attemptId,
+  question,
+  selectedLetter,
+  correctLetter,
+  initial,
+  updateConfusion,
+}: {
+  attemptId: string;
+  question: QuestionPayload;
+  selectedLetter: Letter | null;
+  correctLetter: Letter | null;
+  initial: ConfusionValue;
+  updateConfusion: UpdateConfusion;
+}) {
+  const [open, setOpen] = useState(hasAnyConfusion(initial));
+  const [value, setValue] = useState<ConfusionValue>(initial);
+  const [status, setStatus] = useState<
+    "idle" | "saving" | "saved" | "skipped" | "error"
+  >("idle");
+
+  const save = async () => {
+    setStatus("saving");
+    try {
+      const res = await updateConfusion(attemptId, {
+        eliminated: value.eliminated,
+        deciding_between: value.decidingBetween,
+        source: "revised",
+      });
+      if (res === null || !res.persisted) setStatus("skipped");
+      else setStatus("saved");
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="mt-4 font-mono text-[11px] uppercase tracking-wider text-zinc-500 underline underline-offset-4 hover:text-zinc-800"
+      >
+        Review what you eliminated →
+      </button>
+    );
+  }
+
+  return (
+    <div className="mt-4 rounded-md border border-zinc-200 bg-white p-4">
+      <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">
+        The question again
+      </p>
+      <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-zinc-700">
+        {question.call_of_question ?? question.question_stem}
+      </p>
+      <ConfusionCapture
+        choices={question.choices}
+        value={value}
+        onChange={(next) => {
+          setValue(next);
+          setStatus("idle");
+        }}
+        mode="retrospective"
+        selectedLetter={selectedLetter}
+        correctLetter={correctLetter}
+        disabled={status === "saving"}
+      />
+      <div className="mt-3 flex items-center gap-3">
+        <button
+          type="button"
+          onClick={save}
+          disabled={status === "saving"}
+          className="rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 hover:border-zinc-500 disabled:opacity-50"
+        >
+          {status === "saving" ? "Saving…" : "Save"}
+        </button>
+        {status === "saved" && (
+          <span className="font-mono text-[11px] uppercase tracking-wide text-emerald-700">
+            Saved
+          </span>
+        )}
+        {status === "skipped" && (
+          <span className="font-mono text-[11px] uppercase tracking-wide text-zinc-500">
+            Captured on submit
+          </span>
+        )}
+        {status === "error" && (
+          <span className="font-mono text-[11px] uppercase tracking-wide text-red-700">
+            Couldn’t save
+          </span>
+        )}
+      </div>
     </div>
   );
 }

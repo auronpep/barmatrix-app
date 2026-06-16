@@ -1,5 +1,8 @@
 import Link from "next/link";
-import type { CommandDeckData } from "@/lib/api-client";
+import type {
+  CommandDeckData,
+  CommandDeckQueueItem,
+} from "@/lib/api-client";
 import { computeReadiness } from "@/lib/readiness";
 import { Panel } from "@/components/preview-dashboard/panel";
 import { BriefingHero } from "@/components/preview-dashboard/briefing-hero";
@@ -41,7 +44,7 @@ export function DashboardV2Body({
 }: {
   data: CommandDeckData;
   examDateLabel: string;
-  onStartDrill: (slug: string) => void;
+  onStartDrill: (item: CommandDeckQueueItem) => void;
   onOpenRoute: (route: string) => void;
 }) {
   const r = computeReadiness(data);
@@ -56,7 +59,9 @@ export function DashboardV2Body({
       {/* loop-closer */}
       <RecapStrip
         items={data.recent_attempts}
-        onResume={() => onStartDrill(data.next_up?.drill_slug ?? "")}
+        onResume={() => {
+          if (data.next_up) onStartDrill(data.next_up);
+        }}
         canResume={Boolean(data.next_up)}
       />
 

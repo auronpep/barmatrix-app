@@ -6,7 +6,7 @@ export function TodayQueue({
   onStart,
 }: {
   items: CommandDeckQueueItem[];
-  onStart: (slug: string) => void;
+  onStart: (item: CommandDeckQueueItem) => void;
 }) {
   if (items.length === 0) {
     return (
@@ -22,7 +22,7 @@ export function TodayQueue({
         <button
           key={`${q.drill_slug}:${i}`}
           type="button"
-          onClick={() => onStart(q.drill_slug)}
+          onClick={() => onStart(q)}
           className="grid w-full grid-cols-[1fr_auto] items-start gap-4 border-b border-zinc-100 px-5 py-3.5 text-left last:border-b-0 hover:bg-black/[0.025]"
         >
           <span className="min-w-0">

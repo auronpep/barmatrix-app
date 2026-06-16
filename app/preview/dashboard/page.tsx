@@ -72,8 +72,10 @@ function Deck({
   router: ReturnType<typeof useRouter>;
   error: string | null;
 }) {
-  const startDrill = (slug: string) => {
-    router.push(slug ? `/drills/${slug}` : "/drills");
+  // Preview route keeps simple /drills routing (the live /dashboard owns the
+  // one-click red-zone start flow).
+  const startDrill = () => {
+    router.push("/drills");
   };
   const r = computeReadiness(data);
   const queue = data.queue?.length
@@ -93,7 +95,7 @@ function Deck({
       {/* loop-closer */}
       <RecapStrip
         items={data.recent_attempts}
-        onResume={() => startDrill(data.next_up?.drill_slug ?? "")}
+        onResume={() => startDrill()}
         canResume={Boolean(data.next_up)}
       />
 

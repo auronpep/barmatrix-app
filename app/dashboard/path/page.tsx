@@ -6,6 +6,8 @@ import ProgressRing from "@/components/gamification/progress-ring";
 import GamificationSummary from "@/components/gamification/gamification-summary";
 import type { DayPlanMainItem, DayPlanStep, MyDayPlan } from "@/lib/api-client";
 import { useDayPlan } from "@/lib/use-day-plan";
+import { InfoCell } from "@/components/dashboard/info-cell";
+import { StatusPill } from "@/components/dashboard/status-pill";
 import { DayCards } from "../day-cards";
 
 export default function DashboardPage() {
@@ -244,7 +246,17 @@ function Roadmap({ items }: { items: DayPlanMainItem[] }) {
                 <p className="font-semibold leading-6 text-zinc-950">{item.title}</p>
                 <p className="mt-1 text-sm leading-6 text-zinc-600">{item.description}</p>
               </div>
-              <StatusPill status={item.status} />
+              <StatusPill
+                tone={
+                  item.status === "complete"
+                    ? "positive"
+                    : item.status === "current"
+                      ? "active"
+                      : "neutral"
+                }
+              >
+                {item.status}
+              </StatusPill>
             </div>
             <div className="mt-3 h-2 overflow-hidden border border-zinc-200 bg-zinc-100">
               <div
@@ -308,31 +320,6 @@ function AccessState({
         </Link>
       </div>
     </section>
-  );
-}
-
-function InfoCell({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-600">
-        {label}
-      </p>
-      <p className="mt-1 text-sm font-medium leading-6 text-zinc-950">{value}</p>
-    </div>
-  );
-}
-
-function StatusPill({ status }: { status: DayPlanMainItem["status"] }) {
-  const classes =
-    status === "complete"
-      ? "border-emerald-700 text-emerald-800"
-      : status === "current"
-        ? "border-red-700 text-red-800"
-        : "border-zinc-300 text-zinc-600";
-  return (
-    <span className={`shrink-0 border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${classes}`}>
-      {status}
-    </span>
   );
 }
 

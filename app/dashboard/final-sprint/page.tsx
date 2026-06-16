@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { formatDrillName } from "@/lib/drills";
 import { useDashboard } from "@/lib/use-dashboard";
+import { StatTile } from "@/components/dashboard/stat-tile";
 
 type SprintDay = {
   day: number;
@@ -514,9 +515,9 @@ function ExamDatePanel({
         className="mt-2 w-full border border-zinc-300 bg-white px-3 py-3 font-mono text-sm text-zinc-900"
       />
       <div className="mt-4 grid grid-cols-3 gap-3 text-center">
-        <Metric label="Days left" value={String(Math.max(daysRemaining, 0))} />
-        <Metric label="Timed sets" value="2/day" />
-        <Metric label="Window" value="14d" />
+        <StatTile label="Days left" value={String(Math.max(daysRemaining, 0))} />
+        <StatTile label="Timed sets" value="2/day" />
+        <StatTile label="Window" value="14d" />
       </div>
       <p className="mt-4 text-sm leading-6 text-zinc-600">
         {status.message} {value ? "" : `Planning date: ${formatDisplayDate(previewDate)}.`}
@@ -707,17 +708,6 @@ function PlanLine({
       </p>
       <p className={`mt-1 text-zinc-800 ${compact ? "text-sm leading-6" : "leading-7"}`}>
         {value}
-      </p>
-    </div>
-  );
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="border border-zinc-300 bg-white px-3 py-4">
-      <p className="font-serif text-2xl font-semibold leading-none">{value}</p>
-      <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
-        {label}
       </p>
     </div>
   );

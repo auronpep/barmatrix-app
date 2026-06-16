@@ -1,4 +1,6 @@
 import type { DayPlanSummary } from "@/lib/api-client";
+import { InfoCell } from "@/components/dashboard/info-cell";
+import { StatusPill } from "@/components/dashboard/status-pill";
 
 export function DayCards({ cards }: { cards: DayPlanSummary[] }) {
   if (cards.length === 0) return null;
@@ -32,7 +34,17 @@ export function DayCards({ cards }: { cards: DayPlanSummary[] }) {
               <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-600">
                 Day {card.day_index}
               </p>
-              <DayStatusPill status={card.status} />
+              <StatusPill
+                tone={
+                  card.status === "complete"
+                    ? "positive"
+                    : card.status === "active"
+                      ? "active"
+                      : "neutral"
+                }
+              >
+                {card.status}
+              </StatusPill>
             </div>
             <h3 className="mt-3 font-serif text-xl font-semibold leading-snug text-zinc-950">
               {stripDayPrefix(card.title)}
@@ -46,31 +58,6 @@ export function DayCards({ cards }: { cards: DayPlanSummary[] }) {
         ))}
       </ol>
     </section>
-  );
-}
-
-function DayStatusPill({ status }: { status: DayPlanSummary["status"] }) {
-  const classes =
-    status === "complete"
-      ? "border-emerald-700 text-emerald-800"
-      : status === "active"
-        ? "border-red-700 text-red-800"
-        : "border-zinc-300 text-zinc-600";
-  return (
-    <span className={`shrink-0 border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${classes}`}>
-      {status}
-    </span>
-  );
-}
-
-function InfoCell({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-600">
-        {label}
-      </p>
-      <p className="mt-1 text-sm font-medium leading-6 text-zinc-950">{value}</p>
-    </div>
   );
 }
 

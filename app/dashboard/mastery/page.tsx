@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { type RedZoneEntry } from "@/lib/api-client";
 import { useDashboard } from "@/lib/use-dashboard";
+import { StatTile } from "@/components/dashboard/stat-tile";
 
 const DIMENSION_ORDER = [
   "subject",
@@ -58,11 +59,12 @@ export default function PatternMasteryBoardPage() {
             </p>
           </div>
           <div className="grid grid-cols-3 gap-3 text-center">
-            <Metric label="Dimensions" value={String(groups.length || 5)} />
-            <Metric label="Visible rows" value={String(topZones.length)} />
-            <Metric
+            <StatTile label="Dimensions" value={String(groups.length || 5)} size="lg" />
+            <StatTile label="Visible rows" value={String(topZones.length)} size="lg" />
+            <StatTile
               label="HC wrong"
               value={String(sumHighConfidenceWrongs(topZones))}
+              size="lg"
             />
           </div>
         </div>
@@ -296,17 +298,6 @@ function EmptyState({ message }: { message?: string }) {
         </Link>
       </div>
     </section>
-  );
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="border border-zinc-300 bg-white px-3 py-4">
-      <p className="font-serif text-3xl font-semibold leading-none">{value}</p>
-      <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
-        {label}
-      </p>
-    </div>
   );
 }
 

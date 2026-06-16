@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23c8102e'/%3E%3Ctext x='16' y='24' font-family='Georgia,serif' font-size='22' font-weight='900' fill='white' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E"/>
+<meta name="description" content="Your wrong answers are not random. BarMatrix diagnoses the trap patterns behind every MBE miss and assigns the drill that fixes them."/>
+<meta property="og:title" content="BarMatrix - Your wrong answers are not random."/>
+<meta property="og:description" content="A multiple-choice-only MBE repair system. Diagnose the trap patterns behind every miss. Repair what the test keeps reusing."/>
+<meta property="og:type" content="website"/>
+<meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630'%3E%3Crect width='1200' height='630' fill='%230a0a0a'/%3E%3Crect width='1200' height='12' fill='%23c8102e'/%3E%3Ctext x='100' y='280' font-family='Georgia,serif' font-size='84' font-weight='700' fill='white'%3EYour wrong answers%3C/text%3E%3Ctext x='100' y='372' font-family='Georgia,serif' font-size='84' font-weight='700' fill='%23c8102e' font-style='italic'%3Eare not random.%3C/text%3E%3Ctext x='100' y='552' font-family='monospace' font-size='22' fill='%23a39e93' letter-spacing='4'%3E%E2%96%8C MBE TRAP DIAGNOSIS %C2%B7 FLAGSHIP %24999%3C/text%3E%3C/svg%3E"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="canonical" href="https://barmatrix.app/lp-wrong-answers-not-random.html"/>
+<title>BarMatrix - Your wrong answers are not random.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400;1,6..72,500;1,6..72,600;1,6..72,700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="campaign.css">
+<style>
+  /* Static forensics card snapshot for the hero (self-contained). */
+  .fx { border:1px solid var(--ink); background:var(--paper); box-shadow:6px 6px 0 var(--ink); }
+  .fx-head { background:var(--ink); color:#fff; display:flex; justify-content:space-between; align-items:center; padding:11px 16px; font-family:var(--mono); font-size:10px; letter-spacing:0.14em; text-transform:uppercase; }
+  .fx-head .live { color:var(--red); }
+  .fx-meta { display:grid; grid-template-columns:repeat(4,1fr); border-bottom:1px solid var(--rule-soft); }
+  .fx-meta > div { padding:10px 12px; border-right:1px solid var(--rule-soft); }
+  .fx-meta > div:last-child { border-right:none; }
+  .fx-meta .k { font-family:var(--mono); font-size:8px; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
+  .fx-meta .v { font-family:var(--serif); font-size:13px; font-weight:600; margin-top:3px; }
+  .fx-body { padding:16px; }
+  .fx-stem { font-family:var(--serif); font-size:14px; line-height:1.55; color:var(--ink); margin:0 0 14px; }
+  .fx-choice { display:grid; grid-template-columns:22px 1fr auto; gap:10px; align-items:center; border:1px solid var(--rule-soft); padding:8px 11px; margin-bottom:6px; font-size:12.5px; }
+  .fx-choice .ltr { font-family:var(--mono); font-weight:700; font-size:11px; width:22px; height:22px; display:grid; place-items:center; border:1px solid var(--muted); }
+  .fx-choice .pct { font-family:var(--mono); font-size:10px; color:var(--muted); white-space:nowrap; }
+  .fx-choice.correct { border-color:var(--correct); }
+  .fx-choice.correct .ltr { background:var(--correct); color:#fff; border-color:var(--correct); }
+  .fx-choice.wrong { border-color:var(--red); background:rgba(200,16,46,0.05); }
+  .fx-choice.wrong .ltr { background:var(--red); color:#fff; border-color:var(--red); }
+  .fx-choice.dim { opacity:0.55; }
+  .fx-break { border-top:1px solid var(--ink); margin-top:14px; padding-top:14px; }
+  .fx-break .lbl { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--red); font-weight:600; }
+  .fx-break .stat { font-family:var(--mono); font-size:10px; color:var(--muted); margin:6px 0 10px; }
+  .fx-break .tag { display:inline-block; font-family:var(--mono); font-size:9px; letter-spacing:0.08em; text-transform:uppercase; background:var(--red); color:#fff; padding:3px 8px; margin-bottom:10px; }
+  .fx-break p { font-size:12.5px; line-height:1.5; color:var(--ink-soft); margin:0 0 10px; }
+  .fx-repair { background:var(--ink); color:#fff; display:flex; justify-content:space-between; align-items:center; padding:11px 14px; font-family:var(--mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase; }
+  .fx-repair .go { color:var(--red); }
+</style>
+</head><body data-screen-label="Campaign LP - wrong-answers-not-random">
+<div class="tape-strip"></div>
+<nav class="nav"><div class="nav-inner">
+  <a href="/" class="brand" style="text-decoration:none;color:inherit"><span class="mark">B</span><span>BarMatrix<span class="dot"></span></span></a>
+  <div class="nav-links">
+    <a href="/"><button>Home</button></a>
+    <a href="/pricing"><button>Pricing</button></a>
+    <a href="/about"><button>About</button></a>
+    <a href="/partners"><button>Partners</button></a>
+  </div>
+  <div class="nav-cta"><a href="/checkout?lp=wrong-answers-not-random" class="btn btn-sm red" data-preserve-attribution="true">Enroll $999 &rarr;</a></div>
+</div></nav>
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero"><div class="container">
+    <div class="hero-meta">
+      <span class="stamp">VOL. 1 &middot; NO. 1</span>
+      <span class="stamp">CALIFORNIA &middot; JULY 2026 CYCLE</span>
+      <span class="stamp">EDITION : LAUNCH</span>
+    </div>
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow-red" style="margin-bottom:24px">&#9612; MBE TRAP DIAGNOSIS &middot; WEB &middot; iOS &middot; ANDROID</div>
+        <h1 class="display display-xl">Your wrong answers <span style="color:var(--red);font-style:italic">are not random.</span></h1>
+        <p class="lede">They are a repair map. BarMatrix diagnoses the trap patterns behind every miss &mdash; and assigns the drill that fixes them.</p>
+        <div class="hero-actions">
+          <a href="/diagnostic?lp=wrong-answers-not-random" class="btn btn-lg red" data-preserve-attribution="true">Take the Free Diagnostic <span class="arrow">&rarr;</span></a>
+          <a href="/how-it-works" class="btn btn-lg ghost">See the Forensics</a>
+          <div class="platforms">WEB &middot; iOS &middot; ANDROID<br/>Same account. Same drills.</div>
+        </div>
+      </div>
+      <div>
+        <div class="fx">
+          <div class="fx-head"><span><span class="live">&#9679;</span> Live Forensics &middot; Demo</span><span>POE-CALMAP-001</span></div>
+          <div class="fx-meta">
+            <div><div class="k">Subject</div><div class="v">Evidence</div></div>
+            <div><div class="k">Subtopic</div><div class="v">Judge / Jury Roles</div></div>
+            <div><div class="k">Tension</div><div class="v">Prelim. Admissibility</div></div>
+            <div><div class="k">Difficulty</div><div class="v">0.78 / Hard</div></div>
+          </div>
+          <div class="fx-body">
+            <p class="fx-stem">Moses offers Ruth&rsquo;s note &mdash; &ldquo;the blue truck ran the red light&rdquo; &mdash; as an excited utterance, and offers an absent EMT&rsquo;s sworn statement to prove she was still under stress. Who decides whether the note qualifies, and may the judge consider the sworn statement?</p>
+            <div class="fx-choice wrong"><span class="ltr">A</span><span>The jury decides the foundation, and may consider the sworn statement.</span><span class="pct">16% chose</span></div>
+            <div class="fx-choice dim"><span class="ltr">B</span><span>The jury decides, but may not consider the sworn statement.</span><span class="pct">8% chose</span></div>
+            <div class="fx-choice correct"><span class="ltr">C</span><span>The judge decides the foundation, and may consider the sworn statement.</span><span class="pct">69% chose</span></div>
+            <div class="fx-choice dim"><span class="ltr">D</span><span>The judge decides, but may not consider the sworn statement.</span><span class="pct">7% chose</span></div>
+            <div class="fx-break">
+              <div class="lbl">&#9612; Why this wrong answer pulled you in</div>
+              <div class="stat">16% of the focus group chose the same trap &middot; n=1,247</div>
+              <span class="tag">Decisionmaker Inversion</span>
+              <p>Choice A feels right because the jury &ldquo;weighs the evidence.&rdquo; But weight comes <em>after</em> admissibility &mdash; the judge decides the foundation question under FRE 104(a), and at that gate is not bound by the rules of evidence except privilege.</p>
+              <p style="color:var(--correct)"><strong>Credited: C.</strong> The judge decides, and may consider the sworn statement.</p>
+            </div>
+          </div>
+          <div class="fx-repair"><span>Assigned Repair &middot; Roles of Judge &amp; Jury</span><span class="go">+6 drills &rarr;</span></div>
+        </div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- ============ STATS STRIP (stale question count retired per launch decision) ============ -->
+  <section class="section-tight"><div class="container">
+    <div class="stat-strip">
+      <div><span class="num">156</span><span class="lbl">Tension points mapped</span></div>
+      <div><span class="num">1,247</span><span class="lbl">Focus-group respondents</span></div>
+      <div><span class="num">47</span><span class="lbl">Forensic trap tags</span></div>
+      <div><span class="num">07</span><span class="lbl">MBE subjects covered</span></div>
+    </div>
+  </div></section>
+
+  <!-- ============ PROBLEM ============ -->
+  <section class="section alt"><div class="container">
+    <div class="section-rule"><span class="label">&#9612; The Problem &middot; 01</span></div>
+    <div class="two-col" style="align-items:start">
+      <div>
+        <h2 class="display display-lg" style="margin:0 0 24px">More questions <br/><span style="font-style:italic;color:var(--muted)">&ne; </span><span style="text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:6px">more points</span></h2>
+        <p class="body-lg">You have done thousands of MBE questions. Your score plateaued anyway. The problem is not volume. It is that every miss is treated the same: read the explanation, move on, repeat the trap on the real exam.</p>
+      </div>
+      <div style="border-left:1px solid var(--rule);padding-left:48px">
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:18px">
+          <li style="display:grid;grid-template-columns:32px 1fr 1fr;gap:16px;border-top:1px solid var(--rule-soft);padding-top:14px"><span class="mono" style="font-size:11px;color:var(--red);letter-spacing:0.1em">01</span><span class="serif" style="font-size:17px;font-weight:500">You narrow to two</span><span style="font-size:15px;color:var(--muted);font-style:italic">and pick the wrong one.</span></li>
+          <li style="display:grid;grid-template-columns:32px 1fr 1fr;gap:16px;border-top:1px solid var(--rule-soft);padding-top:14px"><span class="mono" style="font-size:11px;color:var(--red);letter-spacing:0.1em">02</span><span class="serif" style="font-size:17px;font-weight:500">You see a familiar fact pattern</span><span style="font-size:15px;color:var(--muted);font-style:italic">and apply the stale rule.</span></li>
+          <li style="display:grid;grid-template-columns:32px 1fr 1fr;gap:16px;border-top:1px solid var(--rule-soft);padding-top:14px"><span class="mono" style="font-size:11px;color:var(--red);letter-spacing:0.1em">03</span><span class="serif" style="font-size:17px;font-weight:500">You recognize the doctrine</span><span style="font-size:15px;color:var(--muted);font-style:italic">and miss the exception.</span></li>
+          <li style="display:grid;grid-template-columns:32px 1fr 1fr;gap:16px;border-top:1px solid var(--rule-soft);padding-top:14px"><span class="mono" style="font-size:11px;color:var(--red);letter-spacing:0.1em">04</span><span class="serif" style="font-size:17px;font-weight:500">You know the rule</span><span style="font-size:15px;color:var(--muted);font-style:italic">and miss the timing trigger.</span></li>
+          <li style="display:grid;grid-template-columns:32px 1fr 1fr;gap:16px;border-top:1px solid var(--rule-soft);padding-top:14px"><span class="mono" style="font-size:11px;color:var(--red);letter-spacing:0.1em">05</span><span class="serif" style="font-size:17px;font-weight:500">You read the question fast</span><span style="font-size:15px;color:var(--muted);font-style:italic">and miss the changed party.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- ============ METHOD ============ -->
+  <section class="section"><div class="container">
+    <div class="section-rule"><span class="label">&#9612; The Method &middot; 02</span></div>
+    <h2 class="display display-lg" style="margin:0 0 56px;max-width:20ch">The MBE recycles a <span style="color:var(--red)">finite set</span> of trap patterns.</h2>
+    <div class="four-col">
+      <div class="method-step"><div class="num">STEP 01</div><h3>Diagnose</h3><p>A 12-question MBE Trap Diagnostic weighted toward the highest-attractiveness wrong answers &mdash; the ones that pull in real respondents.</p></div>
+      <div class="method-step"><div class="num">STEP 02</div><h3>Map</h3><p>Your misses are plotted onto the Tension Matrix &mdash; the grid of every rule &times; exception &times; trigger that the MBE reuses across cycles.</p></div>
+      <div class="method-step"><div class="num">STEP 03</div><h3>Forensic</h3><p>Each wrong answer is tagged: stale rule, wrong timing, wrong party, wrong scope, overbroad waiver. You see why your specific miss was attractive.</p></div>
+      <div class="method-step"><div class="num">STEP 04</div><h3>Repair</h3><p>Every miss is connected to a Red-Zone Drill &mdash; a targeted micro-set that hits the same tension point until it stops misfiring.</p></div>
+    </div>
+  </div></section>
+
+  <!-- ============ TENSION MATRIX ============ -->
+  <section class="section alt"><div class="container">
+    <div class="section-rule"><span class="label">&#9612; The Matrix &middot; 03</span></div>
+    <div class="two-col" style="align-items:start">
+      <div>
+        <h2 class="display display-md" style="margin:0 0 20px">Every MBE question lives <span style="font-style:italic">somewhere</span> on this grid.</h2>
+        <p class="body-lg" style="margin-bottom:24px">The Tension Matrix maps 7 trap dimensions across 8 MBE subjects. Heat reveals which cells the exam reuses most &mdash; and which patterns produce the most attractive wrong answers.</p>
+        <p class="body-lg" style="margin-bottom:0;font-size:15px;color:var(--muted)">After your diagnostic, your personal misses light up the cells you need to repair first.</p>
+      </div>
+      <div class="matrix-viz">
+        <div class="matrix-header">
+          <div>
+            <div class="mono" style="font-size:11px;letter-spacing:0.15em;color:var(--muted);margin-bottom:4px">&#9612; MBE TENSION MATRIX</div>
+            <div class="serif" style="font-size:18px;font-weight:700">Heat = focus-group attractiveness &times; MBE recurrence</div>
+          </div>
+          <div class="mono" style="font-size:11px;color:var(--red);text-align:right">8 SUBJECTS &times; 7 DIMS</div>
+        </div>
+        <div class="matrix-grid">
+          <div class="row-label"></div>
+          <div class="col-label">Rule/Excptn</div><div class="col-label">Timing</div><div class="col-label">Party</div><div class="col-label">Scope</div><div class="col-label">Standard</div><div class="col-label">Triggers</div><div class="col-label">Remedy</div>
+          <div class="row-label">Civ Pro</div><div class="matrix-cell h3">&#9679;</div><div class="matrix-cell h4">&#9679;</div><div class="matrix-cell h2"></div><div class="matrix-cell h3">&#9679;</div><div class="matrix-cell h4">&#9679;</div><div class="matrix-cell h2"></div><div class="matrix-cell h3">&#9679;</div>
+          <div class="row-label">Con Law</div><div class="matrix-cell h4">&#9679;</div><div class="matrix-cell h2"></div><div class="matrix-cell h3">&#9679;</div><div class="matrix-cell h5">&#9679;</div><div class="matrix-cell h4">&#9679;</div><div class="matrix-cell h3">&#9679;</div><div class="matrix-cell h2"></div>
+          <div class="row-label">Contracts</div><div class="matrix-cell h5">&#9679;</div><div class="matrix-cell h4">&#9679;</div><div class="matrix-cell h3">&#9679;</div><div class="matrix-cell h2"></div><div class="matrix-cell h3">&#9679;</div><div class="matrix-cell h4">&#9679;</div><div class="matrix-cell h3">&#9679;</div>
+          <div class="row-label">Crim Law</div><div class="matrix-cell h3">&#9679;</div><div class="matrix-cell h3">&#9679;</div><div class="matrix-cell h5">&#9679;</div><div class="matrix-cell h2"></div><div class="matrix-cell h4">&#9679;</div><div class="matrix-cell h5">&#9679;</div><div class="matrix-cell h2"></div>
+          <div class="row-label">Crim Pro</div><div class="matrix-cell h4">&#9679;</div><div class="matrix-cell h3">&#9679;</div><div class="matrix-cell h2"></div><div class="matrix-cell h5">&#9679;</div><div class="matrix-cell h3">&#9679;</div><div class="matrix-cell h4">&#9679;</div><div class="matrix-cell h3">&#9679;</div>
+          <div class="row-label">Evidence</div><div class="matrix-cell h5">&#9679;</div><div class="matrix-cell h2"></div><div class="matrix-cell h3">&#9679;</div><div class="matrix-cell h4">&#9679;</div><div class="matrix-cell h5">&#9679;</div><div class="matrix-cell h3">&#9679;</div><div class="matrix-cell h2"></div>
+          <div class="row-label">Property</div><div class="matrix-cell h4">&#9679;</div><div class="matrix-cell h4">&#9679;</div><div class="matrix-cell h3">&#9679;</div><div class="matrix-cell h2"></div><div class="matrix-cell h3">&#9679;</div><div class="matrix-cell h3">&#9679;</div><div class="matrix-cell h4">&#9679;</div>
+          <div class="row-label">Torts</div><div class="matrix-cell h3">&#9679;</div><div class="matrix-cell h2"></div><div class="matrix-cell h5">&#9679;</div><div class="matrix-cell h4">&#9679;</div><div class="matrix-cell h4">&#9679;</div><div class="matrix-cell h3">&#9679;</div><div class="matrix-cell h3">&#9679;</div>
+        </div>
+        <div class="matrix-legend">
+          <span>LOW</span>
+          <div class="legend-bar"><div style="background:#fafaf7"></div><div style="background:#fff0c2"></div><div style="background:#ffd4a0"></div><div style="background:#ff8a5f"></div><div style="background:var(--red)"></div><div style="background:var(--red-deep)"></div></div>
+          <span>HIGH ATTRACTIVENESS</span>
+        </div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- ============ ANATOMY OF A MISS ============ -->
+  <section class="section dark"><div class="container">
+    <div class="section-rule"><span class="label" style="color:white">&#9612; Anatomy of a Miss &middot; 04</span></div>
+    <h2 class="display display-lg" style="color:white;margin:0 0 24px;max-width:22ch">One miss. <span style="color:var(--red)">Five data points.</span> One assigned drill.</h2>
+    <p class="body-lg" style="color:#c8c4ba;margin-bottom:56px">When you miss a question on BarMatrix, you don&rsquo;t see &ldquo;incorrect.&rdquo; You see exactly which trap pulled you in, what % of the focus group picked the same wrong answer, and the next drill assignment.</p>
+    <div class="four-col">
+      <div style="border-top:1px solid rgba(255,255,255,0.3);padding-top:20px"><div class="mono" style="font-size:11px;letter-spacing:0.15em;color:var(--red);margin-bottom:12px">01 &middot; Tension Point</div><div class="serif" style="font-size:22px;font-weight:600;margin-bottom:12px;color:white;line-height:1.15">Prelim. admissibility &times; 104(a)</div><div style="font-size:13px;color:#a39e93;line-height:1.45">Where the rule and the exception meet &mdash; the structural pivot of the question.</div></div>
+      <div style="border-top:1px solid rgba(255,255,255,0.3);padding-top:20px"><div class="mono" style="font-size:11px;letter-spacing:0.15em;color:var(--red);margin-bottom:12px">02 &middot; Trigger Fact</div><div class="serif" style="font-size:22px;font-weight:600;margin-bottom:12px;color:white;line-height:1.15">&ldquo;Sworn statement, absent EMT&rdquo;</div><div style="font-size:13px;color:#a39e93;line-height:1.45">The fact that changed which decisionmaker rules. Catch the trigger, catch the trap.</div></div>
+      <div style="border-top:1px solid rgba(255,255,255,0.3);padding-top:20px"><div class="mono" style="font-size:11px;letter-spacing:0.15em;color:var(--red);margin-bottom:12px">03 &middot; Forensic Tag</div><div class="serif" style="font-size:22px;font-weight:600;margin-bottom:12px;color:white;line-height:1.15">DECISIONMAKER INVERSION</div><div style="font-size:13px;color:#a39e93;line-height:1.45">The taxonomy of why your wrong answer looked right. There are 47 of these.</div></div>
+      <div style="border-top:1px solid rgba(255,255,255,0.3);padding-top:20px"><div class="mono" style="font-size:11px;letter-spacing:0.15em;color:var(--red);margin-bottom:12px">04 &middot; Focus-Group %</div><div class="serif" style="font-size:22px;font-weight:600;margin-bottom:12px;color:white;line-height:1.15">16% chose A</div><div style="font-size:13px;color:#a39e93;line-height:1.45">The trap that pulled the most respondents &mdash; your moat data, made visible.</div></div>
+    </div>
+  </div></section>
+
+  <!-- ============ WHO ============ -->
+  <section class="section"><div class="container">
+    <div class="section-rule"><span class="label">&#9612; Who It Is For &middot; 05</span></div>
+    <div class="two-col">
+      <div>
+        <div class="eyebrow" style="margin-bottom:16px">&#9656; BUILT FOR</div>
+        <h3 class="display display-md" style="margin:0 0 28px;color:var(--ink)">Students who keep <span style="font-style:italic">narrowing to two</span> and choosing wrong.</h3>
+        <ul style="list-style:none;padding:0;margin:0;border-top:2px solid var(--ink)">
+          <li style="padding:16px 0;border-bottom:1px solid var(--rule-soft);font-size:16px;display:grid;grid-template-columns:24px 1fr;gap:12px"><span class="mono" style="color:var(--red)">&rarr;</span><span>Examinees whose MBE percentage is stuck despite high question volume</span></li>
+          <li style="padding:16px 0;border-bottom:1px solid var(--rule-soft);font-size:16px;display:grid;grid-template-columns:24px 1fr;gap:12px"><span class="mono" style="color:var(--red)">&rarr;</span><span>Full-course users who need deeper MBE diagnosis than their bank provides</span></li>
+          <li style="padding:16px 0;border-bottom:1px solid var(--rule-soft);font-size:16px;display:grid;grid-template-columns:24px 1fr;gap:12px"><span class="mono" style="color:var(--red)">&rarr;</span><span>Repeat takers whose prior question volume did not convert into points</span></li>
+          <li style="padding:16px 0;border-bottom:1px solid var(--rule-soft);font-size:16px;display:grid;grid-template-columns:24px 1fr;gap:12px"><span class="mono" style="color:var(--red)">&rarr;</span><span>Working students who cannot afford broad, undirected review cycles</span></li>
+          <li style="padding:16px 0;border-bottom:1px solid var(--rule-soft);font-size:16px;display:grid;grid-template-columns:24px 1fr;gap:12px"><span class="mono" style="color:var(--red)">&rarr;</span><span>California July 2026 examinees and students in any MBE jurisdiction</span></li>
+        </ul>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:16px;color:var(--red)">&#9656; NOT BUILT FOR</div>
+        <h3 class="display display-md" style="margin:0 0 28px">Students looking for a <span style="text-decoration:line-through">full bar course</span>.</h3>
+        <ul style="list-style:none;padding:0;margin:0;border-top:2px solid var(--ink)">
+          <li style="padding:16px 0;border-bottom:1px solid var(--rule-soft);font-size:16px;display:grid;grid-template-columns:24px 1fr;gap:12px;color:var(--muted);text-decoration:line-through;text-decoration-color:var(--rule-soft)"><span class="mono" style="color:var(--muted-light);text-decoration:none">&times;</span><span>A full bar review course replacement</span></li>
+          <li style="padding:16px 0;border-bottom:1px solid var(--rule-soft);font-size:16px;display:grid;grid-template-columns:24px 1fr;gap:12px;color:var(--muted);text-decoration:line-through;text-decoration-color:var(--rule-soft)"><span class="mono" style="color:var(--muted-light);text-decoration:none">&times;</span><span>Essay preparation or grading</span></li>
+          <li style="padding:16px 0;border-bottom:1px solid var(--rule-soft);font-size:16px;display:grid;grid-template-columns:24px 1fr;gap:12px;color:var(--muted);text-decoration:line-through;text-decoration-color:var(--rule-soft)"><span class="mono" style="color:var(--muted-light);text-decoration:none">&times;</span><span>Performance-test preparation</span></li>
+          <li style="padding:16px 0;border-bottom:1px solid var(--rule-soft);font-size:16px;display:grid;grid-template-columns:24px 1fr;gap:12px;color:var(--muted);text-decoration:line-through;text-decoration-color:var(--rule-soft)"><span class="mono" style="color:var(--muted-light);text-decoration:none">&times;</span><span>Official NCBE or State Bar material</span></li>
+          <li style="padding:16px 0;border-bottom:1px solid var(--rule-soft);font-size:16px;display:grid;grid-template-columns:24px 1fr;gap:12px;color:var(--muted);text-decoration:line-through;text-decoration-color:var(--rule-soft)"><span class="mono" style="color:var(--muted-light);text-decoration:none">&times;</span><span>A guarantee of any score or exam outcome</span></li>
+        </ul>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- ============ FINAL CTA ============ -->
+  <section class="section" style="background:var(--ink);color:var(--bg)"><div class="container">
+    <div class="two-col" style="align-items:center">
+      <div>
+        <div class="eyebrow-red" style="margin-bottom:24px">&#9612; START HERE</div>
+        <h2 class="display display-lg" style="color:white;margin:0 0 24px">12 questions. <br/><span style="font-style:italic;color:var(--red)">Your trap profile.</span></h2>
+        <p style="font-size:19px;color:#c8c4ba;line-height:1.5;margin-bottom:32px;max-width:40ch">The free MBE Trap Diagnostic gives you a Red-Zone Map of your most attractive trap patterns &mdash; built from your actual misses, compared to the focus-group base rate.</p>
+        <a href="/diagnostic?lp=wrong-answers-not-random" class="btn btn-lg red" data-preserve-attribution="true">Start the Diagnostic <span class="arrow">&rarr;</span></a>
+      </div>
+      <div>
+        <div style="border:1px solid #c8c4ba;padding:32px">
+          <div class="mono" style="font-size:11px;letter-spacing:0.18em;color:var(--red);margin-bottom:24px">&#9612; WHAT YOU GET</div>
+          <ul style="list-style:none;padding:0;margin:0">
+            <li style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.15);font-size:15px;display:grid;grid-template-columns:24px 1fr;gap:12px;color:white"><span class="mono" style="color:var(--red)">&rarr;</span><span>Personal Red-Zone Map (PDF + dashboard)</span></li>
+            <li style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.15);font-size:15px;display:grid;grid-template-columns:24px 1fr;gap:12px;color:white"><span class="mono" style="color:var(--red)">&rarr;</span><span>Top 5 trap patterns ranked by attractiveness</span></li>
+            <li style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.15);font-size:15px;display:grid;grid-template-columns:24px 1fr;gap:12px;color:white"><span class="mono" style="color:var(--red)">&rarr;</span><span>Focus-group base rates on your specific misses</span></li>
+            <li style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.15);font-size:15px;display:grid;grid-template-columns:24px 1fr;gap:12px;color:white"><span class="mono" style="color:var(--red)">&rarr;</span><span>Sample assigned drills &mdash; try before you buy</span></li>
+            <li style="padding:14px 0;font-size:15px;display:grid;grid-template-columns:24px 1fr;gap:12px;color:white"><span class="mono" style="color:var(--red)">&rarr;</span><span>Companion path with your existing bar course</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div></section>
+</main>
+<footer class="footer"><div class="container">
+  <div class="footer-grid">
+    <div>
+      <div class="brand" style="color:white;margin-bottom:16px"><span class="mark" style="background:white;color:#0a0a0a">B</span><span>BarMatrix<span class="dot"></span></span></div>
+      <p style="font-size:14px;color:#a39e93;max-width:40ch;margin:0;line-height:1.55">A multiple-choice-only MBE repair system. Diagnose recurring trap patterns. Repair what the test keeps reusing.</p>
+    </div>
+    <div><h5>Product</h5><ul>
+      <li><a href="/how-it-works">How It Works</a></li>
+      <li><a href="/pricing">Pricing</a></li>
+      <li><a href="/diagnostic">Free Diagnostic</a></li>
+      <li><a href="/app">Open App</a></li>
+    </ul></div>
+    <div><h5>Program</h5><ul>
+      <li><a href="lp-diagnostic-map.html">Diagnostic</a></li>
+      <li><a href="lp-c3-cut-clash-call.html">C3 Method</a></li>
+      <li><a href="lp-wrong-answer-forensics.html">Forensics</a></li>
+      <li><a href="lp-confidence-calibration.html">Calibration</a></li>
+    </ul></div>
+    <div><h5>Company</h5><ul>
+      <li><a href="/about">About</a></li>
+      <li><a href="/faq">FAQ</a></li>
+      <li><a href="/terms">Terms</a></li>
+      <li><a href="/privacy">Privacy</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom"><span>&copy; 2026 BarMatrix LLC</span><span>BAR-MTX-V1 &middot; LP : NOT-RANDOM</span></div>
+  <p class="disclaimer">BarMatrix is an independent educational product. It is not affiliated with, endorsed by, sponsored by, or licensed by NCBE, the State Bar of California, or any bar authority. BarMatrix is multiple-choice only and does not replace essay preparation, performance-test preparation, legal advice, or official bar-admission guidance. No score, pass result, or exam outcome is guaranteed. Demonstration scenarios on these pages are original marketing examples and are not official bar-exam questions.</p>
+</div></footer>
+<script>
+(function () {
+  var keys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "utm_id", "campaign_id", "partner_id", "referral_click_id", "click_id", "gclid", "fbclid", "ttclid", "rdt_cid"];
+  var current = new URLSearchParams(window.location.search);
+  if (!current.toString()) return;
+  document.querySelectorAll("a[data-preserve-attribution='true']").forEach(function (link) {
+    try {
+      var url = new URL(link.getAttribute("href"), window.location.origin);
+      keys.forEach(function (key) {
+        var value = current.get(key);
+        if (value && !url.searchParams.has(key)) url.searchParams.set(key, value);
+      });
+      link.setAttribute("href", url.pathname + url.search + url.hash);
+    } catch (error) {}
+  });
+}());
+</script>
+</body></html>

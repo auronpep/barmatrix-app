@@ -338,7 +338,7 @@ export default function FoundationsLessonPage() {
               completed
                 ? "border border-emerald-700 text-emerald-800"
                 : "bg-red-700 text-white hover:bg-red-900"
-            } disabled:opacity-50`}
+            } disabled:cursor-not-allowed disabled:opacity-50`}
           >
             {completed ? "Completed ✓ — review again" : "Mark lesson complete"}
             {resp.next_slug && !completed ? " & continue →" : ""}

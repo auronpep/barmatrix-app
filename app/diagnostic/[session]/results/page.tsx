@@ -92,8 +92,8 @@ const LEVEL_FALLBACKS: Record<
     ctaLabel: "Start The Method",
   },
   1: {
-    label: "L1 - Method foundations",
-    description: "Start with the core C3 workflow before pushing timed mixed practice.",
+    label: "Lesson 1: The Core Method",
+    description: "Start with the core BarMatrix answer method before pushing timed mixed practice.",
     focus: "The Method",
     ctaLabel: "Start The Method",
   },

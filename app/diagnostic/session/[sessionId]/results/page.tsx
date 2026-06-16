@@ -31,7 +31,7 @@ const LEVEL_META: Record<
     border: "border-red-200",
   },
   1: {
-    badge: "L1",
+    badge: "Lesson 1",
     color: "text-orange-700",
     bg: "bg-orange-50",
     border: "border-orange-200",

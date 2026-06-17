@@ -25,7 +25,7 @@ describe("sale offer framework", () => {
     assert.match(source, /firstQueryValue\(searchParams\.this\)/);
     assert.match(source, /buildSaleOfferFromQuery/);
     assert.match(source, /normalizeCouponCode/);
-    assert.match(source, /\^\[A-Z\]\{2,32\}\$/);
+    assert.match(source, /\^\[A-Z0-9\]\{2,32\}\$/);
     assert.doesNotMatch(source, /parseDollarParam/);
     assert.doesNotMatch(source, /firstQueryValue\(searchParams\.price\)/);
     assert.doesNotMatch(source, /firstQueryValue\(searchParams\.savings\)/);

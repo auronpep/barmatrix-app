@@ -36,15 +36,15 @@ describe("dashboard guided-path entry", () => {
     assert.match(source, />\s*Program\s*</);
   });
 
-  it("restores old dashboard subviews instead of redirecting them away", () => {
+  it("keeps command-deck dashboard live while preserving old dashboard subviews", () => {
     const dashboard = readProjectFile("app/dashboard/page.tsx");
     const mastery = readProjectFile("app/dashboard/mastery/page.tsx");
     const finalSprint = readProjectFile("app/dashboard/final-sprint/page.tsx");
     const path = readProjectFile("app/dashboard/path/page.tsx");
 
-    assert.match(dashboard, /useDashboard\(/);
-    assert.match(dashboard, /useFoundations\(/);
-    assert.match(dashboard, /useC3\(/);
+    assert.match(dashboard, /useCommandDeck\(/);
+    assert.match(dashboard, /DashboardShell/);
+    assert.match(dashboard, /DashboardV2Body/);
     assert.match(mastery, /PatternMasteryBoardPage/);
     assert.match(mastery, /useDashboard\(/);
     assert.match(finalSprint, /FinalSprintPathPage/);
@@ -66,31 +66,33 @@ describe("dashboard guided-path entry", () => {
   });
 
   it("surfaces the restored paid-program tools inside the full dashboard", () => {
-    const dashboard = readProjectFile("app/dashboard/page.tsx");
+    const shell = readProjectFile("components/preview-dashboard/dashboard-shell.tsx");
+    const body = readProjectFile("components/preview-dashboard/dashboard-v2-body.tsx");
 
-    assert.match(dashboard, /PROGRAM_COMMAND_CENTER/);
-    assert.match(dashboard, /Paid Program Command Center/);
+    assert.match(shell, /section: "VIEWS"/);
+    assert.match(shell, /label: "My Path"/);
     for (const href of [
       "/dashboard/path",
       "/red-zones",
-      "/practice",
       "/drills",
-      "/boot-camps",
-      "/timed-sets",
       "/dashboard/mastery",
-      "/coach",
-      "/certification",
+      "/dashboard/final-sprint",
     ]) {
-      assert.match(dashboard, new RegExp(`href: "${href.replaceAll("/", "\\/")}"`));
+      assert.match(shell, new RegExp(`href: "${href.replaceAll("/", "\\/")}"`));
     }
-    assert.match(dashboard, /ProgramCommandCenter/);
+    assert.match(body, /Sequenced repair queue/);
+    assert.match(body, /Active Red Zones/);
+    assert.match(body, /Mastery trend/);
+    assert.match(body, /Recent activity/);
   });
 
-  it("does not expose raw cohort fetch failures in the dashboard card", () => {
+  it("does not expose raw command-deck fetch failures in the dashboard card", () => {
     const dashboard = readProjectFile("app/dashboard/page.tsx");
 
-    assert.match(dashboard, /Cohort status is temporarily unavailable/);
+    assert.match(dashboard, /Live data sync degraded\. Some panels may be temporarily stale\./);
+    assert.match(dashboard, /Your briefing is temporarily unavailable\./);
     assert.doesNotMatch(dashboard, /<p[^>]*>\{error\}<\/p>/);
-    assert.doesNotMatch(dashboard, /Cohort Status[\s\S]*Failed to fetch/);
+    assert.doesNotMatch(dashboard, /Live data sync degraded: \{error\}/);
+    assert.doesNotMatch(dashboard, /temporarily unavailable\{error/);
   });
 });

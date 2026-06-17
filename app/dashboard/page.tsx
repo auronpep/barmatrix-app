@@ -71,7 +71,7 @@ export default function DashboardPage() {
       >
         {error ? (
           <p className="mb-6 border border-amber-300 bg-amber-50 p-3 font-mono text-xs leading-6 text-amber-900">
-            Live data sync degraded: {error}
+            Live data sync degraded. Some panels may be temporarily stale.
           </p>
         ) : null}
         <DashboardV2Body
@@ -117,7 +117,7 @@ export default function DashboardPage() {
         />
       ) : (
         <p className="border border-amber-300 bg-amber-50 p-6 font-mono text-xs text-amber-900">
-          Your briefing is temporarily unavailable{error ? `: ${error}` : ""}.
+          Your briefing is temporarily unavailable.
         </p>
       )}
     </section>

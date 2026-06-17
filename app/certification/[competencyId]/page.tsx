@@ -154,6 +154,17 @@ export default function CertificationRunnerPage() {
     return <GradedView comp={comp} result={result} />;
   }
 
+  if (comp.items.length === 0) {
+    return (
+      <Shell>
+        <Back />
+        <Banner href="/certification" cta="Back to certification">
+          This competency is unavailable while certification content is being rebuilt.
+        </Banner>
+      </Shell>
+    );
+  }
+
   return (
     <Shell>
       <Back />

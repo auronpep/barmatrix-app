@@ -76,6 +76,15 @@ export default function MiniDrillPage() {
       </Wrap>
     );
   }
+  if (drill.questions.length === 0) {
+    return (
+      <Wrap>
+        <p className="border border-zinc-200 bg-zinc-50 p-6 text-sm text-zinc-600">
+          This mini-drill is unavailable while learning content is being rebuilt.
+        </p>
+      </Wrap>
+    );
+  }
 
   const q: MiniDrillQuestion | undefined = drill.questions[qIdx];
   const total = drill.questions.length;

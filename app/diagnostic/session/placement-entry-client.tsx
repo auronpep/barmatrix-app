@@ -36,6 +36,11 @@ export function PlacementEntryClient() {
     setError(null);
     try {
       const result = await api.startPlacementSession();
+      if (!Array.isArray(result.questions) || result.questions.length === 0) {
+        setError("Placement content is unavailable while the learning bank is being rebuilt.");
+        setPhase("error");
+        return;
+      }
       cachePlacementSession(result);
       router.push(
         `/diagnostic/session/${result.session_id}${

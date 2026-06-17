@@ -75,6 +75,15 @@ export default function FlashcardDeckPage() {
       </Wrap>
     );
   }
+  if (deck.cards.length === 0) {
+    return (
+      <Wrap>
+        <p className="border border-zinc-200 bg-zinc-50 p-6 text-sm text-zinc-600">
+          This flashcard deck is unavailable while learning content is being rebuilt.
+        </p>
+      </Wrap>
+    );
+  }
 
   const card = deck.cards[idx];
   const total = deck.cards.length;

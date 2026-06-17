@@ -30,6 +30,49 @@ function PanelLink({ href, label }: { href: string; label: string }) {
   );
 }
 
+const componentLinks = [
+  {
+    href: "/diagnostic",
+    name: "Diagnostic",
+    desc: "Refresh the Red-Zone Map with a live 20-question trap diagnostic.",
+  },
+  {
+    href: "/foundations",
+    name: "The Method",
+    desc: "C3 lessons, drills, and the core wrong-answer forensics workflow.",
+  },
+  {
+    href: "/practice",
+    name: "Practice",
+    desc: "Work live bank questions by subject while preserving dashboard signal.",
+  },
+  {
+    href: "/timed-sets",
+    name: "Timed Sets",
+    desc: "Pressure-test repaired patterns under exam pacing.",
+  },
+  {
+    href: "/boot-camps",
+    name: "Boot Camps",
+    desc: "Focused repair circuits for high-damage subjects and traps.",
+  },
+  {
+    href: "/traps",
+    name: "Trap Taxonomy",
+    desc: "Review the recurring wrong-answer molds behind missed choices.",
+  },
+  {
+    href: "/certification",
+    name: "Certification",
+    desc: "Prove the repair skills that The Method and drills are building.",
+  },
+  {
+    href: "/coach",
+    name: "Coach",
+    desc: "Ask JJ for the next explanation, repair task, or C3 walkthrough.",
+  },
+] as const;
+
 // Briefing v2 — the FULL command deck. Direction B's Briefing top (readiness +
 // move band + lens router) PLUS the complete analytics suite that v1 demoted:
 // sequenced queue, mastery trend sparkline, personal tension-matrix heatmap, and
@@ -107,6 +150,35 @@ export function DashboardV2Body({
           flush
         >
           <DiagRouter data={data} />
+        </Panel>
+      </div>
+
+      <div className="mb-6">
+        <Panel
+          title="▌ Repair components"
+          meta="Secondary tools behind today's move"
+          flush
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {componentLinks.map((component) => (
+              <Link
+                key={component.href}
+                href={component.href}
+                prefetch={false}
+                className="border-b border-r border-[var(--rule-soft)] px-5 py-4 transition-colors last:border-r-0 hover:bg-black/[0.025] sm:[&:nth-child(2n)]:border-r-0 lg:[&:nth-child(2n)]:border-r lg:[&:nth-child(3n)]:border-r-0"
+              >
+                <div className="mb-1.5 font-serif text-[17px] font-bold tracking-tight text-zinc-950">
+                  {component.name}
+                </div>
+                <div className="text-[12.5px] leading-snug text-zinc-700">
+                  {component.desc}
+                </div>
+                <div className="mt-2.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--red)]">
+                  Open →
+                </div>
+              </Link>
+            ))}
+          </div>
         </Panel>
       </div>
 

@@ -68,8 +68,8 @@ export default function SupportPage() {
           <Link href="/account" className="btn red">
             Check Account
           </Link>
-          <Link href="/dashboard/path" className="btn ghost">
-            Open My Path
+          <Link href="/dashboard" className="btn ghost">
+            Open Dashboard
           </Link>
           <Link href="/mobile-apps" className="btn ghost">
             Mobile Access

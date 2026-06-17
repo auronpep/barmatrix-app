@@ -98,7 +98,7 @@ export const WELCOME = {
   headline: "Your guided repair path is ready.",
   body: "Your first screen is the guided daily path: one active MBE repair task, a small milestone map, and no resource-browsing decisions.",
   flagshipLine: "BarMatrix Flagship · One July-cycle cohort.",
-  primaryCta: { label: "Open the guided repair path", href: "/dashboard/path" },
+  primaryCta: { label: "Open the v3 dashboard", href: "/dashboard" },
   secondaryCta: { label: "Start the free diagnostic", href: "/diagnostic" },
 } as const;
 

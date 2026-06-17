@@ -164,8 +164,8 @@ export default function CoachPage() {
               justifyContent: "center",
             }}
           >
-            <Link href="/dashboard/path" className="btn btn-lg red">
-              Open My Path <span className="arrow">→</span>
+            <Link href="/dashboard" className="btn btn-lg red">
+              Open Dashboard <span className="arrow">→</span>
             </Link>
             <Link
               href="/drills"

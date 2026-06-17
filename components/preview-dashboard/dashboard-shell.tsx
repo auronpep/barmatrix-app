@@ -45,7 +45,7 @@ export function DashboardShell({
       section: "STUDY",
       links: [
         { href: "/dashboard", icon: "◧", label: "Dashboard", active: true },
-        { href: "/preview/outline-atlas", icon: "≣", label: "Outline Atlas" },
+        { href: "/foundations", icon: "≣", label: "The Method" },
         {
           href: "/drills",
           icon: "▶",
@@ -64,11 +64,23 @@ export function DashboardShell({
       ],
     },
     {
+      section: "COMPONENTS",
+      links: [
+        { href: "/diagnostic", icon: "▥", label: "Diagnostic" },
+        { href: "/practice", icon: "◇", label: "Practice" },
+        { href: "/timed-sets", icon: "◷", label: "Timed Sets" },
+        { href: "/boot-camps", icon: "▧", label: "Boot Camps" },
+        { href: "/certification", icon: "✓", label: "Certification" },
+      ],
+    },
+    {
       section: "DIAGNOSTICS",
       links: [
         { href: "/pattern-board", icon: "▤", label: "Pattern Board" },
         { href: "/misconceptions", icon: "✕", label: "Misconceptions" },
         { href: "/question-history", icon: "≡", label: "Question History" },
+        { href: "/traps", icon: "×", label: "Trap Taxonomy" },
+        { href: "/tensions", icon: "⌁", label: "Tension Map" },
       ],
     },
     {
@@ -90,6 +102,7 @@ export function DashboardShell({
     {
       section: "MORE",
       links: [
+        { href: "/coach", icon: "◆", label: "Coach" },
         { href: "/mobile-apps", icon: "□", label: "Mobile Apps" },
         { href: "/support", icon: "?", label: "Support" },
       ],

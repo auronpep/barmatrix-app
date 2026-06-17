@@ -22,7 +22,7 @@ export function CheckoutSuccessHero({
         eyebrow: "Signed-in access confirmed",
         headline: "Your Flagship access is active.",
         body:
-          "This browser is signed in to an enrolled BarMatrix account. Continue to Lead Me, open The Method, or manage your account without starting another checkout.",
+          "This browser is signed in to an enrolled BarMatrix account. Continue to the v3 dashboard, open The Method, or manage your account without starting another checkout.",
       }
     : getActivationCopy(activationKind);
 
@@ -67,8 +67,8 @@ export function CheckoutSuccessHero({
               <Link href="/foundations" className="btn btn-lg red">
                 Start with The Method <span className="arrow">→</span>
               </Link>
-              <Link href="/dashboard/path" className="btn btn-lg red">
-                Open Lead Me <span className="arrow">→</span>
+              <Link href="/dashboard" className="btn btn-lg red">
+                Open Dashboard <span className="arrow">→</span>
               </Link>
             </>
           )}
@@ -93,7 +93,7 @@ function getActivationCopy(kind: ActivationKind) {
       eyebrow: "ENROLLMENT CONFIRMED",
       headline: "Your Flagship access is being activated.",
       body:
-        "Stripe has returned checkout completion to BarMatrix. Start with The Method - the 14-lesson core the whole platform runs on - then open Lead Me to begin the repair loop.",
+        "Stripe has returned checkout completion to BarMatrix. Start with The Method - the 14-lesson core the whole platform runs on - then open the v3 dashboard to begin the repair loop.",
     };
   }
 

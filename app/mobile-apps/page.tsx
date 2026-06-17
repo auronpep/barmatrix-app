@@ -40,8 +40,8 @@ export default function MobileAppsPage() {
             <Link href="/app" className="btn red">
               Open Web App
             </Link>
-            <Link href="/dashboard/path" className="btn ghost">
-              Continue My Path
+            <Link href="/dashboard" className="btn ghost">
+              Open Dashboard
             </Link>
           </div>
         </div>

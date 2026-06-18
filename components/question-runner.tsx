@@ -27,6 +27,12 @@ import ConfusionCapture, {
 
 type Phase = "loading" | "presenting" | "submitting" | "forensics" | "error" | "done";
 
+// Forensics is a SOFT dependency of submit: the attempt is already recorded
+// before we fetch it. Cap the wait so a slow/hung fetch can never strand the
+// user on "Submitting…" forever (the prior diagnostic P0, never propagated
+// here). On timeout we degrade to a verdict-only card.
+const FORENSICS_TIMEOUT_MS = 10000;
+
 export interface RunnerSummary {
   answered: number;
   correct: number;
@@ -129,8 +135,11 @@ export default function QuestionRunner({
     setPhase("submitting");
     setErrorMsg(null);
     const timeSeconds = Math.max(0, Math.round((Date.now() - startedAtRef.current) / 1000));
+
+    // Hard dependency: the attempt MUST record. Only a failure here is an error.
+    let resp: AttemptResponse;
     try {
-      const resp = await submitAttempt({
+      resp = await submitAttempt({
         question_id: question.question_id,
         selected_letter: selected,
         confidence,
@@ -147,27 +156,45 @@ export default function QuestionRunner({
             }
           : undefined,
       });
-      setAttempt(resp);
-      setAnswered((n) => n + 1);
-      if (resp.correct) setCorrect((n) => n + 1);
-      trackQuestionAttempted({
-        questionId: question.question_id,
-        correct: resp.correct,
-        confidence,
-        sessionId: setId,
-      });
-      const f = await api.getForensics(resp.attempt_id);
-      setForensics(f);
+    } catch (err) {
+      setErrorMsg(humanError(err));
+      setPhase("error");
+      return;
+    }
+
+    setAttempt(resp);
+    setAnswered((n) => n + 1);
+    if (resp.correct) setCorrect((n) => n + 1);
+    trackQuestionAttempted({
+      questionId: question.question_id,
+      correct: resp.correct,
+      confidence,
+      sessionId: setId,
+    });
+
+    // Soft dependency: forensics. Time it out and degrade to a verdict-only card
+    // so a hung fetch never blocks the UI. The attempt is already recorded.
+    let f: ForensicsResponse | null = null;
+    try {
+      f = await Promise.race([
+        api.getForensics(resp.attempt_id),
+        new Promise<never>((_, reject) =>
+          window.setTimeout(
+            () => reject(new Error("forensics timed out")),
+            FORENSICS_TIMEOUT_MS,
+          ),
+        ),
+      ]);
       trackForensicsViewed({
         attemptId: resp.attempt_id,
         forensicTags: collectForensicTags(resp, f),
         sessionId: setId,
       });
-      setPhase("forensics");
-    } catch (err) {
-      setErrorMsg(humanError(err));
-      setPhase("error");
+    } catch {
+      f = null;
     }
+    setForensics(f);
+    setPhase("forensics");
   };
 
   const next = () => {
@@ -237,6 +264,14 @@ export default function QuestionRunner({
           selectedLetter={selected}
           initialConfusion={confusion}
           updateConfusion={updateConfusion}
+          onNext={next}
+          nextLabel={isLast ? completeLabel : "Next question →"}
+        />
+      )}
+
+      {phase === "forensics" && attempt && question && !forensics && (
+        <ForensicsFallback
+          correct={attempt.correct}
           onNext={next}
           nextLabel={isLast ? completeLabel : "Next question →"}
         />
@@ -587,6 +622,38 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
+// Shown when the attempt recorded fine but forensics timed out / failed. Keeps
+// the user moving (verdict + Next) instead of stranding them on "Submitting…".
+function ForensicsFallback({
+  correct,
+  onNext,
+  nextLabel,
+}: {
+  correct: boolean;
+  onNext: () => void;
+  nextLabel: string;
+}) {
+  return (
+    <div className="border border-zinc-300 bg-white p-8 shadow-sm" role="status">
+      <p
+        className={`font-mono text-xs uppercase tracking-wider ${correct ? "text-emerald-700" : "text-red-700"}`}
+      >
+        {correct ? "Correct" : "Incorrect"}
+      </p>
+      <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-900">
+        Your answer was recorded.
+      </h2>
+      <p className="mt-3 text-sm leading-6 text-zinc-700">
+        The full forensic breakdown is taking longer than usual to load — you can
+        review it later from your history. Keep moving for now.
+      </p>
+      <button type="button" onClick={onNext} className="btn red mt-6">
+        {nextLabel}
+      </button>
+    </div>
+  );
+}
+
 function humanError(err: unknown): string {
   if (err instanceof ApiClientError) return `API ${err.status}: ${err.message}`;
   if (err instanceof Error) return err.message;
@@ -595,7 +662,11 @@ function humanError(err: unknown): string {
 
 function collectForensicTags(attempt: AttemptResponse, forensics: ForensicsResponse): string[] {
   const tags = [
-    ...attempt.red_zone_updates.map((u) => `${u.dimension}:${u.tag}`),
+    // red_zone_updates can come back null on some attempts; guard the map (the
+    // diagnostic surface guards the same field — this propagates that fix).
+    ...(Array.isArray(attempt.red_zone_updates) ? attempt.red_zone_updates : []).map(
+      (u) => `${u.dimension}:${u.tag}`,
+    ),
     forensics.trap_name,
     forensics.assigned_drill?.slug,
   ].filter((tag): tag is string => Boolean(tag));

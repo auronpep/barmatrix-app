@@ -1,6 +1,6 @@
 "use client";
 
-import { SignIn, SignUp } from "@clerk/nextjs";
+import { SignIn, SignUp, useAuth } from "@clerk/nextjs";
 import { resolveAuthReturnPath } from "@/app/auth-return-path";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -15,6 +15,11 @@ export function AuthForm({
   after?: string | null;
 }) {
   const [showFallback, setShowFallback] = useState(false);
+  // Clerk's real load state. The fallback below is gated on this so the
+  // "taking longer than expected" warning only appears when Clerk genuinely
+  // hasn't loaded after the timeout — not on every page that sits open >3s with
+  // a working, interactive sign-in form (the prior false-alarm bug).
+  const { isLoaded } = useAuth();
   const returnPath = resolveAuthReturnPath(after);
   const isSignUp = mode === "sign-up";
   const title = isSignUp
@@ -68,7 +73,7 @@ export function AuthForm({
             signInFallbackRedirectUrl={returnPath}
           />
         )}
-        {showFallback && (
+        {showFallback && !isLoaded && (
           <div
             role="status"
             className="max-w-md rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm leading-6 text-amber-900"

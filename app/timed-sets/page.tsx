@@ -301,8 +301,10 @@ export default function TimedSetsPage() {
       Math.round((Date.now() - questionStartedAtRef.current) / 1000),
     );
 
+    // Hard dependency: the attempt must record. Only this is an error.
+    let nextAttempt: AttemptResponse;
     try {
-      const nextAttempt = await submitAttempt({
+      nextAttempt = await submitAttempt({
         question_id: question.question_id,
         selected_letter: selected,
         confidence,
@@ -310,14 +312,28 @@ export default function TimedSetsPage() {
         platform: "web",
         set_id: setIdRef.current ?? `timed-mixed-${Date.now()}`,
       });
-      const nextForensics = await api.getForensics(nextAttempt.attempt_id);
-      setAttempt(nextAttempt);
-      setForensics(nextForensics);
-      setPhase("forensics");
     } catch (nextError) {
       setError(humanError(nextError));
       setPhase("error");
+      return;
     }
+    setAttempt(nextAttempt);
+
+    // Soft dependency: forensics. Cap the wait (10s) so a hung fetch never
+    // strands the user on "Submitting…"; degrade to a verdict-only card.
+    let nextForensics: ForensicsResponse | null = null;
+    try {
+      nextForensics = await Promise.race([
+        api.getForensics(nextAttempt.attempt_id),
+        new Promise<never>((_, reject) =>
+          window.setTimeout(() => reject(new Error("forensics timed out")), 10000),
+        ),
+      ]);
+    } catch {
+      nextForensics = null;
+    }
+    setForensics(nextForensics);
+    setPhase("forensics");
   };
 
   const next = () => {
@@ -713,6 +729,37 @@ function EnginePanel({
           </div>
         )}
 
+        <button
+          type="button"
+          onClick={onNext}
+          className="btn btn-lg red mt-6 w-full justify-center"
+        >
+          {isLast ? "Finish timed set" : "Next timed question"}
+        </button>
+      </aside>
+    );
+  }
+
+  if (phase === "forensics" && attempt && !forensics) {
+    return (
+      <aside
+        className="border border-zinc-300 bg-white p-6 shadow-sm lg:sticky lg:top-6"
+        role="status"
+      >
+        <p
+          className={`font-mono text-xs uppercase tracking-wider ${
+            attempt.correct ? "text-emerald-700" : "text-amber-700"
+          }`}
+        >
+          {attempt.correct ? "Correct" : "Recorded"}
+        </p>
+        <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
+          Your answer was recorded.
+        </h2>
+        <p className="mt-3 text-sm leading-6 text-zinc-700">
+          The full forensic breakdown is taking longer than usual to load — review
+          it later from your history. Keep moving for now.
+        </p>
         <button
           type="button"
           onClick={onNext}

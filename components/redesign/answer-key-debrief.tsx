@@ -73,6 +73,7 @@ export function AnswerKeyDebrief({
   return (
     <div className="relative">
       <div className="mx-auto max-w-[1000px] px-6 pb-28 sm:px-8">
+        <TopContinue onContinue={onContinue} continueLabel={continueLabel} />
         <Hero data={data} yourPick={yourPick} isCorrect={isCorrect} />
         <QuestionCard data={data} yourPick={yourPick} isCorrect={isCorrect} />
         <ForkSection data={data} yourPick={yourPick} />
@@ -137,6 +138,22 @@ function NumberedSection({
       </div>
       <div className="mt-6">{children}</div>
     </section>
+  );
+}
+
+function TopContinue({
+  onContinue,
+  continueLabel,
+}: {
+  onContinue?: () => void;
+  continueLabel: string;
+}) {
+  return (
+    <div className="flex justify-end pt-6">
+      <button type="button" onClick={onContinue} disabled={!onContinue} className="btn red">
+        {continueLabel}
+      </button>
+    </div>
   );
 }
 

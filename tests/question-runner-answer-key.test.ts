@@ -30,3 +30,20 @@ describe("question runner answer-key debrief", () => {
     assert.match(source, /continueLabel=\{continueLabel\}/);
   });
 });
+
+describe("practice bank answer-key debrief", () => {
+  it("tries the answer-key debrief after submit and keeps the forensics fallback", () => {
+    const source = readProjectFile("app/practice/practice-client.tsx");
+
+    assert.match(source, /AnswerKeyDebrief/);
+    assert.match(source, /import type \{ DebriefData \}/);
+    assert.match(source, /useClerkAuth/);
+    assert.match(source, /api\.getAnswerKey\(question\.question_id, token\)/);
+    assert.match(source, /setAnswerKey/);
+    assert.match(source, /<AnswerKeyDebrief/);
+    assert.match(source, /yourPick=\{selected \?\? answerKey\.correctLetter\}/);
+    assert.match(source, /continueLabel=\{nextLabel\}/);
+    assert.match(source, /!answerKey && forensics/);
+    assert.match(source, /<ForensicsCard/);
+  });
+});

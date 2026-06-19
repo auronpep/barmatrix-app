@@ -20,6 +20,9 @@ import {
   type Letter,
   type QuestionPayload,
 } from "@/lib/api-client";
+import { AnswerKeyDebrief } from "@/components/redesign/answer-key-debrief";
+import type { DebriefData } from "@/components/redesign/answer-key-types";
+import { useClerkAuth } from "@/lib/use-clerk-auth";
 import { useSubmitAttempt } from "@/lib/use-attempts";
 import {
   trackPracticeSetCompletedOnce,
@@ -31,6 +34,7 @@ const FETCH_LIMIT = 200;
 // Show 20 questions per practice set (configurable for future A/B testing).
 const SET_LIMIT = 20;
 const INCLUDE_HIDDEN = process.env.NODE_ENV !== "production";
+const ANSWER_KEY_TIMEOUT_MS = 10000;
 
 // Fisher-Yates shuffle: mutates array in-place, returns it for chaining.
 function shuffle<T>(array: T[]): T[] {
@@ -73,6 +77,15 @@ function humanError(error: unknown): string {
   if (error instanceof ApiClientError) return `API ${error.status}: ${error.message}`;
   if (error instanceof Error) return error.message;
   return "Unknown error";
+}
+
+function withSoftTimeout<T>(promise: Promise<T>, message: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      window.setTimeout(() => reject(new Error(message)), ANSWER_KEY_TIMEOUT_MS),
+    ),
+  ]);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -168,6 +181,7 @@ export function PracticeClient({
   initialTrap?: string;
 }) {
   const submitAttempt = useSubmitAttempt();
+  const { isSignedIn, getToken } = useClerkAuth();
 
   // A deep-link filter (?tension / ?trap / ?subject) auto-starts a set. Derive it
   // synchronously so the initial render is already in "building" — that keeps the
@@ -189,6 +203,7 @@ export function PracticeClient({
   const [confidence, setConfidence] = useState(3);
   const [attempt, setAttempt] = useState<AttemptResponse | null>(null);
   const [forensics, setForensics] = useState<ForensicsResponse | null>(null);
+  const [answerKey, setAnswerKey] = useState<DebriefData | null>(null);
   const [correctCount, setCorrectCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const setIdRef = useRef<string | null>(null);
@@ -211,6 +226,7 @@ export function PracticeClient({
       setConfidence(3);
       setAttempt(null);
       setForensics(null);
+      setAnswerKey(null);
       questionStartedAtRef.current = Date.now();
       try {
         const nextQuestion = await api.getQuestion(nextId);
@@ -256,13 +272,14 @@ export function PracticeClient({
   // fine — only effects are restricted. Resets state, then kicks the async fetch.
   const startSet = useCallback(
     (nextFilter: ActiveFilter) => {
-      setIdRef.current = `practice-${nextFilter.type}-${nextFilter.value}-${Date.now()}`;
+      setIdRef.current = `practice-${nextFilter.type}-${Date.now()}`;
       setPhase("building");
       setFilter(nextFilter);
       setError(null);
       setQuestion(null);
       setAttempt(null);
       setForensics(null);
+      setAnswerKey(null);
       setSelected(null);
       setConfidence(3);
       setIndex(0);
@@ -277,7 +294,7 @@ export function PracticeClient({
   // async fetch — no synchronous setState in the effect body.
   useEffect(() => {
     if (!initialFilter) return;
-    setIdRef.current = `practice-${initialFilter.type}-${initialFilter.value}-${Date.now()}`;
+    setIdRef.current = `practice-${initialFilter.type}-${Date.now()}`;
     // runFetch only mutates state AFTER an await (async continuation), so it can't
     // cause the cascading synchronous renders this rule guards against; auto-starting
     // a deep-linked set is the canonical "sync with an external system on mount" effect.
@@ -304,10 +321,23 @@ export function PracticeClient({
         platform: "web",
         set_id: setIdRef.current ?? `practice-${Date.now()}`,
       });
-      const nextForensics = await api.getForensics(nextAttempt.attempt_id);
+      const answerKeyRequest = async (): Promise<DebriefData | null> => {
+        if (!isSignedIn) return null;
+        const token = await getToken();
+        if (!token) return null;
+        return withSoftTimeout(
+          api.getAnswerKey(question.question_id, token),
+          "answer key timed out",
+        ).catch(() => null);
+      };
+      const [nextForensics, nextAnswerKey] = await Promise.all([
+        api.getForensics(nextAttempt.attempt_id),
+        answerKeyRequest().catch(() => null),
+      ]);
       if (nextAttempt.correct) setCorrectCount((c) => c + 1);
       setAttempt(nextAttempt);
       setForensics(nextForensics);
+      setAnswerKey(nextAnswerKey);
       setPhase("forensics");
     } catch (err) {
       setError(humanError(err));
@@ -337,8 +367,11 @@ export function PracticeClient({
     setQuestion(null);
     setAttempt(null);
     setForensics(null);
+    setAnswerKey(null);
     setError(null);
   };
+
+  const nextLabel = isLast ? "Finish set" : "Next question";
 
   return (
     <section className="mx-auto max-w-5xl px-6 py-12">
@@ -408,7 +441,22 @@ export function PracticeClient({
           />
         )}
 
-        {phase === "forensics" && attempt && forensics && (
+        {phase === "forensics" && attempt && answerKey && (
+          <AnswerKeyDebrief
+            data={answerKey}
+            yourPick={selected ?? answerKey.correctLetter}
+            session={{
+              index: Math.min(index + 1, total),
+              total,
+              percent: total > 0 ? Math.round(((index + 1) / total) * 100) : 0,
+              minutesLeft: Math.max(0, (total - index - 1) * 2),
+            }}
+            onContinue={next}
+            continueLabel={nextLabel}
+          />
+        )}
+
+        {phase === "forensics" && attempt && !answerKey && forensics && (
           <ForensicsCard
             attempt={attempt}
             forensics={forensics}

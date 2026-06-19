@@ -16,4 +16,12 @@ describe("practice subject response normalization", () => {
     assert.match(source, /asString\(value\.question_id\)\s*\?\?\s*asString\(value\.id\)/);
     assert.match(source, /pickQuestionArray\(payload\)\s*\.map\(normalizeQuestionId\)/);
   });
+
+  it("keeps practice set IDs below the API limit for long tension and trap slugs", () => {
+    const source = readProjectFile("app/practice/practice-client.tsx");
+
+    assert.doesNotMatch(source, /setIdRef\.current = `practice-\$\{[^}]+\.type\}-\$\{[^}]+\.value\}-/);
+    assert.match(source, /setIdRef\.current = `practice-\$\{nextFilter\.type\}-\$\{Date\.now\(\)\}`;/);
+    assert.match(source, /setIdRef\.current = `practice-\$\{initialFilter\.type\}-\$\{Date\.now\(\)\}`;/);
+  });
 });

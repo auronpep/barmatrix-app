@@ -61,6 +61,15 @@ describe("paid program display labels", () => {
     assert.doesNotMatch(redZoneList, /\{rz\.subject\} · \{rz\.miss_count\}/);
   });
 
+  it("does not expose question UUIDs in dashboard recent activity rows", () => {
+    const recentFeed = readProjectFile("components/preview-dashboard/recent-feed.tsx");
+
+    assert.match(recentFeed, /import \{ humanizeSubject \} from "@\/lib\/format-subject";/);
+    assert.match(recentFeed, /\{humanizeSubject\(a\.subject\)\}/);
+    assert.doesNotMatch(recentFeed, /\{a\.question_id\}/);
+    assert.doesNotMatch(recentFeed, /\{a\.subject\}/);
+  });
+
   it("formats raw drill catalog API labels before rendering catalog cards", () => {
     const helpers = readProjectFile("lib/drills.ts");
     const drillLibrary = readProjectFile("app/drills/page.tsx");

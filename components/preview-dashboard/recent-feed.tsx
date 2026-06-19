@@ -1,4 +1,5 @@
 import type { DashboardRecentAttempt } from "@/lib/api-client";
+import { humanizeSubject } from "@/lib/format-subject";
 
 function timeAgo(iso: string): string {
   const then = new Date(iso).getTime();
@@ -36,9 +37,9 @@ export function RecentFeed({ items }: { items: DashboardRecentAttempt[] }) {
           />
           <span className="min-w-0">
             <span className="block truncate text-sm text-zinc-700">
-              <span className="font-mono text-xs text-zinc-900">{a.question_id}</span>
-              <span className="mx-2 text-zinc-300">·</span>
-              <span className="text-zinc-500">{a.subject}</span>
+              <span className="font-medium text-zinc-900">
+                {humanizeSubject(a.subject)}
+              </span>
             </span>
             {a.correct ? (
               <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-emerald-600">

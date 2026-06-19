@@ -32,6 +32,11 @@ function PanelLink({ href, label }: { href: string; label: string }) {
 
 const componentLinks = [
   {
+    href: "/atlas-v1",
+    name: "Atlas v1",
+    desc: "Audit approved questions by outline code and find empty codes.",
+  },
+  {
     href: "/diagnostic",
     name: "Diagnostic",
     desc: "Refresh the Red-Zone Map with a live 20-question trap diagnostic.",

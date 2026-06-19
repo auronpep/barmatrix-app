@@ -73,6 +73,7 @@ describe("dashboard guided-path entry", () => {
     assert.match(shell, /label: "My Path"/);
     for (const href of [
       "/dashboard/path",
+      "/atlas-v1",
       "/red-zones",
       "/drills",
       "/dashboard/mastery",
@@ -81,6 +82,7 @@ describe("dashboard guided-path entry", () => {
       assert.match(shell, new RegExp(`href: "${href.replaceAll("/", "\\/")}"`));
     }
     assert.match(body, /Sequenced repair queue/);
+    assert.match(body, /Atlas v1/);
     assert.match(body, /Active Red Zones/);
     assert.match(body, /Mastery trend/);
     assert.match(body, /Recent activity/);

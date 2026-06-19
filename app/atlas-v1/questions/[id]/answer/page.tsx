@@ -3,6 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Atlas v1 Answer",
+  robots: { index: false, follow: false },
 };
 
 export const dynamic = "force-dynamic";

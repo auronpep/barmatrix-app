@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 export const metadata: Metadata = {
   title: "Atlas v1",
   description: "Internal Atlas_v1 outline-code coverage and question intake.",
+  robots: { index: false, follow: false },
 };
 
 export const dynamic = "force-dynamic";

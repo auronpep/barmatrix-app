@@ -20,6 +20,7 @@ describe("paid program proxy gates", () => {
   it("protects logged-in program engines that are linked from the paid dashboard", () => {
     const routes = protectedRouteBlock(readProjectFile("proxy.ts"));
     const protectedRoutes = [
+      "/atlas-v1(.*)",
       "/matrix(.*)",
       "/misconceptions(.*)",
       "/question-history(.*)",

@@ -11,7 +11,7 @@ describe("mobile navigation width", () => {
     const layout = readProjectFile("app/layout.tsx");
     const css = readProjectFile("app/globals.css");
 
-    assert.match(layout, /href="\/diagnostic" className="btn btn-sm red hide-md"/);
+    assert.match(layout, /<NavPrimaryCta className="btn btn-sm red hide-md" \/>/);
     assert.match(css, /\.nav-cta \.hide-md \{ display: none; \}/);
   });
 
@@ -23,5 +23,16 @@ describe("mobile navigation width", () => {
     assert.match(css, /\.nav-cta > \.btn\.ghost\s*\{[^}]*display:\s*none;/s);
     assert.match(css, /\.nav-inner \{[^}]*gap: 8px;/s);
     assert.match(css, /\.nav-cta \{[^}]*gap: 8px;/s);
+  });
+
+  it("uses auth-aware primary CTAs instead of repeating Free Diagnostic for signed-in users", () => {
+    const layout = readProjectFile("app/layout.tsx");
+    const mobileNav = readProjectFile("components/mobile-nav.tsx");
+    const navAuth = readProjectFile("app/nav-auth.tsx");
+
+    assert.match(layout, /<NavPrimaryCta className="btn btn-sm red hide-md" \/>/);
+    assert.match(mobileNav, /<NavPrimaryCta\s+className="mobile-nav-link mobile-nav-cta"\s+onClick=\{\(\) => setOpen\(false\)\}\s+\/>/s);
+    assert.match(navAuth, /href="\/dashboard\/path"/);
+    assert.match(navAuth, /My Path/);
   });
 });

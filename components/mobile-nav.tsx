@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { NavPrimaryCta } from "@/app/nav-auth";
 
 const NAV_LINKS = [
   { href: "/dashboard/path", label: "Dashboard" },
@@ -16,7 +17,7 @@ const NAV_LINKS = [
   { href: "/faq", label: "FAQ" },
 ];
 
-export function MobileNavToggle() {
+export function MobileNavToggle({ hasClerk }: { hasClerk: boolean }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -43,13 +44,20 @@ export function MobileNavToggle() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/diagnostic"
-            className="mobile-nav-link mobile-nav-cta"
-            onClick={() => setOpen(false)}
-          >
-            Free Diagnostic →
-          </Link>
+          {hasClerk ? (
+            <NavPrimaryCta
+              className="mobile-nav-link mobile-nav-cta"
+              onClick={() => setOpen(false)}
+            />
+          ) : (
+            <Link
+              href="/diagnostic"
+              className="mobile-nav-link mobile-nav-cta"
+              onClick={() => setOpen(false)}
+            >
+              Free Diagnostic →
+            </Link>
+          )}
         </div>
       )}
     </>

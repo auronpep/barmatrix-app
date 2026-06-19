@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import "./globals.css";
 import { AnalyticsEvents } from "./analytics-events";
-import { NavAuth } from "./nav-auth";
+import { NavAuth, NavPrimaryCta } from "./nav-auth";
 import { MobileNavToggle } from "@/components/mobile-nav";
 import { ChromeGate } from "@/components/chrome-gate";
 import { BRAND, DISCLAIMER, DOMAIN } from "@/lib/copy";
@@ -118,10 +118,14 @@ export default function RootLayout({
                     Sign in
                   </Link>
                 )}
-                <Link href="/diagnostic" className="btn btn-sm red hide-md">
-                  Free Diagnostic <span className="arrow">→</span>
-                </Link>
-                <MobileNavToggle />
+                {hasClerk ? (
+                  <NavPrimaryCta className="btn btn-sm red hide-md" />
+                ) : (
+                  <Link href="/diagnostic" className="btn btn-sm red hide-md">
+                    Free Diagnostic <span className="arrow">→</span>
+                  </Link>
+                )}
+                <MobileNavToggle hasClerk={hasClerk} />
               </div>
             </div>
           </nav>

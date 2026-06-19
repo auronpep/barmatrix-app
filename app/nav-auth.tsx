@@ -27,3 +27,27 @@ export function NavAuth() {
     </Link>
   );
 }
+
+export function NavPrimaryCta({
+  className,
+  onClick,
+}: {
+  className: string;
+  onClick?: () => void;
+}) {
+  const { isSignedIn } = useUser();
+
+  if (isSignedIn) {
+    return (
+      <Link href="/dashboard/path" className={className} onClick={onClick}>
+        My Path <span className="arrow">→</span>
+      </Link>
+    );
+  }
+
+  return (
+    <Link href="/diagnostic" className={className} onClick={onClick}>
+      Free Diagnostic <span className="arrow">→</span>
+    </Link>
+  );
+}

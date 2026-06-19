@@ -72,7 +72,7 @@ export default function DashboardLayout({
       {showLegacyChrome ? (
       <nav aria-label="Dashboard" className="border-b border-zinc-900 bg-white">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="flex items-center gap-1 overflow-x-auto">
+          <div className="no-scrollbar flex items-center gap-1 overflow-x-auto">
             {VIEW_TABS.map((tab) => {
               const active = isViewActive(pathname, tab.href);
               return (
@@ -94,7 +94,7 @@ export default function DashboardLayout({
         </div>
 
         <div className="border-t border-zinc-200 bg-zinc-50">
-          <div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-6 py-2">
+          <div className="no-scrollbar mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-6 py-2">
             <span className="shrink-0 pr-1 font-mono text-[10px] uppercase tracking-wider text-zinc-400">
               Program
             </span>

@@ -94,6 +94,15 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* ====== HAIRLINE RED TAPE STRIP ====== */
 .tape-strip {
   height: 6px;

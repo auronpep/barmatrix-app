@@ -10,6 +10,7 @@
 // the Clerk-attributed-or-anonymous decision in one place).
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   api,
@@ -128,6 +129,14 @@ function filterLabel(filter: ActiveFilter): string {
   return humanizeValue(filter.value);
 }
 
+function redZoneMapHref(answerKey: DebriefData | null): string {
+  const redZone = answerKey?.redZone;
+  if (redZone?.dimension && redZone.tag) {
+    return `/red-zones/${encodeURIComponent(redZone.dimension)}/${encodeURIComponent(redZone.tag)}`;
+  }
+  return "/red-zones";
+}
+
 async function fetchSubjectIds(subject: string): Promise<string[]> {
   const params = new URLSearchParams({
     subject,
@@ -180,6 +189,7 @@ export function PracticeClient({
   initialTension?: string;
   initialTrap?: string;
 }) {
+  const router = useRouter();
   const submitAttempt = useSubmitAttempt();
   const { isSignedIn, getToken } = useClerkAuth();
 
@@ -204,6 +214,7 @@ export function PracticeClient({
   const [attempt, setAttempt] = useState<AttemptResponse | null>(null);
   const [forensics, setForensics] = useState<ForensicsResponse | null>(null);
   const [answerKey, setAnswerKey] = useState<DebriefData | null>(null);
+  const [repairBusy, setRepairBusy] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const setIdRef = useRef<string | null>(null);
@@ -227,6 +238,7 @@ export function PracticeClient({
       setAttempt(null);
       setForensics(null);
       setAnswerKey(null);
+      setRepairBusy(false);
       questionStartedAtRef.current = Date.now();
       try {
         const nextQuestion = await api.getQuestion(nextId);
@@ -280,6 +292,7 @@ export function PracticeClient({
       setAttempt(null);
       setForensics(null);
       setAnswerKey(null);
+      setRepairBusy(false);
       setSelected(null);
       setConfidence(3);
       setIndex(0);
@@ -308,6 +321,7 @@ export function PracticeClient({
     if (!question || !selected) return;
     setPhase("submitting");
     setError(null);
+    setRepairBusy(false);
     const timeSeconds = Math.max(
       0,
       Math.round((Date.now() - questionStartedAtRef.current) / 1000),
@@ -368,8 +382,47 @@ export function PracticeClient({
     setAttempt(null);
     setForensics(null);
     setAnswerKey(null);
+    setRepairBusy(false);
     setError(null);
   };
+
+  const openRedZoneMap = useCallback(() => {
+    router.push(redZoneMapHref(answerKey));
+  }, [answerKey, router]);
+
+  const startRepair = useCallback(() => {
+    if (repairBusy) return;
+    const redZone = answerKey?.redZone;
+    const dimension = redZone?.dimension;
+    const tag = redZone?.tag;
+    if (!dimension || !tag) {
+      router.push("/drills");
+      return;
+    }
+    setRepairBusy(true);
+    void (async () => {
+      try {
+        const token = await getToken();
+        if (!token) {
+          router.push("/sign-in?after=practice");
+          return;
+        }
+        const res = await api.startDrill(
+          {
+            kind: "prescribed_red_zone",
+            red_zone_dimension: dimension,
+            red_zone_tag: tag,
+          },
+          token,
+        );
+        router.push(res?.drill_id ? `/drills/${res.drill_id}` : "/drills");
+      } catch {
+        router.push("/drills");
+      } finally {
+        setRepairBusy(false);
+      }
+    })();
+  }, [answerKey, getToken, repairBusy, router]);
 
   const nextLabel = isLast ? "Finish set" : "Next question";
 
@@ -453,6 +506,9 @@ export function PracticeClient({
             }}
             onContinue={next}
             continueLabel={nextLabel}
+            onStartRepair={startRepair}
+            onOpenRedZoneMap={openRedZoneMap}
+            repairBusy={repairBusy}
           />
         )}
 

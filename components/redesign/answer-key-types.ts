@@ -29,6 +29,14 @@ export type FactTone =
   | "selfhelp"
   | "call";
 
+export interface DebriefRedZone {
+  id: string;
+  label: string;
+  rank: number;
+  dimension?: string | null;
+  tag?: string | null;
+}
+
 export interface DebriefChoice {
   letter: string;
   correct: boolean;
@@ -48,7 +56,7 @@ export interface DebriefChoice {
   fullRight?: string;
   fullWrong?: string;
   recovery?: string | null;
-  redZone?: { id: string; label: string; rank: number } | null;
+  redZone?: DebriefRedZone | null;
 }
 
 export interface TriggerFact {
@@ -140,5 +148,5 @@ export interface DebriefData {
     queueMeta: string;
   };
 
-  redZone: { id: string; label: string; rank: number };
+  redZone: DebriefRedZone;
 }

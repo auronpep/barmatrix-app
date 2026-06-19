@@ -33,6 +33,7 @@ export interface AnswerKeyDebriefProps {
   continueLabel?: string;
   onStartRepair?: () => void;
   onOpenRedZoneMap?: () => void;
+  repairBusy?: boolean;
 }
 
 const TONE_TEXT: Record<FactTone, string> = {
@@ -65,13 +66,13 @@ export function AnswerKeyDebrief({
   continueLabel = "Continue drill →",
   onStartRepair,
   onOpenRedZoneMap,
+  repairBusy = false,
 }: AnswerKeyDebriefProps) {
   const isCorrect = yourPick === data.correctLetter;
 
   return (
     <div className="relative">
       <div className="mx-auto max-w-[1000px] px-6 pb-28 sm:px-8">
-        <TopContinue onContinue={onContinue} continueLabel={continueLabel} />
         <Hero data={data} yourPick={yourPick} isCorrect={isCorrect} />
         <QuestionCard data={data} yourPick={yourPick} isCorrect={isCorrect} />
         <ForkSection data={data} yourPick={yourPick} />
@@ -79,7 +80,12 @@ export function AnswerKeyDebrief({
         <FactsSection data={data} />
         <MoldsSection data={data} />
         <BankItSection data={data} />
-        <RepairSection data={data} onStartRepair={onStartRepair} onOpenRedZoneMap={onOpenRedZoneMap} />
+        <RepairSection
+          data={data}
+          onStartRepair={onStartRepair}
+          onOpenRedZoneMap={onOpenRedZoneMap}
+          repairBusy={repairBusy}
+        />
       </div>
       <BottomContinue
         data={data}
@@ -119,32 +125,18 @@ function NumberedSection({
 }) {
   return (
     <section className="border-b border-zinc-200 py-9 last:border-0">
-      <div className="flex items-baseline gap-3">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
         <span className="font-serif text-[15px] font-bold text-red-700">{n}</span>
-        <h2 className="whitespace-nowrap font-serif text-2xl font-bold tracking-tight text-zinc-950">
+        <h2 className="font-serif text-[22px] font-bold tracking-tight text-zinc-950 sm:text-2xl">
           {title}
         </h2>
-        <span aria-hidden className="h-px flex-1 bg-zinc-200" />
-        <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-zinc-500">{meta}</span>
+        <span aria-hidden className="h-px min-w-16 flex-1 bg-zinc-200" />
+        <span className="ml-auto max-w-full text-right font-mono text-[10px] uppercase tracking-[0.1em] text-zinc-500 sm:max-w-none">
+          {meta}
+        </span>
       </div>
       <div className="mt-6">{children}</div>
     </section>
-  );
-}
-
-function TopContinue({
-  onContinue,
-  continueLabel,
-}: {
-  onContinue?: () => void;
-  continueLabel: string;
-}) {
-  return (
-    <div className="flex justify-end pt-6">
-      <button type="button" onClick={onContinue} disabled={!onContinue} className="btn red">
-        {continueLabel}
-      </button>
-    </div>
   );
 }
 
@@ -203,7 +195,7 @@ function QuestionCard({ data, yourPick, isCorrect }: { data: DebriefData; yourPi
           return (
             <div
               key={c.letter}
-              className={`grid grid-cols-[26px_1fr_auto] items-center gap-3 border px-3 py-2.5 ${
+              className={`grid grid-cols-[26px_minmax(0,1fr)] items-center gap-3 border px-3 py-2.5 sm:grid-cols-[26px_minmax(0,1fr)_auto] ${
                 credited ? "border-green-800" : wrongPick ? "border-red-700" : "border-zinc-300"
               }`}
             >
@@ -218,17 +210,17 @@ function QuestionCard({ data, yourPick, isCorrect }: { data: DebriefData; yourPi
               >
                 {c.letter}
               </span>
-              <span className="font-serif text-sm text-zinc-900">{c.text}</span>
+              <span className="min-w-0 font-serif text-sm text-zinc-900">{c.text}</span>
               {credited ? (
-                <span className="bg-green-800 px-2 py-0.5 font-mono text-[8.5px] uppercase tracking-wide text-white">
+                <span className="col-start-2 justify-self-start bg-green-800 px-2 py-0.5 font-mono text-[8.5px] uppercase tracking-wide text-white sm:col-start-auto sm:justify-self-end">
                   ✓ credited
                 </span>
               ) : wrongPick ? (
-                <span className="bg-red-700 px-2 py-0.5 font-mono text-[8.5px] uppercase tracking-wide text-white">
+                <span className="col-start-2 justify-self-start bg-red-700 px-2 py-0.5 font-mono text-[8.5px] uppercase tracking-wide text-white sm:col-start-auto sm:justify-self-end">
                   your pick
                 </span>
               ) : (
-                <span />
+                <span className="hidden sm:block" />
               )}
             </div>
           );
@@ -314,7 +306,7 @@ function ForkNode({ c, data, yourPick }: { c: DebriefChoice; data: DebriefData; 
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="grid w-full grid-cols-[26px_1fr_auto] items-center gap-3 px-3.5 py-3 text-left"
+        className="grid w-full grid-cols-[26px_minmax(0,1fr)_18px] items-center gap-3 px-3.5 py-3 text-left"
       >
         <span
           className={`flex h-[26px] w-[26px] items-center justify-center border font-mono text-xs font-bold ${
@@ -327,7 +319,7 @@ function ForkNode({ c, data, yourPick }: { c: DebriefChoice; data: DebriefData; 
         >
           {c.letter}
         </span>
-        <span>
+        <span className="min-w-0">
           <span className="font-serif text-sm text-zinc-900">{c.text}</span>
           <span className="mt-1 block font-mono text-[9px] uppercase tracking-wide text-zinc-500">
             {label} · {c.studentLabel}
@@ -475,7 +467,7 @@ function Station({
 }) {
   return (
     <div className="border-t border-dashed border-zinc-300 py-6 first:border-0 first:pt-0">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <span
           className={`flex h-8 w-8 flex-none items-center justify-center border border-red-700 font-mono text-sm text-red-700 ${
             round ? "rounded-full" : ""
@@ -484,8 +476,10 @@ function Station({
           {glyph}
         </span>
         <h3 className="font-serif text-[21px] font-bold text-zinc-950">{title}</h3>
-        <span aria-hidden className="h-px flex-1 bg-zinc-200" />
-        <span className="font-mono text-[9px] uppercase tracking-wide text-zinc-500">{desc}</span>
+        <span aria-hidden className="h-px min-w-10 flex-1 bg-zinc-200" />
+        <span className="ml-auto max-w-full text-right font-mono text-[9px] uppercase tracking-wide text-zinc-500 sm:max-w-none">
+          {desc}
+        </span>
       </div>
       <div className="mt-4">{children}</div>
     </div>
@@ -493,39 +487,53 @@ function Station({
 }
 
 function KeyCardView({ tone, k }: { tone: "gold" | "silver"; k: KeyCard }) {
-  const accent = tone === "gold" ? "border-amber-500" : "border-zinc-400";
-  const chip = tone === "gold" ? "text-amber-700" : "text-zinc-500";
+  const accent = tone === "gold" ? "border-amber-500" : "border-zinc-500";
+  const chip = tone === "gold" ? "text-amber-400" : "text-zinc-300";
+  const icon = tone === "gold" ? "bg-amber-500 text-zinc-950" : "bg-zinc-300 text-zinc-950";
+  const rule = tone === "gold" ? "border-amber-500/35" : "border-zinc-500/45";
   return (
-    <div className={`border-2 ${accent} bg-white px-5 py-4`}>
-      <p className={`font-mono text-[9px] uppercase tracking-[0.16em] ${chip}`}>
-        ⚷ {tone} key · {k.kind} · {k.id}
-      </p>
-      <p className="mt-2 font-serif text-[15px] leading-relaxed text-zinc-900">{k.statement}</p>
-      <dl className="mt-3 space-y-1 border-t border-zinc-200 pt-3 text-[12px] text-zinc-600">
+    <div className={`border-2 ${accent} bg-zinc-950 px-5 py-4 text-white shadow-[8px_8px_0_rgba(0,0,0,0.14)]`}>
+      <div className="flex items-start gap-3">
+        <span
+          aria-hidden
+          className={`flex h-9 w-9 flex-none items-center justify-center border border-white/20 font-mono text-sm ${icon}`}
+        >
+          ⚷
+        </span>
+        <div className="min-w-0">
+          <p className={`font-mono text-[9px] uppercase tracking-[0.16em] ${chip}`}>
+            {tone} key · {k.kind}
+          </p>
+          <p className="mt-0.5 font-mono text-[8px] uppercase tracking-wide text-zinc-500">{k.id}</p>
+        </div>
+      </div>
+      <p className="mt-3 font-serif text-[15px] font-semibold leading-relaxed text-white">{k.statement}</p>
+      <dl className={`mt-4 space-y-2 border-t ${rule} pt-4 text-[12px] text-zinc-300`}>
         {k.unlocks && (
-          <div className="flex gap-2">
-            <dt className="font-mono uppercase tracking-wide text-zinc-400">Unlocks</dt>
+          <div className="flex gap-3">
+            <dt className="w-24 flex-none font-mono uppercase tracking-wide text-zinc-500">Unlocks</dt>
             <dd>{k.unlocks}</dd>
           </div>
         )}
         {k.navigates && (
-          <div className="flex gap-2">
-            <dt className="font-mono uppercase tracking-wide text-zinc-400">Navigates</dt>
+          <div className="flex gap-3">
+            <dt className="w-24 flex-none font-mono uppercase tracking-wide text-zinc-500">Navigates</dt>
             <dd>{k.navigates}</dd>
           </div>
         )}
-        <div className="flex gap-2">
-          <dt className="font-mono uppercase tracking-wide text-zinc-400">Trigger</dt>
+        <div className="flex gap-3">
+          <dt className="w-24 flex-none font-mono uppercase tracking-wide text-zinc-500">Trigger</dt>
           <dd>{k.trigger}</dd>
         </div>
-        <div className="flex gap-2">
-          <dt className="font-mono uppercase tracking-wide text-zinc-400">Tested-by</dt>
+        <div className="flex gap-3">
+          <dt className="w-24 flex-none font-mono uppercase tracking-wide text-zinc-500">Tested-by</dt>
           <dd>choice {k.testedChoice}</dd>
         </div>
       </dl>
       {k.authority && (
-        <p className="mt-3 font-mono text-[10px] leading-relaxed text-zinc-400">{k.authority}</p>
+        <p className="mt-3 font-mono text-[10px] leading-relaxed text-zinc-500">{k.authority}</p>
       )}
+      <p className={`mt-3 text-right font-mono text-[9px] uppercase tracking-wide ${chip}`}>Banked to sheet</p>
     </div>
   );
 }
@@ -540,28 +548,30 @@ function FactsSection({ data }: { data: DebriefData }) {
           Fact-by-fact breakdown not yet ingested for this question.
         </p>
       ) : (
-      <div className="border border-zinc-300">
-        <div className="grid grid-cols-[1.4fr_1fr_1.4fr] gap-3 border-b border-zinc-300 bg-zinc-50 px-4 py-2 font-mono text-[9px] uppercase tracking-wide text-zinc-500">
-          <span>Fact in the stem</span>
-          <span>Role</span>
-          <span>How you use it</span>
-        </div>
-        {data.triggerFacts.map((f, i) => (
-          <div
-            key={i}
-            className={`grid grid-cols-[1.4fr_1fr_1.4fr] items-start gap-3 border-b border-zinc-200 px-4 py-3 last:border-0 ${
-              f.type === "call" ? "bg-[rgba(200,16,46,0.04)]" : ""
-            }`}
-          >
-            <span className="flex gap-2 font-serif text-sm text-zinc-900">
-              <span aria-hidden className={`mt-1.5 h-2 w-2 flex-none rounded-full ${TONE_PIP[f.type]}`} />
-              {f.fact}
-            </span>
-            <span className="text-[12px] text-zinc-600">{f.role}</span>
-            <span className={`text-[12px] ${TONE_TEXT[f.type]}`}>{f.use}</span>
+        <div className="overflow-x-auto border border-zinc-300">
+          <div className="min-w-[720px]">
+            <div className="grid grid-cols-[1.4fr_1fr_1.4fr] gap-3 border-b border-zinc-300 bg-zinc-50 px-4 py-2 font-mono text-[9px] uppercase tracking-wide text-zinc-500">
+              <span>Fact in the stem</span>
+              <span>Role</span>
+              <span>How you use it</span>
+            </div>
+            {data.triggerFacts.map((f, i) => (
+              <div
+                key={i}
+                className={`grid grid-cols-[1.4fr_1fr_1.4fr] items-start gap-3 border-b border-zinc-200 px-4 py-3 last:border-0 ${
+                  f.type === "call" ? "bg-[rgba(200,16,46,0.04)]" : ""
+                }`}
+              >
+                <span className="flex gap-2 font-serif text-sm text-zinc-900">
+                  <span aria-hidden className={`mt-1.5 h-2 w-2 flex-none rounded-full ${TONE_PIP[f.type]}`} />
+                  {f.fact}
+                </span>
+                <span className="text-[12px] text-zinc-600">{f.role}</span>
+                <span className={`text-[12px] ${TONE_TEXT[f.type]}`}>{f.use}</span>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
       )}
     </NumberedSection>
   );
@@ -572,7 +582,7 @@ function FactsSection({ data }: { data: DebriefData }) {
 function MoldsSection({ data }: { data: DebriefData }) {
   return (
     <NumberedSection n="04" title="How the traps are built" meta="trap taxonomy + full log">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {data.molds.map((m) => (
           <div key={m.code} className="border border-zinc-300 px-4 py-3">
             <div className="flex items-center justify-between">
@@ -596,7 +606,7 @@ function MoldsSection({ data }: { data: DebriefData }) {
           const credited = c.letter === data.correctLetter;
           return (
             <div key={c.letter} className="border-b border-zinc-200 px-4 py-3 last:border-0">
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <span
                   className={`flex h-[22px] w-[22px] items-center justify-center border font-mono text-[11px] font-bold ${
                     credited ? "border-green-800 bg-green-800 text-white" : "border-zinc-400 text-zinc-700"
@@ -604,9 +614,9 @@ function MoldsSection({ data }: { data: DebriefData }) {
                 >
                   {c.letter}
                 </span>
-                <span className="font-serif text-sm text-zinc-900">{c.text}</span>
+                <span className="min-w-0 flex-1 font-serif text-sm text-zinc-900">{c.text}</span>
                 <span
-                  className={`ml-auto whitespace-nowrap font-mono text-[9px] uppercase tracking-wide ${
+                  className={`whitespace-nowrap font-mono text-[9px] uppercase tracking-wide ${
                     credited ? "text-green-800" : c.dominant ? "text-red-700" : "text-zinc-400"
                   }`}
                 >
@@ -653,48 +663,63 @@ function RepairSection({
   data,
   onStartRepair,
   onOpenRedZoneMap,
+  repairBusy,
 }: {
   data: DebriefData;
   onStartRepair?: () => void;
   onOpenRedZoneMap?: () => void;
+  repairBusy: boolean;
 }) {
   return (
     <NumberedSection n="06" title="Repair this pattern" meta="red-zone map + repair drill">
-      <div className="flex flex-wrap items-center gap-3 border border-zinc-300 bg-zinc-50 px-4 py-3">
-        <span aria-hidden className="text-red-700">⚷</span>
+      <div className="flex flex-wrap items-center gap-3 border border-amber-600 bg-zinc-950 px-4 py-3 text-white shadow-[6px_6px_0_rgba(0,0,0,0.14)]">
+        <span
+          aria-hidden
+          className="flex h-9 w-9 flex-none items-center justify-center border border-amber-300 bg-amber-500 font-mono text-sm text-zinc-950"
+        >
+          ⚷
+        </span>
         <div>
-          <p className="font-mono text-[9px] uppercase tracking-wide text-zinc-500">
+          <p className="font-mono text-[9px] uppercase tracking-wide text-amber-300">
             ▌ This pattern is one of your Red Zones
           </p>
-          <p className="font-serif text-sm font-semibold text-zinc-900">
+          <p className="font-serif text-sm font-semibold text-white">
             Red-Zone {data.redZone.rank ? `#${data.redZone.rank} · ` : ""}{data.redZone.label}
           </p>
         </div>
         <button
           type="button"
           onClick={onOpenRedZoneMap}
-          className="ml-auto font-mono text-[11px] uppercase tracking-wide !text-red-700 hover:underline"
+          disabled={!onOpenRedZoneMap}
+          className="ml-auto border border-amber-500 px-3 py-2 font-mono text-[10px] uppercase tracking-wide text-amber-300 hover:bg-amber-500 hover:text-zinc-950 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-transparent disabled:hover:text-amber-300"
         >
           Open Red-Zone Map ↗
         </button>
       </div>
 
-      <div className="mt-4 border border-zinc-950">
-        <p className="border-b border-zinc-200 bg-zinc-50 px-5 py-3 font-mono text-[10px] uppercase tracking-wide text-zinc-700">
+      <div className="mt-4 border border-zinc-950 bg-zinc-950 text-white">
+        <p className="border-b border-red-700 bg-red-700 px-5 py-3 font-mono text-[10px] uppercase tracking-wide text-white">
           ▌ Queued for repair · {data.remediation.cardId}
         </p>
-        <div className="px-5 py-4">
-          <h3 className="font-serif text-lg font-semibold text-zinc-950">{data.remediation.title}</h3>
-          <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-zinc-500">
-            {data.remediation.queueMeta} · confidence: {data.remediation.confidence}
-          </p>
-          <dl className="mt-4 divide-y divide-zinc-200 border-y border-zinc-200">
-            <RepairRung label="Signal" value={data.remediation.signal} />
-            <RepairRung label="Move" value={data.remediation.studentMove} />
-            <RepairRung label="Tiny rule" value={data.remediation.tinyRule} />
-          </dl>
-          <button type="button" onClick={onStartRepair} className="btn red btn-lg mt-5">
-            Start repair →
+        <div className="grid gap-5 px-5 py-5 md:grid-cols-[1fr_auto] md:items-start">
+          <div>
+            <h3 className="font-serif text-lg font-semibold text-white">{data.remediation.title}</h3>
+            <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-zinc-400">
+              {data.remediation.queueMeta} · confidence: {data.remediation.confidence}
+            </p>
+            <dl className="mt-4 divide-y divide-zinc-800 border-y border-zinc-800">
+              <RepairRung label="Signal" value={data.remediation.signal} dark />
+              <RepairRung label="Move" value={data.remediation.studentMove} dark />
+              <RepairRung label="Tiny rule" value={data.remediation.tinyRule} dark />
+            </dl>
+          </div>
+          <button
+            type="button"
+            onClick={onStartRepair}
+            disabled={!onStartRepair || repairBusy}
+            className="bg-red-700 px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-wide text-white hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-45"
+          >
+            {repairBusy ? "Starting repair..." : "Start repair →"}
           </button>
         </div>
       </div>
@@ -702,11 +727,11 @@ function RepairSection({
   );
 }
 
-function RepairRung({ label, value }: { label: string; value: string }) {
+function RepairRung({ label, value, dark = false }: { label: string; value: string; dark?: boolean }) {
   return (
-    <div className="grid grid-cols-[90px_1fr] gap-4 py-2.5">
+    <div className="grid grid-cols-1 gap-1 py-2.5 sm:grid-cols-[90px_1fr] sm:gap-4">
       <dt className="font-mono text-[10px] uppercase tracking-wide text-zinc-500">{label}</dt>
-      <dd className="text-[13px] leading-6 text-zinc-900">{value}</dd>
+      <dd className={`text-[13px] leading-6 ${dark ? "text-zinc-100" : "text-zinc-900"}`}>{value}</dd>
     </div>
   );
 }
@@ -727,7 +752,7 @@ function BottomContinue({
   const s = session ?? { index: 4, total: 6, percent: 66, minutesLeft: 7 };
   return (
     <div className="sticky bottom-0 z-10 border-t-[3px] border-red-700 bg-zinc-950 text-white shadow-[0_-10px_28px_rgba(0,0,0,0.2)]">
-      <div className="mx-auto grid max-w-[1000px] grid-cols-[1fr_auto] items-center gap-5 px-6 py-3 sm:grid-cols-[1fr_auto_auto] sm:px-8">
+      <div className="mx-auto grid max-w-[1000px] grid-cols-1 items-center gap-4 px-6 py-3 sm:grid-cols-[1fr_auto_auto] sm:gap-5 sm:px-8">
         <div className="flex items-center gap-3">
           <span aria-hidden className="h-2.5 w-2.5 flex-none animate-pulse rounded-full bg-red-600" />
           <div>
@@ -749,7 +774,7 @@ function BottomContinue({
           type="button"
           onClick={onContinue}
           disabled={!onContinue}
-          className="!border-0 !bg-red-700 px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-wide !text-white hover:!bg-red-800"
+          className="justify-self-start !border-0 !bg-red-700 px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-wide !text-white hover:!bg-red-800 sm:justify-self-auto"
         >
           {continueLabel}
         </button>

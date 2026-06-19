@@ -327,7 +327,7 @@ export default async function AtlasV1Page({
                   <SideLink
                     active={questionStatus === "included"}
                     href={pathFor({ coverage_state: coverageState, outline_code: selected.code, question_status: "included" })}
-                    label="Included"
+                    label="View included"
                   />
                   <SideLink
                     active={questionStatus === "rejected"}

@@ -75,6 +75,7 @@ describe("paid program display labels", () => {
   it("keeps paid study surfaces from sounding like unfinished previews", () => {
     const paidSources = [
       "components/path/milestone-map.tsx",
+      "app/boot-camps/boot-camps-catalog.tsx",
       "app/timed-sets/page.tsx",
       "app/drills/civil-procedure/page.tsx",
       "app/drills/constitutional-law/page.tsx",
@@ -92,6 +93,14 @@ describe("paid program display labels", () => {
       assert.doesNotMatch(source, /replace this preview/);
       assert.doesNotMatch(source, /preview card/);
       assert.doesNotMatch(source, /proof preview/);
+      assert.doesNotMatch(source, /published yet/i);
+      assert.doesNotMatch(source, /seeded/i);
+      assert.doesNotMatch(source, /endpoints come online/i);
+      assert.doesNotMatch(source, /tables are applied/i);
     }
+
+    const bootCampCatalog = readProjectFile("app/boot-camps/boot-camps-catalog.tsx");
+    assert.doesNotMatch(bootCampCatalog, /API \$\{/);
+    assert.doesNotMatch(bootCampCatalog, /\{state\.message\}/);
   });
 });

@@ -1,20 +1,19 @@
 "use client";
 
 // Live catalog island for /boot-camps. Fetches the API catalog on mount and
-// renders cards that deep-link to each camp's detail page. Degrades to a clear
-// empty/error state when the boot-camps endpoint is not yet deployed (the seed
-// migration is an operator step), rather than rendering placeholder camps.
+// renders cards that deep-link to each camp's detail page. Empty/error states
+// route students into active repair work instead of exposing operator setup.
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { api, ApiClientError, type BootCampSummary } from "@/lib/api-client";
+import { api, type BootCampSummary } from "@/lib/api-client";
 import { formatBootCampTargetLabel } from "@/lib/boot-camps";
 import GamificationStrip from "./gamification-strip";
 
 type State =
   | { phase: "loading" }
   | { phase: "ready"; camps: BootCampSummary[] }
-  | { phase: "error"; message: string };
+  | { phase: "error" };
 
 export default function BootCampCatalog() {
   const [state, setState] = useState<State>({ phase: "loading" });
@@ -27,11 +26,9 @@ export default function BootCampCatalog() {
         if (!active) return;
         setState({ phase: "ready", camps: res.boot_camps });
       })
-      .catch((err: unknown) => {
+      .catch(() => {
         if (!active) return;
-        const message =
-          err instanceof ApiClientError ? `API ${err.status}` : "Catalog unavailable";
-        setState({ phase: "error", message });
+        setState({ phase: "error" });
       });
     return () => {
       active = false;
@@ -51,16 +48,23 @@ export default function BootCampCatalog() {
     return (
       <div className="border border-amber-300 bg-amber-50 p-8" aria-live="polite">
         <p className="font-mono text-xs uppercase tracking-wider text-amber-700">
-          Catalog unavailable
+          Boot-camp queue recalibrating
         </p>
         <h2 className="mt-3 font-serif text-2xl font-semibold text-amber-950">
-          The boot camp catalog is not reachable yet.
+          Keep building the Red-Zone signal that drives your camp.
         </h2>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-amber-900">
-          The boot camp endpoints come online once the camp tables are applied to
-          the database. Check back shortly — your other surfaces still work.
+          Your diagnostic, Red-Zone Map, and targeted drills stay active while
+          the boot-camp queue calibrates from your recent work.
         </p>
-        <p className="mt-3 font-mono text-xs text-amber-800">{state.message}</p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link href="/red-zones" className="btn red">
+            Open Red-Zone Map
+          </Link>
+          <Link href="/drills" className="btn ghost">
+            Work drills
+          </Link>
+        </div>
       </div>
     );
   }
@@ -68,17 +72,25 @@ export default function BootCampCatalog() {
   if (state.camps.length === 0) {
     return (
       <div className="border border-zinc-300 bg-white p-8">
-        <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">No camps yet</p>
+        <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
+          Boot-camp queue
+        </p>
         <h2 className="mt-3 font-serif text-2xl font-semibold text-zinc-900">
-          No boot camps are published yet.
+          Your next sequence starts from your Red-Zone Map.
         </h2>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-700">
-          Camps appear here as soon as they are seeded. In the meantime, run the
-          diagnostic to build your Red-Zone Map.
+          Keep working the diagnostic and targeted drills. As your weak patterns
+          sharpen, this page routes you into the focused sequence that fits the
+          signal.
         </p>
-        <Link href="/diagnostic" className="btn red mt-6">
-          Start the diagnostic
-        </Link>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link href="/red-zones" className="btn red">
+            Open Red-Zone Map
+          </Link>
+          <Link href="/drills" className="btn ghost">
+            Work drills
+          </Link>
+        </div>
       </div>
     );
   }

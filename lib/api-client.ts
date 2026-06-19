@@ -9,6 +9,8 @@
 //
 // Source of truth: BARMATRIX/engineering/API_CONTRACTS.md (SRC-0020).
 
+import type { DebriefData } from "@/components/redesign/answer-key-types";
+
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ??
   "https://api.barmatrix.app";
@@ -1927,6 +1929,16 @@ export const api = {
   // Hearsay seam endpoints — Handoff 10
   getQuestion: (id: string) =>
     request<QuestionPayload>(`/api/questions/${encodeURIComponent(id)}`),
+
+  // Answer Key debrief ("Combo B · Fork-First") — post-answer payload assembled
+  // from questions + answer_choices + c3_annotations. Reveals the credited
+  // answer + forensics by design.
+  getAnswerKey: (id: string, token: string, init?: RequestInit) =>
+    authedRequest<DebriefData>(
+      `/api/questions/${encodeURIComponent(id)}/answer-key`,
+      token,
+      init,
+    ),
 
   // token (Clerk session) is optional: when present the API attributes the
   // attempt to the signed-in student so red-zones + drills update; otherwise it

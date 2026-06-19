@@ -108,6 +108,12 @@ export interface DebriefData {
   finalScript: string;
   programFrame: string;
 
+  // Combo B §01 fork branch labels. Data-driven so non-easement items don't read
+  // "violation / remedy". Omitted by the fixture → the component's easement
+  // defaults render; supplied by the answer-key endpoint for generic questions.
+  decoyBranchLabel?: string;
+  askedBranchLabel?: string;
+
   stemSegments: StemSegment[];
   triggerFacts: TriggerFact[];
   choices: DebriefChoice[];

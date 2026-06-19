@@ -16,7 +16,10 @@ import {
   type Letter,
   type QuestionPayload,
 } from "@/lib/api-client";
+import { AnswerKeyDebrief } from "@/components/redesign/answer-key-debrief";
+import type { DebriefData } from "@/components/redesign/answer-key-types";
 import { trackForensicsViewed, trackQuestionAttempted } from "@/lib/analytics";
+import { useClerkAuth } from "@/lib/use-clerk-auth";
 import { useSubmitAttempt } from "@/lib/use-attempts";
 import { useUpdateConfusion, type UpdateConfusion } from "@/lib/use-update-confusion";
 import ConfusionCapture, {
@@ -32,6 +35,18 @@ type Phase = "loading" | "presenting" | "submitting" | "forensics" | "error" | "
 // user on "Submitting…" forever (the prior diagnostic P0, never propagated
 // here). On timeout we degrade to a verdict-only card.
 const FORENSICS_TIMEOUT_MS = 10000;
+
+function withSoftTimeout<T>(promise: Promise<T>, message: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      window.setTimeout(
+        () => reject(new Error(message)),
+        FORENSICS_TIMEOUT_MS,
+      ),
+    ),
+  ]);
+}
 
 export interface RunnerSummary {
   answered: number;
@@ -85,9 +100,11 @@ export default function QuestionRunner({
   const [confusion, setConfusion] = useState<ConfusionValue>(EMPTY_CONFUSION);
   const [attempt, setAttempt] = useState<AttemptResponse | null>(null);
   const [forensics, setForensics] = useState<ForensicsResponse | null>(null);
+  const [answerKey, setAnswerKey] = useState<DebriefData | null>(null);
   const [correct, setCorrect] = useState(initialCorrect);
   const [answered, setAnswered] = useState(priorAnswered);
   const startedAtRef = useRef(0);
+  const { isSignedIn, getToken } = useClerkAuth();
   const submitAttempt = useSubmitAttempt();
   const updateConfusion = useUpdateConfusion();
 
@@ -108,6 +125,7 @@ export default function QuestionRunner({
       setConfusion(EMPTY_CONFUSION);
       setAttempt(null);
       setForensics(null);
+      setAnswerKey(null);
       setErrorMsg(null);
       setPhase("loading");
     });
@@ -172,28 +190,33 @@ export default function QuestionRunner({
       sessionId: setId,
     });
 
-    // Soft dependency: forensics. Time it out and degrade to a verdict-only card
-    // so a hung fetch never blocks the UI. The attempt is already recorded.
+    // Soft dependencies: answer-key debrief and forensics. The attempt is
+    // already recorded, so either fetch can fail without blocking the next step.
     let f: ForensicsResponse | null = null;
-    try {
-      f = await Promise.race([
-        api.getForensics(resp.attempt_id),
-        new Promise<never>((_, reject) =>
-          window.setTimeout(
-            () => reject(new Error("forensics timed out")),
-            FORENSICS_TIMEOUT_MS,
-          ),
-        ),
-      ]);
+    let debrief: DebriefData | null = null;
+    const answerKeyRequest = async () => {
+      if (!isSignedIn) throw new Error("answer key requires sign-in");
+      const token = await getToken();
+      if (!token) throw new Error("answer key token unavailable");
+      return api.getAnswerKey(question.question_id, token);
+    };
+    const [forensicsResult, answerKeyResult] = await Promise.allSettled([
+      withSoftTimeout(api.getForensics(resp.attempt_id), "forensics timed out"),
+      withSoftTimeout(answerKeyRequest(), "answer key timed out"),
+    ]);
+    if (forensicsResult.status === "fulfilled") {
+      f = forensicsResult.value;
       trackForensicsViewed({
         attemptId: resp.attempt_id,
         forensicTags: collectForensicTags(resp, f),
         sessionId: setId,
       });
-    } catch {
-      f = null;
+    }
+    if (answerKeyResult.status === "fulfilled") {
+      debrief = answerKeyResult.value;
     }
     setForensics(f);
+    setAnswerKey(debrief);
     setPhase("forensics");
   };
 
@@ -226,6 +249,8 @@ export default function QuestionRunner({
   }
 
   const progressCurrent = Math.min(answered + 1, total);
+  const reviewedQuestionNumber = Math.min(priorAnswered + index + 1, total);
+  const nextLabel = isLast ? completeLabel : "Next question →";
 
   return (
     <section>
@@ -256,7 +281,22 @@ export default function QuestionRunner({
         />
       )}
 
-      {phase === "forensics" && attempt && forensics && question && (
+      {phase === "forensics" && attempt && answerKey && question && (
+        <AnswerKeyDebrief
+          data={answerKey}
+          yourPick={selected ?? answerKey.correctLetter}
+          session={{
+            index: reviewedQuestionNumber,
+            total,
+            percent: total > 0 ? Math.round((reviewedQuestionNumber / total) * 100) : 0,
+            minutesLeft: Math.max(0, (pending.length - index - 1) * 2),
+          }}
+          onContinue={next}
+          continueLabel={nextLabel}
+        />
+      )}
+
+      {phase === "forensics" && attempt && !answerKey && forensics && question && (
         <ForensicsCard
           attempt={attempt}
           forensics={forensics}
@@ -265,15 +305,15 @@ export default function QuestionRunner({
           initialConfusion={confusion}
           updateConfusion={updateConfusion}
           onNext={next}
-          nextLabel={isLast ? completeLabel : "Next question →"}
+          nextLabel={nextLabel}
         />
       )}
 
-      {phase === "forensics" && attempt && question && !forensics && (
+      {phase === "forensics" && attempt && question && !answerKey && !forensics && (
         <ForensicsFallback
           correct={attempt.correct}
           onNext={next}
-          nextLabel={isLast ? completeLabel : "Next question →"}
+          nextLabel={nextLabel}
         />
       )}
     </section>

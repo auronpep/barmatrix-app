@@ -30,6 +30,7 @@ export interface AnswerKeyDebriefProps {
   /** Drill-session state for the sticky footer (derived at request time). */
   session?: { index: number; total: number; percent: number; minutesLeft: number };
   onContinue?: () => void;
+  continueLabel?: string;
   onStartRepair?: () => void;
   onOpenRedZoneMap?: () => void;
 }
@@ -61,6 +62,7 @@ export function AnswerKeyDebrief({
   yourPick,
   session,
   onContinue,
+  continueLabel = "Continue drill →",
   onStartRepair,
   onOpenRedZoneMap,
 }: AnswerKeyDebriefProps) {
@@ -69,6 +71,7 @@ export function AnswerKeyDebrief({
   return (
     <div className="relative">
       <div className="mx-auto max-w-[1000px] px-6 pb-28 sm:px-8">
+        <TopContinue onContinue={onContinue} continueLabel={continueLabel} />
         <Hero data={data} yourPick={yourPick} isCorrect={isCorrect} />
         <QuestionCard data={data} yourPick={yourPick} isCorrect={isCorrect} />
         <ForkSection data={data} yourPick={yourPick} />
@@ -78,7 +81,12 @@ export function AnswerKeyDebrief({
         <BankItSection data={data} />
         <RepairSection data={data} onStartRepair={onStartRepair} onOpenRedZoneMap={onOpenRedZoneMap} />
       </div>
-      <DrillBar data={data} session={session} onContinue={onContinue} />
+      <BottomContinue
+        data={data}
+        session={session}
+        onContinue={onContinue}
+        continueLabel={continueLabel}
+      />
     </div>
   );
 }
@@ -121,6 +129,22 @@ function NumberedSection({
       </div>
       <div className="mt-6">{children}</div>
     </section>
+  );
+}
+
+function TopContinue({
+  onContinue,
+  continueLabel,
+}: {
+  onContinue?: () => void;
+  continueLabel: string;
+}) {
+  return (
+    <div className="flex justify-end pt-6">
+      <button type="button" onClick={onContinue} disabled={!onContinue} className="btn red">
+        {continueLabel}
+      </button>
+    </div>
   );
 }
 
@@ -227,15 +251,21 @@ function ForkSection({ data, yourPick }: { data: DebriefData; yourPick: string }
       <div className="text-center">
         <Eyebrow>▌ The call asks one thing</Eyebrow>
         <p className="mx-auto mt-2 max-w-xl font-serif text-xl italic text-zinc-900">
-          Who wins the action to{" "}
-          <span className="font-bold not-italic text-red-700">{data.requestedRelief}</span>?
+          {data.requestedRelief ? (
+            <>
+              Who wins the action to{" "}
+              <span className="font-bold not-italic text-red-700">{data.requestedRelief}</span>?
+            </>
+          ) : (
+            data.call
+          )}
         </p>
       </div>
 
       <div className="mt-6 grid grid-cols-1 border border-zinc-950 md:grid-cols-2">
         <div className="border-b border-zinc-950 bg-[rgba(194,65,12,0.04)] p-4 md:border-b-0 md:border-r">
           <p className="font-mono text-[10px] uppercase tracking-wide text-amber-700">
-            ↯ Branch 1 · The violation question — a decoy
+            ↯ Branch 1 · {data.decoyBranchLabel ?? "The violation question — a decoy"}
           </p>
           <div className="mt-3 flex flex-col gap-2">
             {violation.map((c) => (
@@ -245,7 +275,7 @@ function ForkSection({ data, yourPick }: { data: DebriefData; yourPick: string }
         </div>
         <div className="bg-[rgba(31,111,58,0.05)] p-4">
           <p className="font-mono text-[10px] uppercase tracking-wide text-green-800">
-            ◉ Branch 2 · The remedy question — what’s asked
+            ◉ Branch 2 · {data.askedBranchLabel ?? "The remedy question — what’s asked"}
           </p>
           <div className="mt-3 flex flex-col gap-2">
             {remedy.map((c) => (
@@ -340,37 +370,47 @@ function SolveSection({ data }: { data: DebriefData }) {
   return (
     <NumberedSection n="02" title="Work the solve" meta="see the fork · lock the call · C³">
       {/* Station 1 — see the fork */}
-      <Station glyph="⑂" round title="See the fork" desc="violation vs. remedy">
+      <Station glyph="⑂" round title="See the fork" desc="what splits the choices">
         <div className="border border-zinc-300 bg-zinc-50 px-4 py-3">
           <Eyebrow>▌ The key legal question</Eyebrow>
           <p className="mt-2 font-serif text-[15px] leading-relaxed text-zinc-900">{data.keyLegalQuestion}</p>
         </div>
-        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div className="border border-zinc-300 px-4 py-3">
-            <p className="font-mono text-[9px] uppercase tracking-wide text-amber-700">
-              ↯ The axis — what splits the survivors
-            </p>
-            <p className="mt-1.5 font-serif text-sm text-zinc-900">{data.tension.axis}</p>
+        {(data.tension.axis || data.tension.resolver) && (
+          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="border border-zinc-300 px-4 py-3">
+              <p className="font-mono text-[9px] uppercase tracking-wide text-amber-700">
+                ↯ The axis — what splits the survivors
+              </p>
+              <p className="mt-1.5 font-serif text-sm text-zinc-900">{data.tension.axis}</p>
+            </div>
+            <div className="border border-zinc-300 px-4 py-3">
+              <p className="font-mono text-[9px] uppercase tracking-wide text-green-800">
+                ◉ The resolver — what the call decides
+              </p>
+              <p className="mt-1.5 font-serif text-sm text-zinc-900">{data.tension.resolver}</p>
+            </div>
           </div>
-          <div className="border border-zinc-300 px-4 py-3">
-            <p className="font-mono text-[9px] uppercase tracking-wide text-green-800">
-              ◉ The resolver — what the call decides
-            </p>
-            <p className="mt-1.5 font-serif text-sm text-zinc-900">{data.tension.resolver}</p>
-          </div>
-        </div>
+        )}
       </Station>
 
       {/* Station 2 — lock the call */}
-      <Station glyph="◉" title="Lock the call" desc={`remedy = ${data.callVerb}`}>
+      <Station glyph="◉" title="Lock the call" desc={data.callVerb ? `remedy = ${data.callVerb}` : "what's actually asked"}>
         <div className="border border-zinc-950 bg-[rgba(194,65,12,0.04)] px-5 py-4">
-          <Eyebrow>▌ The call fixes the remedy</Eyebrow>
+          <Eyebrow>▌ The call fixes what&apos;s asked</Eyebrow>
           <p className="mt-2 font-serif text-lg italic text-zinc-900">
-            The call asks for one remedy only:{" "}
-            <span className="font-semibold not-italic text-red-700">{data.requestedRelief}</span> — not damages,
-            not an injunction.
+            {data.requestedRelief ? (
+              <>
+                The call asks for one remedy only:{" "}
+                <span className="font-semibold not-italic text-red-700">{data.requestedRelief}</span> — not damages,
+                not an injunction.
+              </>
+            ) : (
+              data.call
+            )}
           </p>
-          <p className="mt-2 font-serif text-[14.5px] leading-relaxed text-zinc-700">{data.callResolution}</p>
+          {data.callResolution && (
+            <p className="mt-2 font-serif text-[14.5px] leading-relaxed text-zinc-700">{data.callResolution}</p>
+          )}
         </div>
       </Station>
 
@@ -395,7 +435,9 @@ function SolveSection({ data }: { data: DebriefData }) {
           </div>
           <div className="border border-zinc-300 px-4 py-3">
             <p className="font-mono text-[9px] uppercase tracking-wide text-zinc-500">② Clash</p>
-            <p className="mt-2 font-serif text-[17px] italic leading-snug text-zinc-900">{data.clash}</p>
+            <p className="mt-2 font-serif text-[17px] italic leading-snug text-zinc-900">
+              {data.clash || "The survivors clash; the call decides between them."}
+            </p>
           </div>
           <div className="bg-zinc-950 px-4 py-3 text-white">
             <p className="font-mono text-[9px] uppercase tracking-wide text-red-400">③ Call</p>
@@ -404,14 +446,16 @@ function SolveSection({ data }: { data: DebriefData }) {
         </div>
       </Station>
 
-      {/* Keys payoff */}
-      <div className="mt-7">
-        <p className="font-mono text-[9px] uppercase tracking-wide text-zinc-500">▌ Bank the keys you just earned</p>
-        <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
-          <KeyCardView tone="gold" k={data.goldKey} />
-          <KeyCardView tone="silver" k={data.silverKey} />
+      {/* Keys payoff — hidden until the program-intelligence keys are ingested. */}
+      {(data.goldKey.statement || data.silverKey.statement) && (
+        <div className="mt-7">
+          <p className="font-mono text-[9px] uppercase tracking-wide text-zinc-500">▌ Bank the keys you just earned</p>
+          <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+            {data.goldKey.statement && <KeyCardView tone="gold" k={data.goldKey} />}
+            {data.silverKey.statement && <KeyCardView tone="silver" k={data.silverKey} />}
+          </div>
         </div>
-      </div>
+      )}
     </NumberedSection>
   );
 }
@@ -491,6 +535,11 @@ function KeyCardView({ tone, k }: { tone: "gold" | "silver"; k: KeyCard }) {
 function FactsSection({ data }: { data: DebriefData }) {
   return (
     <NumberedSection n="03" title="Facts in the stem" meta="each fact → how you use it">
+      {data.triggerFacts.length === 0 ? (
+        <p className="border border-dashed border-zinc-300 bg-zinc-50 px-4 py-3 font-mono text-[11px] text-zinc-500">
+          Fact-by-fact breakdown not yet ingested for this question.
+        </p>
+      ) : (
       <div className="border border-zinc-300">
         <div className="grid grid-cols-[1.4fr_1fr_1.4fr] gap-3 border-b border-zinc-300 bg-zinc-50 px-4 py-2 font-mono text-[9px] uppercase tracking-wide text-zinc-500">
           <span>Fact in the stem</span>
@@ -513,6 +562,7 @@ function FactsSection({ data }: { data: DebriefData }) {
           </div>
         ))}
       </div>
+      )}
     </NumberedSection>
   );
 }
@@ -617,7 +667,7 @@ function RepairSection({
             ▌ This pattern is one of your Red Zones
           </p>
           <p className="font-serif text-sm font-semibold text-zinc-900">
-            Red-Zone #{data.redZone.rank} · {data.redZone.label}
+            Red-Zone {data.redZone.rank ? `#${data.redZone.rank} · ` : ""}{data.redZone.label}
           </p>
         </div>
         <button
@@ -663,14 +713,16 @@ function RepairRung({ label, value }: { label: string; value: string }) {
 
 /* ───────────────────────── mid-drill bar ───────────────────────── */
 
-function DrillBar({
+function BottomContinue({
   data,
   session,
   onContinue,
+  continueLabel,
 }: {
   data: DebriefData;
   session?: { index: number; total: number; percent: number; minutesLeft: number };
   onContinue?: () => void;
+  continueLabel: string;
 }) {
   const s = session ?? { index: 4, total: 6, percent: 66, minutesLeft: 7 };
   return (
@@ -696,9 +748,10 @@ function DrillBar({
         <button
           type="button"
           onClick={onContinue}
+          disabled={!onContinue}
           className="!border-0 !bg-red-700 px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-wide !text-white hover:!bg-red-800"
         >
-          Continue drill →
+          {continueLabel}
         </button>
       </div>
     </div>

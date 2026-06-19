@@ -1,4 +1,5 @@
 import type { CommandDeckRedZone } from "@/lib/api-client";
+import { humanizeSubject } from "@/lib/format-subject";
 
 function TrendPill({ trend }: { trend: CommandDeckRedZone["trend"] }) {
   const cls =
@@ -17,6 +18,8 @@ function TrendPill({ trend }: { trend: CommandDeckRedZone["trend"] }) {
 }
 
 function RedZoneRow({ rz, onClick }: { rz: CommandDeckRedZone; onClick: () => void }) {
+  const subjectLabel = displaySubject(rz.subject);
+
   return (
     <button
       type="button"
@@ -31,7 +34,7 @@ function RedZoneRow({ rz, onClick }: { rz: CommandDeckRedZone; onClick: () => vo
           {rz.name}
         </span>
         <span className="mt-0.5 block truncate font-mono text-[11px] tracking-[0.05em] text-zinc-500">
-          ▸ {rz.subject} · {rz.miss_count}/{rz.total_attempts} missed
+          ▸ {subjectLabel} · {rz.miss_count}/{rz.total_attempts} missed
           {rz.last_missed ? ` · last: ${rz.last_missed}` : ""}
           <TrendPill trend={rz.trend} />
         </span>
@@ -46,6 +49,11 @@ function RedZoneRow({ rz, onClick }: { rz: CommandDeckRedZone; onClick: () => vo
       </span>
     </button>
   );
+}
+
+function displaySubject(subject: string): string {
+  const cleanSubject = subject.includes("·") ? subject.split("·").at(-1) : subject;
+  return humanizeSubject(cleanSubject?.trim() || subject);
 }
 
 export function RedZoneList({

@@ -50,6 +50,17 @@ describe("paid program display labels", () => {
     );
   });
 
+  it("does not expose compound API subject markers in dashboard red-zone rows", () => {
+    const redZoneList = readProjectFile("components/preview-dashboard/red-zone-list.tsx");
+
+    assert.match(redZoneList, /import \{ humanizeSubject \} from "@\/lib\/format-subject";/);
+    assert.match(redZoneList, /function displaySubject\(subject: string\): string/);
+    assert.match(redZoneList, /subject\.split\("·"\)\.at\(-1\)/);
+    assert.match(redZoneList, /const subjectLabel = displaySubject\(rz\.subject\);/);
+    assert.match(redZoneList, /\{subjectLabel\} · \{rz\.miss_count\}\/\{rz\.total_attempts\} missed/);
+    assert.doesNotMatch(redZoneList, /\{rz\.subject\} · \{rz\.miss_count\}/);
+  });
+
   it("formats raw drill catalog API labels before rendering catalog cards", () => {
     const helpers = readProjectFile("lib/drills.ts");
     const drillLibrary = readProjectFile("app/drills/page.tsx");

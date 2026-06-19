@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { formatDrillName } from "@/lib/drills";
+import { formatStudyLabel } from "@/lib/study-labels";
 import { useDashboard } from "@/lib/use-dashboard";
 import { StatTile } from "@/components/dashboard/stat-tile";
 
@@ -439,7 +440,7 @@ function LiveTargets({ dash }: { dash: ReturnType<typeof useDashboard> }) {
               className="flex items-center justify-between gap-3 border-b border-zinc-100 pb-3 last:border-b-0 last:pb-0"
             >
               <span className="min-w-0 break-words text-sm font-medium text-zinc-900">
-                {z.tag}
+                {formatStudyLabel(z.tag)}
               </span>
               <span className="shrink-0 font-mono text-xs text-red-700">
                 {Math.round(Math.max(0, Math.min(1, z.proficiency_score)) * 100)}%

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { type RedZoneEntry } from "@/lib/api-client";
+import { formatStudyLabel } from "@/lib/study-labels";
 import { useDashboard } from "@/lib/use-dashboard";
 import { StatTile } from "@/components/dashboard/stat-tile";
 
@@ -233,14 +234,16 @@ function MasteryRow({
               {zone.dimensionLabel}
             </p>
           )}
-          <p className="break-words text-sm font-semibold text-zinc-950">{zone.tag}</p>
+          <p className="break-words text-sm font-semibold text-zinc-950">
+            {formatStudyLabel(zone.tag)}
+          </p>
         </div>
         <span className="shrink-0 font-mono text-xs text-zinc-600">{band}</span>
       </div>
 
       <div
         className="mt-3 h-2 w-full overflow-hidden bg-zinc-100"
-        aria-label={`${zone.tag} proficiency ${pct}%`}
+        aria-label={`${formatStudyLabel(zone.tag)} proficiency ${pct}%`}
       >
         <div className={`h-full ${barClass}`} style={{ width: `${pct}%` }} />
       </div>

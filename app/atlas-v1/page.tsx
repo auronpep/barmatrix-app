@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { isAtlasAdmin, requireAtlasAdmin } from "@/lib/atlas-admin";
 
 export const metadata: Metadata = {
   title: "Atlas v1",
@@ -97,6 +98,8 @@ function cleanFormValue(value: FormDataEntryValue | null): string {
 async function submitAtlasQuestion(formData: FormData) {
   "use server";
 
+  await requireAtlasAdmin();
+
   const outlineCode = cleanFormValue(formData.get("outline_code"));
   const status = cleanFormValue(formData.get("status")) || "review";
   const caseStudyJson = cleanFormValue(formData.get("case_study_json"));
@@ -129,6 +132,8 @@ async function submitAtlasQuestion(formData: FormData) {
 
 async function updateAtlasQuestionStatus(formData: FormData) {
   "use server";
+
+  await requireAtlasAdmin();
 
   const questionId = cleanFormValue(formData.get("question_id"));
   const outlineCode = cleanFormValue(formData.get("outline_code"));
@@ -190,6 +195,8 @@ export default async function AtlasV1Page({
     question_status?: string;
   }>;
 }) {
+  if (!(await isAtlasAdmin())) notFound();
+
   const params = await searchParams;
   const coverageState = ["missing", "in_review", "covered"].includes(params.coverage_state ?? "")
     ? (params.coverage_state as CoverageState)

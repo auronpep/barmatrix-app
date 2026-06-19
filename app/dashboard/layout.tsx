@@ -36,7 +36,6 @@ const PROGRAM_LINKS: readonly NavItem[] = [
   { href: "/matrix", label: "Tension Matrix" },
   { href: "/tensions", label: "Tension Map" },
   { href: "/misconceptions", label: "Misconceptions" },
-  { href: "/atlas-v1", label: "Atlas v1" },
   { href: "/question-history", label: "Question History" },
   { href: "/traps", label: "Trap Taxonomy" },
   { href: "/practice", label: "Practice" },

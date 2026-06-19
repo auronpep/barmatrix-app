@@ -76,7 +76,6 @@ export function DashboardShell({
     {
       section: "DIAGNOSTICS",
       links: [
-        { href: "/atlas-v1", icon: "▨", label: "Atlas v1" },
         { href: "/pattern-board", icon: "▤", label: "Pattern Board" },
         { href: "/misconceptions", icon: "✕", label: "Misconceptions" },
         { href: "/question-history", icon: "≡", label: "Question History" },

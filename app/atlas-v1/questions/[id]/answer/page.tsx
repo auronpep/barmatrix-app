@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import { isAtlasAdmin } from "@/lib/atlas-admin";
 
 export const metadata: Metadata = {
   title: "Atlas v1 Answer",
@@ -63,6 +65,8 @@ export default async function AtlasV1AnswerPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  if (!(await isAtlasAdmin())) notFound();
+
   const { id } = await params;
   const answer = await loadAnswer(id);
 

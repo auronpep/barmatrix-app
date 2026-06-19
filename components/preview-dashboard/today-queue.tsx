@@ -1,4 +1,5 @@
 import type { CommandDeckQueueItem } from "@/lib/api-client";
+import { formatStudyLabel } from "@/lib/study-labels";
 
 // Sequenced repair queue. Ported from the prototype's QueueItem list.
 export function TodayQueue({
@@ -38,7 +39,7 @@ export function TodayQueue({
               {i + 1}. {q.title}
             </span>
             <span className="mt-0.5 block truncate text-sm text-zinc-600">
-              ▸ {q.reason}
+              ▸ {formatQueueReason(q.reason)}
             </span>
           </span>
           <span className="whitespace-nowrap text-right font-mono text-xs text-zinc-500">
@@ -53,4 +54,12 @@ export function TodayQueue({
       ))}
     </div>
   );
+}
+
+function formatQueueReason(reason: string): string {
+  const trimmed = reason.trim();
+  if (/^[a-z0-9]+(?:[_-][a-z0-9]+)+$/i.test(trimmed)) {
+    return formatStudyLabel(trimmed);
+  }
+  return reason;
 }

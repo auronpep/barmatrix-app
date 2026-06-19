@@ -44,6 +44,10 @@ export default function DashboardPage() {
     }
     try {
       const token = await getToken();
+      if (!token) {
+        router.push("/sign-in?after=dashboard");
+        return;
+      }
       const res = await api.startDrill(
         {
           kind: "prescribed_red_zone",

@@ -2,9 +2,15 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
+function readActiveHomePage(): string {
+  const entry = readFileSync("app/page.tsx", "utf8");
+  const match = entry.match(/export \{ default, metadata \} from "\.\/([^"]+)\/page";/);
+  return match ? readFileSync(`app/${match[1]}/page.tsx`, "utf8") : entry;
+}
+
 test("public sales copy keeps the proof-before-price diagnostic path", () => {
   const copy = readFileSync("lib/copy.ts", "utf8");
-  const home = readFileSync("app/page.tsx", "utf8");
+  const home = readActiveHomePage();
   const diagnostic = readFileSync("app/diagnostic/diagnostic-page-client.tsx", "utf8");
   const pricing = readFileSync("app/pricing/page.tsx", "utf8");
 

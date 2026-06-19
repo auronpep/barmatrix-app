@@ -27,15 +27,18 @@ describe("legacy paid dashboard routes", () => {
 
   it("links the restored surfaces from dashboard navigation and command center", () => {
     const dashboardLayout = readProjectFile("app/dashboard/layout.tsx");
-    const dashboardPage = readProjectFile("app/dashboard/page.tsx");
+    const dashboardShell = readProjectFile("components/preview-dashboard/dashboard-shell.tsx");
 
     for (const href of ["/matrix", "/misconceptions", "/question-history"]) {
       assert.match(dashboardLayout, new RegExp(`href: "${href}"`));
-      assert.match(dashboardPage, new RegExp(`href: "${href}"`));
+      assert.match(dashboardShell, new RegExp(`href: "${href}"`));
     }
 
     assert.match(dashboardLayout, /Tension Matrix/);
     assert.match(dashboardLayout, /Misconceptions/);
     assert.match(dashboardLayout, /Question History/);
+    assert.match(dashboardShell, /Tension Matrix/);
+    assert.match(dashboardShell, /Misconceptions/);
+    assert.match(dashboardShell, /Question History/);
   });
 });

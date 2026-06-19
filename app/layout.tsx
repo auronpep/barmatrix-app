@@ -35,7 +35,7 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(`https://${DOMAIN}`),
   title: {
-    default: `${BRAND} - Diagnose. Repair. Pass the MBE.`,
+    default: `${BRAND} - Diagnose MBE traps. Repair one pattern at a time.`,
     template: `%s | ${BRAND}`,
   },
   description: SITE_DESCRIPTION,
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
-    title: `${BRAND} - Diagnose. Repair. Pass the MBE.`,
+    title: `${BRAND} - Diagnose MBE traps. Repair one pattern at a time.`,
     description: SITE_DESCRIPTION,
     url: "/",
     siteName: BRAND,
@@ -64,13 +64,13 @@ export const metadata: Metadata = {
         url: "/og-image.svg",
         width: 1200,
         height: 630,
-        alt: `${BRAND}: Diagnose. Repair. Pass the MBE.`,
+        alt: `${BRAND}: Diagnose MBE traps. Repair one pattern at a time.`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${BRAND} - Diagnose. Repair. Pass the MBE.`,
+    title: `${BRAND} - Diagnose MBE traps. Repair one pattern at a time.`,
     description: SITE_DESCRIPTION,
     images: ["/og-image.svg"],
   },

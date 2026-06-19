@@ -47,10 +47,10 @@ export default function HowItWorksPage() {
             <span style={{ color: "var(--red)" }}>Stop repeating it.</span>
           </h1>
           <p className="body-lg" style={{ marginBottom: 0 }}>
-            The MBE is not an infinite universe. It is a bounded set of
-            recurring legal tension points and answer-choice traps. BarMatrix
-            maps the traps, diagnoses why attractive wrong answers pull you in,
-            and assigns the drill that fixes the underlying misconception.
+            The MBE reuses recurring legal tension points and answer-choice
+            traps. BarMatrix maps those traps, diagnoses why attractive wrong
+            answers pull you in, and assigns the drill that repairs the
+            underlying misconception.
           </p>
         </div>
       </section>

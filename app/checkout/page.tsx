@@ -13,7 +13,7 @@ export default function CheckoutPage() {
     "@type": "Product",
     name: PRICING.flagshipName,
     description:
-      "A web-live MBE multiple-choice diagnostic and repair layer with Red-Zone Map, Wrong Answer Forensics, assigned drills, boot camps, timed sets, and dashboard access.",
+      "A web-live MBE multiple-choice diagnostic and repair layer with Red-Zone Map, Wrong Answer Forensics, assigned drills, boot camps, timed sets, and guided repair path access.",
     brand: {
       "@type": "Brand",
       name: BRAND,

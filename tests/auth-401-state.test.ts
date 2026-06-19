@@ -26,4 +26,19 @@ describe("auth-gated study hooks", () => {
       assert.doesNotMatch(source, /`API \$\{err\.status\}`/);
     }
   });
+
+  it("treats stale paid-app dashboard sessions as signed out instead of raw API errors", () => {
+    const sources = [
+      readProjectFile("lib/use-dashboard.ts"),
+      readProjectFile("lib/use-command-deck.ts"),
+      readProjectFile("lib/use-day-plan.ts"),
+    ];
+
+    for (const source of sources) {
+      assert.match(source, /isAuthRejected\(err\)/);
+      assert.match(source, /signedOut:\s*true/);
+      assert.match(source, /signedIn:\s*false/);
+      assert.doesNotMatch(source, /`API \$\{err\.status\}`/);
+    }
+  });
 });

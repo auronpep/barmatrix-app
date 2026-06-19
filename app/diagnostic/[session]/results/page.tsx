@@ -491,8 +491,8 @@ function ResultsDecisionPanel({
             Continue your repair path from {topLeak}; do not enroll again.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-4">
-            <Link href="/dashboard" className="btn red">
-              Open dashboard <span aria-hidden>→</span>
+            <Link href="/dashboard/path" className="btn red">
+              Continue your repair path <span aria-hidden>→</span>
             </Link>
             <Link
               href="/red-zones"

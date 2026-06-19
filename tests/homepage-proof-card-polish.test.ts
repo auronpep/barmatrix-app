@@ -6,9 +6,15 @@ function readProjectFile(path: string): string {
   return readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 }
 
+function readActiveHomePage(): string {
+  const entry = readProjectFile("app/page.tsx");
+  const match = entry.match(/export \{ default, metadata \} from "\.\/([^"]+)\/page";/);
+  return match ? readProjectFile(`app/${match[1]}/page.tsx`) : entry;
+}
+
 describe("homepage proof card polish", () => {
   it("does not describe the main proof visual as a demo or illustrative mockup", () => {
-    const page = readProjectFile("app/page.tsx");
+    const page = readActiveHomePage();
     const css = readProjectFile("app/globals.css");
 
     assert.doesNotMatch(page, /Illustrative example/i);

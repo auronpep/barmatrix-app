@@ -102,9 +102,9 @@ export default function Home() {
                 ▌ MBE TRAP DIAGNOSIS · WEB
               </div>
               <h1 className="display display-xl">
-                Master the{" "}
-                <span style={{ fontStyle: "italic" }}>finite universe</span>{" "}
-                of <span style={{ color: "var(--red)" }}>MBE traps.</span>
+                Find the{" "}
+                <span style={{ fontStyle: "italic" }}>MBE traps</span>{" "}
+                your question sets are hiding.
               </h1>
               <p className="lede">{HERO.subhead}</p>
               <div className="hero-actions">

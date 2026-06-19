@@ -44,8 +44,8 @@ export default function PricingPage() {
           </h1>
           <p className="body-lg" style={{ marginBottom: 0 }}>
             BarMatrix Flagship is a multiple-choice-only MBE repair system.
-            Diagnostic, Red-Zone Map, forensic question bank, assigned
-            drills, boot camps, timed sets, dashboard, and full web access —
+            Diagnostic, Red-Zone Map, guided repair question work, assigned
+            drills, boot camps, timed sets, guided path, and full web access —
             all included.
           </p>
         </div>
@@ -157,6 +157,7 @@ export default function PricingPage() {
                     lineHeight: 1.55,
                   }}
                 >
+                  Price comes after the Red-Zone Map.{" "}
                   The Free MBE Trap Diagnostic builds your Red-Zone Map,
                   names the trap pattern from your own answers, and shows the
                   same diagnostic-to-repair loop Flagship uses after

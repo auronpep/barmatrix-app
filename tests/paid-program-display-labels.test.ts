@@ -9,17 +9,16 @@ function readProjectFile(path: string): string {
 describe("paid program display labels", () => {
   it("formats raw drill names before rendering dashboard and drill runner headings", () => {
     const helpers = readProjectFile("lib/drills.ts");
-    const dashboard = readProjectFile("app/dashboard/page.tsx");
+    const drillLibrary = readProjectFile("app/drills/page.tsx");
     const drillRunner = readProjectFile("app/drills/[drill_id]/page.tsx");
 
     assert.match(helpers, /function formatDrillName/);
     assert.match(helpers, /review_drill/);
     assert.match(helpers, /Review Missed Questions/);
 
-    assert.match(dashboard, /formatDrillName\(drill\.drill_name\)/);
-    assert.match(dashboard, /formatDrillName\(drill\.reason\)/);
-    assert.doesNotMatch(dashboard, /title:\s*drill\.drill_name/);
-    assert.doesNotMatch(dashboard, /\$\{drill\.reason\}/);
+    assert.match(drillLibrary, /formatDrillName\(d\.drill_name\)/);
+    assert.doesNotMatch(drillLibrary, /title:\s*d\.drill_name/);
+    assert.doesNotMatch(drillLibrary, /\{d\.drill_name\}/);
 
     assert.match(
       drillRunner,
@@ -62,14 +61,15 @@ describe("paid program display labels", () => {
     assert.doesNotMatch(drillLibrary, /\{item\.label\}/);
   });
 
-  it("formats cohort codes and statuses before showing dashboard status text", () => {
-    const dashboard = readProjectFile("app/dashboard/page.tsx");
+  it("keeps cohort capacity copy user-facing instead of exposing raw status codes", () => {
+    const checkout = readProjectFile("app/checkout/checkout-client.tsx");
+    const copy = readProjectFile("lib/copy.ts");
 
-    assert.match(dashboard, /function formatCohortCode/);
-    assert.match(dashboard, /function formatCohortPublicStatus/);
-    assert.match(dashboard, /formatCohortCode\(status\.cohort_code\)/);
-    assert.match(dashboard, /formatCohortPublicStatus\(status\.public_status\)/);
-    assert.doesNotMatch(dashboard, /\{status\.cohort_code\} \/ \{status\.public_status\}/);
+    assert.match(checkout, /api\.cohortStatus\(\)/);
+    assert.match(checkout, /cohort\.public_status === "waitlist"/);
+    assert.match(checkout, /CAPACITY_COPY\.waitlist/);
+    assert.match(copy, /waitlist: "Enrollment is currently paused/);
+    assert.doesNotMatch(checkout, /\{status\.cohort_code\} \/ \{status\.public_status\}/);
   });
 
   it("keeps paid study surfaces from sounding like unfinished previews", () => {

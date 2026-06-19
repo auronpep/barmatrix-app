@@ -206,7 +206,8 @@ export function OutlineAtlas({ data: O, onStartDrill }: OutlineAtlasProps) {
   const toggle = (setFn: React.Dispatch<React.SetStateAction<Set<string>>>, key: string) =>
     setFn((prev) => {
       const n = new Set(prev);
-      n.has(key) ? n.delete(key) : n.add(key);
+      if (n.has(key)) n.delete(key);
+      else n.add(key);
       return n;
     });
 

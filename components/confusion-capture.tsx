@@ -8,58 +8,17 @@
 // shuffled per session. See lib/confusion (api) for the server side.
 
 import type { Letter, QuestionChoice } from "@/lib/api-client";
+import { bucketOf, toggleChoiceBucket } from "@/components/confusion-capture-state";
+import type { ConfusionValue } from "@/components/confusion-capture-state";
 
-export type ConfusionBucket = "eliminated" | "deciding_between";
-
-export interface ConfusionValue {
-  eliminated: string[]; // choice_ids
-  decidingBetween: string[]; // choice_ids
-}
-
-export const EMPTY_CONFUSION: ConfusionValue = {
-  eliminated: [],
-  decidingBetween: [],
-};
-
-// ---- pure helpers (exported for unit tests) ----
-
-/** Which bucket a choice is in, or null. */
-export function bucketOf(
-  value: ConfusionValue,
-  choiceId: string,
-): ConfusionBucket | null {
-  if (value.eliminated.includes(choiceId)) return "eliminated";
-  if (value.decidingBetween.includes(choiceId)) return "deciding_between";
-  return null;
-}
-
-/** Set or clear a choice's bucket, enforcing disjointness (a choice is only ever
- *  in one bucket). Returns a NEW value (immutable). */
-export function setChoiceBucket(
-  value: ConfusionValue,
-  choiceId: string,
-  bucket: ConfusionBucket | null,
-): ConfusionValue {
-  const eliminated = value.eliminated.filter((id) => id !== choiceId);
-  const decidingBetween = value.decidingBetween.filter((id) => id !== choiceId);
-  if (bucket === "eliminated") eliminated.push(choiceId);
-  else if (bucket === "deciding_between") decidingBetween.push(choiceId);
-  return { eliminated, decidingBetween };
-}
-
-/** Toggle: clicking the active bucket clears it; otherwise switches to it. */
-export function toggleChoiceBucket(
-  value: ConfusionValue,
-  choiceId: string,
-  bucket: ConfusionBucket,
-): ConfusionValue {
-  const current = bucketOf(value, choiceId);
-  return setChoiceBucket(value, choiceId, current === bucket ? null : bucket);
-}
-
-export function hasAnyConfusion(value: ConfusionValue): boolean {
-  return value.eliminated.length > 0 || value.decidingBetween.length > 0;
-}
+export type { ConfusionBucket, ConfusionValue } from "@/components/confusion-capture-state";
+export {
+  EMPTY_CONFUSION,
+  bucketOf,
+  hasAnyConfusion,
+  setChoiceBucket,
+  toggleChoiceBucket,
+} from "@/components/confusion-capture-state";
 
 // ---- component ----
 

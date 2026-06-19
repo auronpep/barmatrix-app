@@ -5,7 +5,7 @@ export const BRAND = "BarMatrix";
 export const DOMAIN = "barmatrix.app";
 
 export const HERO = {
-  headline: "Master the MBE by learning why you miss.",
+  headline: "Diagnose the MBE patterns behind your misses.",
   subhead:
     "BarMatrix uses the C3 method to diagnose the wrong-answer patterns behind your missed MBE questions, map your red zones, and assign the next repair drill instead of sending you back into random practice.",
   primaryCta: { label: "Take the Free MBE Trap Diagnostic", href: "/diagnostic" },

@@ -23,7 +23,7 @@ export const PRICING = {
   includes: [
     "Free MBE Trap Diagnostic",
     "Red-Zone Map",
-    "Forensic question bank",
+    "Guided repair question work",
     "Wrong Answer Forensics",
     "Targeted Red-Zone Drills",
     "Boot Camps",
@@ -98,7 +98,7 @@ export const WELCOME = {
   headline: "Your guided repair path is ready.",
   body: "Your first screen is the guided daily path: one active MBE repair task, a small milestone map, and no resource-browsing decisions.",
   flagshipLine: "BarMatrix Flagship · One July-cycle cohort.",
-  primaryCta: { label: "Open the v3 dashboard", href: "/dashboard" },
+  primaryCta: { label: "Open Lead Me", href: "/dashboard/path" },
   secondaryCta: { label: "Start the free diagnostic", href: "/diagnostic" },
 } as const;
 

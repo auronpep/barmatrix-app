@@ -18,7 +18,7 @@ import { BM_OUTLINE } from "./outline-data";
 
 export default function OutlineAtlasPreviewPage() {
   return (
-    <main className="py-8">
+    <section className="py-8">
       <div className="mx-auto max-w-[1100px] px-4 sm:px-6">
         <SectionLabel>Preview · BarMatrix Blueprint</SectionLabel>
         <h1 className="mt-3 font-serif text-4xl font-semibold leading-tight text-zinc-950">
@@ -35,6 +35,6 @@ export default function OutlineAtlasPreviewPage() {
       <div className="mt-6">
         <OutlineAtlas data={BM_OUTLINE} onStartDrill={() => undefined} />
       </div>
-    </main>
+    </section>
   );
 }

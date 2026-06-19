@@ -36,7 +36,7 @@ export default function DrillsPreviewPage() {
   const totalDrills = tensions.length + traps.length + SUBJECT_QUICK_DRILLS.length;
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-10 sm:py-14">
+    <section className="mx-auto max-w-5xl px-6 py-10 sm:py-14">
       {/* Top bar */}
       <div className="flex items-center justify-between gap-4 border-b-2 border-zinc-900 pb-6">
         <p className="flex items-center gap-2 font-serif text-2xl font-semibold text-zinc-900">
@@ -100,7 +100,7 @@ export default function DrillsPreviewPage() {
       )}
 
       <RedesignFooter />
-    </main>
+    </section>
   );
 }
 

@@ -5,7 +5,7 @@ export const BRAND = "BarMatrix";
 export const DOMAIN = "barmatrix.app";
 
 export const HERO = {
-  headline: "Master the finite universe of MBE traps.",
+  headline: "Find the MBE traps your question sets are hiding.",
   subhead:
     "BarMatrix diagnoses the wrong-answer patterns behind your missed MBE questions and assigns targeted repair drills so you stop practicing randomly and start repairing the traps that keep costing you points.",
   primaryCta: { label: "Take the Free MBE Trap Diagnostic", href: "/diagnostic" },
@@ -23,7 +23,7 @@ export const PRICING = {
   includes: [
     "Free MBE Trap Diagnostic",
     "Red-Zone Map",
-    "Forensic question bank",
+    "Guided repair question work",
     "Wrong Answer Forensics",
     "Targeted Red-Zone Drills",
     "Boot Camps",

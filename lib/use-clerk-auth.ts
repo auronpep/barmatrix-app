@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 export interface ClerkAuthState {
   isLoaded: boolean;
   isSignedIn: boolean;
+  authKey: string | null;
   getToken: () => Promise<string | null>;
 }
 
@@ -22,7 +23,7 @@ const CLERK_ENABLED = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
 const AUTH_LOAD_TIMEOUT_MS = 3000;
 
 function useRealClerkAuth(): ClerkAuthState {
-  const { isLoaded, isSignedIn, getToken } = useAuth();
+  const { isLoaded, isSignedIn, getToken, sessionId, userId } = useAuth();
   const [authLoadTimedOut, setAuthLoadTimedOut] = useState(false);
 
   useEffect(() => {
@@ -37,6 +38,7 @@ function useRealClerkAuth(): ClerkAuthState {
   return {
     isLoaded: isLoaded || authLoadTimedOut,
     isSignedIn: Boolean(isLoaded && isSignedIn),
+    authKey: isLoaded && isSignedIn ? `${userId ?? "unknown"}:${sessionId ?? ""}` : null,
     getToken: isLoaded ? getToken : ANON_GET_TOKEN,
   };
 }
@@ -44,7 +46,7 @@ function useRealClerkAuth(): ClerkAuthState {
 const ANON_GET_TOKEN = async (): Promise<string | null> => null;
 
 function useAnonClerkAuth(): ClerkAuthState {
-  return { isLoaded: true, isSignedIn: false, getToken: ANON_GET_TOKEN };
+  return { isLoaded: true, isSignedIn: false, authKey: null, getToken: ANON_GET_TOKEN };
 }
 
 export const useClerkAuth: () => ClerkAuthState = CLERK_ENABLED

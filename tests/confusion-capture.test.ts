@@ -7,7 +7,7 @@ import {
   setChoiceBucket,
   toggleChoiceBucket,
   hasAnyConfusion,
-} from "../components/confusion-capture";
+} from "../components/confusion-capture-state.ts";
 
 describe("confusion-capture pure helpers", () => {
   it("starts empty", () => {

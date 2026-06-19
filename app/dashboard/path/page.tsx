@@ -261,7 +261,7 @@ function Roadmap({ items }: { items: DayPlanMainItem[] }) {
             <div className="mt-3 h-2 overflow-hidden border border-zinc-200 bg-zinc-100">
               <div
                 className="h-full bg-red-700"
-                style={{ width: `${Math.round((item.completed_steps / item.step_count) * 100)}%` }}
+                style={{ width: `${milestoneProgressPct(item)}%` }}
                 aria-hidden
               />
             </div>
@@ -272,6 +272,14 @@ function Roadmap({ items }: { items: DayPlanMainItem[] }) {
         ))}
       </ol>
     </section>
+  );
+}
+
+function milestoneProgressPct(item: DayPlanMainItem): number {
+  if (item.step_count <= 0) return 0;
+  return Math.max(
+    0,
+    Math.min(100, Math.round((item.completed_steps / item.step_count) * 100)),
   );
 }
 

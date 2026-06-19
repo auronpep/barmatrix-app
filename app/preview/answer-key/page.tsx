@@ -22,7 +22,7 @@ export default function AnswerKeyPreviewPage() {
   const yourPick = view === "missed" ? DAMASCUS_ALLEY.dominantTrap : DAMASCUS_ALLEY.correctLetter;
 
   return (
-    <main className="py-10">
+    <section className="py-10">
       <div className="mx-auto max-w-[1000px] px-6 sm:px-8">
         <SectionLabel>Preview · the answer key</SectionLabel>
         <h1 className="mt-3 font-serif text-4xl font-semibold leading-tight text-zinc-950">
@@ -54,7 +54,7 @@ export default function AnswerKeyPreviewPage() {
           onOpenRedZoneMap={() => undefined}
         />
       </div>
-    </main>
+    </section>
   );
 }
 

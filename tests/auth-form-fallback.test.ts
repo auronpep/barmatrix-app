@@ -42,11 +42,15 @@ describe("auth form fallback", () => {
     assert.match(wrapper, /fallbackRedirectUrl=\{returnPath\}/);
     assert.match(wrapper, /signUpForceRedirectUrl=\{returnPath\}/);
     assert.match(wrapper, /signInForceRedirectUrl=\{returnPath\}/);
-    assert.match(signIn, /const after = Array\.isArray\(params\?\.after\) \? params\.after\[0\] : params\?\.after;/);
-    assert.match(signUp, /const after = Array\.isArray\(params\?\.after\) \? params\.after\[0\] : params\?\.after;/);
+    assert.match(signIn, /function firstParam\(value: string \| string\[\] \| undefined\): string \| undefined/);
+    assert.match(signUp, /function firstParam\(value: string \| string\[\] \| undefined\): string \| undefined/);
+    assert.match(signIn, /firstParam\(params\?\.redirect_url\) \?\? firstParam\(params\?\.after\)/);
+    assert.match(signUp, /firstParam\(params\?\.redirect_url\) \?\? firstParam\(params\?\.after\)/);
     assert.match(helper, /function resolveAuthReturnPath\(after: string \| null \| undefined\): string/);
     assert.match(helper, /dashboard: "\/dashboard"/);
-    assert.match(helper, /AUTH_RETURN_PATHS\[normalized\] \?\? "\/dashboard"/);
+    assert.match(helper, /AUTH_RETURN_PATHS\[slug\]/);
+    assert.match(helper, /toSafeInternalPath\(raw\) \?\? FALLBACK_RETURN_PATH/);
+    assert.match(helper, /candidate\.startsWith\("\/\/"\)/);
     assert.doesNotMatch(wrapper, /return after;/);
   });
 

@@ -90,7 +90,7 @@ export default async function TrapsPage({
       </div>
 
       <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight sm:text-5xl">
-        The finite universe of MBE traps
+        The recurring patterns behind MBE traps
       </h1>
       <p className="mt-4 max-w-2xl text-lg text-zinc-600">
         {catalogDescription}

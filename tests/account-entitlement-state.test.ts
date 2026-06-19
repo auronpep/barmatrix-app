@@ -16,7 +16,8 @@ describe("account entitlement state", () => {
     assert.match(status, /useDashboard\(\)/);
     assert.match(status, /dash\.data\?\.enrolled/);
     assert.match(status, /Account active/);
-    assert.match(status, /Open dashboard/);
+    assert.match(status, /Open Lead Me/);
+    assert.match(status, /href="\/dashboard\/path"/);
   });
 
   it("shows a checking account panel before signed-in status resolves", () => {

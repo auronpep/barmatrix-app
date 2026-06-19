@@ -14,7 +14,7 @@ import { SectionLabel } from "@/components/redesign/redesign-chrome";
 
 export default function OperatorPreviewPage() {
   return (
-    <main className="py-6">
+    <section className="py-6">
       <div className="mx-auto mb-4 max-w-[1600px] px-5">
         <SectionLabel>Preview · founder console</SectionLabel>
         <h1 className="mt-2 font-serif text-3xl font-semibold leading-tight text-zinc-950">Operator Console</h1>
@@ -26,6 +26,6 @@ export default function OperatorPreviewPage() {
       <div className="mx-auto max-w-[1600px] px-5">
         <OperatorConsole />
       </div>
-    </main>
+    </section>
   );
 }

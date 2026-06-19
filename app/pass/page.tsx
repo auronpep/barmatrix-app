@@ -102,8 +102,8 @@ export default function Home() {
                 ▌ MBE TRAP DIAGNOSIS · WEB
               </div>
               <h1 className="display display-xl">
-                Master the MBE by learning{" "}
-                <span style={{ fontStyle: "italic" }}>why you miss.</span>
+                Diagnose the MBE patterns{" "}
+                <span style={{ fontStyle: "italic" }}>behind your misses.</span>
               </h1>
               <p className="lede">{HERO.subhead}</p>
               <div className="hero-actions">

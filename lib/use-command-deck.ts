@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { api, ApiClientError, type CommandDeckData } from "@/lib/api-client";
+import { isAuthRejected } from "@/lib/auth-errors";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
 
 export interface CommandDeckState {
@@ -14,6 +15,8 @@ export interface CommandDeckState {
 interface FetchResult {
   data: CommandDeckData | null;
   error: string | null;
+  authKey: string | null;
+  signedOut?: boolean;
 }
 
 // Single source of the signed-in student's command-deck data. Resolves the
@@ -22,7 +25,7 @@ interface FetchResult {
 // without a CTA flash. Mirrors lib/use-dashboard.ts: loading and signed-out
 // states are DERIVED during render (no setState in the effect body).
 export function useCommandDeck(): CommandDeckState {
-  const { isLoaded, isSignedIn, getToken } = useClerkAuth();
+  const { isLoaded, isSignedIn, authKey, getToken } = useClerkAuth();
   const [result, setResult] = useState<FetchResult | null>(null);
 
   useEffect(() => {
@@ -34,23 +37,27 @@ export function useCommandDeck(): CommandDeckState {
         const token = await getToken();
         if (!token) throw new Error("no session token");
         const data = await api.getMyCommandDeck(token);
-        if (!cancelled) setResult({ data, error: null });
+        if (!cancelled) setResult({ data, error: null, authKey });
       } catch (err) {
         if (cancelled) return;
+        if (isAuthRejected(err)) {
+          setResult({ data: null, error: null, authKey, signedOut: true });
+          return;
+        }
         const message =
           err instanceof ApiClientError
-            ? `API ${err.status}`
+            ? "request failed"
             : err instanceof Error
               ? err.message
               : "Unknown error";
-        setResult({ data: null, error: message });
+        setResult({ data: null, error: message, authKey });
       }
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [isLoaded, isSignedIn, getToken]);
+  }, [isLoaded, isSignedIn, authKey, getToken]);
 
   if (!isLoaded) {
     return { loading: true, signedIn: false, data: null, error: null };
@@ -58,8 +65,11 @@ export function useCommandDeck(): CommandDeckState {
   if (!isSignedIn) {
     return { loading: false, signedIn: false, data: null, error: null };
   }
-  if (result === null) {
+  if (result === null || result.authKey !== authKey) {
     return { loading: true, signedIn: true, data: null, error: null };
+  }
+  if (result.signedOut === true) {
+    return { loading: false, signedIn: false, data: null, error: null };
   }
   return {
     loading: false,

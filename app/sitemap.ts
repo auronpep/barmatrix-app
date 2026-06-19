@@ -54,6 +54,7 @@ const CAMPAIGN_ROUTES = [
   "/lp-diagnostic-map.html",
   "/lp-wrong-answer-forensics.html",
   "/lp-wrong-answers.html",
+  "/lp-wrong-answers-not-random.html",
   "/lp-red-zone.html",
   "/lp-red-zone-drills.html",
   "/lp-c3-cut-clash-call.html",

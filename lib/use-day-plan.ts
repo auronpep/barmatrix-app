@@ -7,6 +7,7 @@ import {
   type MyDayPlan,
   type MyDayPlanCompleteResponse,
 } from "@/lib/api-client";
+import { isAuthRejected } from "@/lib/auth-errors";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
 
 export interface DayPlanState {
@@ -21,10 +22,12 @@ export interface DayPlanState {
 interface FetchResult {
   data: MyDayPlan | null;
   error: string | null;
+  authKey: string | null;
+  signedOut?: boolean;
 }
 
 export function useDayPlan(): DayPlanState {
-  const { isLoaded, isSignedIn, getToken } = useClerkAuth();
+  const { isLoaded, isSignedIn, authKey, getToken } = useClerkAuth();
   const [result, setResult] = useState<FetchResult | null>(null);
 
   const fetchPlan = useCallback(async () => {
@@ -33,11 +36,15 @@ export function useDayPlan(): DayPlanState {
       const token = await getToken();
       if (!token) throw new Error("no session token");
       const data = await api.getMyDayPlan(token);
-      setResult({ data, error: null });
+      setResult({ data, error: null, authKey });
     } catch (err) {
-      setResult({ data: null, error: formatDayPlanError(err) });
+      if (isAuthRejected(err)) {
+        setResult({ data: null, error: null, authKey, signedOut: true });
+        return;
+      }
+      setResult({ data: null, error: formatDayPlanError(err), authKey });
     }
-  }, [getToken, isLoaded, isSignedIn]);
+  }, [authKey, getToken, isLoaded, isSignedIn]);
 
   useEffect(() => {
     if (!isLoaded || !isSignedIn) return;
@@ -48,26 +55,31 @@ export function useDayPlan(): DayPlanState {
         const token = await getToken();
         if (!token) throw new Error("no session token");
         const data = await api.getMyDayPlan(token);
-        if (!cancelled) setResult({ data, error: null });
+        if (!cancelled) setResult({ data, error: null, authKey });
       } catch (err) {
-        if (!cancelled) setResult({ data: null, error: formatDayPlanError(err) });
+        if (cancelled) return;
+        if (isAuthRejected(err)) {
+          setResult({ data: null, error: null, authKey, signedOut: true });
+          return;
+        }
+        setResult({ data: null, error: formatDayPlanError(err), authKey });
       }
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [getToken, isLoaded, isSignedIn]);
+  }, [authKey, getToken, isLoaded, isSignedIn]);
 
   const completeStep = useCallback(
     async (stepId: string) => {
       const token = await getToken();
       if (!token) throw new Error("no session token");
       const data = await api.completeMyDayPlanStep(token, stepId);
-      setResult({ data, error: null });
+      setResult({ data, error: null, authKey });
       return data;
     },
-    [getToken],
+    [authKey, getToken],
   );
 
   if (!isLoaded) {
@@ -90,10 +102,20 @@ export function useDayPlan(): DayPlanState {
       refresh: fetchPlan,
     };
   }
-  if (result === null) {
+  if (result === null || result.authKey !== authKey) {
     return {
       loading: true,
       signedIn: true,
+      data: null,
+      error: null,
+      completeStep,
+      refresh: fetchPlan,
+    };
+  }
+  if (result.signedOut === true) {
+    return {
+      loading: false,
+      signedIn: false,
       data: null,
       error: null,
       completeStep,
@@ -111,7 +133,7 @@ export function useDayPlan(): DayPlanState {
 }
 
 function formatDayPlanError(error: unknown) {
-  if (error instanceof ApiClientError) return `API ${error.status}`;
+  if (error instanceof ApiClientError) return "request failed";
   if (error instanceof Error) return error.message;
   return "Unknown error";
 }

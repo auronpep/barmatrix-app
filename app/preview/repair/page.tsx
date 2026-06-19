@@ -54,7 +54,7 @@ export default function RepairPreviewPage() {
   const [view, setView] = useState<"counterfeit" | "true">("counterfeit");
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
+    <section className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
       <SectionLabel>Preview · the repair verdict</SectionLabel>
       <h1 className="mt-3 font-serif text-4xl font-semibold leading-tight text-zinc-950">
         The Repair screen
@@ -91,7 +91,7 @@ export default function RepairPreviewPage() {
           />
         )}
       </div>
-    </main>
+    </section>
   );
 }
 

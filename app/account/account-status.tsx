@@ -21,14 +21,14 @@ export function AccountAccessPanel({
           Your BarMatrix access is active.
         </h1>
         <p className="mt-4 text-zinc-600">
-          Continue from your dashboard, red-zone map, or assigned repair drills.
+          Continue from Lead Me, your Red-Zone Map, or assigned repair drills.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
           <Link
-            href="/dashboard"
+            href="/dashboard/path"
             className="rounded-md bg-red-700 px-6 py-3 text-base font-medium text-white hover:bg-red-900"
           >
-            Open dashboard
+            Open Lead Me
           </Link>
           <Link
             href="/red-zones"
@@ -82,15 +82,15 @@ export function AccountAccessPanel({
           Account status unavailable
         </h1>
         <p className="mt-3 text-zinc-600">
-          We could not confirm your enrollment from this page. Open the dashboard
-          to retry the account check.
+          We could not confirm your enrollment from this page. Open Lead Me to
+          retry the account check.
         </p>
         <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
           <Link
-            href="/dashboard"
+            href="/dashboard/path"
             className="rounded-md bg-red-700 px-6 py-3 text-sm font-medium text-white hover:bg-red-900"
           >
-            Open dashboard
+            Open Lead Me
           </Link>
           <Link
             href="mailto:support@barmatrix.app"

@@ -37,9 +37,9 @@ export function TensionMatrix({ matrix }: { matrix: CommandDeckTensionMatrix | n
 
   const cols = matrix.cols;
   return (
-    <div className="p-5">
-      <div className="mb-3.5 flex items-baseline justify-between gap-4">
-        <span className="font-mono text-[11px] tracking-[0.05em] text-zinc-500">
+    <div className="min-w-0 p-5">
+      <div className="mb-3.5 flex min-w-0 flex-wrap items-baseline justify-between gap-2">
+        <span className="min-w-0 font-mono text-[11px] tracking-[0.05em] text-zinc-500">
           {hover
             ? `${hover.row} × ${hover.col} — ${hover.attempts} misses, heat ${hover.heat}/5`
             : "Hover any cell · darker = more misses on attractive traps"}
@@ -50,7 +50,7 @@ export function TensionMatrix({ matrix }: { matrix: CommandDeckTensionMatrix | n
       </div>
 
       <div
-        className="grid gap-1 overflow-x-auto"
+        className="max-w-full grid gap-1 overflow-x-auto"
         style={{ gridTemplateColumns: `120px repeat(${cols.length}, minmax(34px, 1fr))` }}
       >
         <div />

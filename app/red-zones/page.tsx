@@ -212,18 +212,18 @@ function WeakAreaHeatDisplay({ zones }: { zones: HeatZone[] }) {
 
       <ol className="mt-6 grid gap-4 md:grid-cols-2" aria-label="Weak areas by heat">
         {zones.slice(0, 8).map((item) => (
-          <li key={`${item.dimension}:${item.zone.tag}`}>
+          <li key={`${item.dimension}:${item.zone.tag}`} className="min-w-0">
             <Link
               href={zoneHref(item.dimension, item.zone.tag)}
-              className="block border border-zinc-200 bg-zinc-50 p-4 transition hover:border-zinc-500 hover:bg-white"
+              className="block min-w-0 border border-zinc-200 bg-zinc-50 p-4 transition hover:border-zinc-500 hover:bg-white"
             >
-              <div className="flex items-start justify-between gap-4">
-                <div>
+              <div className="flex min-w-0 flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0">
                   <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">
                     {titleize(item.dimension)}
                   </p>
-                  <h3 className="mt-1 text-base font-semibold text-zinc-950">
-                    {item.zone.tag}
+                  <h3 className="mt-1 break-words text-base font-semibold text-zinc-950">
+                    {titleize(item.zone.tag)}
                   </h3>
                 </div>
                 <span
@@ -269,13 +269,15 @@ function DimensionSection({
         {zones.map((zone) => {
           const pct = clampPct(Math.round(normalizeScore(zone.proficiency_score) * 100));
           return (
-            <li key={zone.tag}>
+            <li key={zone.tag} className="min-w-0">
               <Link
                 href={zoneHref(dimension, zone.tag)}
-                className="block rounded-lg border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-zinc-500"
+                className="block min-w-0 rounded-lg border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-zinc-500"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <span className="text-base font-semibold text-zinc-900">{zone.tag}</span>
+                <div className="flex min-w-0 flex-wrap items-start justify-between gap-3">
+                  <span className="min-w-0 break-words text-base font-semibold text-zinc-900">
+                    {titleize(zone.tag)}
+                  </span>
                   {zone.has_drill ? (
                     <span className="shrink-0 border border-red-700 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-red-800">
                       Drill ready

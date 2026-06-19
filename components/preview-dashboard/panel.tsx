@@ -16,20 +16,20 @@ export function Panel({
   children: ReactNode;
 }) {
   return (
-    <div className="border border-zinc-900 bg-white">
-      <div className="flex items-center justify-between border-b border-zinc-200 bg-zinc-50 px-5 py-3">
-        <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-900">
+    <div className="min-w-0 border border-zinc-900 bg-white">
+      <div className="flex min-w-0 flex-wrap items-center justify-between gap-2 border-b border-zinc-200 bg-zinc-50 px-5 py-3">
+        <span className="min-w-0 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-900">
           {title}
         </span>
         {actions ? (
-          <div className="flex items-center gap-2">{actions}</div>
+          <div className="flex min-w-0 items-center gap-2">{actions}</div>
         ) : meta ? (
-          <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-500">
+          <span className="min-w-0 font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-500">
             {meta}
           </span>
         ) : null}
       </div>
-      <div className={flush ? "" : "p-5"}>{children}</div>
+      <div className={flush ? "min-w-0" : "min-w-0 p-5"}>{children}</div>
     </div>
   );
 }

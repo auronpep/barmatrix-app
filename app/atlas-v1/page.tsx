@@ -216,7 +216,7 @@ export default async function AtlasV1Page({
     : { data: { items: [] }, error: null };
 
   return (
-    <main className="min-h-screen bg-[#f7f5ef] text-zinc-950">
+    <div className="min-h-screen bg-[#f7f5ef] text-zinc-950">
       <section className="border-b border-zinc-300 bg-white px-5 py-5">
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-end justify-between gap-4">
           <div>
@@ -357,7 +357,7 @@ export default async function AtlasV1Page({
           )}
         </aside>
       </section>
-    </main>
+    </div>
   );
 }
 

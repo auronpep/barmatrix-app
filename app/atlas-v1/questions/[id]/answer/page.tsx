@@ -67,34 +67,34 @@ export default async function AtlasV1AnswerPage({
 
   if (answer.error) {
     return (
-      <main className="min-h-screen bg-[#f7f5ef] px-5 py-8 text-zinc-950">
+      <div className="min-h-screen bg-[#f7f5ef] px-5 py-8 text-zinc-950">
         <div className="mx-auto max-w-4xl">
           <Link href="/atlas-v1" className="font-mono text-xs uppercase tracking-wide text-zinc-600 underline">
             Atlas_v1
           </Link>
           <p className="mt-6 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800">{answer.error}</p>
         </div>
-      </main>
+      </div>
     );
   }
 
   const data = answer.data;
   if (!data) {
     return (
-      <main className="min-h-screen bg-[#f7f5ef] px-5 py-8 text-zinc-950">
+      <div className="min-h-screen bg-[#f7f5ef] px-5 py-8 text-zinc-950">
         <div className="mx-auto max-w-4xl">
           <Link href="/atlas-v1" className="font-mono text-xs uppercase tracking-wide text-zinc-600 underline">
             Atlas_v1
           </Link>
           <p className="mt-6 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800">Atlas_v1 answer was not returned.</p>
         </div>
-      </main>
+      </div>
     );
   }
   const modules = Object.entries(data.case_study_modules);
 
   return (
-    <main className="min-h-screen bg-[#f7f5ef] px-5 py-8 text-zinc-950">
+    <div className="min-h-screen bg-[#f7f5ef] px-5 py-8 text-zinc-950">
       <article className="mx-auto max-w-4xl">
         <Link href={`/atlas-v1?outline_code=${encodeURIComponent(data.question.outline_code)}`} className="font-mono text-xs uppercase tracking-wide text-zinc-600 underline">
           Atlas_v1
@@ -134,6 +134,6 @@ export default async function AtlasV1AnswerPage({
           </section>
         ))}
       </article>
-    </main>
+    </div>
   );
 }

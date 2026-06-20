@@ -430,6 +430,19 @@ export function AtlasClient() {
       null
     );
   }, [allNodes, scopedNodes, selectedCode, studiedCodes]);
+  const nextLessonWalkCode = useMemo(() => {
+    const walkNodes = scopedNodes.length > 0 ? scopedNodes : allNodes;
+    if (!selectedCode || walkNodes.length === 0) return null;
+    const assumedStudied = new Set(studiedCodes);
+    assumedStudied.add(selectedCode);
+    const scopedIndex = walkNodes.findIndex((node) => node.code === selectedCode);
+    const afterSelected = scopedIndex >= 0 ? walkNodes.slice(scopedIndex + 1) : walkNodes;
+    return (
+      afterSelected.find((node) => !assumedStudied.has(node.code))?.code ??
+      walkNodes.find((node) => !assumedStudied.has(node.code))?.code ??
+      null
+    );
+  }, [allNodes, scopedNodes, selectedCode, studiedCodes]);
   const scopedWalkCode = nextUnstudiedCode ?? scopedNodes[0]?.code ?? null;
   const scopedWalkActionLabel =
     scopedStudiedCount === 0
@@ -520,6 +533,18 @@ export function AtlasClient() {
       writeStoredStudiedCodes(next);
       return next;
     });
+  }
+
+  function markStudiedAndContinue() {
+    if (!selected || !nextLessonWalkCode) return;
+    setStudiedCodes((current) => {
+      if (current.has(selected.code)) return current;
+      const next = new Set(current);
+      next.add(selected.code);
+      writeStoredStudiedCodes(next);
+      return next;
+    });
+    selectCode(nextLessonWalkCode);
   }
 
   function focusSelectedSubtopic() {
@@ -1405,11 +1430,13 @@ export function AtlasClient() {
                               </Link>
                             ) : null}
                             <WalkButton
-                              label="Next unstudied code"
-                              disabled={!nextUnstudiedCode}
-                              onClick={() =>
-                                nextUnstudiedCode && selectCode(nextUnstudiedCode)
+                              label={
+                                selectedStudied
+                                  ? "Continue lesson walk"
+                                  : "Mark studied + continue"
                               }
+                              disabled={!nextLessonWalkCode}
+                              onClick={markStudiedAndContinue}
                             />
                           </div>
                         </div>

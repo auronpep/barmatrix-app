@@ -116,7 +116,6 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Lesson checkpoint/);
     assert.match(atlas, /Mark lesson studied/);
     assert.match(atlas, /Practice this lesson/);
-    assert.match(atlas, /Next unstudied code/);
     assert.match(atlas, /Not studied/);
     assert.match(atlas, /Outline position/);
     assert.match(atlas, /LessonJump/);
@@ -191,8 +190,11 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /focusSelectedSubtopic/);
     assert.match(atlas, /Focus this subtopic/);
     assert.match(atlas, /toggleStudiedCode/);
+    assert.match(atlas, /markStudiedAndContinue/);
     assert.match(atlas, /Studied on this device/);
     assert.match(atlas, /Mark studied/);
+    assert.match(atlas, /Mark studied \+ continue/);
+    assert.match(atlas, /Continue lesson walk/);
     assert.match(atlas, /Next unstudied/);
     assert.match(atlas, /window\.localStorage\.setItem/);
     assert.match(atlas, /Saved on this device for next time/);

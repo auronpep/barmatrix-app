@@ -326,6 +326,7 @@ export function AtlasClient() {
     (sum, node) => sum + node.question_count,
     0,
   );
+  const scopedNoQuestionCount = scopedNodes.length - scopedPracticeNodes.length;
   const scopedComponentCodeCount = scopedNodes.filter((node) => nodeComponentTotal(node) > 0)
     .length;
   const scopedLaneReadyCount = scopedNodes.filter(hasAnyLane).length;
@@ -795,12 +796,13 @@ export function AtlasClient() {
                         {scopedPracticeNodes.length} ready codes / {scopedQuestionCount} questions
                       </p>
                       <div
-                        className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4"
+                        className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-5"
                         aria-label={`Scope readiness for ${scopeLabel}`}
                       >
                         {[
                           { label: "Studied", value: `${scopedStudiedCount}/${scopedNodes.length}` },
                           { label: "Practice", value: String(scopedPracticeNodes.length) },
+                          { label: "Needs Q", value: String(scopedNoQuestionCount) },
                           { label: "Components", value: String(scopedComponentCodeCount) },
                           { label: "No lane", value: String(scopedNoLaneCount) },
                         ].map((item) => (

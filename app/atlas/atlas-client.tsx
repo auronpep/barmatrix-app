@@ -1979,6 +1979,15 @@ export function AtlasClient() {
                           </div>
                           <div className="mt-3 rounded-md border border-white/10 bg-white/5 p-3">
                             <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+                              Subtopic position
+                            </p>
+                            <p className="mt-1 text-sm leading-6 text-zinc-200">
+                              {selectedSubtopicPosition ?? "-"} / {selectedSubtopicNodes.length} in{" "}
+                              {selected.subtopic}
+                            </p>
+                          </div>
+                          <div className="mt-3 rounded-md border border-white/10 bg-white/5 p-3">
+                            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
                               Current code checklist
                             </p>
                             <div className="mt-3 grid gap-2 sm:grid-cols-2">

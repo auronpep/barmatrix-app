@@ -219,6 +219,9 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /View support lanes/);
     assert.match(atlas, /Follow approved detours/);
     assert.match(atlas, /View detour lanes/);
+    assert.match(atlas, /Subtopic position/);
+    assert.match(atlas, /selectedSubtopicPosition \?\? "-"/);
+    assert.match(atlas, /selectedSubtopicNodes\.length/);
     assert.match(atlas, /Current code checklist/);
     assert.match(atlas, /Lesson studied/);
     assert.match(atlas, /Practice ready/);

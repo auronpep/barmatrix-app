@@ -51,7 +51,7 @@ export function DashboardShell({
           href: "/atlas",
           icon: "▨",
           label: "Outline Atlas V2",
-          description: "Outline-code learning map",
+          description: "Code-by-code lessons, questions, traps, drills",
         },
         {
           href: "/drills",

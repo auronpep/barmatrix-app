@@ -14,7 +14,7 @@ import { usePathname } from "next/navigation";
 //   Primary row  — the dashboard views: Overview / Mastery / Final Sprint.
 //   Program row  — launcher to the study-program surfaces that actually exist.
 
-type NavItem = { href: string; label: string };
+type NavItem = { href: string; label: string; title?: string };
 
 // The dashboard views, switched via the primary tabs. "My Path" (the J7 guided
 // "lead me" surface) leads; "Full Dashboard" is the metric wall for power users
@@ -33,7 +33,11 @@ const VIEW_TABS: readonly NavItem[] = [
 // (no /subjects — it has only per-subject sub-pages, no index, so it 404s).
 const PROGRAM_LINKS: readonly NavItem[] = [
   { href: "/foundations", label: "The Method" },
-  { href: "/atlas", label: "Outline Atlas V2" },
+  {
+    href: "/atlas",
+    label: "Outline Atlas V2",
+    title: "Interactive outline map: code-by-code lessons, questions, traps, and drills",
+  },
   { href: "/matrix", label: "Tension Matrix" },
   { href: "/tensions", label: "Tension Map" },
   { href: "/misconceptions", label: "Misconceptions" },
@@ -103,6 +107,7 @@ export default function DashboardLayout({
               <Link
                 key={link.href}
                 href={link.href}
+                title={link.title}
                 className="shrink-0 border border-zinc-300 bg-white px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-zinc-600 transition-colors hover:border-zinc-900 hover:text-zinc-950"
               >
                 {link.label}

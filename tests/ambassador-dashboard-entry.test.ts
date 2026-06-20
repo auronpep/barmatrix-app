@@ -72,7 +72,7 @@ describe("dashboard guided-path entry", () => {
     assert.match(shell, /section: "VIEWS"/);
     assert.match(shell, /label: "My Path"/);
     assert.match(shell, /label: "Outline Atlas V2"/);
-    assert.match(shell, /description: "Outline-code learning map"/);
+    assert.match(shell, /description: "Code-by-code lessons, questions, traps, drills"/);
     assert.match(shell, /l\.description/);
     for (const href of [
       "/dashboard/path",
@@ -95,7 +95,10 @@ describe("dashboard guided-path entry", () => {
   it("keeps Atlas V2 named in the dashboard program navigation", () => {
     const layout = readProjectFile("app/dashboard/layout.tsx");
 
-    assert.match(layout, /href: "\/atlas", label: "Outline Atlas V2"/);
+    assert.match(layout, /href: "\/atlas"/);
+    assert.match(layout, /label: "Outline Atlas V2"/);
+    assert.match(layout, /Interactive outline map: code-by-code lessons, questions, traps, and drills/);
+    assert.match(layout, /title=\{link\.title\}/);
   });
 
   it("keeps the Atlas page metadata aligned with the V2 customer-facing label", () => {

@@ -1176,6 +1176,14 @@ export function AtlasClient() {
                       </button>
                       <button
                         type="button"
+                        onClick={() => selectCode(scopedDebriefNodes[0]?.code ?? null)}
+                        disabled={scopedDebriefNodes.length === 0}
+                        className="rounded-md border border-zinc-950/15 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-[transform,background-color,border-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
+                      >
+                        Jump to first detour
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => resumedCode && selectCode(resumedCode)}
                         disabled={!resumedCode || resumedCode === selectedCode}
                         className="rounded-md border border-zinc-950/15 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-[transform,background-color,border-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"

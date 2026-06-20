@@ -132,6 +132,8 @@ describe("dashboard guided-path entry", () => {
     assert.match(answer, /ModuleValue/);
     assert.match(answer, /case_study_modules/);
     assert.match(answer, /key !== "detours"/);
+    assert.match(answer, /Study this outline code/);
+    assert.match(answer, /encodeURIComponent\(q\.outline_code\)/);
     assert.match(client, /getAtlasComponents/);
     assert.match(client, /AtlasLeadMeItemPreview/);
     assert.match(client, /AtlasDebriefElementPreview/);

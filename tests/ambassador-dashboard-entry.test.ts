@@ -124,6 +124,8 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /outline_code: selected\.code/);
     assert.match(atlas, /Approval gate/);
     assert.match(atlas, /readRequestedCode/);
+    assert.match(atlas, /const requestedCode = readRequestedCode\(\)/);
+    assert.doesNotMatch(atlas, /useState\(readRequestedCode\)/);
     assert.match(atlas, /window\.history\.replaceState/);
     assert.match(atlas, /chooseComponentFilter/);
     assert.match(atlas, /matchesComponentFilter/);

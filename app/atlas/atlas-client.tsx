@@ -86,7 +86,6 @@ export function AtlasClient() {
   const { isLoaded, isSignedIn, getToken } = useClerkAuth();
   const router = useRouter();
   const [state, setState] = useState<LoadState>({ kind: "loading" });
-  const [requestedCode] = useState(readRequestedCode);
   const [query, setQuery] = useState("");
   const [subjectFilter, setSubjectFilter] = useState(ALL_SUBJECTS);
   const [subtopicFilter, setSubtopicFilter] = useState(ALL_SUBTOPICS);
@@ -119,6 +118,7 @@ export function AtlasClient() {
         const data = await api.getAtlasCoverage(token);
         if (cancelled) return;
         setState({ kind: "ready", nodes: data.nodes });
+        const requestedCode = readRequestedCode();
         const requestedNode = requestedCode
           ? data.nodes.find((node) => node.code === requestedCode)
           : null;
@@ -142,7 +142,7 @@ export function AtlasClient() {
     return () => {
       cancelled = true;
     };
-  }, [getToken, isLoaded, isSignedIn, requestedCode]);
+  }, [getToken, isLoaded, isSignedIn]);
 
   const allNodes = useMemo(() => (state.kind === "ready" ? state.nodes : []), [state]);
   const selected = selectedCode

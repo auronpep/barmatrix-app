@@ -1894,12 +1894,20 @@ export function AtlasClient() {
                                   : "Approval gate: no approved questions are attached to this code yet."}
                               </p>
                               {firstSelectedQuestion ? (
-                                <Link
-                                  href={atlasQuestionPracticeHref(firstSelectedQuestion.question_id)}
-                                  className="mt-2 inline-flex rounded-md bg-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-colors hover:bg-red-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
-                                >
-                                  Do first question
-                                </Link>
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                  <Link
+                                    href={atlasQuestionPracticeHref(firstSelectedQuestion.question_id)}
+                                    className="inline-flex rounded-md bg-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-red-800 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
+                                  >
+                                    Do first question
+                                  </Link>
+                                  <Link
+                                    href={atlasQuestionAnswerHref(firstSelectedQuestion.question_id)}
+                                    className="inline-flex rounded-md border border-zinc-950/15 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-[transform,border-color,background-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                                  >
+                                    Open answer debrief
+                                  </Link>
+                                </div>
                               ) : selected.question_count > 0 ? (
                                 <a
                                   href="#atlas-code-questions"

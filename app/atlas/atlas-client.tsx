@@ -479,6 +479,8 @@ export function AtlasClient() {
   const detourLinks = detourPreviews
     .map((detour) => ({ detour, href: atlasCodeDetourHref(detour) }))
     .filter((item): item is { detour: AtlasAnswerDetour; href: string } => item.href !== null);
+  const trapDetourCount = detourLinks.filter(({ detour }) => detour.type === "trap").length;
+  const tensionDetourCount = detourLinks.filter(({ detour }) => detour.type === "tension").length;
   const previewCount = leadmeItemPreviews.length + debriefElementPreviews.length;
   const lessonCount = countMatching(componentData?.leadme_items ?? [], [
     "lesson",
@@ -1318,14 +1320,34 @@ export function AtlasClient() {
                               active={drillCount > 0}
                             />
                             <ComponentIndexLink
+                              href="#atlas-code-components"
+                              label="Flashcards"
+                              meta={
+                                flashcardCount > 0
+                                  ? formatCount(flashcardCount, "flashcard")
+                                  : "Approval gate"
+                              }
+                              active={flashcardCount > 0}
+                            />
+                            <ComponentIndexLink
                               href="#atlas-code-detours"
                               label="Trap detours"
                               meta={
-                                detourLinks.length > 0
-                                  ? formatCount(detourLinks.length, "detour")
+                                trapDetourCount > 0
+                                  ? formatCount(trapDetourCount, "trap detour")
                                   : "Approval gate"
                               }
-                              active={detourLinks.length > 0}
+                              active={trapDetourCount > 0}
+                            />
+                            <ComponentIndexLink
+                              href="#atlas-code-detours"
+                              label="Tension detours"
+                              meta={
+                                tensionDetourCount > 0
+                                  ? formatCount(tensionDetourCount, "tension detour")
+                                  : "Approval gate"
+                              }
+                              active={tensionDetourCount > 0}
                             />
                             <ComponentIndexLink
                               href="#atlas-code-components"

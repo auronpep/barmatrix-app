@@ -836,14 +836,12 @@ export function AtlasClient() {
                                 <span className="font-mono text-xs font-semibold text-zinc-950">
                                   {node.code}
                                 </span>
-                                <span className="min-w-0 text-sm leading-5 text-zinc-800">
-                                  <span className="block">{node.outline_text}</span>
-                                  <span className="mt-1 block font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
-                                    {nodeComponentTotal(node) > 0
-                                      ? formatCount(nodeComponentTotal(node), "component")
-                                      : "No components"}
+                                  <span className="min-w-0 text-sm leading-5 text-zinc-800">
+                                    <span className="block">{node.outline_text}</span>
+                                    <span className="mt-1 block font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                                      {laneFootprint(node)}
+                                    </span>
                                   </span>
-                                </span>
                                 <span
                                   className={`w-fit rounded-md px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] md:justify-self-end ${
                                     node.question_count > 0
@@ -1646,6 +1644,16 @@ function clip(value: string, max = 150): string {
 
 function nodeComponentTotal(node: AtlasCoverageNode): number {
   return node.leadme_item_count + node.debrief_element_count;
+}
+
+function laneFootprint(node: AtlasCoverageNode): string {
+  const parts = [
+    node.question_count > 0 ? formatCount(node.question_count, "question") : null,
+    node.leadme_set_count > 0 ? formatCount(node.leadme_set_count, "LeadMe set") : null,
+    node.leadme_item_count > 0 ? formatCount(node.leadme_item_count, "guided item") : null,
+    node.debrief_element_count > 0 ? formatCount(node.debrief_element_count, "debrief") : null,
+  ].filter(Boolean);
+  return parts.length > 0 ? parts.join(" / ") : "No approved lanes yet";
 }
 
 function hasAnyLane(node: AtlasCoverageNode): boolean {

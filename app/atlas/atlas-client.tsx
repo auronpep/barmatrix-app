@@ -926,6 +926,62 @@ export function AtlasClient() {
                         </div>
                         <div className="mt-4 border-t border-zinc-950/10 pt-4">
                           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                            Study sequence
+                          </p>
+                          <ol className="mt-3 grid gap-3 text-sm leading-6 text-zinc-700">
+                            <li className="border-l-2 border-red-700 pl-3">
+                              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                                1 / Anchor this code
+                              </p>
+                              <p className="mt-1">
+                                Treat {selected.code} as the target label for {selected.subtopic}:{" "}
+                                {selected.outline_text}.
+                              </p>
+                            </li>
+                            <li className="border-l-2 border-zinc-300 pl-3">
+                              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                                2 / Work approved questions
+                              </p>
+                              <p className="mt-1">
+                                {selected.question_count > 0
+                                  ? `Start with ${formatCount(
+                                      selected.question_count,
+                                      "approved question",
+                                    )}, then open the answer debrief.`
+                                  : "Approval gate: no approved questions are attached to this code yet."}
+                              </p>
+                            </li>
+                            <li className="border-l-2 border-zinc-300 pl-3">
+                              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                                3 / Open approved support
+                              </p>
+                              <p className="mt-1">
+                                {componentsLoading
+                                  ? "Checking approved component connections..."
+                                  : previewCount > 0
+                                    ? `${formatCount(
+                                        previewCount,
+                                        "approved preview",
+                                      )} connected below for this code.`
+                                    : leadmeSet
+                                      ? `${leadmeSet.title} is ready for this code.`
+                                      : "Approval gate: lessons, drills, flashcards, and debrief components stay hidden until approved."}
+                              </p>
+                            </li>
+                            <li className="border-l-2 border-zinc-300 pl-3">
+                              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                                4 / Follow approved detours
+                              </p>
+                              <p className="mt-1">
+                                {trapCount + tensionCount + debriefElementTotal > 0
+                                  ? "Use the live trap, tension, and debrief lanes to drill the same failure pattern."
+                                  : "Trap, tension, and red-zone detours remain gated until they are approved for students."}
+                              </p>
+                            </li>
+                          </ol>
+                        </div>
+                        <div className="mt-4 border-t border-zinc-950/10 pt-4">
+                          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                             LeadMe lesson
                           </p>
                         {componentsLoading ? (

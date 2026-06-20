@@ -1242,6 +1242,7 @@ export function AtlasClient() {
                       const readyCodeCount = nodes.filter((node) => node.question_count > 0).length;
                       const lessonReadyCount = nodes.filter(hasLessonLane).length;
                       const laneReadyCount = nodes.filter(hasAnyLane).length;
+                      const detourReadyCount = nodes.filter(hasDetourLane).length;
                       const studiedCodeCount = nodes.filter((node) =>
                         studiedCodes.has(node.code),
                       ).length;
@@ -1265,7 +1266,8 @@ export function AtlasClient() {
                             <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
                               {studiedCodeCount} studied / {nodes.length} codes /{" "}
                               {readyCodeCount} q-ready / {lessonReadyCount} lesson-ready /{" "}
-                              {laneReadyCount} lane-ready / {questionCount} questions
+                              {laneReadyCount} lane-ready / {detourReadyCount} detour-ready /{" "}
+                              {questionCount} questions
                             </p>
                           </div>
                           <div className="divide-y divide-zinc-950/10">
@@ -2972,6 +2974,10 @@ function hasAnyLane(node: AtlasCoverageNode): boolean {
 
 function hasLessonLane(node: AtlasCoverageNode): boolean {
   return node.leadme_set_count + node.leadme_item_count > 0;
+}
+
+function hasDetourLane(node: AtlasCoverageNode): boolean {
+  return node.debrief_element_count > 0;
 }
 
 function totalCounts(counts: { count: number }[]): number {

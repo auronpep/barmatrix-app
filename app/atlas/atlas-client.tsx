@@ -335,6 +335,10 @@ export function AtlasClient() {
     () => scopedNodes.filter((node) => node.question_count > 0),
     [scopedNodes],
   );
+  const scopedNoQuestionNodes = useMemo(
+    () => scopedNodes.filter((node) => node.question_count === 0),
+    [scopedNodes],
+  );
   const scopedUnstudiedNodes = useMemo(
     () => scopedNodes.filter((node) => !studiedCodes.has(node.code)),
     [scopedNodes, studiedCodes],
@@ -717,6 +721,12 @@ export function AtlasClient() {
     selectCode(scopedPracticeNodes[0]?.code ?? null);
   }
 
+  function showScopedQuestionGaps() {
+    setComponentFilter("needs_questions");
+    setStudyFilter("all");
+    selectCode(scopedNoQuestionNodes[0]?.code ?? null);
+  }
+
   function showScopedLessons() {
     setComponentFilter("lessons");
     selectCode(scopedLessonNodes[0]?.code ?? null);
@@ -1010,6 +1020,14 @@ export function AtlasClient() {
                         className="rounded-md bg-zinc-950 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-zinc-800 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
                       >
                         Show ready codes
+                      </button>
+                      <button
+                        type="button"
+                        onClick={showScopedQuestionGaps}
+                        disabled={scopedNoQuestionNodes.length === 0}
+                        className="rounded-md bg-zinc-950 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-zinc-800 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
+                      >
+                        Show question gaps
                       </button>
                       <button
                         type="button"

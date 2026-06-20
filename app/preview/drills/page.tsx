@@ -59,7 +59,7 @@ export default function DrillsPreviewPage() {
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-700">
           Real MBE mechanics, set in the world you actually live in. Answer under
-          pressure, then run the TEAR forensics: see exactly which counterfeit
+          pressure, then run the TEAR/C3 debrief: see exactly which counterfeit
           almost persuaded you, the keys that break it, and the repair that keeps
           the point next time.
         </p>

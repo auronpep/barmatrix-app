@@ -65,7 +65,7 @@ export function RedesignFooter() {
             The Work
           </p>
           <ul className="mt-4 space-y-2 text-zinc-600">
-            <li><Link href="/how-it-works" className="hover:text-zinc-900">The TEAR Method</Link></li>
+            <li><Link href="/how-it-works" className="hover:text-zinc-900">TEAR / C3 Method</Link></li>
             <li><Link href="/drills" className="hover:text-zinc-900">Repair Drills</Link></li>
             <li><Link href="/diagnostic" className="hover:text-zinc-900">The Diagnostic</Link></li>
             <li><Link href="/pricing" className="hover:text-zinc-900">Pricing</Link></li>

@@ -95,6 +95,8 @@ describe("dashboard guided-path entry", () => {
 
     assert.match(atlas, /Walk the MBE outline by code/);
     assert.match(atlas, /Has any lane/);
+    assert.match(atlas, /Practice ready/);
+    assert.match(atlas, /Practice-ready codes/);
     assert.match(atlas, /Needs content/);
     assert.match(atlas, /Codes with components/);
     assert.match(atlas, /Study this code/);
@@ -115,6 +117,8 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Approval gate/);
     assert.match(atlas, /readRequestedCode/);
     assert.match(atlas, /window\.history\.replaceState/);
+    assert.match(atlas, /chooseComponentFilter/);
+    assert.match(atlas, /matchesComponentFilter/);
     assert.match(atlas, /Direct link/);
     assert.match(client, /getAtlasComponents/);
     assert.match(client, /AtlasLeadMeItemPreview/);

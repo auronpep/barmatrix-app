@@ -50,7 +50,7 @@ type SubjectStat = {
 const COMPONENT_FILTERS = [
   { key: "all", label: "All codes" },
   { key: "ready", label: "Has any lane" },
-  { key: "questions", label: "Has questions" },
+  { key: "questions", label: "Practice ready" },
   { key: "lessons", label: "Has lesson" },
   { key: "needs", label: "Needs content" },
 ] as const;
@@ -60,6 +60,14 @@ type ComponentFilter = (typeof COMPONENT_FILTERS)[number]["key"];
 const ALL_SUBJECTS = "All subjects";
 const ALL_SUBTOPICS = "All subtopics";
 const OUTLINE_CODE_RE = /^\d{8}$/;
+
+function matchesComponentFilter(node: AtlasCoverageNode, filter: ComponentFilter) {
+  if (filter === "ready") return hasAnyLane(node);
+  if (filter === "questions") return node.question_count > 0;
+  if (filter === "lessons") return node.leadme_set_count + node.leadme_item_count > 0;
+  if (filter === "needs") return !hasAnyLane(node);
+  return true;
+}
 
 function readRequestedCode() {
   if (typeof window === "undefined") return null;
@@ -218,12 +226,7 @@ export function AtlasClient() {
     return allNodes.filter((node) => {
       if (subjectFilter !== ALL_SUBJECTS && node.subject_display !== subjectFilter) return false;
       if (subtopicFilter !== ALL_SUBTOPICS && node.subtopic !== subtopicFilter) return false;
-      if (componentFilter === "ready" && !hasAnyLane(node)) return false;
-      if (componentFilter === "questions" && node.question_count === 0) return false;
-      if (componentFilter === "lessons" && node.leadme_set_count + node.leadme_item_count === 0) {
-        return false;
-      }
-      if (componentFilter === "needs" && hasAnyLane(node)) return false;
+      if (!matchesComponentFilter(node, componentFilter)) return false;
       if (!needle) return true;
       return [node.code, node.subject_display, node.subtopic, node.outline_text].some((value) =>
         value.toLowerCase().includes(needle),
@@ -321,6 +324,17 @@ export function AtlasClient() {
         subjectFilter === ALL_SUBJECTS || node.subject_display === subjectFilter;
       const subtopicOk = subtopic === ALL_SUBTOPICS || node.subtopic === subtopic;
       return subjectOk && subtopicOk;
+    });
+    selectCode(next?.code ?? null);
+  }
+
+  function chooseComponentFilter(filter: ComponentFilter) {
+    setComponentFilter(filter);
+    const next = allNodes.find((node) => {
+      const subjectOk =
+        subjectFilter === ALL_SUBJECTS || node.subject_display === subjectFilter;
+      const subtopicOk = subtopicFilter === ALL_SUBTOPICS || node.subtopic === subtopicFilter;
+      return subjectOk && subtopicOk && matchesComponentFilter(node, filter);
     });
     selectCode(next?.code ?? null);
   }
@@ -449,7 +463,7 @@ export function AtlasClient() {
             <div className="grid gap-3 py-5 sm:grid-cols-2 lg:grid-cols-4">
               <Metric label="Outline codes" value={String(state.nodes.length)} />
               <Metric
-                label="Codes with questions"
+                label="Practice-ready codes"
                 value={String(state.nodes.filter((node) => node.question_count > 0).length)}
               />
               <Metric
@@ -526,13 +540,13 @@ export function AtlasClient() {
                   />
                   <div
                     className="mt-3 flex flex-wrap gap-2"
-                    aria-label="Filter outline codes by available lanes"
+                    aria-label="Filter outline codes by practice and available lanes"
                   >
                     {COMPONENT_FILTERS.map((filter) => (
                       <button
                         key={filter.key}
                         type="button"
-                        onClick={() => setComponentFilter(filter.key)}
+                        onClick={() => chooseComponentFilter(filter.key)}
                         className={`rounded-md px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] transition-[transform,background-color,color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] ${
                           componentFilter === filter.key
                             ? "bg-zinc-950 text-white"
@@ -600,7 +614,7 @@ export function AtlasClient() {
                                 }`}
                               >
                                 {node.question_count > 0
-                                  ? `${node.question_count} live`
+                                  ? `${node.question_count} ready`
                                   : "Needs item"}
                               </span>
                             </button>

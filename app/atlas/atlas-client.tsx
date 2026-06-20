@@ -642,6 +642,15 @@ export function AtlasClient() {
     selectCode(scopedLessonNodes[0]?.code ?? null);
   }
 
+  function clearAtlasFilters() {
+    setQuery("");
+    setSubjectFilter(ALL_SUBJECTS);
+    setSubtopicFilter(ALL_SUBTOPICS);
+    setComponentFilter("all");
+    setStudyFilter("all");
+    selectCode(allNodes[0]?.code ?? null);
+  }
+
   function toggleStudyFilter() {
     if (studyFilter === "unstudied") {
       setStudyFilter("all");
@@ -834,6 +843,13 @@ export function AtlasClient() {
                         {filter.label}
                       </button>
                     ))}
+                    <button
+                      type="button"
+                      onClick={clearAtlasFilters}
+                      className="rounded-md border border-zinc-950/15 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-[transform,background-color,border-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98]"
+                    >
+                      Clear filters
+                    </button>
                   </div>
                   <div className="mt-3 grid gap-3 rounded-md bg-[#f4f1ea] p-3">
                     <div className="min-w-0">

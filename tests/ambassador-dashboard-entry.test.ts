@@ -294,6 +294,8 @@ describe("dashboard guided-path entry", () => {
     assert.doesNotMatch(atlas, /useState\(readRequestedCode\)/);
     assert.match(atlas, /window\.history\.replaceState/);
     assert.match(atlas, /chooseComponentFilter/);
+    assert.match(atlas, /clearAtlasFilters/);
+    assert.match(atlas, /Clear filters/);
     assert.match(atlas, /matchesComponentFilter/);
     assert.match(atlas, /filter === "guided"/);
     assert.match(atlas, /filter === "debriefs"/);

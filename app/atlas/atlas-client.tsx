@@ -479,6 +479,13 @@ export function AtlasClient() {
     });
   }
 
+  function focusSelectedSubtopic() {
+    if (!selected) return;
+    setSubjectFilter(selected.subject_display);
+    setSubtopicFilter(selected.subtopic);
+    selectCode(selected.code);
+  }
+
   function chooseSubject(subject: string) {
     setSubjectFilter(subject);
     setSubtopicFilter(ALL_SUBTOPICS);
@@ -880,6 +887,13 @@ export function AtlasClient() {
                       <p className="mt-2 text-sm leading-6 text-zinc-300">
                         {selected.subject_display} / {selected.subtopic}
                       </p>
+                      <button
+                        type="button"
+                        onClick={focusSelectedSubtopic}
+                        className="mt-3 inline-flex w-full items-center justify-center rounded-md border border-white/15 bg-white/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-100 transition-[transform,background-color,border-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-white/35 hover:bg-white/15 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                      >
+                        Focus this subtopic
+                      </button>
                       <p className="mt-3 rounded-md bg-white/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-300">
                         Saved on this device for next time
                       </p>

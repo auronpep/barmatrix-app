@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { api, ApiClientError, type AtlasAnswer, type Letter } from "@/lib/api-client";
+import { api, ApiClientError, type AtlasAnswer, type AtlasQuestionListItem, type Letter } from "@/lib/api-client";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
 
 const LETTERS: Letter[] = ["A", "B", "C", "D"];
@@ -26,6 +26,9 @@ export default function AtlasQuestionPracticePage() {
     selected: null,
     submitted: false,
   });
+  const [codeQuestions, setCodeQuestions] = useState<{ outlineCode: string; items: AtlasQuestionListItem[] } | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!isLoaded || !isSignedIn) return;
@@ -37,7 +40,11 @@ export default function AtlasQuestionPracticePage() {
         const token = await getToken();
         if (!token) throw new Error("no session token");
         const answer = await api.getAtlasAnswer(token, questionId);
-        if (!cancelled) setState({ kind: "ready", answer });
+        const questions = await api.getAtlasQuestions(token, answer.question.outline_code).catch(() => ({ items: [] }));
+        if (!cancelled) {
+          setCodeQuestions({ outlineCode: answer.question.outline_code, items: questions.items });
+          setState({ kind: "ready", answer });
+        }
       } catch (err) {
         if (cancelled) return;
         if (err instanceof ApiClientError && err.status === 403) setState({ kind: "locked" });
@@ -66,11 +73,16 @@ export default function AtlasQuestionPracticePage() {
   if (state.kind === "error") {
     return <Shell><StateBox text={state.message} /></Shell>;
   }
-  if (state.kind !== "ready") {
+  if (state.kind !== "ready" || state.answer.question.question_id !== questionId) {
     return <Shell><StateBox text="Loading Atlas question..." /></Shell>;
   }
 
   const q = state.answer.question;
+  const siblingQuestions = codeQuestions?.outlineCode === q.outline_code ? codeQuestions.items : [];
+  const questionIndex = siblingQuestions.findIndex((question) => question.question_id === questionId);
+  const previousQuestion = questionIndex > 0 ? siblingQuestions[questionIndex - 1] : null;
+  const nextQuestion =
+    questionIndex >= 0 && questionIndex < siblingQuestions.length - 1 ? siblingQuestions[questionIndex + 1] : null;
   const selected = selection.questionId === questionId ? selection.selected : null;
   const submitted = selection.questionId === questionId ? selection.submitted : false;
   const isCorrect = submitted && selected === q.correct_answer;
@@ -101,6 +113,11 @@ export default function AtlasQuestionPracticePage() {
           {q.outline_code} - {q.outline_text}
         </h1>
         <p className="mt-2 text-sm text-zinc-600">{q.subject_display} / {q.subtopic}</p>
+        {questionIndex >= 0 ? (
+          <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-500">
+            Question {questionIndex + 1} / {siblingQuestions.length}
+          </p>
+        ) : null}
         <p className="mt-5 whitespace-pre-wrap text-[15px] leading-7 text-zinc-800">{q.stem}</p>
         <p className="mt-5 border-l-4 border-red-700 pl-4 font-serif text-lg italic">
           {q.call_text}
@@ -170,9 +187,28 @@ export default function AtlasQuestionPracticePage() {
           <p className="mt-4 whitespace-pre-wrap text-[15px] leading-7 text-zinc-800">
             {q.minimum_explanation}
           </p>
+          {(previousQuestion || nextQuestion) ? (
+            <div className="mt-6 flex flex-wrap gap-3">
+              {previousQuestion ? (
+                <QuestionNavLink question={previousQuestion} label="Previous question" />
+              ) : null}
+              {nextQuestion ? <QuestionNavLink question={nextQuestion} label="Next question" /> : null}
+            </div>
+          ) : null}
         </section>
       ) : null}
     </Shell>
+  );
+}
+
+function QuestionNavLink({ question, label }: { question: AtlasQuestionListItem; label: string }) {
+  return (
+    <Link
+      href={`/atlas/questions/${encodeURIComponent(question.question_id)}/practice`}
+      className="rounded-md border border-zinc-950/15 px-5 py-3 font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-700 transition-[transform,border-color,background-color] duration-200 hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98]"
+    >
+      {label}
+    </Link>
   );
 }
 

@@ -220,11 +220,15 @@ describe("dashboard guided-path entry", () => {
     assert.match(answer, /#atlas-code-questions/);
     assert.match(answer, /encodeURIComponent\(q\.outline_code\)/);
     assert.match(practice, /getAtlasAnswer/);
+    assert.match(practice, /getAtlasQuestions/);
     assert.match(practice, /Submit answer/);
     assert.match(practice, /setSelection/);
     assert.match(practice, /submitted: true/);
     assert.match(practice, /selected === q\.correct_answer/);
     assert.match(practice, /Study answer debrief/);
+    assert.match(practice, /QuestionNavLink/);
+    assert.match(practice, /Next question/);
+    assert.match(practice, /Previous question/);
     assert.doesNotMatch(practice, /QuestionRunner/);
     assert.match(client, /getAtlasComponents/);
     assert.match(client, /AtlasLeadMeItemPreview/);

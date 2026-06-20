@@ -292,9 +292,11 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /focusSelectedSubtopic/);
     assert.match(atlas, /Focus this subtopic/);
     assert.match(atlas, /toggleStudiedCode/);
+    assert.match(atlas, /resetScopeProgress/);
     assert.match(atlas, /markStudiedAndContinue/);
     assert.match(atlas, /Studied on this device/);
     assert.match(atlas, /Mark studied/);
+    assert.match(atlas, /Reset scope progress/);
     assert.match(atlas, /Mark studied \+ continue/);
     assert.match(atlas, /Continue lesson walk/);
     assert.match(atlas, /Restart lesson walk/);

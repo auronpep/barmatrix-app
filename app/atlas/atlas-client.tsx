@@ -651,6 +651,16 @@ export function AtlasClient() {
     });
   }
 
+  function resetScopeProgress() {
+    if (scopedStudiedCount === 0) return;
+    const scopedCodes = new Set(scopedNodes.map((node) => node.code));
+    setStudiedCodes((current) => {
+      const next = new Set([...current].filter((code) => !scopedCodes.has(code)));
+      writeStoredStudiedCodes(next);
+      return next;
+    });
+  }
+
   function markStudiedAndContinue() {
     if (!selected || !lessonWalkTargetCode) return;
     setStudiedCodes((current) => {
@@ -1426,6 +1436,13 @@ export function AtlasClient() {
                             disabled={!nextUnstudiedCode}
                             onClick={() => nextUnstudiedCode && selectCode(nextUnstudiedCode)}
                           />
+                          <div className="col-span-2">
+                            <WalkButton
+                              label="Reset scope progress"
+                              disabled={scopedStudiedCount === 0}
+                              onClick={resetScopeProgress}
+                            />
+                          </div>
                         </div>
                       </div>
 

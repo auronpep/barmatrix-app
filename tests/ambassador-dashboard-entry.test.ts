@@ -108,6 +108,10 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Study sequence/);
     assert.match(atlas, /Anchor this code/);
     assert.match(atlas, /Work approved questions/);
+    assert.match(atlas, /firstSelectedQuestion/);
+    assert.match(atlas, /Open first answer/);
+    assert.match(atlas, /atlas-code-questions/);
+    assert.match(atlas, /View question bank/);
     assert.match(atlas, /Open approved support/);
     assert.match(atlas, /Follow approved detours/);
     assert.match(atlas, /LeadMe lesson/);

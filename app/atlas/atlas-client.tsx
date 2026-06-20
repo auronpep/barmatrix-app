@@ -351,6 +351,7 @@ export function AtlasClient() {
     questionState.kind === "ready" && questionState.code === selectedCode
       ? questionState.items
       : [];
+  const firstSelectedQuestion = selectedQuestions[0] ?? null;
   const questionLoading = Boolean(selectedCode && questionState.code !== selectedCode);
   const questionError =
     questionState.kind === "error" && questionState.code === selectedCode
@@ -950,6 +951,23 @@ export function AtlasClient() {
                                     )}, then open the answer debrief.`
                                   : "Approval gate: no approved questions are attached to this code yet."}
                               </p>
+                              {firstSelectedQuestion ? (
+                                <Link
+                                  href={`/atlas/questions/${encodeURIComponent(
+                                    firstSelectedQuestion.question_id,
+                                  )}/answer`}
+                                  className="mt-2 inline-flex rounded-md border border-zinc-950/15 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-colors hover:border-zinc-950 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                                >
+                                  Open first answer
+                                </Link>
+                              ) : selected.question_count > 0 ? (
+                                <a
+                                  href="#atlas-code-questions"
+                                  className="mt-2 inline-flex font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600 underline underline-offset-4 hover:text-zinc-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                                >
+                                  View question bank
+                                </a>
+                              ) : null}
                             </li>
                             <li className="border-l-2 border-zinc-300 pl-3">
                               <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
@@ -1168,7 +1186,10 @@ export function AtlasClient() {
                         </div>
                       </section>
 
-                      <section className="mt-4 rounded-lg bg-white p-4 text-zinc-950">
+                      <section
+                        id="atlas-code-questions"
+                        className="mt-4 scroll-mt-6 rounded-lg bg-white p-4 text-zinc-950"
+                      >
                         <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                           Question bank
                         </p>

@@ -77,12 +77,20 @@ export function AtlasAnswerClient() {
           {q.outline_code} - {q.outline_text}
         </h1>
         <p className="mt-2 text-sm text-zinc-600">{q.subject_display} / {q.subtopic}</p>
-        <Link
-          href={`/atlas?code=${encodeURIComponent(q.outline_code)}#atlas-code-lesson`}
-          className="mt-5 inline-flex w-fit items-center justify-center rounded-md border border-zinc-950/15 bg-[#f7f5ef] px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-700 transition-[transform,background-color,border-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950 hover:bg-white active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
-        >
-          Study this outline code
-        </Link>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <Link
+            href={`/atlas?code=${encodeURIComponent(q.outline_code)}#atlas-code-lesson`}
+            className="inline-flex w-fit items-center justify-center rounded-md border border-zinc-950/15 bg-[#f7f5ef] px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-700 transition-[transform,background-color,border-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950 hover:bg-white active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+          >
+            Study this outline code
+          </Link>
+          <Link
+            href={`/atlas?code=${encodeURIComponent(q.outline_code)}#atlas-code-questions`}
+            className="inline-flex w-fit items-center justify-center rounded-md border border-zinc-950 bg-zinc-950 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-white transition-[transform,background-color,border-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-800 hover:bg-zinc-800 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+          >
+            Review code questions
+          </Link>
+        </div>
       </article>
 
       <section className="border-x border-b border-zinc-300 bg-white p-6">

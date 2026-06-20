@@ -32,10 +32,14 @@ export async function generateMetadata({
 
 export default async function TrapDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ atlasCode?: string | string[] }>;
 }) {
   const { slug } = await params;
+  const atlasCodeParam = (await searchParams)?.atlasCode;
+  const atlasCode = Array.isArray(atlasCodeParam) ? atlasCodeParam[0] : atlasCodeParam;
   const detail = await getTrapDetail(slug);
   if (!detail) {
     notFound();
@@ -56,6 +60,14 @@ export default async function TrapDetailPage({
       >
         ← All traps
       </Link>
+      {atlasCode ? (
+        <Link
+          href={`/atlas?code=${encodeURIComponent(atlasCode)}#atlas-code-detours`}
+          className="ml-4 rounded-md font-mono text-xs uppercase tracking-wider text-red-700 underline-offset-4 hover:text-red-900 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+        >
+          Back to Atlas code
+        </Link>
+      ) : null}
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
         {detail.kinds.map((kind) => (

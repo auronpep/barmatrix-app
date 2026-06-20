@@ -110,6 +110,8 @@ describe("dashboard guided-path entry", () => {
     const answer = readProjectFile("app/atlas/questions/[id]/answer/answer-client.tsx");
     const practice = readProjectFile("app/atlas/questions/[id]/practice/page.tsx");
     const drill = readProjectFile("app/drills/[drill_id]/page.tsx");
+    const trap = readProjectFile("app/traps/[slug]/page.tsx");
+    const tension = readProjectFile("app/tensions/[slug]/page.tsx");
     const client = readProjectFile("lib/api-client.ts");
     const body = readProjectFile("components/preview-dashboard/dashboard-v2-body.tsx");
 
@@ -367,8 +369,10 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /atlasCodeDetourHref/);
     assert.match(atlas, /type: "trap"/);
     assert.match(atlas, /type: "tension"/);
-    assert.match(atlas, /\/traps\/\$\{encodeURIComponent\(detour\.key\)\}/);
-    assert.match(atlas, /\/tensions\/\$\{encodeURIComponent\(detour\.key\)\}/);
+    assert.match(atlas, /atlasCodeDetourHref\(detour, selectedCode\)/);
+    assert.match(atlas, /\?atlasCode=\$\{encodeURIComponent\(outlineCode\)\}/);
+    assert.match(atlas, /\/traps\/\$\{encodeURIComponent\(detour\.key\)\}\$\{atlasCode\}/);
+    assert.match(atlas, /\/tensions\/\$\{encodeURIComponent\(detour\.key\)\}\$\{atlasCode\}/);
     assert.match(atlas, /Approval gate/);
     assert.match(atlas, /readRequestedCode/);
     assert.match(atlas, /const requestedCode = readRequestedCode\(\)/);
@@ -388,8 +392,10 @@ describe("dashboard guided-path entry", () => {
     assert.match(answer, /case_study_modules/);
     assert.match(answer, /Related study detours/);
     assert.match(answer, /detourHref/);
-    assert.match(answer, /\/traps\/\$\{encodeURIComponent\(detour\.key\)\}/);
-    assert.match(answer, /\/tensions\/\$\{encodeURIComponent\(detour\.key\)\}/);
+    assert.match(answer, /detourHref\(detour, q\.outline_code\)/);
+    assert.match(answer, /\?atlasCode=\$\{encodeURIComponent\(outlineCode\)\}/);
+    assert.match(answer, /\/traps\/\$\{encodeURIComponent\(detour\.key\)\}\$\{atlasCode\}/);
+    assert.match(answer, /\/tensions\/\$\{encodeURIComponent\(detour\.key\)\}\$\{atlasCode\}/);
     assert.match(answer, /answer\.detours/);
     assert.match(answer, /key !== "detours"/);
     assert.match(answer, /Study this outline code/);
@@ -423,6 +429,12 @@ describe("dashboard guided-path entry", () => {
     assert.match(drill, /isAtlasOutlineDrill/);
     assert.match(drill, /router\.replace\(atlasPracticeHref\(firstQuestionId\)\)/);
     assert.match(drill, /red_zone_dimension === "outline_code"/);
+    assert.match(trap, /searchParams\?: Promise<\{ atlasCode\?: string \| string\[\] \}>/);
+    assert.match(trap, /Back to Atlas code/);
+    assert.match(trap, /#atlas-code-detours/);
+    assert.match(tension, /searchParams\?: Promise<\{ atlasCode\?: string \| string\[\] \}>/);
+    assert.match(tension, /Back to Atlas code/);
+    assert.match(tension, /#atlas-code-detours/);
     assert.match(client, /getAtlasComponents/);
     assert.match(client, /AtlasLeadMeItemPreview/);
     assert.match(client, /AtlasDebriefElementPreview/);

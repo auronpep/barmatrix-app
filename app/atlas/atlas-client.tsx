@@ -592,7 +592,7 @@ export function AtlasClient() {
   const debriefElementPreviews = componentData?.debrief_element_previews ?? [];
   const detourPreviews = componentData?.detour_previews ?? [];
   const detourLinks = detourPreviews
-    .map((detour) => ({ detour, href: atlasCodeDetourHref(detour) }))
+    .map((detour) => ({ detour, href: atlasCodeDetourHref(detour, selectedCode) }))
     .filter((item): item is { detour: AtlasAnswerDetour; href: string } => item.href !== null);
   const trapDetourCount = detourLinks.filter(({ detour }) => detour.type === "trap").length;
   const tensionDetourCount = detourLinks.filter(({ detour }) => detour.type === "tension").length;
@@ -2709,12 +2709,13 @@ function ComponentPreviewRow({
   );
 }
 
-function atlasCodeDetourHref(detour: AtlasAnswerDetour): string | null {
+function atlasCodeDetourHref(detour: AtlasAnswerDetour, outlineCode: string | null): string | null {
+  const atlasCode = outlineCode ? `?atlasCode=${encodeURIComponent(outlineCode)}` : "";
   if (detour.type === "trap") {
-    return `/traps/${encodeURIComponent(detour.key)}`;
+    return `/traps/${encodeURIComponent(detour.key)}${atlasCode}`;
   }
   if (detour.type === "tension") {
-    return `/tensions/${encodeURIComponent(detour.key)}`;
+    return `/tensions/${encodeURIComponent(detour.key)}${atlasCode}`;
   }
   return null;
 }

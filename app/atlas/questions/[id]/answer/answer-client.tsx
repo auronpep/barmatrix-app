@@ -60,7 +60,7 @@ export function AtlasAnswerClient() {
   const q = state.answer.question;
   const practiceHref = `/atlas/questions/${encodeURIComponent(q.question_id)}/practice`;
   const detours = state.answer.detours
-    .map((detour) => ({ detour, href: detourHref(detour) }))
+    .map((detour) => ({ detour, href: detourHref(detour, q.outline_code) }))
     .filter((item): item is { detour: AtlasAnswerDetour; href: string } => item.href !== null);
   const caseStudyEntries = Object.entries(state.answer.case_study_modules).filter(
     ([key, value]) =>
@@ -191,15 +191,16 @@ export function AtlasAnswerClient() {
   );
 }
 
-function detourHref(detour: AtlasAnswerDetour): string | null {
+function detourHref(detour: AtlasAnswerDetour, outlineCode: string): string | null {
   if (detour.type === "outline_code" && OUTLINE_CODE_RE.test(detour.key)) {
     return `/atlas?code=${encodeURIComponent(detour.key)}#atlas-code-lesson`;
   }
+  const atlasCode = `?atlasCode=${encodeURIComponent(outlineCode)}`;
   if (detour.type === "trap") {
-    return `/traps/${encodeURIComponent(detour.key)}`;
+    return `/traps/${encodeURIComponent(detour.key)}${atlasCode}`;
   }
   if (detour.type === "tension") {
-    return `/tensions/${encodeURIComponent(detour.key)}`;
+    return `/tensions/${encodeURIComponent(detour.key)}${atlasCode}`;
   }
   return null;
 }

@@ -416,6 +416,9 @@ describe("dashboard guided-path entry", () => {
     assert.match(practice, /QuestionNavLink/);
     assert.match(practice, /Next question/);
     assert.match(practice, /Previous question/);
+    assert.match(practice, /position=\{questionIndex\}/);
+    assert.match(practice, /position=\{questionIndex \+ 2\}/);
+    assert.match(practice, /Question \{position\} \/ \{total\}/);
     assert.doesNotMatch(practice, /QuestionRunner/);
     assert.match(drill, /isAtlasOutlineDrill/);
     assert.match(drill, /router\.replace\(atlasPracticeHref\(firstQuestionId\)\)/);

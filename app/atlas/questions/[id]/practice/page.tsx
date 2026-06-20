@@ -191,9 +191,21 @@ export default function AtlasQuestionPracticePage() {
           {(previousQuestion || nextQuestion) ? (
             <div className="mt-6 flex flex-wrap gap-3">
               {previousQuestion ? (
-                <QuestionNavLink question={previousQuestion} label="Previous question" />
+                <QuestionNavLink
+                  question={previousQuestion}
+                  label="Previous question"
+                  position={questionIndex}
+                  total={siblingQuestions.length}
+                />
               ) : null}
-              {nextQuestion ? <QuestionNavLink question={nextQuestion} label="Next question" /> : null}
+              {nextQuestion ? (
+                <QuestionNavLink
+                  question={nextQuestion}
+                  label="Next question"
+                  position={questionIndex + 2}
+                  total={siblingQuestions.length}
+                />
+              ) : null}
             </div>
           ) : null}
           <div className="mt-4 flex flex-wrap gap-3">
@@ -216,13 +228,26 @@ export default function AtlasQuestionPracticePage() {
   );
 }
 
-function QuestionNavLink({ question, label }: { question: AtlasQuestionListItem; label: string }) {
+function QuestionNavLink({
+  question,
+  label,
+  position,
+  total,
+}: {
+  question: AtlasQuestionListItem;
+  label: string;
+  position: number;
+  total: number;
+}) {
   return (
     <Link
       href={`/atlas/questions/${encodeURIComponent(question.question_id)}/practice`}
       className="rounded-md border border-zinc-950/15 px-5 py-3 font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-700 transition-[transform,border-color,background-color] duration-200 hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98]"
     >
-      {label}
+      <span className="block">{label}</span>
+      <span className="mt-1 block text-[10px] text-zinc-500">
+        Question {position} / {total}
+      </span>
     </Link>
   );
 }

@@ -2467,14 +2467,20 @@ export function AtlasClient() {
                               ) : null}
                             </div>
                           ) : null}
-                          {selectedQuestions.map((question) => (
+                          {selectedQuestions.map((question, index) => (
                             <article
                               key={question.question_id}
                               className="border-l-2 border-red-700 pl-3"
                             >
-                              <p className="font-mono text-[11px] font-semibold text-zinc-800">
-                                {question.question_id}
-                              </p>
+                              <div className="flex flex-wrap items-center justify-between gap-2">
+                                <p className="font-mono text-[11px] font-semibold text-zinc-800">
+                                  {question.question_id}
+                                </p>
+                                <span className="rounded-md bg-zinc-100 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                                  Question {index + 1} /{" "}
+                                  {selectedQuestions.length}
+                                </span>
+                              </div>
                               <p className="mt-1 text-sm leading-6 text-zinc-700">
                                 {clip(question.stem)}
                               </p>

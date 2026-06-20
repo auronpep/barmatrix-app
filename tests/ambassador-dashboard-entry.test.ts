@@ -124,12 +124,15 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /filter === "needs_questions"/);
     assert.match(atlas, /node\.question_count === 0/);
     assert.match(atlas, /filter === "needs_lessons"/);
-    assert.match(atlas, /node\.leadme_set_count \+ node\.leadme_item_count === 0/);
+    assert.match(atlas, /function hasLessonLane/);
+    assert.match(atlas, /node\.leadme_set_count \+ node\.leadme_item_count > 0/);
     assert.match(atlas, /Practice-ready codes/);
     assert.match(atlas, /SubtopicStat/);
     assert.match(atlas, /readyCodeCount/);
     assert.match(atlas, /scopedNoQuestionCount/);
     assert.match(atlas, /scopedNoLessonCount/);
+    assert.match(atlas, /lessonWalkNodes/);
+    assert.match(atlas, /Next lesson target/);
     assert.match(atlas, /Needs Q/);
     assert.match(atlas, /scopedWalkNode/);
     assert.match(atlas, /Next walk target/);

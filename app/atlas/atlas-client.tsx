@@ -76,8 +76,8 @@ function matchesComponentFilter(node: AtlasCoverageNode, filter: ComponentFilter
   if (filter === "ready") return hasAnyLane(node);
   if (filter === "questions") return node.question_count > 0;
   if (filter === "needs_questions") return node.question_count === 0;
-  if (filter === "lessons") return node.leadme_set_count + node.leadme_item_count > 0;
-  if (filter === "needs_lessons") return node.leadme_set_count + node.leadme_item_count === 0;
+  if (filter === "lessons") return hasLessonLane(node);
+  if (filter === "needs_lessons") return !hasLessonLane(node);
   if (filter === "guided") return node.leadme_item_count > 0;
   if (filter === "debriefs") return node.debrief_element_count > 0;
   if (filter === "needs") return !hasAnyLane(node);
@@ -329,9 +329,7 @@ export function AtlasClient() {
     0,
   );
   const scopedNoQuestionCount = scopedNodes.length - scopedPracticeNodes.length;
-  const scopedNoLessonCount = scopedNodes.filter(
-    (node) => node.leadme_set_count + node.leadme_item_count === 0,
-  ).length;
+  const scopedNoLessonCount = scopedNodes.filter((node) => !hasLessonLane(node)).length;
   const scopedComponentCodeCount = scopedNodes.filter((node) => nodeComponentTotal(node) > 0)
     .length;
   const scopedLaneReadyCount = scopedNodes.filter(hasAnyLane).length;
@@ -442,23 +440,32 @@ export function AtlasClient() {
       null
     );
   }, [allNodes, scopedNodes, selectedCode, studiedCodes]);
+  const lessonWalkNodes = useMemo(() => {
+    const scopedLessonNodes = scopedNodes.filter(hasLessonLane);
+    return scopedLessonNodes.length > 0 ? scopedLessonNodes : allNodes.filter(hasLessonLane);
+  }, [allNodes, scopedNodes]);
   const nextLessonWalkCode = useMemo(() => {
-    const walkNodes = scopedNodes.length > 0 ? scopedNodes : allNodes;
-    if (!selectedCode || walkNodes.length === 0) return null;
+    if (!selectedCode || lessonWalkNodes.length === 0) return null;
     const assumedStudied = new Set(studiedCodes);
     assumedStudied.add(selectedCode);
-    const scopedIndex = walkNodes.findIndex((node) => node.code === selectedCode);
-    const afterSelected = scopedIndex >= 0 ? walkNodes.slice(scopedIndex + 1) : walkNodes;
+    const scopedIndex = lessonWalkNodes.findIndex((node) => node.code === selectedCode);
+    const afterSelected =
+      scopedIndex >= 0 ? lessonWalkNodes.slice(scopedIndex + 1) : lessonWalkNodes;
     return (
       afterSelected.find((node) => !assumedStudied.has(node.code))?.code ??
-      walkNodes.find((node) => !assumedStudied.has(node.code))?.code ??
+      lessonWalkNodes.find((node) => !assumedStudied.has(node.code))?.code ??
       null
     );
-  }, [allNodes, scopedNodes, selectedCode, studiedCodes]);
+  }, [lessonWalkNodes, selectedCode, studiedCodes]);
   const scopedWalkCode = nextUnstudiedCode ?? scopedNodes[0]?.code ?? null;
   const scopedWalkNode = scopedWalkCode
     ? (scopedNodes.find((node) => node.code === scopedWalkCode) ??
         allNodes.find((node) => node.code === scopedWalkCode) ??
+        null)
+    : null;
+  const nextLessonWalkNode = nextLessonWalkCode
+    ? (lessonWalkNodes.find((node) => node.code === nextLessonWalkCode) ??
+        allNodes.find((node) => node.code === nextLessonWalkCode) ??
         null)
     : null;
   const scopedWalkActionLabel =
@@ -870,6 +877,12 @@ export function AtlasClient() {
                     {scopedWalkNode ? (
                       <p className="truncate font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
                         Next walk target: {scopedWalkNode.code} / {scopedWalkNode.outline_text}
+                      </p>
+                    ) : null}
+                    {nextLessonWalkNode ? (
+                      <p className="truncate font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                        Next lesson target: {nextLessonWalkNode.code} /{" "}
+                        {nextLessonWalkNode.outline_text}
                       </p>
                     ) : null}
                   </div>
@@ -2221,6 +2234,10 @@ function laneFootprint(node: AtlasCoverageNode): string {
 
 function hasAnyLane(node: AtlasCoverageNode): boolean {
   return node.question_count + nodeComponentTotal(node) > 0;
+}
+
+function hasLessonLane(node: AtlasCoverageNode): boolean {
+  return node.leadme_set_count + node.leadme_item_count > 0;
 }
 
 function totalCounts(counts: { count: number }[]): number {

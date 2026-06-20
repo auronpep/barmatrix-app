@@ -1626,8 +1626,8 @@ export function AtlasClient() {
                             status={trapCount > 0 ? "Live" : "Approval gate"}
                             meta={trapCount > 0 ? formatCount(trapCount, "trap") : "Not connected"}
                             active={trapCount > 0}
-                            actionLabel="Open detours"
-                            href={detourLinks.length > 0 ? "#atlas-code-detours" : undefined}
+                            actionLabel="Open trap detours"
+                            href={trapDetourCount > 0 ? "#atlas-code-detours" : undefined}
                           />
                           <LaneRow
                             label="Flashcards"
@@ -1650,8 +1650,8 @@ export function AtlasClient() {
                             status={tensionCount > 0 ? "Live" : "Approval gate"}
                             meta={tensionCount > 0 ? formatCount(tensionCount, "tension") : "Not connected"}
                             active={tensionCount > 0}
-                            actionLabel="Open detours"
-                            href={detourLinks.length > 0 ? "#atlas-code-detours" : undefined}
+                            actionLabel="Open tension detours"
+                            href={tensionDetourCount > 0 ? "#atlas-code-detours" : undefined}
                           />
                           <LaneRow
                             label="Answer debriefs"

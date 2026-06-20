@@ -138,6 +138,8 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /label="Flashcards"/);
     assert.match(atlas, /label="Trap detours"/);
     assert.match(atlas, /label="Tension detours"/);
+    assert.match(atlas, /actionLabel="Open trap detours"/);
+    assert.match(atlas, /actionLabel="Open tension detours"/);
     assert.match(atlas, /label="Answer debriefs"/);
     assert.match(atlas, /href="#atlas-code-detours"/);
     assert.match(atlas, /aria-disabled="true"/);
@@ -220,14 +222,16 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /LaneRow/);
     assert.match(atlas, /actionLabel="Open questions"/);
     assert.match(atlas, /actionLabel="Open LeadMe"/);
-    assert.match(atlas, /actionLabel="Open detours"/);
+    assert.doesNotMatch(atlas, /actionLabel="Open detours"/);
     assert.match(atlas, /actionLabel="Open debrief"/);
     assert.match(atlas, /href="#atlas-code-questions"/);
-    assert.match(atlas, /href=\{detourLinks\.length > 0 \? "#atlas-code-detours" : undefined\}/);
     assert.match(atlas, /leadme_item_previews/);
     assert.match(atlas, /debrief_element_previews/);
     assert.match(atlas, /Open through LeadMe/);
     assert.match(atlas, /onOpen=\{leadmeSet \? startLeadMe : undefined\}/);
+    assert.match(atlas, /trapDetourCount > 0 \? "#atlas-code-detours" : undefined/);
+    assert.match(atlas, /tensionDetourCount > 0 \? "#atlas-code-detours" : undefined/);
+    assert.doesNotMatch(atlas, /href=\{detourLinks\.length > 0 \? "#atlas-code-detours" : undefined\}/);
     assert.match(atlas, /Open answer debrief/);
     assert.match(
       atlas,

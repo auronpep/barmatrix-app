@@ -933,6 +933,9 @@ export function AtlasClient() {
                 </div>
 
                 <div className="mt-4 grid gap-4">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+                    Visible codes: {filtered.length} / {allNodes.length} in {scopeLabel}
+                  </p>
                   {grouped.length === 0 ? (
                     <div className="rounded-lg border border-zinc-950/10 bg-white p-6 text-sm text-zinc-700">
                       No outline codes match this filter.

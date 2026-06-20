@@ -611,6 +611,14 @@ export function AtlasClient() {
   const tensionCount =
     countMatching(componentData?.debrief_elements ?? [], ["tension"]) +
     countMatching(componentData?.leadme_items ?? [], ["tension", "clash"]);
+  const selectedMissingLanes = [
+    !selectedStudied ? "study the lesson" : null,
+    selected && selected.question_count === 0 ? "add approved practice" : null,
+    !componentsLoading && previewCount + leadmeItemTotal + debriefElementTotal === 0
+      ? "approve support lanes"
+      : null,
+    !componentsLoading && trapCount + tensionCount === 0 ? "approve detours" : null,
+  ].filter((item): item is string => Boolean(item));
   const loading = !isLoaded || (isSignedIn && state.kind === "loading");
 
   function selectCode(code: string | null) {
@@ -2022,6 +2030,13 @@ export function AtlasClient() {
                                   label: "Detours ready",
                                   value: trapCount + tensionCount > 0 ? "Ready" : "Gate",
                                   ready: trapCount + tensionCount > 0,
+                                },
+                                {
+                                  label: "Next gap",
+                                  value: componentsLoading
+                                    ? "Checking"
+                                    : (selectedMissingLanes[0] ?? "Covered"),
+                                  ready: !componentsLoading && selectedMissingLanes.length === 0,
                                 },
                               ].map((item) => (
                                 <div

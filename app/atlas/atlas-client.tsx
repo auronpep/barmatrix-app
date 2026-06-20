@@ -360,6 +360,7 @@ export function AtlasClient() {
     0,
   );
   const scopedNoQuestionCount = scopedNodes.length - scopedPracticeNodes.length;
+  const scopedNextQuestionGapNode = scopedNoQuestionNodes[0] ?? null;
   const scopedNoLessonCount = scopedNodes.filter((node) => !hasLessonLane(node)).length;
   const scopedComponentCodeCount = scopedNodes.filter((node) => nodeComponentTotal(node) > 0)
     .length;
@@ -1048,6 +1049,25 @@ export function AtlasClient() {
                             </span>
                             <span className="mt-1 block truncate text-sm font-semibold text-zinc-900">
                               {scopedNextLessonNode.outline_text}
+                            </span>
+                          </span>
+                        </button>
+                      ) : null}
+                      {scopedNextQuestionGapNode ? (
+                        <button
+                          type="button"
+                          onClick={() => selectCode(scopedNextQuestionGapNode.code)}
+                          className="mt-2 grid w-full grid-cols-[96px_minmax(0,1fr)] gap-3 rounded-md bg-white px-3 py-2 text-left transition-[transform,background-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-zinc-50 active:scale-[0.99]"
+                        >
+                          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-amber-700">
+                            Next question gap
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block font-mono text-[10px] font-semibold text-zinc-950">
+                              {scopedNextQuestionGapNode.code}
+                            </span>
+                            <span className="mt-1 block truncate text-sm font-semibold text-zinc-900">
+                              {scopedNextQuestionGapNode.outline_text}
                             </span>
                           </span>
                         </button>

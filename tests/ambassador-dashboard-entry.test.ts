@@ -94,6 +94,9 @@ describe("dashboard guided-path entry", () => {
     const body = readProjectFile("components/preview-dashboard/dashboard-v2-body.tsx");
 
     assert.match(atlas, /Walk the MBE outline by code/);
+    assert.match(atlas, /Has any lane/);
+    assert.match(atlas, /Needs content/);
+    assert.match(atlas, /Codes with components/);
     assert.match(atlas, /LeadMe lesson/);
     assert.match(atlas, /Question bank/);
     assert.match(atlas, /Start LeadMe/);

@@ -40,6 +40,16 @@ type SubjectStat = {
   questionCount: number;
 };
 
+const COMPONENT_FILTERS = [
+  { key: "all", label: "All codes" },
+  { key: "ready", label: "Has any lane" },
+  { key: "questions", label: "Has questions" },
+  { key: "lessons", label: "Has lesson" },
+  { key: "needs", label: "Needs content" },
+] as const;
+
+type ComponentFilter = (typeof COMPONENT_FILTERS)[number]["key"];
+
 const ALL_SUBJECTS = "All subjects";
 const ALL_SUBTOPICS = "All subtopics";
 
@@ -49,6 +59,7 @@ export function AtlasClient() {
   const [query, setQuery] = useState("");
   const [subjectFilter, setSubjectFilter] = useState(ALL_SUBJECTS);
   const [subtopicFilter, setSubtopicFilter] = useState(ALL_SUBTOPICS);
+  const [componentFilter, setComponentFilter] = useState<ComponentFilter>("all");
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
   const [questionState, setQuestionState] = useState<QuestionState>({
     kind: "idle",
@@ -183,12 +194,18 @@ export function AtlasClient() {
     return allNodes.filter((node) => {
       if (subjectFilter !== ALL_SUBJECTS && node.subject_display !== subjectFilter) return false;
       if (subtopicFilter !== ALL_SUBTOPICS && node.subtopic !== subtopicFilter) return false;
+      if (componentFilter === "ready" && !hasAnyLane(node)) return false;
+      if (componentFilter === "questions" && node.question_count === 0) return false;
+      if (componentFilter === "lessons" && node.leadme_set_count + node.leadme_item_count === 0) {
+        return false;
+      }
+      if (componentFilter === "needs" && hasAnyLane(node)) return false;
       if (!needle) return true;
       return [node.code, node.subject_display, node.subtopic, node.outline_text].some((value) =>
         value.toLowerCase().includes(needle),
       );
     });
-  }, [allNodes, query, subjectFilter, subtopicFilter]);
+  }, [allNodes, componentFilter, query, subjectFilter, subtopicFilter]);
 
   const grouped = useMemo(() => {
     const map = new Map<string, AtlasCoverageNode[]>();
@@ -341,7 +358,7 @@ export function AtlasClient() {
 
         {isSignedIn && state.kind === "ready" && state.nodes.length > 0 && (
           <>
-            <div className="grid gap-3 py-5 sm:grid-cols-3">
+            <div className="grid gap-3 py-5 sm:grid-cols-2 lg:grid-cols-4">
               <Metric label="Outline codes" value={String(state.nodes.length)} />
               <Metric
                 label="Codes with questions"
@@ -352,6 +369,10 @@ export function AtlasClient() {
                 value={String(
                   state.nodes.reduce((sum, node) => sum + node.question_count, 0),
                 )}
+              />
+              <Metric
+                label="Codes with components"
+                value={String(state.nodes.filter((node) => nodeComponentTotal(node) > 0).length)}
               />
             </div>
 
@@ -415,6 +436,25 @@ export function AtlasClient() {
                     placeholder="Search subject, subtopic, code, or rule..."
                     className="w-full rounded-md border border-zinc-950/15 bg-[#fbfaf6] px-4 py-3 text-sm outline-none transition-colors focus:border-red-700"
                   />
+                  <div
+                    className="mt-3 flex flex-wrap gap-2"
+                    aria-label="Filter outline codes by available lanes"
+                  >
+                    {COMPONENT_FILTERS.map((filter) => (
+                      <button
+                        key={filter.key}
+                        type="button"
+                        onClick={() => setComponentFilter(filter.key)}
+                        className={`rounded-md px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] transition-[transform,background-color,color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] ${
+                          componentFilter === filter.key
+                            ? "bg-zinc-950 text-white"
+                            : "bg-[#fbfaf6] text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950"
+                        }`}
+                      >
+                        {filter.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="mt-4 grid gap-4">
@@ -457,7 +497,12 @@ export function AtlasClient() {
                                 {node.code}
                               </span>
                               <span className="min-w-0 text-sm leading-5 text-zinc-800">
-                                {node.outline_text}
+                                <span className="block">{node.outline_text}</span>
+                                <span className="mt-1 block font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                                  {nodeComponentTotal(node) > 0
+                                    ? formatCount(nodeComponentTotal(node), "component")
+                                    : "No components"}
+                                </span>
                               </span>
                               <span
                                 className={`w-fit rounded-md px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] md:justify-self-end ${
@@ -831,6 +876,14 @@ function StateBox({ text, href, cta }: { text: string; href?: string; cta?: stri
 
 function clip(value: string, max = 150): string {
   return value.length > max ? `${value.slice(0, max - 1)}...` : value;
+}
+
+function nodeComponentTotal(node: AtlasCoverageNode): number {
+  return node.leadme_item_count + node.debrief_element_count;
+}
+
+function hasAnyLane(node: AtlasCoverageNode): boolean {
+  return node.question_count + nodeComponentTotal(node) > 0;
 }
 
 function totalCounts(counts: { count: number }[]): number {

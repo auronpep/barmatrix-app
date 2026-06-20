@@ -122,11 +122,14 @@ export interface AtlasCoverageNode {
   level: number;
   leaf: boolean;
   question_count: number;
+  leadme_item_count: number;
+  debrief_element_count: number;
+  leadme_set_count: number;
 }
 
 export interface AtlasCoverageResponse {
   nodes: AtlasCoverageNode[];
-  summary: { total: number; with_questions: number };
+  summary: { total: number; with_questions: number; with_components: number };
 }
 
 export interface AtlasQuestionListItem {

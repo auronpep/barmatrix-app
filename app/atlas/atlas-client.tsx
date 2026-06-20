@@ -219,6 +219,10 @@ export function AtlasClient() {
     }
     return [...map.values()].sort((a, b) => a.subject.localeCompare(b.subject));
   }, [allNodes]);
+  const practiceNodes = useMemo(
+    () => allNodes.filter((node) => node.question_count > 0),
+    [allNodes],
+  );
 
   const subtopics = useMemo<SubtopicStat[]>(() => {
     const source =
@@ -274,6 +278,22 @@ export function AtlasClient() {
   const nextCode =
     selectedIndex >= 0 && selectedIndex < allNodes.length - 1
       ? allNodes[selectedIndex + 1]?.code ?? null
+      : null;
+  const selectedPracticeIndex = selectedCode
+    ? practiceNodes.findIndex((node) => node.code === selectedCode)
+    : -1;
+  const selectedPracticePosition =
+    selectedPracticeIndex >= 0 ? selectedPracticeIndex + 1 : null;
+  const previousPracticeCode =
+    selectedIndex > 0
+      ? allNodes
+          .slice(0, selectedIndex)
+          .reverse()
+          .find((node) => node.question_count > 0)?.code ?? null
+      : null;
+  const nextPracticeCode =
+    selectedIndex >= 0
+      ? allNodes.slice(selectedIndex + 1).find((node) => node.question_count > 0)?.code ?? null
       : null;
   const selectedPosition = selectedIndex >= 0 ? selectedIndex + 1 : null;
   const selectedProgress =
@@ -706,6 +726,38 @@ export function AtlasClient() {
                           <div
                             className="h-full rounded-full bg-red-600"
                             style={{ width: `${selectedProgress}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="mt-3 rounded-md bg-white/10 p-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+                            Practice walk
+                          </p>
+                          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-200">
+                            {selectedPracticePosition
+                              ? `${selectedPracticePosition} / ${practiceNodes.length}`
+                              : `${practiceNodes.length} ready codes`}
+                          </p>
+                        </div>
+                        <p className="mt-2 text-sm leading-6 text-zinc-300">
+                          {selected.question_count > 0
+                            ? `${formatCount(selected.question_count, "approved question")} here.`
+                            : "No approved practice here yet. Jump to a ready code."}
+                        </p>
+                        <div className="mt-3 grid grid-cols-2 gap-2">
+                          <WalkButton
+                            label="Prev ready"
+                            disabled={!previousPracticeCode}
+                            onClick={() =>
+                              previousPracticeCode && selectCode(previousPracticeCode)
+                            }
+                          />
+                          <WalkButton
+                            label="Next ready"
+                            disabled={!nextPracticeCode}
+                            onClick={() => nextPracticeCode && selectCode(nextPracticeCode)}
                           />
                         </div>
                       </div>

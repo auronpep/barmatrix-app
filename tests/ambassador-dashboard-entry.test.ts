@@ -273,6 +273,8 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Needs Q/);
     assert.match(atlas, /Lesson ready/);
     assert.match(atlas, /Needs lesson/);
+    assert.match(atlas, /Studied/);
+    assert.match(atlas, /To study/);
     assert.match(atlas, /Prev in subtopic/);
     assert.match(atlas, /Next in subtopic/);
     assert.match(atlas, /aria-current=\{active \? "true" : undefined\}/);

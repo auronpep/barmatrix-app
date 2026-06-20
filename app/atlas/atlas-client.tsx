@@ -1283,6 +1283,7 @@ export function AtlasClient() {
                         <div className="mt-3 grid max-h-56 gap-2 overflow-y-auto pr-1">
                           {selectedSubtopicNodes.map((node) => {
                             const active = node.code === selected.code;
+                            const rowStudied = studiedCodes.has(node.code);
                             return (
                               <button
                                 key={node.code}
@@ -1328,6 +1329,15 @@ export function AtlasClient() {
                                     }`}
                                   >
                                     {hasLessonLane(node) ? "Lesson ready" : "Needs lesson"}
+                                  </span>
+                                  <span
+                                    className={`rounded-md px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] ${
+                                      rowStudied
+                                        ? "bg-emerald-100 text-emerald-900"
+                                        : "bg-white/80 text-zinc-700"
+                                    }`}
+                                  >
+                                    {rowStudied ? "Studied" : "To study"}
                                   </span>
                                 </span>
                               </button>

@@ -128,6 +128,7 @@ export function AtlasClient() {
   const [subtopicFilter, setSubtopicFilter] = useState(ALL_SUBTOPICS);
   const [componentFilter, setComponentFilter] = useState<ComponentFilter>("all");
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
+  const [resumedCode, setResumedCode] = useState<string | null>(null);
   const [studiedCodes, setStudiedCodes] = useState<Set<string>>(() => new Set());
   const [questionState, setQuestionState] = useState<QuestionState>({
     kind: "idle",
@@ -162,6 +163,7 @@ export function AtlasClient() {
           ? data.nodes.find((node) => node.code === requestedCode)
           : null;
         const storedNode = storedCode ? data.nodes.find((node) => node.code === storedCode) : null;
+        setResumedCode(!requestedNode && storedNode ? storedNode.code : null);
         setSelectedCode((current) => {
           if (requestedNode) return requestedNode.code;
           if (storedNode) return storedNode.code;
@@ -762,7 +764,7 @@ export function AtlasClient() {
                         {scopedPracticeNodes.length} ready codes / {scopedQuestionCount} questions
                       </p>
                     </div>
-                    <div className="grid gap-2 sm:grid-cols-3">
+                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
                       <button
                         type="button"
                         onClick={() => scopedWalkCode && selectCode(scopedWalkCode)}
@@ -787,7 +789,20 @@ export function AtlasClient() {
                       >
                         Jump to first ready
                       </button>
+                      <button
+                        type="button"
+                        onClick={() => resumedCode && selectCode(resumedCode)}
+                        disabled={!resumedCode || resumedCode === selectedCode}
+                        className="rounded-md border border-zinc-950/15 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-[transform,background-color,border-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
+                      >
+                        Saved code
+                      </button>
                     </div>
+                    {resumedCode ? (
+                      <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                        Saved code on this device: {resumedCode}
+                      </p>
+                    ) : null}
                   </div>
                 </div>
 

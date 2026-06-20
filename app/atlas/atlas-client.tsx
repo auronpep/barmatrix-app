@@ -366,6 +366,7 @@ export function AtlasClient() {
     .length;
   const scopedLaneReadyCount = scopedNodes.filter(hasAnyLane).length;
   const scopedNoLaneCount = scopedNoLaneNodes.length;
+  const scopedNextContentGapNode = scopedNoLaneNodes[0] ?? null;
   const scopeLabel =
     subtopicFilter !== ALL_SUBTOPICS
       ? subtopicFilter
@@ -1068,6 +1069,25 @@ export function AtlasClient() {
                             </span>
                             <span className="mt-1 block truncate text-sm font-semibold text-zinc-900">
                               {scopedNextQuestionGapNode.outline_text}
+                            </span>
+                          </span>
+                        </button>
+                      ) : null}
+                      {scopedNextContentGapNode ? (
+                        <button
+                          type="button"
+                          onClick={() => selectCode(scopedNextContentGapNode.code)}
+                          className="mt-2 grid w-full grid-cols-[96px_minmax(0,1fr)] gap-3 rounded-md bg-white px-3 py-2 text-left transition-[transform,background-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-zinc-50 active:scale-[0.99]"
+                        >
+                          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700">
+                            Next content gap
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block font-mono text-[10px] font-semibold text-zinc-950">
+                              {scopedNextContentGapNode.code}
+                            </span>
+                            <span className="mt-1 block truncate text-sm font-semibold text-zinc-900">
+                              {scopedNextContentGapNode.outline_text}
                             </span>
                           </span>
                         </button>

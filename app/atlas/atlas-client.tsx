@@ -1337,12 +1337,22 @@ export function AtlasClient() {
                         >
                           Do first question
                         </Link>
+                      ) : questionLoading && selected.question_count > 0 ? (
+                        <button
+                          type="button"
+                          disabled
+                          className="mt-2 inline-flex w-full items-center justify-center rounded-md bg-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white opacity-60"
+                        >
+                          Loading questions
+                        </button>
                       ) : selected.question_count > 0 ? (
                         <a
                           href="#atlas-code-questions"
                           className="mt-2 inline-flex w-full items-center justify-center rounded-md bg-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-red-800 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-300"
                         >
-                          Open question list
+                          {selectedQuestions.length > 0
+                            ? "Open question list"
+                            : "Question list unavailable"}
                         </a>
                       ) : (
                         <button

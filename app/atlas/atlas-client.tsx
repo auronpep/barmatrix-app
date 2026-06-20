@@ -1364,6 +1364,57 @@ export function AtlasClient() {
                       </p>
 
                       <div className="mt-3 rounded-md bg-white/10 p-3">
+                        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+                          Learning path position
+                        </p>
+                        <div className="mt-3 grid grid-cols-2 gap-2">
+                          {[
+                            {
+                              label: "Full Atlas",
+                              value: selectedPosition
+                                ? `${selectedPosition} / ${allNodes.length}`
+                                : formatCount(allNodes.length, "code"),
+                            },
+                            {
+                              label: "Visible filter",
+                              value: selectedVisiblePosition
+                                ? `${selectedVisiblePosition} / ${filtered.length}`
+                                : formatCount(filtered.length, "code"),
+                            },
+                            {
+                              label: "Subtopic",
+                              value: selectedSubtopicPosition
+                                ? `${selectedSubtopicPosition} / ${selectedSubtopicNodes.length}`
+                                : formatCount(selectedSubtopicNodes.length, "code"),
+                            },
+                            {
+                              label: "Lesson walk",
+                              value: hasLessonLane(selected)
+                                ? `${selectedSubtopicLessonNodes.findIndex(
+                                    (node) => node.code === selected.code,
+                                  ) + 1} / ${selectedSubtopicLessonNodes.length}`
+                                : `${selectedSubtopicLessonNodes.length} ready`,
+                            },
+                            {
+                              label: "Practice walk",
+                              value: selectedPracticePosition
+                                ? `${selectedPracticePosition} / ${practiceNodes.length}`
+                                : `${practiceNodes.length} ready`,
+                            },
+                          ].map((item) => (
+                            <div key={item.label} className="rounded-md bg-zinc-950/35 px-2 py-2">
+                              <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-zinc-400">
+                                {item.label}
+                              </p>
+                              <p className="mt-1 font-serif text-lg font-semibold tabular-nums text-white">
+                                {item.value}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="mt-3 rounded-md bg-white/10 p-3">
                         <div className="flex items-center justify-between gap-3">
                           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
                             This subtopic

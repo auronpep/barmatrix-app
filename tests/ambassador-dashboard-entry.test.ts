@@ -184,6 +184,7 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /label="Tension detours"/);
     assert.match(atlas, /actionLabel="Open trap detours"/);
     assert.match(atlas, /actionLabel="Open tension detours"/);
+    assert.match(atlas, /Trap and tension detours are gated until approved paths are attached/);
     assert.match(atlas, /label="Answer debriefs"/);
     assert.match(atlas, /href="#atlas-code-detours"/);
     assert.match(atlas, /aria-disabled="true"/);

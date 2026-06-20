@@ -2289,21 +2289,23 @@ export function AtlasClient() {
                             </div>
                           )}
                         </div>
-                        {detourLinks.length > 0 ? (
-                          <div
-                            id="atlas-code-detours"
-                            className="mt-4 scroll-mt-6 border-t border-zinc-950/10 pt-4"
-                          >
-                            <div className="flex items-center justify-between gap-3">
-                              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
-                                Related detours
-                              </p>
-                              <span className="rounded-md bg-red-50 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-red-800">
-                                {formatCount(detourLinks.length, "path")}
-                              </span>
-                            </div>
-                            <div className="mt-3 grid gap-2">
-                              {detourLinks.map(({ detour, href }) => (
+                        <div
+                          id="atlas-code-detours"
+                          className="mt-4 scroll-mt-6 border-t border-zinc-950/10 pt-4"
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                              Related detours
+                            </p>
+                            <span className="rounded-md bg-red-50 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-red-800">
+                              {detourLinks.length > 0
+                                ? formatCount(detourLinks.length, "path")
+                                : "Approval gate"}
+                            </span>
+                          </div>
+                          <div className="mt-3 grid gap-2">
+                            {detourLinks.length > 0 ? (
+                              detourLinks.map(({ detour, href }) => (
                                 <Link
                                   key={`${detour.type}:${detour.key}`}
                                   href={href}
@@ -2321,10 +2323,14 @@ export function AtlasClient() {
                                     {detour.label}
                                   </p>
                                 </Link>
-                              ))}
-                            </div>
+                              ))
+                            ) : (
+                              <p className="rounded-md bg-zinc-50 px-3 py-2 text-sm leading-6 text-zinc-600">
+                                Trap and tension detours are gated until approved paths are attached to this outline code.
+                              </p>
+                            )}
                           </div>
-                        ) : null}
+                        </div>
                       </section>
 
                       <section

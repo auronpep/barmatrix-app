@@ -126,6 +126,14 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /selectedProgress/);
     assert.match(atlas, /LAST_ATLAS_CODE_KEY/);
     assert.match(atlas, /readStoredCode/);
+    assert.match(atlas, /STUDIED_ATLAS_CODES_KEY/);
+    assert.match(atlas, /readStoredStudiedCodes/);
+    assert.match(atlas, /writeStoredStudiedCodes/);
+    assert.match(atlas, /studiedCodes/);
+    assert.match(atlas, /toggleStudiedCode/);
+    assert.match(atlas, /Studied on this device/);
+    assert.match(atlas, /Mark studied/);
+    assert.match(atlas, /Next unstudied/);
     assert.match(atlas, /window\.localStorage\.setItem/);
     assert.match(atlas, /Saved on this device for next time/);
     assert.match(atlas, /nextPracticeCode/);

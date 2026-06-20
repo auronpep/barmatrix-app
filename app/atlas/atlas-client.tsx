@@ -68,6 +68,7 @@ const ALL_SUBJECTS = "All subjects";
 const ALL_SUBTOPICS = "All subtopics";
 const OUTLINE_CODE_RE = /^\d{8}$/;
 const LAST_ATLAS_CODE_KEY = "barmatrix:last-atlas-code";
+const STUDIED_ATLAS_CODES_KEY = "barmatrix:studied-atlas-codes";
 
 function matchesComponentFilter(node: AtlasCoverageNode, filter: ComponentFilter) {
   if (filter === "ready") return hasAnyLane(node);
@@ -93,6 +94,31 @@ function readStoredCode() {
   }
 }
 
+function readStoredStudiedCodes() {
+  if (typeof window === "undefined") return new Set<string>();
+  try {
+    const raw = window.localStorage.getItem(STUDIED_ATLAS_CODES_KEY);
+    const parsed: unknown = raw ? JSON.parse(raw) : [];
+    const codes = Array.isArray(parsed)
+      ? parsed.filter(
+          (code): code is string => typeof code === "string" && OUTLINE_CODE_RE.test(code),
+        )
+      : [];
+    return new Set(codes);
+  } catch {
+    return new Set<string>();
+  }
+}
+
+function writeStoredStudiedCodes(codes: Set<string>) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(STUDIED_ATLAS_CODES_KEY, JSON.stringify([...codes].sort()));
+  } catch {
+    // ponytail: device-local studied progress is optional; private-mode storage can fail.
+  }
+}
+
 export function AtlasClient() {
   const { isLoaded, isSignedIn, getToken } = useClerkAuth();
   const router = useRouter();
@@ -102,6 +128,7 @@ export function AtlasClient() {
   const [subtopicFilter, setSubtopicFilter] = useState(ALL_SUBTOPICS);
   const [componentFilter, setComponentFilter] = useState<ComponentFilter>("all");
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
+  const [studiedCodes, setStudiedCodes] = useState<Set<string>>(() => new Set());
   const [questionState, setQuestionState] = useState<QuestionState>({
     kind: "idle",
     code: null,
@@ -157,6 +184,14 @@ export function AtlasClient() {
       cancelled = true;
     };
   }, [getToken, isLoaded, isSignedIn]);
+
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn) return;
+    const handle = window.setTimeout(() => {
+      setStudiedCodes(readStoredStudiedCodes());
+    }, 0);
+    return () => window.clearTimeout(handle);
+  }, [isLoaded, isSignedIn]);
 
   const allNodes = useMemo(() => (state.kind === "ready" ? state.nodes : []), [state]);
   const selected = selectedCode
@@ -346,6 +381,26 @@ export function AtlasClient() {
     selectedPosition && allNodes.length > 0
       ? Math.round((selectedPosition / allNodes.length) * 100)
       : 0;
+  const studiedCount = useMemo(
+    () =>
+      allNodes.reduce(
+        (count, node) => count + (studiedCodes.has(node.code) ? 1 : 0),
+        0,
+      ),
+    [allNodes, studiedCodes],
+  );
+  const studiedProgress =
+    allNodes.length > 0 ? Math.round((studiedCount / allNodes.length) * 100) : 0;
+  const selectedStudied = selected ? studiedCodes.has(selected.code) : false;
+  const nextUnstudiedCode = useMemo(() => {
+    if (allNodes.length === 0) return null;
+    const afterSelected = selectedIndex >= 0 ? allNodes.slice(selectedIndex + 1) : allNodes;
+    return (
+      afterSelected.find((node) => !studiedCodes.has(node.code))?.code ??
+      allNodes.find((node) => !studiedCodes.has(node.code))?.code ??
+      null
+    );
+  }, [allNodes, selectedIndex, studiedCodes]);
 
   const selectedQuestions =
     questionState.kind === "ready" && questionState.code === selectedCode
@@ -397,6 +452,20 @@ export function AtlasClient() {
       url.searchParams.delete("code");
     }
     window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+  }
+
+  function toggleStudiedCode() {
+    if (!selected) return;
+    setStudiedCodes((current) => {
+      const next = new Set(current);
+      if (next.has(selected.code)) {
+        next.delete(selected.code);
+      } else {
+        next.add(selected.code);
+      }
+      writeStoredStudiedCodes(next);
+      return next;
+    });
   }
 
   function chooseSubject(subject: string) {
@@ -795,6 +864,45 @@ export function AtlasClient() {
                       <p className="mt-3 rounded-md bg-white/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-300">
                         Saved on this device for next time
                       </p>
+
+                      <div className="mt-3 rounded-md bg-white/10 p-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+                            Studied on this device
+                          </p>
+                          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-200">
+                            {studiedCount} / {allNodes.length}
+                          </p>
+                        </div>
+                        <div
+                          className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10"
+                          aria-label={`Studied outline progress ${studiedProgress}%`}
+                        >
+                          <div
+                            className="h-full rounded-full bg-emerald-400"
+                            style={{ width: `${studiedProgress}%` }}
+                          />
+                        </div>
+                        <div className="mt-3 grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            aria-pressed={selectedStudied}
+                            onClick={toggleStudiedCode}
+                            className={`rounded-md border px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] transition-[transform,background-color,border-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
+                              selectedStudied
+                                ? "border-emerald-300/70 bg-emerald-400 text-zinc-950 hover:bg-emerald-300"
+                                : "border-white/15 bg-white/10 text-white hover:border-white/35 hover:bg-white/15"
+                            }`}
+                          >
+                            {selectedStudied ? "Marked studied" : "Mark studied"}
+                          </button>
+                          <WalkButton
+                            label="Next unstudied"
+                            disabled={!nextUnstudiedCode}
+                            onClick={() => nextUnstudiedCode && selectCode(nextUnstudiedCode)}
+                          />
+                        </div>
+                      </div>
 
                       <div className="mt-5 rounded-md bg-white/10 p-3">
                         <div className="flex items-center justify-between gap-3">

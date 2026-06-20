@@ -12,6 +12,17 @@ type State =
   | { kind: "error"; message: string }
   | { kind: "ready"; answer: AtlasAnswer };
 
+const CASE_STUDY_LABELS: Record<string, string> = {
+  hero_verdict: "Verdict",
+  question_card: "Question card",
+  fork: "Fork",
+  solve: "Solve",
+  facts: "Facts",
+  traps_wrong_answer_log: "Wrong-answer traps",
+  bank_it: "Bank it",
+  repair: "Repair",
+};
+
 export function AtlasAnswerClient() {
   const params = useParams<{ id: string }>();
   const { isLoaded, isSignedIn, getToken } = useClerkAuth();
@@ -45,6 +56,12 @@ export function AtlasAnswerClient() {
   if (state.kind !== "ready") return <Shell><StateBox text="Loading answer..." /></Shell>;
 
   const q = state.answer.question;
+  const caseStudyEntries = Object.entries(state.answer.case_study_modules).filter(
+    ([key, value]) =>
+      // ponytail: detours need server-side audience filtering before link rendering.
+      key !== "detours" && isRenderableModule(value),
+  );
+
   return (
     <Shell>
       <article className="border-b-4 border-zinc-950 bg-white p-6">
@@ -80,6 +97,29 @@ export function AtlasAnswerClient() {
           {q.minimum_explanation}
         </p>
       </section>
+
+      {caseStudyEntries.length > 0 ? (
+        <section className="mt-5 rounded-md border border-zinc-300 bg-white p-6">
+          <p className="font-mono text-xs uppercase tracking-[0.16em] text-red-700">
+            Case study path
+          </p>
+          <h2 className="mt-2 font-serif text-2xl font-semibold">
+            Approved answer modules
+          </h2>
+          <div className="mt-5 grid gap-4">
+            {caseStudyEntries.map(([key, value]) => (
+              <article key={key} className="rounded-md border border-zinc-200 bg-[#fbfaf6] p-4">
+                <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-500">
+                  {caseStudyLabel(key)}
+                </p>
+                <div className="mt-3 text-sm leading-6 text-zinc-800">
+                  <ModuleValue value={value} />
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
     </Shell>
   );
 }
@@ -103,5 +143,73 @@ function StateBox({ text, href, cta }: { text: string; href?: string; cta?: stri
       <p className="text-sm leading-6 text-zinc-800">{text}</p>
       {href && cta ? <Link href={href} className="btn red">{cta}</Link> : null}
     </div>
+  );
+}
+
+function ModuleValue({ value }: { value: unknown }) {
+  if (!isRenderableModule(value)) return null;
+
+  if (typeof value === "string" || typeof value === "number") {
+    return <p className="whitespace-pre-wrap">{String(value)}</p>;
+  }
+
+  if (typeof value === "boolean") {
+    return <p>{value ? "Yes" : "No"}</p>;
+  }
+
+  if (Array.isArray(value)) {
+    return (
+      <div className="grid gap-2">
+        {value.filter(isRenderableModule).map((item, index) => (
+          <div key={index} className="rounded-md bg-white px-3 py-2">
+            <ModuleValue value={item} />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (isRecord(value)) {
+    const entries = Object.entries(value).filter(([, child]) => isRenderableModule(child));
+    return (
+      <div className="grid gap-3">
+        {entries.map(([key, child]) => (
+          <div key={key}>
+            <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+              {caseStudyLabel(key)}
+            </p>
+            <div className="mt-1">
+              <ModuleValue value={child} />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return null;
+}
+
+function isRenderableModule(value: unknown): boolean {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "string") return value.trim().length > 0;
+  if (typeof value === "number") return Number.isFinite(value);
+  if (typeof value === "boolean") return true;
+  if (Array.isArray(value)) return value.some(isRenderableModule);
+  if (isRecord(value)) return Object.values(value).some(isRenderableModule);
+  return false;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function caseStudyLabel(key: string): string {
+  return (
+    CASE_STUDY_LABELS[key] ??
+    key
+      .replace(/[_-]+/g, " ")
+      .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .replace(/\b\w/g, (char) => char.toUpperCase())
   );
 }

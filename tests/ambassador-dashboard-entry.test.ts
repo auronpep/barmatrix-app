@@ -71,7 +71,9 @@ describe("dashboard guided-path entry", () => {
 
     assert.match(shell, /section: "VIEWS"/);
     assert.match(shell, /label: "My Path"/);
-    assert.match(shell, /href: "\/atlas", icon: "▨", label: "Outline Atlas V2"/);
+    assert.match(shell, /label: "Outline Atlas V2"/);
+    assert.match(shell, /description: "Outline-code learning map"/);
+    assert.match(shell, /l\.description/);
     for (const href of [
       "/dashboard/path",
       "/atlas",

@@ -15,6 +15,7 @@ export interface MobileNavLink {
   href: string;
   icon: string;
   label: string;
+  description?: string;
   badge?: string | null;
   redBadge?: boolean;
   active?: boolean;
@@ -128,7 +129,14 @@ export function DashboardMobileNav({
                       <span className="w-4 text-center font-mono text-base text-zinc-500">
                         {l.icon}
                       </span>
-                      <span className="flex-1">{l.label}</span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate">{l.label}</span>
+                        {l.description ? (
+                          <span className="mt-0.5 block truncate font-mono text-[9px] uppercase tracking-[0.1em] text-zinc-600">
+                            {l.description}
+                          </span>
+                        ) : null}
+                      </span>
                       {l.badge ? (
                         <span
                           className={`px-1.5 py-0.5 font-mono text-[9px] font-semibold tracking-[0.1em] ${

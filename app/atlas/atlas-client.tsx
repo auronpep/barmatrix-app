@@ -2498,6 +2498,14 @@ export function AtlasClient() {
                               <p className="mt-1 text-sm leading-6 text-zinc-700">
                                 {clip(question.stem)}
                               </p>
+                              {question.call_text ? (
+                                <p className="mt-2 rounded-md bg-zinc-50 px-3 py-2 text-xs leading-5 text-zinc-600">
+                                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-400">
+                                    Call{" "}
+                                  </span>
+                                  {clip(question.call_text, 180)}
+                                </p>
+                              ) : null}
                               <div className="mt-2 flex flex-wrap gap-2">
                                 <Link
                                   href={atlasQuestionPracticeHref(question.question_id)}

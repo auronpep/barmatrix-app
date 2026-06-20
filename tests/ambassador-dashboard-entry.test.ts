@@ -206,6 +206,8 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /selectedQuestions\.map\(\(question, index\)/);
     assert.match(atlas, /Question \{index \+ 1\} \//);
     assert.match(atlas, /\{selectedQuestions\.length\}/);
+    assert.match(atlas, /question\.call_text/);
+    assert.match(atlas, /clip\(question\.call_text, 180\)/);
     assert.match(atlas, /Do question/);
     assert.match(atlas, /Study answer debrief/);
     assert.match(atlas, /Open question list/);

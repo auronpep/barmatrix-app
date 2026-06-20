@@ -115,6 +115,10 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Weak-section drilldown/);
     assert.match(atlas, /showScopedPractice/);
     assert.match(atlas, /selectedProgress/);
+    assert.match(atlas, /LAST_ATLAS_CODE_KEY/);
+    assert.match(atlas, /readStoredCode/);
+    assert.match(atlas, /window\.localStorage\.setItem/);
+    assert.match(atlas, /Saved on this device for next time/);
     assert.match(atlas, /nextPracticeCode/);
     assert.match(atlas, /previousPracticeCode/);
     assert.match(atlas, /ComponentPreviewRow/);

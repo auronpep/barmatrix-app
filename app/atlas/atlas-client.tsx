@@ -67,6 +67,7 @@ type ComponentFilter = (typeof COMPONENT_FILTERS)[number]["key"];
 const ALL_SUBJECTS = "All subjects";
 const ALL_SUBTOPICS = "All subtopics";
 const OUTLINE_CODE_RE = /^\d{8}$/;
+const LAST_ATLAS_CODE_KEY = "barmatrix:last-atlas-code";
 
 function matchesComponentFilter(node: AtlasCoverageNode, filter: ComponentFilter) {
   if (filter === "ready") return hasAnyLane(node);
@@ -80,6 +81,16 @@ function readRequestedCode() {
   if (typeof window === "undefined") return null;
   const code = new URLSearchParams(window.location.search).get("code");
   return code && OUTLINE_CODE_RE.test(code) ? code : null;
+}
+
+function readStoredCode() {
+  if (typeof window === "undefined") return null;
+  try {
+    const code = window.localStorage.getItem(LAST_ATLAS_CODE_KEY);
+    return code && OUTLINE_CODE_RE.test(code) ? code : null;
+  } catch {
+    return null;
+  }
 }
 
 export function AtlasClient() {
@@ -119,11 +130,14 @@ export function AtlasClient() {
         if (cancelled) return;
         setState({ kind: "ready", nodes: data.nodes });
         const requestedCode = readRequestedCode();
+        const storedCode = requestedCode ? null : readStoredCode();
         const requestedNode = requestedCode
           ? data.nodes.find((node) => node.code === requestedCode)
           : null;
+        const storedNode = storedCode ? data.nodes.find((node) => node.code === storedCode) : null;
         setSelectedCode((current) => {
           if (requestedNode) return requestedNode.code;
+          if (storedNode) return storedNode.code;
           return current && data.nodes.some((node) => node.code === current)
             ? current
             : data.nodes[0]?.code ?? null;
@@ -148,6 +162,15 @@ export function AtlasClient() {
   const selected = selectedCode
     ? allNodes.find((node) => node.code === selectedCode) ?? null
     : null;
+
+  useEffect(() => {
+    if (!selectedCode || typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(LAST_ATLAS_CODE_KEY, selectedCode);
+    } catch {
+      // ponytail: device-local resume is optional; private-mode storage can fail.
+    }
+  }, [selectedCode]);
 
   useEffect(() => {
     if (state.kind !== "ready" || !selectedCode) return;
@@ -767,6 +790,9 @@ export function AtlasClient() {
                       <p className="mt-3 text-lg leading-7 text-white">{selected.outline_text}</p>
                       <p className="mt-2 text-sm leading-6 text-zinc-300">
                         {selected.subject_display} / {selected.subtopic}
+                      </p>
+                      <p className="mt-3 rounded-md bg-white/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-300">
+                        Saved on this device for next time
                       </p>
 
                       <div className="mt-5 rounded-md bg-white/10 p-3">

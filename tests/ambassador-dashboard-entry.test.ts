@@ -270,6 +270,7 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Jump to first lesson/);
     assert.match(atlas, /Lesson ready/);
     assert.match(atlas, /Needs lesson/);
+    assert.match(atlas, /nodes\.map\(\(node\) => \{\s*const rowStudied = studiedCodes\.has\(node\.code\);/);
     assert.match(atlas, /scopedLessonRemainingCount/);
     assert.match(atlas, /lesson-ready codes/);
     assert.match(atlas, /Lessons left/);

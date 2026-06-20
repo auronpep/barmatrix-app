@@ -1262,51 +1262,63 @@ export function AtlasClient() {
                             </p>
                           </div>
                           <div className="divide-y divide-zinc-950/10">
-                            {nodes.map((node) => (
-                              <button
-                                key={node.code}
-                                type="button"
-                                onClick={() => selectCode(node.code)}
-                                aria-current={node.code === selectedCode ? "true" : undefined}
-                                className={`grid w-full gap-2 px-4 py-3 text-left transition-colors md:grid-cols-[94px_minmax(0,1fr)_116px] ${
-                                  node.code === selectedCode
-                                    ? "bg-red-50"
-                                    : "bg-white hover:bg-zinc-50"
-                                }`}
-                              >
-                                <span className="font-mono text-xs font-semibold text-zinc-950">
-                                  {node.code}
-                                </span>
+                            {nodes.map((node) => {
+                              const rowStudied = studiedCodes.has(node.code);
+                              return (
+                                <button
+                                  key={node.code}
+                                  type="button"
+                                  onClick={() => selectCode(node.code)}
+                                  aria-current={node.code === selectedCode ? "true" : undefined}
+                                  className={`grid w-full gap-2 px-4 py-3 text-left transition-colors md:grid-cols-[94px_minmax(0,1fr)_116px] ${
+                                    node.code === selectedCode
+                                      ? "bg-red-50"
+                                      : "bg-white hover:bg-zinc-50"
+                                  }`}
+                                >
+                                  <span className="font-mono text-xs font-semibold text-zinc-950">
+                                    {node.code}
+                                  </span>
                                   <span className="min-w-0 text-sm leading-5 text-zinc-800">
                                     <span className="block">{node.outline_text}</span>
                                     <span className="mt-1 block font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
                                       {laneFootprint(node)}
                                     </span>
                                   </span>
-                                <span className="flex flex-wrap gap-1 md:justify-self-end">
-                                  <span
-                                    className={`w-fit rounded-md px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] ${
-                                      node.question_count > 0
-                                        ? "bg-emerald-50 text-emerald-800"
-                                        : "bg-amber-50 text-amber-800"
-                                    }`}
-                                  >
-                                    {node.question_count > 0
-                                      ? `${node.question_count} ready`
-                                      : "Needs Q"}
+                                  <span className="flex flex-wrap gap-1 md:justify-self-end">
+                                    <span
+                                      className={`w-fit rounded-md px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] ${
+                                        node.question_count > 0
+                                          ? "bg-emerald-50 text-emerald-800"
+                                          : "bg-amber-50 text-amber-800"
+                                      }`}
+                                    >
+                                      {node.question_count > 0
+                                        ? `${node.question_count} ready`
+                                        : "Needs Q"}
+                                    </span>
+                                    <span
+                                      className={`w-fit rounded-md px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] ${
+                                        hasLessonLane(node)
+                                          ? "bg-red-50 text-red-800"
+                                          : "bg-zinc-100 text-zinc-600"
+                                      }`}
+                                    >
+                                      {hasLessonLane(node) ? "Lesson ready" : "Needs lesson"}
+                                    </span>
+                                    <span
+                                      className={`w-fit rounded-md px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] ${
+                                        rowStudied
+                                          ? "bg-zinc-950 text-white"
+                                          : "bg-zinc-100 text-zinc-600"
+                                      }`}
+                                    >
+                                      {rowStudied ? "Studied" : "To study"}
+                                    </span>
                                   </span>
-                                  <span
-                                    className={`w-fit rounded-md px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] ${
-                                      hasLessonLane(node)
-                                        ? "bg-red-50 text-red-800"
-                                        : "bg-zinc-100 text-zinc-600"
-                                    }`}
-                                  >
-                                    {hasLessonLane(node) ? "Lesson ready" : "Needs lesson"}
-                                  </span>
-                                </span>
-                              </button>
-                            ))}
+                                </button>
+                              );
+                            })}
                           </div>
                         </section>
                       );

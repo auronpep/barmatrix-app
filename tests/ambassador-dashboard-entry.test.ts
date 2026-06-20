@@ -206,7 +206,9 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Open question list/);
     assert.match(atlas, /atlas-code-questions/);
     assert.match(atlas, /View question bank/);
+    assert.match(atlas, /Previous practice-ready code/);
     assert.match(atlas, /Next practice-ready code/);
+    assert.match(atlas, /onClick=\{\(\) => selectCode\(previousPracticeCode\)\}/);
     assert.match(atlas, /onClick=\{\(\) => selectCode\(nextPracticeCode\)\}/);
     assert.match(atlas, /Open approved support/);
     assert.match(atlas, /View support lanes/);

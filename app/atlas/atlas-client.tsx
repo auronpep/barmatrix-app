@@ -381,26 +381,30 @@ export function AtlasClient() {
     selectedPosition && allNodes.length > 0
       ? Math.round((selectedPosition / allNodes.length) * 100)
       : 0;
-  const studiedCount = useMemo(
+  const scopedStudiedCount = useMemo(
     () =>
-      allNodes.reduce(
+      scopedNodes.reduce(
         (count, node) => count + (studiedCodes.has(node.code) ? 1 : 0),
         0,
       ),
-    [allNodes, studiedCodes],
+    [scopedNodes, studiedCodes],
   );
-  const studiedProgress =
-    allNodes.length > 0 ? Math.round((studiedCount / allNodes.length) * 100) : 0;
+  const scopedStudiedProgress =
+    scopedNodes.length > 0 ? Math.round((scopedStudiedCount / scopedNodes.length) * 100) : 0;
   const selectedStudied = selected ? studiedCodes.has(selected.code) : false;
   const nextUnstudiedCode = useMemo(() => {
-    if (allNodes.length === 0) return null;
-    const afterSelected = selectedIndex >= 0 ? allNodes.slice(selectedIndex + 1) : allNodes;
+    const walkNodes = scopedNodes.length > 0 ? scopedNodes : allNodes;
+    if (walkNodes.length === 0) return null;
+    const scopedIndex = selectedCode
+      ? walkNodes.findIndex((node) => node.code === selectedCode)
+      : -1;
+    const afterSelected = scopedIndex >= 0 ? walkNodes.slice(scopedIndex + 1) : walkNodes;
     return (
       afterSelected.find((node) => !studiedCodes.has(node.code))?.code ??
-      allNodes.find((node) => !studiedCodes.has(node.code))?.code ??
+      walkNodes.find((node) => !studiedCodes.has(node.code))?.code ??
       null
     );
-  }, [allNodes, selectedIndex, studiedCodes]);
+  }, [allNodes, scopedNodes, selectedCode, studiedCodes]);
 
   const selectedQuestions =
     questionState.kind === "ready" && questionState.code === selectedCode
@@ -871,16 +875,19 @@ export function AtlasClient() {
                             Studied on this device
                           </p>
                           <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-200">
-                            {studiedCount} / {allNodes.length}
+                            {scopedStudiedCount} / {scopedNodes.length}
                           </p>
                         </div>
+                        <p className="mt-1 truncate font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-400">
+                          Scope: {scopeLabel}
+                        </p>
                         <div
                           className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10"
-                          aria-label={`Studied outline progress ${studiedProgress}%`}
+                          aria-label={`Studied outline progress ${scopedStudiedProgress}% for ${scopeLabel}`}
                         >
                           <div
                             className="h-full rounded-full bg-emerald-400"
-                            style={{ width: `${studiedProgress}%` }}
+                            style={{ width: `${scopedStudiedProgress}%` }}
                           />
                         </div>
                         <div className="mt-3 grid grid-cols-2 gap-2">

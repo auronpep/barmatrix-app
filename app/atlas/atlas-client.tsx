@@ -2439,9 +2439,20 @@ export function AtlasClient() {
                           {!questionLoading &&
                           !questionError &&
                           selectedQuestions.length === 0 ? (
-                            <p className="text-sm leading-6 text-zinc-600">
-                              No approved questions are attached to this outline code yet.
-                            </p>
+                            <div className="rounded-md bg-zinc-50 px-3 py-2">
+                              <p className="text-sm leading-6 text-zinc-600">
+                                No approved questions are attached to this outline code yet.
+                              </p>
+                              {nextPracticeCode ? (
+                                <button
+                                  type="button"
+                                  onClick={() => selectCode(nextPracticeCode)}
+                                  className="mt-2 inline-flex rounded-md border border-zinc-950/15 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-[transform,border-color,background-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950 hover:bg-white active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                                >
+                                  Next practice-ready code
+                                </button>
+                              ) : null}
+                            </div>
                           ) : null}
                           {selectedQuestions.map((question) => (
                             <article

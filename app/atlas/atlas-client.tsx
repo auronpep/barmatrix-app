@@ -1608,6 +1608,64 @@ export function AtlasClient() {
                               {selectedPosition ?? "-"} / {allNodes.length}
                             </span>
                           </div>
+                          <div className="mt-3 rounded-md border border-white/10 bg-white/5 p-3">
+                            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+                              Current code checklist
+                            </p>
+                            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                              {[
+                                {
+                                  label: "Lesson studied",
+                                  value: selectedStudied ? "Done" : "Open",
+                                  ready: selectedStudied,
+                                },
+                                {
+                                  label: "Practice ready",
+                                  value:
+                                    selected.question_count > 0
+                                      ? formatCount(selected.question_count, "question")
+                                      : "Gate",
+                                  ready: selected.question_count > 0,
+                                },
+                                {
+                                  label: "Support ready",
+                                  value: componentsLoading
+                                    ? "..."
+                                    : previewCount + leadmeItemTotal + debriefElementTotal > 0
+                                      ? formatCount(
+                                          previewCount + leadmeItemTotal + debriefElementTotal,
+                                          "item",
+                                        )
+                                      : "Gate",
+                                  ready:
+                                    previewCount + leadmeItemTotal + debriefElementTotal > 0,
+                                },
+                                {
+                                  label: "Detours ready",
+                                  value: trapCount + tensionCount > 0 ? "Ready" : "Gate",
+                                  ready: trapCount + tensionCount > 0,
+                                },
+                              ].map((item) => (
+                                <div
+                                  key={item.label}
+                                  className="flex items-center justify-between gap-3 rounded-md bg-zinc-950/70 px-3 py-2"
+                                >
+                                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-300">
+                                    {item.label}
+                                  </span>
+                                  <span
+                                    className={`rounded-md px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] ${
+                                      item.ready
+                                        ? "bg-emerald-300 text-zinc-950"
+                                        : "bg-white/10 text-zinc-300"
+                                    }`}
+                                  >
+                                    {item.value}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                           <div className="mt-3 grid gap-2 sm:grid-cols-3">
                             <button
                               type="button"

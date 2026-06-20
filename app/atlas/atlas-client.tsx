@@ -2465,7 +2465,7 @@ export function AtlasClient() {
                                   href={atlasQuestionAnswerHref(question.question_id)}
                                   className="inline-flex rounded-md border border-zinc-950/15 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-colors hover:border-zinc-950 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
                                 >
-                                  Study answer
+                                  Study answer debrief
                                 </Link>
                               </div>
                             </article>

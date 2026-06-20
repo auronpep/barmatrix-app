@@ -47,6 +47,14 @@ const NICHE_ROUTES = [
   "/for/california-july-2026",
 ] as const;
 
+const COMPARISON_ROUTES = [
+  "/alternatives/adaptibar",
+  "/alternatives/uworld-mbe-qbank",
+  "/alternatives/mbe-question-bank",
+  "/barbri-mbe-companion",
+  "/themis-uworld-mbe-companion",
+] as const;
+
 const CAMPAIGN_ROUTES = [
   "/campaign.html",
   "/lp-failed-by-6.html",
@@ -90,11 +98,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
+  const comparisonRoutes = COMPARISON_ROUTES.map((route) => ({
+    url: `https://barmatrix.app${route}`,
+    lastModified: LAST_MODIFIED,
+    changeFrequency: "weekly" as const,
+    priority: 0.75,
+  }));
   const campaignRoutes = CAMPAIGN_ROUTES.map((route) => ({
     url: `https://barmatrix.app${route}`,
     lastModified: LAST_MODIFIED,
     changeFrequency: "weekly" as const,
     priority: route === "/campaign.html" ? 0.8 : 0.65,
   }));
-  return [...appRoutes, ...nicheRoutes, ...campaignRoutes];
+  return [...appRoutes, ...nicheRoutes, ...comparisonRoutes, ...campaignRoutes];
 }

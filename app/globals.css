@@ -1158,6 +1158,13 @@ button:disabled {
   background: var(--ink);
   margin: 48px 0;
 }
+.comparison-row {
+  display: grid;
+  grid-template-columns: 180px 1fr 1fr;
+  gap: 24px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--rule-soft);
+}
 
 /* ====== MOBILE NAV HAMBURGER ====== */
 .mobile-nav-toggle {
@@ -1477,6 +1484,7 @@ button:disabled {
   .stat-strip { grid-template-columns: 1fr; }
   .stat-strip > div { border-right: none; border-bottom: 1px solid var(--rule); }
   .stat-strip > div:last-child { border-bottom: none; }
+  .comparison-row { grid-template-columns: 1fr; gap: 10px; }
   .footer-grid { grid-template-columns: 1fr; }
   .footer-bottom { flex-direction: column; gap: 12px; align-items: flex-start; }
 

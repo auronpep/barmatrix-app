@@ -908,6 +908,59 @@ export function AtlasClient() {
                       <p className="mt-2 text-sm leading-6 text-zinc-300">
                         {selected.subject_display} / {selected.subtopic}
                       </p>
+                      <div
+                        className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3"
+                        aria-label="Selected code lanes"
+                      >
+                        {[
+                          {
+                            label: "Questions",
+                            value: selected.question_count > 0 ? selected.question_count : "Gate",
+                            active: selected.question_count > 0,
+                          },
+                          {
+                            label: "Lessons",
+                            value: componentsLoading ? "..." : lessonCount || "Gate",
+                            active: lessonCount > 0,
+                          },
+                          {
+                            label: "Drills",
+                            value: componentsLoading ? "..." : drillCount || "Gate",
+                            active: drillCount > 0,
+                          },
+                          {
+                            label: "Traps",
+                            value: componentsLoading ? "..." : trapCount || "Gate",
+                            active: trapCount > 0,
+                          },
+                          {
+                            label: "Tensions",
+                            value: componentsLoading ? "..." : tensionCount || "Gate",
+                            active: tensionCount > 0,
+                          },
+                          {
+                            label: "Debriefs",
+                            value: componentsLoading ? "..." : debriefElementTotal || "Gate",
+                            active: debriefElementTotal > 0,
+                          },
+                        ].map((lane) => (
+                          <div
+                            key={lane.label}
+                            className={`rounded-md px-2 py-2 ${
+                              lane.active
+                                ? "bg-emerald-400 text-zinc-950"
+                                : "bg-white/10 text-zinc-300"
+                            }`}
+                          >
+                            <p className="font-mono text-[9px] uppercase tracking-[0.12em]">
+                              {lane.label}
+                            </p>
+                            <p className="mt-1 font-serif text-lg font-semibold tabular-nums">
+                              {lane.value}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
                       <button
                         type="button"
                         onClick={focusSelectedSubtopic}
@@ -1113,12 +1166,19 @@ export function AtlasClient() {
                       >
                         Study lesson
                       </Link>
-                      {selected.question_count > 0 ? (
+                      {firstSelectedQuestion ? (
+                        <Link
+                          href={atlasQuestionPracticeHref(firstSelectedQuestion.question_id)}
+                          className="mt-2 inline-flex w-full items-center justify-center rounded-md bg-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-red-800 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-300"
+                        >
+                          Do first question
+                        </Link>
+                      ) : selected.question_count > 0 ? (
                         <a
                           href="#atlas-code-questions"
                           className="mt-2 inline-flex w-full items-center justify-center rounded-md bg-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-red-800 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-300"
                         >
-                          Open code questions
+                          Open question list
                         </a>
                       ) : (
                         <button
@@ -1256,12 +1316,10 @@ export function AtlasClient() {
                               </p>
                               {firstSelectedQuestion ? (
                                 <Link
-                                  href={`/atlas/questions/${encodeURIComponent(
-                                    firstSelectedQuestion.question_id,
-                                  )}/answer`}
-                                  className="mt-2 inline-flex rounded-md border border-zinc-950/15 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-colors hover:border-zinc-950 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                                  href={atlasQuestionPracticeHref(firstSelectedQuestion.question_id)}
+                                  className="mt-2 inline-flex rounded-md bg-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-colors hover:bg-red-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
                                 >
-                                  Open first answer
+                                  Do first question
                                 </Link>
                               ) : selected.question_count > 0 ? (
                                 <a
@@ -1568,14 +1626,22 @@ export function AtlasClient() {
                               <p className="mt-1 text-sm leading-6 text-zinc-700">
                                 {clip(question.stem)}
                               </p>
-                              <Link
-                                href={`/atlas/questions/${encodeURIComponent(
-                                  question.question_id,
-                                )}/answer`}
-                                className="mt-2 inline-flex rounded-md border border-zinc-950/15 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-colors hover:border-zinc-950 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
-                              >
-                                Study answer
-                              </Link>
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                <Link
+                                  href={atlasQuestionPracticeHref(question.question_id)}
+                                  className="inline-flex rounded-md bg-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-colors hover:bg-red-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
+                                >
+                                  Do question
+                                </Link>
+                                <Link
+                                  href={`/atlas/questions/${encodeURIComponent(
+                                    question.question_id,
+                                  )}/answer`}
+                                  className="inline-flex rounded-md border border-zinc-950/15 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-colors hover:border-zinc-950 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                                >
+                                  Study answer
+                                </Link>
+                              </div>
                             </article>
                           ))}
                         </div>
@@ -1781,6 +1847,10 @@ function StateBox({ text, href, cta }: { text: string; href?: string; cta?: stri
 
 function clip(value: string, max = 150): string {
   return value.length > max ? `${value.slice(0, max - 1)}...` : value;
+}
+
+function atlasQuestionPracticeHref(questionId: string): string {
+  return `/atlas/questions/${encodeURIComponent(questionId)}/practice`;
 }
 
 function nodeComponentTotal(node: AtlasCoverageNode): number {

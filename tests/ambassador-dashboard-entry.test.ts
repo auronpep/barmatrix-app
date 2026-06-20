@@ -91,6 +91,7 @@ describe("dashboard guided-path entry", () => {
   it("keeps the customer Atlas as a learning map with gated component lanes", () => {
     const atlas = readProjectFile("app/atlas/atlas-client.tsx");
     const answer = readProjectFile("app/atlas/questions/[id]/answer/answer-client.tsx");
+    const practice = readProjectFile("app/atlas/questions/[id]/practice/page.tsx");
     const client = readProjectFile("lib/api-client.ts");
     const body = readProjectFile("components/preview-dashboard/dashboard-v2-body.tsx");
 
@@ -103,6 +104,8 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Needs content/);
     assert.match(atlas, /Codes with components/);
     assert.match(atlas, /Study lesson/);
+    assert.match(atlas, /Selected code lanes/);
+    assert.match(atlas, /Debriefs/);
     assert.match(atlas, /copySelectedLink/);
     assert.match(atlas, /directLinkMessage/);
     assert.match(atlas, /Copy link/);
@@ -127,7 +130,10 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Anchor this code/);
     assert.match(atlas, /Work approved questions/);
     assert.match(atlas, /firstSelectedQuestion/);
-    assert.match(atlas, /Open first answer/);
+    assert.match(atlas, /atlasQuestionPracticeHref/);
+    assert.match(atlas, /Do first question/);
+    assert.match(atlas, /Do question/);
+    assert.match(atlas, /Open question list/);
     assert.match(atlas, /atlas-code-questions/);
     assert.match(atlas, /View question bank/);
     assert.match(atlas, /Open approved support/);
@@ -136,7 +142,6 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /id="atlas-code-leadme"/);
     assert.match(atlas, /Question bank/);
     assert.match(atlas, /Start LeadMe/);
-    assert.match(atlas, /Open code questions/);
     assert.doesNotMatch(atlas, /Drill this code/);
     assert.doesNotMatch(atlas, /No runnable questions matched this outline code yet/);
     assert.match(atlas, /id="atlas-code-components"/);
@@ -214,6 +219,10 @@ describe("dashboard guided-path entry", () => {
     assert.match(answer, /Review code questions/);
     assert.match(answer, /#atlas-code-questions/);
     assert.match(answer, /encodeURIComponent\(q\.outline_code\)/);
+    assert.match(practice, /QuestionRunner/);
+    assert.match(practice, /questionIds=\{\[questionId\]\}/);
+    assert.match(practice, /setId=\{`atlas:\$\{questionId\}`\}/);
+    assert.match(practice, /Review answer debrief/);
     assert.match(client, /getAtlasComponents/);
     assert.match(client, /AtlasLeadMeItemPreview/);
     assert.match(client, /AtlasDebriefElementPreview/);

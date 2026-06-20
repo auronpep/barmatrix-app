@@ -259,11 +259,16 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Scope readiness/);
     assert.match(atlas, /No lane/);
     assert.match(atlas, /selectedSubtopicNodes/);
+    assert.match(atlas, /selectedSubtopicLessonNodes/);
+    assert.match(atlas, /selectedSubtopicLessonRemainingCount/);
     assert.match(atlas, /selectedSubtopicIndex/);
     assert.match(atlas, /selectedSubtopicPosition/);
     assert.match(atlas, /previousSubtopicCode/);
     assert.match(atlas, /nextSubtopicCode/);
     assert.match(atlas, /This subtopic/);
+    assert.match(atlas, /Subtopic lessons/);
+    assert.match(atlas, /lesson-ready/);
+    assert.match(atlas, /left unstudied/);
     assert.match(atlas, /Prev in subtopic/);
     assert.match(atlas, /Next in subtopic/);
     assert.match(atlas, /aria-current=\{active \? "true" : undefined\}/);

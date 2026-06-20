@@ -443,6 +443,13 @@ export function AtlasClient() {
         : [],
     [allNodes, selected],
   );
+  const selectedSubtopicLessonNodes = useMemo(
+    () => selectedSubtopicNodes.filter(hasLessonLane),
+    [selectedSubtopicNodes],
+  );
+  const selectedSubtopicLessonRemainingCount = selectedSubtopicLessonNodes.filter(
+    (node) => !studiedCodes.has(node.code),
+  ).length;
   const selectedSubtopicIndex = selectedCode
     ? selectedSubtopicNodes.findIndex((node) => node.code === selectedCode)
     : -1;
@@ -1252,6 +1259,10 @@ export function AtlasClient() {
                         </div>
                         <p className="mt-1 truncate text-sm leading-6 text-zinc-300">
                           {selected.subtopic}
+                        </p>
+                        <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-400">
+                          Subtopic lessons: {selectedSubtopicLessonNodes.length} lesson-ready /{" "}
+                          {selectedSubtopicLessonRemainingCount} left unstudied
                         </p>
                         <div className="mt-3 grid grid-cols-2 gap-2">
                           <WalkButton

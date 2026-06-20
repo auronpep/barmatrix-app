@@ -672,6 +672,12 @@ export function AtlasClient() {
     selectCode(scopedLessonNodes[0]?.code ?? null);
   }
 
+  function showScopedLessonBacklog() {
+    setComponentFilter("lessons");
+    setStudyFilter("unstudied");
+    selectCode(scopedNextLessonNode?.code ?? null);
+  }
+
   function clearAtlasFilters() {
     setQuery("");
     setSubjectFilter(ALL_SUBJECTS);
@@ -936,7 +942,7 @@ export function AtlasClient() {
                         </button>
                       ) : null}
                     </div>
-                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-7">
+                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-8">
                       <button
                         type="button"
                         onClick={() => scopedWalkCode && selectCode(scopedWalkCode)}
@@ -960,6 +966,14 @@ export function AtlasClient() {
                         className="rounded-md bg-zinc-950 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-zinc-800 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
                       >
                         Show lesson codes
+                      </button>
+                      <button
+                        type="button"
+                        onClick={showScopedLessonBacklog}
+                        disabled={scopedLessonRemainingCount === 0}
+                        className="rounded-md bg-zinc-950 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-zinc-800 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
+                      >
+                        Show lesson backlog
                       </button>
                       <button
                         type="button"

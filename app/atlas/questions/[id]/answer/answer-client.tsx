@@ -58,6 +58,7 @@ export function AtlasAnswerClient() {
   if (state.kind !== "ready") return <Shell><StateBox text="Loading answer..." /></Shell>;
 
   const q = state.answer.question;
+  const practiceHref = `/atlas/questions/${encodeURIComponent(q.question_id)}/practice`;
   const detours = state.answer.detours
     .map((detour) => ({ detour, href: detourHref(detour) }))
     .filter((item): item is { detour: AtlasAnswerDetour; href: string } => item.href !== null);
@@ -78,6 +79,12 @@ export function AtlasAnswerClient() {
         </h1>
         <p className="mt-2 text-sm text-zinc-600">{q.subject_display} / {q.subtopic}</p>
         <div className="mt-5 flex flex-wrap gap-2">
+          <Link
+            href={practiceHref}
+            className="inline-flex w-fit items-center justify-center rounded-md border border-red-700 bg-red-700 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-white transition-[transform,background-color,border-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-red-800 hover:bg-red-800 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
+          >
+            Practice this question
+          </Link>
           <Link
             href={`/atlas?code=${encodeURIComponent(q.outline_code)}#atlas-code-lesson`}
             className="inline-flex w-fit items-center justify-center rounded-md border border-zinc-950/15 bg-[#f7f5ef] px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-700 transition-[transform,background-color,border-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950 hover:bg-white active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"

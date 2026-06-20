@@ -133,12 +133,17 @@ describe("dashboard guided-path entry", () => {
     assert.match(answer, /Case study path/);
     assert.match(answer, /ModuleValue/);
     assert.match(answer, /case_study_modules/);
+    assert.match(answer, /Related study detours/);
+    assert.match(answer, /detourHref/);
+    assert.match(answer, /\/traps\/\$\{encodeURIComponent\(detour\.key\)\}/);
+    assert.match(answer, /answer\.detours/);
     assert.match(answer, /key !== "detours"/);
     assert.match(answer, /Study this outline code/);
     assert.match(answer, /encodeURIComponent\(q\.outline_code\)/);
     assert.match(client, /getAtlasComponents/);
     assert.match(client, /AtlasLeadMeItemPreview/);
     assert.match(client, /AtlasDebriefElementPreview/);
+    assert.match(client, /AtlasAnswerDetour/);
     assert.match(client, /startAtlasLeadMe/);
     assert.match(body, /open approved questions, lessons, and component lanes/);
     assert.doesNotMatch(atlas, /review_count|source_ref|source_label|included_by/);

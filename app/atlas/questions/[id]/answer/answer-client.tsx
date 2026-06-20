@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { api, ApiClientError, type AtlasAnswer } from "@/lib/api-client";
+import { api, ApiClientError, type AtlasAnswer, type AtlasAnswerDetour } from "@/lib/api-client";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
 
 type State =
@@ -22,6 +22,8 @@ const CASE_STUDY_LABELS: Record<string, string> = {
   bank_it: "Bank it",
   repair: "Repair",
 };
+
+const OUTLINE_CODE_RE = /^[0-9]{8}$/;
 
 export function AtlasAnswerClient() {
   const params = useParams<{ id: string }>();
@@ -56,9 +58,12 @@ export function AtlasAnswerClient() {
   if (state.kind !== "ready") return <Shell><StateBox text="Loading answer..." /></Shell>;
 
   const q = state.answer.question;
+  const detours = state.answer.detours
+    .map((detour) => ({ detour, href: detourHref(detour) }))
+    .filter((item): item is { detour: AtlasAnswerDetour; href: string } => item.href !== null);
   const caseStudyEntries = Object.entries(state.answer.case_study_modules).filter(
     ([key, value]) =>
-      // ponytail: detours need server-side audience filtering before link rendering.
+      // ponytail: raw detour specs render only through filtered answer.detours.
       key !== "detours" && isRenderableModule(value),
   );
 
@@ -126,8 +131,48 @@ export function AtlasAnswerClient() {
           </div>
         </section>
       ) : null}
+
+      {detours.length > 0 ? (
+        <section className="mt-5 rounded-md border border-zinc-300 bg-white p-6">
+          <p className="font-mono text-xs uppercase tracking-[0.16em] text-red-700">
+            Related study detours
+          </p>
+          <h2 className="mt-2 font-serif text-2xl font-semibold">
+            Drill this weakness elsewhere
+          </h2>
+          <div className="mt-5 grid gap-3">
+            {detours.map(({ detour, href }) => (
+              <Link
+                key={`${detour.type}:${detour.key}`}
+                href={href}
+                className="group rounded-md border border-zinc-200 bg-[#fbfaf6] p-4 transition-[transform,background-color,border-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:border-zinc-950 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+              >
+                <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-500">
+                  {caseStudyLabel(detour.type)}
+                </p>
+                <p className="mt-2 font-serif text-lg font-semibold text-zinc-950">
+                  {detour.label}
+                </p>
+                <p className="mt-2 text-sm text-zinc-600">
+                  {detour.target_count} approved {detour.target_count === 1 ? "item" : "items"}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
     </Shell>
   );
+}
+
+function detourHref(detour: AtlasAnswerDetour): string | null {
+  if (detour.type === "outline_code" && OUTLINE_CODE_RE.test(detour.key)) {
+    return `/atlas?code=${encodeURIComponent(detour.key)}#atlas-code-lesson`;
+  }
+  if (detour.type === "trap") {
+    return `/traps/${encodeURIComponent(detour.key)}`;
+  }
+  return null;
 }
 
 function Shell({ children }: { children: React.ReactNode }) {

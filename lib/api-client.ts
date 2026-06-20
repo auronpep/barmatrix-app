@@ -190,6 +190,14 @@ export interface AtlasLeadMeStartResponse {
   };
 }
 
+export interface AtlasAnswerDetour {
+  type: string;
+  key: string;
+  label: string;
+  target_count: number;
+  visibility: "student" | "admin_only";
+}
+
 export interface AtlasAnswer {
   question: {
     question_id: string;
@@ -204,6 +212,7 @@ export interface AtlasAnswer {
     minimum_explanation: string;
   };
   case_study_modules: Record<string, unknown>;
+  detours: AtlasAnswerDetour[];
 }
 
 // --- Hearsay seam (Handoff 10) ---

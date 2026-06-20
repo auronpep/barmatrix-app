@@ -405,6 +405,13 @@ export function AtlasClient() {
       null
     );
   }, [allNodes, scopedNodes, selectedCode, studiedCodes]);
+  const scopedWalkCode = nextUnstudiedCode ?? scopedNodes[0]?.code ?? null;
+  const scopedWalkActionLabel =
+    scopedStudiedCount === 0
+      ? "Start walk"
+      : scopedStudiedCount >= scopedNodes.length
+        ? "Restart walk"
+        : "Continue walk";
 
   const selectedQuestions =
     questionState.kind === "ready" && questionState.code === selectedCode
@@ -748,7 +755,15 @@ export function AtlasClient() {
                         {scopedPracticeNodes.length} ready codes / {scopedQuestionCount} questions
                       </p>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid gap-2 sm:grid-cols-3">
+                      <button
+                        type="button"
+                        onClick={() => scopedWalkCode && selectCode(scopedWalkCode)}
+                        disabled={!scopedWalkCode}
+                        className="rounded-md bg-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-red-800 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
+                      >
+                        {scopedWalkActionLabel}
+                      </button>
                       <button
                         type="button"
                         onClick={showScopedPractice}

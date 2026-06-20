@@ -451,6 +451,11 @@ export function AtlasClient() {
     );
   }, [allNodes, scopedNodes, selectedCode, studiedCodes]);
   const scopedWalkCode = nextUnstudiedCode ?? scopedNodes[0]?.code ?? null;
+  const scopedWalkNode = scopedWalkCode
+    ? (scopedNodes.find((node) => node.code === scopedWalkCode) ??
+        allNodes.find((node) => node.code === scopedWalkCode) ??
+        null)
+    : null;
   const scopedWalkActionLabel =
     scopedStudiedCount === 0
       ? "Start walk"
@@ -854,6 +859,11 @@ export function AtlasClient() {
                     {resumedCode ? (
                       <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
                         Saved code on this device: {resumedCode}
+                      </p>
+                    ) : null}
+                    {scopedWalkNode ? (
+                      <p className="truncate font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                        Next walk target: {scopedWalkNode.code} / {scopedWalkNode.outline_text}
                       </p>
                     ) : null}
                   </div>

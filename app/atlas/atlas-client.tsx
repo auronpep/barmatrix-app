@@ -1310,14 +1310,25 @@ export function AtlasClient() {
                                     {laneFootprint(node)}
                                   </span>
                                 </span>
-                                <span
-                                  className={`rounded-md px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] ${
-                                    node.question_count > 0
-                                      ? "bg-emerald-50 text-emerald-800"
-                                      : "bg-amber-50 text-amber-800"
-                                  }`}
-                                >
-                                  {node.question_count > 0 ? "Ready" : "Needs"}
+                                <span className="flex flex-col items-end gap-1">
+                                  <span
+                                    className={`rounded-md px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] ${
+                                      node.question_count > 0
+                                        ? "bg-emerald-50 text-emerald-800"
+                                        : "bg-amber-50 text-amber-800"
+                                    }`}
+                                  >
+                                    {node.question_count > 0 ? "Q ready" : "Needs Q"}
+                                  </span>
+                                  <span
+                                    className={`rounded-md px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] ${
+                                      hasLessonLane(node)
+                                        ? "bg-sky-50 text-sky-800"
+                                        : "bg-zinc-100 text-zinc-600"
+                                    }`}
+                                  >
+                                    {hasLessonLane(node) ? "Lesson ready" : "Needs lesson"}
+                                  </span>
                                 </span>
                               </button>
                             );

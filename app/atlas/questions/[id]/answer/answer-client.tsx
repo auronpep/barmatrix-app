@@ -97,6 +97,14 @@ export function AtlasAnswerClient() {
           >
             Review code questions
           </Link>
+          {detours.length > 0 ? (
+            <a
+              href="#atlas-answer-detours"
+              className="inline-flex w-fit items-center justify-center rounded-md border border-zinc-950/15 bg-white px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-700 transition-[transform,background-color,border-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950 hover:bg-[#f7f5ef] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+            >
+              Review related detours
+            </a>
+          ) : null}
         </div>
       </article>
 
@@ -148,7 +156,10 @@ export function AtlasAnswerClient() {
       ) : null}
 
       {detours.length > 0 ? (
-        <section className="mt-5 rounded-md border border-zinc-300 bg-white p-6">
+        <section
+          id="atlas-answer-detours"
+          className="mt-5 scroll-mt-6 rounded-md border border-zinc-300 bg-white p-6"
+        >
           <p className="font-mono text-xs uppercase tracking-[0.16em] text-red-700">
             Related study detours
           </p>

@@ -96,6 +96,13 @@ describe("dashboard guided-path entry", () => {
     assert.match(layout, /href: "\/atlas", label: "Outline Atlas V2"/);
   });
 
+  it("keeps the Atlas page metadata aligned with the V2 customer-facing label", () => {
+    const page = readProjectFile("app/atlas/page.tsx");
+
+    assert.match(page, /title: "Outline Atlas V2"/);
+    assert.match(page, /robots: \{ index: false, follow: false \}/);
+  });
+
   it("keeps the customer Atlas as a learning map with gated component lanes", () => {
     const atlas = readProjectFile("app/atlas/atlas-client.tsx");
     const answer = readProjectFile("app/atlas/questions/[id]/answer/answer-client.tsx");

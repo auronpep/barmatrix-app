@@ -1526,6 +1526,8 @@ export function AtlasClient() {
                             status={selected.question_count > 0 ? "Live" : "Missing"}
                             meta={`${selected.question_count} approved`}
                             active={selected.question_count > 0}
+                            actionLabel="Open questions"
+                            href={selected.question_count > 0 ? "#atlas-code-questions" : undefined}
                           />
                           <LaneRow
                             label="Guided items"
@@ -1536,24 +1538,44 @@ export function AtlasClient() {
                                 : "Not connected"
                             }
                             active={leadmeItemTotal > 0}
+                            actionLabel="Open LeadMe"
+                            disabled={
+                              leadMeStart.kind === "starting" &&
+                              leadMeStart.code === selected.code
+                            }
+                            onOpen={leadmeSet && leadmeItemTotal > 0 ? startLeadMe : undefined}
                           />
                           <LaneRow
                             label="Lessons"
                             status={lessonCount > 0 ? "Live" : "Approval gate"}
                             meta={lessonCount > 0 ? formatCount(lessonCount, "lesson") : "Not connected"}
                             active={lessonCount > 0}
+                            actionLabel="Open LeadMe"
+                            disabled={
+                              leadMeStart.kind === "starting" &&
+                              leadMeStart.code === selected.code
+                            }
+                            onOpen={leadmeSet && lessonCount > 0 ? startLeadMe : undefined}
                           />
                           <LaneRow
                             label="Drills"
                             status={drillCount > 0 ? "Live" : "Approval gate"}
                             meta={drillCount > 0 ? formatCount(drillCount, "drill") : "Not connected"}
                             active={drillCount > 0}
+                            actionLabel="Open LeadMe"
+                            disabled={
+                              leadMeStart.kind === "starting" &&
+                              leadMeStart.code === selected.code
+                            }
+                            onOpen={leadmeSet && drillCount > 0 ? startLeadMe : undefined}
                           />
                           <LaneRow
                             label="Traps"
                             status={trapCount > 0 ? "Live" : "Approval gate"}
                             meta={trapCount > 0 ? formatCount(trapCount, "trap") : "Not connected"}
                             active={trapCount > 0}
+                            actionLabel="Open detours"
+                            href={detourLinks.length > 0 ? "#atlas-code-detours" : undefined}
                           />
                           <LaneRow
                             label="Flashcards"
@@ -1564,12 +1586,20 @@ export function AtlasClient() {
                                 : "Not connected"
                             }
                             active={flashcardCount > 0}
+                            actionLabel="Open LeadMe"
+                            disabled={
+                              leadMeStart.kind === "starting" &&
+                              leadMeStart.code === selected.code
+                            }
+                            onOpen={leadmeSet && flashcardCount > 0 ? startLeadMe : undefined}
                           />
                           <LaneRow
                             label="Tensions"
                             status={tensionCount > 0 ? "Live" : "Approval gate"}
                             meta={tensionCount > 0 ? formatCount(tensionCount, "tension") : "Not connected"}
                             active={tensionCount > 0}
+                            actionLabel="Open detours"
+                            href={detourLinks.length > 0 ? "#atlas-code-detours" : undefined}
                           />
                           <LaneRow
                             label="Answer debriefs"
@@ -1580,6 +1610,12 @@ export function AtlasClient() {
                                 : "Not connected"
                             }
                             active={debriefElementTotal > 0}
+                            actionLabel="Open debrief"
+                            href={
+                              firstSelectedQuestion && debriefElementTotal > 0
+                                ? atlasQuestionAnswerHref(firstSelectedQuestion.question_id)
+                                : undefined
+                            }
                           />
                           <LaneRow
                             label="Boot camps"
@@ -1652,7 +1688,10 @@ export function AtlasClient() {
                           )}
                         </div>
                         {detourLinks.length > 0 ? (
-                          <div className="mt-4 border-t border-zinc-950/10 pt-4">
+                          <div
+                            id="atlas-code-detours"
+                            className="mt-4 scroll-mt-6 border-t border-zinc-950/10 pt-4"
+                          >
                             <div className="flex items-center justify-between gap-3">
                               <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                                 Related detours
@@ -1801,14 +1840,23 @@ function LaneRow({
   status,
   meta,
   active,
+  actionLabel,
+  disabled = false,
+  href,
+  onOpen,
 }: {
   label: string;
   status: string;
   meta: string;
   active: boolean;
+  actionLabel?: string;
+  disabled?: boolean;
+  href?: string;
+  onOpen?: () => void;
 }) {
-  return (
-    <div className="flex items-center justify-between gap-3 py-2.5">
+  const action = href || onOpen;
+  const content = (
+    <>
       <div className="min-w-0">
         <p className="text-sm font-semibold leading-5 text-zinc-900">{label}</p>
         <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
@@ -1822,6 +1870,41 @@ function LaneRow({
       >
         {status}
       </span>
+      {action && actionLabel ? (
+        <span className="shrink-0 rounded-md border border-zinc-950/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700">
+          {actionLabel}
+        </span>
+      ) : null}
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className="flex items-center justify-between gap-3 py-2.5 transition-colors hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  if (onOpen) {
+    return (
+      <button
+        type="button"
+        onClick={onOpen}
+        disabled={disabled}
+        className="flex w-full items-center justify-between gap-3 py-2.5 text-left transition-colors hover:bg-zinc-50 disabled:pointer-events-none disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-between gap-3 py-2.5">
+      {content}
     </div>
   );
 }

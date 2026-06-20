@@ -422,6 +422,9 @@ describe("dashboard guided-path entry", () => {
     assert.match(practice, /Review code question list/);
     assert.match(practice, /lessonHref/);
     assert.match(practice, /codeHref/);
+    assert.match(practice, /<Shell atlasHref=\{codeHref\}>/);
+    assert.match(practice, /atlasHref = "\/atlas"/);
+    assert.match(practice, />\s*Outline Atlas\s*</);
     assert.match(practice, /#atlas-code-lesson/);
     assert.match(practice, /QuestionNavLink/);
     assert.match(practice, /Next question/);

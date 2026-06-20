@@ -90,7 +90,7 @@ export default function AtlasQuestionPracticePage() {
   const lessonHref = `/atlas?code=${encodeURIComponent(q.outline_code)}#atlas-code-lesson`;
 
   return (
-    <Shell>
+    <Shell atlasHref={codeHref}>
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <Link
           href={codeHref}
@@ -252,10 +252,24 @@ function QuestionNavLink({
   );
 }
 
-function Shell({ children }: { children: ReactNode }) {
+function Shell({
+  children,
+  atlasHref = "/atlas",
+}: {
+  children: ReactNode;
+  atlasHref?: string;
+}) {
   return (
     <main className="min-h-screen bg-[#f4f1ea] px-4 py-8 text-zinc-950 sm:px-6">
-      <div className="mx-auto max-w-3xl">{children}</div>
+      <div className="mx-auto max-w-3xl">
+        <Link
+          href={atlasHref}
+          className="font-mono text-xs uppercase tracking-wide text-zinc-600 underline underline-offset-4 hover:text-zinc-950"
+        >
+          Outline Atlas
+        </Link>
+        <div className="mt-4">{children}</div>
+      </div>
     </main>
   );
 }

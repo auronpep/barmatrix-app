@@ -155,11 +155,27 @@ export interface AtlasLeadMeSet {
   total_items: number;
 }
 
+export interface AtlasLeadMeItemPreview {
+  item_id: string;
+  external_id: string;
+  component_type: string;
+  estimated_seconds: number | null;
+}
+
+export interface AtlasDebriefElementPreview {
+  element_id: string;
+  component_type: string;
+  title: string;
+  source_count: number;
+}
+
 export interface AtlasComponentsResponse {
   outline_code: string;
   leadme_set: AtlasLeadMeSet | null;
   leadme_items: AtlasComponentCount[];
   debrief_elements: AtlasComponentCount[];
+  leadme_item_previews: AtlasLeadMeItemPreview[];
+  debrief_element_previews: AtlasDebriefElementPreview[];
 }
 
 export interface AtlasLeadMeStartResponse {

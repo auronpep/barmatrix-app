@@ -269,6 +269,9 @@ export function AtlasClient() {
   const leadmeSet = componentData?.leadme_set ?? null;
   const leadmeItemTotal = totalCounts(componentData?.leadme_items ?? []);
   const debriefElementTotal = totalCounts(componentData?.debrief_elements ?? []);
+  const leadmeItemPreviews = componentData?.leadme_item_previews ?? [];
+  const debriefElementPreviews = componentData?.debrief_element_previews ?? [];
+  const previewCount = leadmeItemPreviews.length + debriefElementPreviews.length;
   const lessonCount = countMatching(componentData?.leadme_items ?? [], [
     "lesson",
     "micro_read",
@@ -812,6 +815,50 @@ export function AtlasClient() {
                             active={false}
                           />
                         </div>
+                        <div className="mt-4 border-t border-zinc-950/10 pt-4">
+                          <div className="flex items-center justify-between gap-3">
+                            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                              Connected previews
+                            </p>
+                            <span className="rounded-md bg-zinc-100 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                              {formatCount(previewCount, "item")}
+                            </span>
+                          </div>
+                          {componentsLoading ? (
+                            <p className="mt-3 text-sm leading-6 text-zinc-600">
+                              Loading approved component previews...
+                            </p>
+                          ) : previewCount === 0 ? (
+                            <p className="mt-3 text-sm leading-6 text-zinc-600">
+                              No approved component previews are connected yet.
+                            </p>
+                          ) : (
+                            <div className="mt-3 grid gap-2">
+                              {leadmeItemPreviews.map((item) => (
+                                <ComponentPreviewRow
+                                  key={item.item_id}
+                                  label="LeadMe"
+                                  title={friendlyComponentLabel(item.external_id)}
+                                  type={item.component_type}
+                                  meta={
+                                    item.estimated_seconds
+                                      ? `${formatSeconds(item.estimated_seconds)} estimate`
+                                      : "Approved item"
+                                  }
+                                />
+                              ))}
+                              {debriefElementPreviews.map((item) => (
+                                <ComponentPreviewRow
+                                  key={item.element_id}
+                                  label="Answer debrief"
+                                  title={item.title}
+                                  type={item.component_type}
+                                  meta={formatCount(item.source_count, "source")}
+                                />
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </section>
 
                       <section className="mt-4 rounded-lg bg-white p-4 text-zinc-950">
@@ -945,6 +992,35 @@ function LaneRow({
   );
 }
 
+function ComponentPreviewRow({
+  label,
+  title,
+  type,
+  meta,
+}: {
+  label: string;
+  title: string;
+  type: string;
+  meta: string;
+}) {
+  return (
+    <article className="rounded-md bg-zinc-50 px-3 py-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="rounded-sm bg-zinc-950 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-white">
+          {label}
+        </span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+          {formatComponentType(type)}
+        </span>
+      </div>
+      <p className="mt-1 text-sm font-semibold leading-5 text-zinc-900">{title}</p>
+      <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+        {meta}
+      </p>
+    </article>
+  );
+}
+
 function WalkButton({
   label,
   disabled,
@@ -1012,6 +1088,21 @@ function countMatching(
 
 function formatCount(count: number, singular: string, plural = `${singular}s`): string {
   return `${count} ${count === 1 ? singular : plural}`;
+}
+
+function formatSeconds(seconds: number): string {
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = Math.round(seconds / 60);
+  return `${minutes} min`;
+}
+
+function formatComponentType(value: string): string {
+  return value.replaceAll("_", " ");
+}
+
+function friendlyComponentLabel(value: string): string {
+  const cleaned = value.replace(/^[a-z]+_/i, "").replaceAll("_", " ").replaceAll("-", " ");
+  return cleaned || value;
 }
 
 function slug(value: string): string {

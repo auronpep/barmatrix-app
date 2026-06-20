@@ -101,6 +101,10 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Question bank/);
     assert.match(atlas, /Start LeadMe/);
     assert.match(atlas, /Drill this code/);
+    assert.match(atlas, /Connected previews/);
+    assert.match(atlas, /ComponentPreviewRow/);
+    assert.match(atlas, /leadme_item_previews/);
+    assert.match(atlas, /debrief_element_previews/);
     assert.match(atlas, /kind: "outline_code"/);
     assert.match(atlas, /outline_code: selected\.code/);
     assert.match(atlas, /Approval gate/);
@@ -108,6 +112,8 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /window\.history\.replaceState/);
     assert.match(atlas, /Direct link/);
     assert.match(client, /getAtlasComponents/);
+    assert.match(client, /AtlasLeadMeItemPreview/);
+    assert.match(client, /AtlasDebriefElementPreview/);
     assert.match(client, /startAtlasLeadMe/);
     assert.match(body, /open approved questions, lessons, and component lanes/);
     assert.doesNotMatch(atlas, /review_count|source_ref|source_label|included_by/);

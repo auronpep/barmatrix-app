@@ -61,6 +61,7 @@ const COMPONENT_FILTERS = [
 ] as const;
 
 type ComponentFilter = (typeof COMPONENT_FILTERS)[number]["key"];
+type StudyFilter = "all" | "unstudied";
 
 const ALL_SUBJECTS = "All subjects";
 const ALL_SUBTOPICS = "All subtopics";
@@ -132,6 +133,7 @@ export function AtlasClient() {
   const [subjectFilter, setSubjectFilter] = useState(ALL_SUBJECTS);
   const [subtopicFilter, setSubtopicFilter] = useState(ALL_SUBTOPICS);
   const [componentFilter, setComponentFilter] = useState<ComponentFilter>("all");
+  const [studyFilter, setStudyFilter] = useState<StudyFilter>("all");
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
   const [resumedCode, setResumedCode] = useState<string | null>(null);
   const [studiedCodes, setStudiedCodes] = useState<Set<string>>(() => new Set());
@@ -324,6 +326,10 @@ export function AtlasClient() {
     () => scopedNodes.filter((node) => node.question_count > 0),
     [scopedNodes],
   );
+  const scopedUnstudiedNodes = useMemo(
+    () => scopedNodes.filter((node) => !studiedCodes.has(node.code)),
+    [scopedNodes, studiedCodes],
+  );
   const scopedQuestionCount = scopedPracticeNodes.reduce(
     (sum, node) => sum + node.question_count,
     0,
@@ -347,12 +353,13 @@ export function AtlasClient() {
       if (subjectFilter !== ALL_SUBJECTS && node.subject_display !== subjectFilter) return false;
       if (subtopicFilter !== ALL_SUBTOPICS && node.subtopic !== subtopicFilter) return false;
       if (!matchesComponentFilter(node, componentFilter)) return false;
+      if (studyFilter === "unstudied" && studiedCodes.has(node.code)) return false;
       if (!needle) return true;
       return [node.code, node.subject_display, node.subtopic, node.outline_text].some((value) =>
         value.toLowerCase().includes(needle),
       );
     });
-  }, [allNodes, componentFilter, query, subjectFilter, subtopicFilter]);
+  }, [allNodes, componentFilter, query, studiedCodes, studyFilter, subjectFilter, subtopicFilter]);
 
   const grouped = useMemo(() => {
     const map = new Map<string, AtlasCoverageNode[]>();
@@ -624,6 +631,16 @@ export function AtlasClient() {
     selectCode(scopedLessonNodes[0]?.code ?? null);
   }
 
+  function toggleStudyFilter() {
+    if (studyFilter === "unstudied") {
+      setStudyFilter("all");
+      selectCode(scopedNodes[0]?.code ?? null);
+      return;
+    }
+    setStudyFilter("unstudied");
+    selectCode(scopedUnstudiedNodes[0]?.code ?? null);
+  }
+
   async function startLeadMe() {
     if (!selected) return;
     setLeadMeStart({ kind: "starting", code: selected.code });
@@ -841,7 +858,7 @@ export function AtlasClient() {
                         ))}
                       </div>
                     </div>
-                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
+                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-6">
                       <button
                         type="button"
                         onClick={() => scopedWalkCode && selectCode(scopedWalkCode)}
@@ -881,6 +898,14 @@ export function AtlasClient() {
                         className="rounded-md border border-zinc-950/15 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-[transform,background-color,border-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
                       >
                         Saved code
+                      </button>
+                      <button
+                        type="button"
+                        onClick={toggleStudyFilter}
+                        disabled={studyFilter !== "unstudied" && scopedUnstudiedNodes.length === 0}
+                        className="rounded-md border border-zinc-950/15 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-[transform,background-color,border-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
+                      >
+                        {studyFilter === "unstudied" ? "Show all codes" : "Show unstudied"}
                       </button>
                     </div>
                     {resumedCode ? (

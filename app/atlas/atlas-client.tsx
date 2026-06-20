@@ -450,6 +450,9 @@ export function AtlasClient() {
   const selectedSubtopicLessonRemainingCount = selectedSubtopicLessonNodes.filter(
     (node) => !studiedCodes.has(node.code),
   ).length;
+  const selectedSubtopicUnstudiedCount = selectedSubtopicNodes.filter(
+    (node) => !studiedCodes.has(node.code),
+  ).length;
   const selectedSubtopicIndex = selectedCode
     ? selectedSubtopicNodes.findIndex((node) => node.code === selectedCode)
     : -1;
@@ -628,6 +631,20 @@ export function AtlasClient() {
         next.delete(selected.code);
       } else {
         next.add(selected.code);
+      }
+      writeStoredStudiedCodes(next);
+      return next;
+    });
+  }
+
+  function markSubtopicStudied() {
+    if (selectedSubtopicNodes.length === 0 || selectedSubtopicUnstudiedCount === 0) {
+      return;
+    }
+    setStudiedCodes((current) => {
+      const next = new Set(current);
+      for (const node of selectedSubtopicNodes) {
+        next.add(node.code);
       }
       writeStoredStudiedCodes(next);
       return next;
@@ -1266,6 +1283,11 @@ export function AtlasClient() {
                           Subtopic lessons: {selectedSubtopicLessonNodes.length} lesson-ready /{" "}
                           {selectedSubtopicLessonRemainingCount} left unstudied
                         </p>
+                        <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-400">
+                          Subtopic progress:{" "}
+                          {selectedSubtopicNodes.length - selectedSubtopicUnstudiedCount} /{" "}
+                          {selectedSubtopicNodes.length} studied
+                        </p>
                         <div className="mt-3 grid grid-cols-2 gap-2">
                           <WalkButton
                             label="Prev in subtopic"
@@ -1289,6 +1311,13 @@ export function AtlasClient() {
                                 nextSubtopicUnstudiedCode &&
                                 selectCode(nextSubtopicUnstudiedCode)
                               }
+                            />
+                          </div>
+                          <div className="col-span-2">
+                            <WalkButton
+                              label="Mark subtopic studied"
+                              disabled={selectedSubtopicUnstudiedCount === 0}
+                              onClick={markSubtopicStudied}
                             />
                           </div>
                         </div>

@@ -33,7 +33,7 @@ const VIEW_TABS: readonly NavItem[] = [
 // (no /subjects — it has only per-subject sub-pages, no index, so it 404s).
 const PROGRAM_LINKS: readonly NavItem[] = [
   { href: "/foundations", label: "The Method" },
-  { href: "/atlas", label: "Outline Atlas" },
+  { href: "/atlas", label: "Outline Atlas V2" },
   { href: "/matrix", label: "Tension Matrix" },
   { href: "/tensions", label: "Tension Map" },
   { href: "/misconceptions", label: "Misconceptions" },

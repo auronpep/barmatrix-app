@@ -71,6 +71,7 @@ describe("dashboard guided-path entry", () => {
 
     assert.match(shell, /section: "VIEWS"/);
     assert.match(shell, /label: "My Path"/);
+    assert.match(shell, /href: "\/atlas", icon: "▨", label: "Outline Atlas V2"/);
     for (const href of [
       "/dashboard/path",
       "/atlas",
@@ -87,6 +88,12 @@ describe("dashboard guided-path entry", () => {
     assert.match(body, /Active Red Zones/);
     assert.match(body, /Mastery trend/);
     assert.match(body, /Recent activity/);
+  });
+
+  it("keeps Atlas V2 named in the dashboard program navigation", () => {
+    const layout = readProjectFile("app/dashboard/layout.tsx");
+
+    assert.match(layout, /href: "\/atlas", label: "Outline Atlas V2"/);
   });
 
   it("keeps the customer Atlas as a learning map with gated component lanes", () => {

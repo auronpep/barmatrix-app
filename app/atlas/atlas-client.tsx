@@ -45,6 +45,7 @@ type SubtopicStat = {
   name: string;
   codeCount: number;
   readyCodeCount: number;
+  lessonReadyCodeCount: number;
   questionCount: number;
 };
 
@@ -297,10 +298,17 @@ export function AtlasClient() {
     for (const node of source) {
       const stat =
         stats.get(node.subtopic) ??
-        { name: node.subtopic, codeCount: 0, readyCodeCount: 0, questionCount: 0 };
+        {
+          name: node.subtopic,
+          codeCount: 0,
+          readyCodeCount: 0,
+          lessonReadyCodeCount: 0,
+          questionCount: 0,
+        };
       stat.codeCount += 1;
       stat.questionCount += node.question_count;
       if (node.question_count > 0) stat.readyCodeCount += 1;
+      if (hasLessonLane(node)) stat.lessonReadyCodeCount += 1;
       stats.set(node.subtopic, stat);
     }
     return [
@@ -308,6 +316,7 @@ export function AtlasClient() {
         name: ALL_SUBTOPICS,
         codeCount: source.length,
         readyCodeCount: source.filter((node) => node.question_count > 0).length,
+        lessonReadyCodeCount: source.filter(hasLessonLane).length,
         questionCount: source.reduce((sum, node) => sum + node.question_count, 0),
       },
       ...stats.values(),
@@ -818,7 +827,8 @@ export function AtlasClient() {
                             subtopicFilter === subtopic.name ? "text-zinc-300" : "text-zinc-500"
                           }`}
                         >
-                          {subtopic.readyCodeCount} ready / {subtopic.questionCount} questions
+                          {subtopic.codeCount} codes / {subtopic.lessonReadyCodeCount} lessons /{" "}
+                          {subtopic.questionCount} questions
                         </span>
                       </button>
                     ))}

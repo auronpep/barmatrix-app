@@ -59,6 +59,7 @@ export function AtlasAnswerClient() {
 
   const q = state.answer.question;
   const practiceHref = `/atlas/questions/${encodeURIComponent(q.question_id)}/practice`;
+  const codeQuestionsHref = `/atlas?code=${encodeURIComponent(q.outline_code)}#atlas-code-questions`;
   const detours = state.answer.detours
     .map((detour) => ({ detour, href: detourHref(detour, q.outline_code) }))
     .filter((item): item is { detour: AtlasAnswerDetour; href: string } => item.href !== null);
@@ -69,7 +70,7 @@ export function AtlasAnswerClient() {
   );
 
   return (
-    <Shell>
+    <Shell atlasHref={codeQuestionsHref}>
       <article className="border-b-4 border-zinc-950 bg-white p-6">
         <p className="font-mono text-xs uppercase tracking-[0.16em] text-red-700">
           {q.question_id}
@@ -92,7 +93,7 @@ export function AtlasAnswerClient() {
             Study this outline code
           </Link>
           <Link
-            href={`/atlas?code=${encodeURIComponent(q.outline_code)}#atlas-code-questions`}
+            href={codeQuestionsHref}
             className="inline-flex w-fit items-center justify-center rounded-md border border-zinc-950 bg-zinc-950 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-white transition-[transform,background-color,border-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-800 hover:bg-zinc-800 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
           >
             Review code questions
@@ -205,11 +206,17 @@ function detourHref(detour: AtlasAnswerDetour, outlineCode: string): string | nu
   return null;
 }
 
-function Shell({ children }: { children: React.ReactNode }) {
+function Shell({
+  children,
+  atlasHref = "/atlas",
+}: {
+  children: React.ReactNode;
+  atlasHref?: string;
+}) {
   return (
     <div className="min-h-screen bg-[#f7f5ef] px-5 py-8 text-zinc-950">
       <div className="mx-auto max-w-4xl">
-        <Link href="/atlas" className="font-mono text-xs uppercase tracking-wide text-zinc-600 underline">
+        <Link href={atlasHref} className="font-mono text-xs uppercase tracking-wide text-zinc-600 underline">
           Outline Atlas
         </Link>
         <div className="mt-4">{children}</div>

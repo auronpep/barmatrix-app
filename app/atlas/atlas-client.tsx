@@ -343,6 +343,14 @@ export function AtlasClient() {
     () => scopedNodes.filter((node) => !hasAnyLane(node)),
     [scopedNodes],
   );
+  const scopedGuidedNodes = useMemo(
+    () => scopedNodes.filter((node) => node.leadme_item_count > 0),
+    [scopedNodes],
+  );
+  const scopedDebriefNodes = useMemo(
+    () => scopedNodes.filter((node) => node.debrief_element_count > 0),
+    [scopedNodes],
+  );
   const scopedUnstudiedNodes = useMemo(
     () => scopedNodes.filter((node) => !studiedCodes.has(node.code)),
     [scopedNodes, studiedCodes],
@@ -754,6 +762,16 @@ export function AtlasClient() {
     selectCode(scopedLessonNodes[0]?.code ?? null);
   }
 
+  function showScopedGuided() {
+    setComponentFilter("guided");
+    selectCode(scopedGuidedNodes[0]?.code ?? null);
+  }
+
+  function showScopedDebriefs() {
+    setComponentFilter("debriefs");
+    selectCode(scopedDebriefNodes[0]?.code ?? null);
+  }
+
   function showScopedLessonBacklog() {
     setComponentFilter("lessons");
     setStudyFilter("unstudied");
@@ -1027,7 +1045,7 @@ export function AtlasClient() {
                         </button>
                       ) : null}
                     </div>
-                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-10">
+                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-12">
                       <button
                         type="button"
                         onClick={() => scopedWalkCode && selectCode(scopedWalkCode)}
@@ -1067,6 +1085,22 @@ export function AtlasClient() {
                         className="rounded-md bg-zinc-950 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-zinc-800 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
                       >
                         Show lesson codes
+                      </button>
+                      <button
+                        type="button"
+                        onClick={showScopedGuided}
+                        disabled={scopedGuidedNodes.length === 0}
+                        className="rounded-md bg-zinc-950 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-zinc-800 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
+                      >
+                        Show guided items
+                      </button>
+                      <button
+                        type="button"
+                        onClick={showScopedDebriefs}
+                        disabled={scopedDebriefNodes.length === 0}
+                        className="rounded-md bg-zinc-950 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-zinc-800 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
+                      >
+                        Show debriefs
                       </button>
                       <button
                         type="button"

@@ -1638,6 +1638,14 @@ export function AtlasClient() {
                                   title={item.title}
                                   type={item.component_type}
                                   meta={formatCount(item.source_count, "source")}
+                                  actionLabel={
+                                    firstSelectedQuestion ? "Open answer debrief" : undefined
+                                  }
+                                  href={
+                                    firstSelectedQuestion
+                                      ? atlasQuestionAnswerHref(firstSelectedQuestion.question_id)
+                                      : undefined
+                                  }
                                 />
                               ))}
                             </div>
@@ -1722,9 +1730,7 @@ export function AtlasClient() {
                                   Do question
                                 </Link>
                                 <Link
-                                  href={`/atlas/questions/${encodeURIComponent(
-                                    question.question_id,
-                                  )}/answer`}
+                                  href={atlasQuestionAnswerHref(question.question_id)}
                                   className="inline-flex rounded-md border border-zinc-950/15 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-colors hover:border-zinc-950 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
                                 >
                                   Study answer
@@ -1827,6 +1833,7 @@ function ComponentPreviewRow({
   meta,
   actionLabel,
   disabled = false,
+  href,
   onOpen,
 }: {
   label: string;
@@ -1835,6 +1842,7 @@ function ComponentPreviewRow({
   meta: string;
   actionLabel?: string;
   disabled?: boolean;
+  href?: string;
   onOpen?: () => void;
 }) {
   const content = (
@@ -1853,6 +1861,22 @@ function ComponentPreviewRow({
       </p>
     </>
   );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        className="rounded-md border border-zinc-950/10 bg-zinc-50 px-3 py-2 text-left transition-[transform,background-color,border-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950/25 hover:bg-white active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+      >
+        {content}
+        {actionLabel ? (
+          <span className="mt-2 inline-flex rounded-md bg-zinc-950 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white">
+            {actionLabel}
+          </span>
+        ) : null}
+      </Link>
+    );
+  }
 
   if (onOpen) {
     return (
@@ -1983,6 +2007,10 @@ function clip(value: string, max = 150): string {
 
 function atlasQuestionPracticeHref(questionId: string): string {
   return `/atlas/questions/${encodeURIComponent(questionId)}/practice`;
+}
+
+function atlasQuestionAnswerHref(questionId: string): string {
+  return `/atlas/questions/${encodeURIComponent(questionId)}/answer`;
 }
 
 function nodeComponentTotal(node: AtlasCoverageNode): number {

@@ -132,6 +132,7 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Work approved questions/);
     assert.match(atlas, /firstSelectedQuestion/);
     assert.match(atlas, /atlasQuestionPracticeHref/);
+    assert.match(atlas, /atlasQuestionAnswerHref/);
     assert.match(atlas, /Do first question/);
     assert.match(atlas, /Do question/);
     assert.match(atlas, /Open question list/);
@@ -205,6 +206,11 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /debrief_element_previews/);
     assert.match(atlas, /Open through LeadMe/);
     assert.match(atlas, /onOpen=\{leadmeSet \? startLeadMe : undefined\}/);
+    assert.match(atlas, /Open answer debrief/);
+    assert.match(
+      atlas,
+      /href=\{\s*firstSelectedQuestion\s*\?\s*atlasQuestionAnswerHref\(firstSelectedQuestion\.question_id\)\s*:\s*undefined\s*\}/,
+    );
     assert.match(atlas, /detour_previews/);
     assert.match(atlas, /Related detours/);
     assert.match(atlas, /atlasCodeDetourHref/);

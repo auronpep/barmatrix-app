@@ -1280,6 +1280,7 @@ export interface PrescribedDrillsResponse {
 export type DrillStartKind =
   | "tension"
   | "trap"
+  | "outline_code"
   | "prescribed_red_zone"
   | "review"
   | "retry";
@@ -1287,6 +1288,7 @@ export type DrillStartKind =
 export interface DrillStartRequest {
   kind: DrillStartKind;
   slug?: string;
+  outline_code?: string;
   red_zone_dimension?: string;
   red_zone_tag?: string;
   size?: number;

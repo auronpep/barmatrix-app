@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   api,
@@ -34,6 +35,12 @@ type LeadMeStartState =
   | { kind: "missing"; code: string; message: string }
   | { kind: "error"; code: string; message: string };
 
+type CodeDrillStartState =
+  | { kind: "idle"; code: string | null }
+  | { kind: "starting"; code: string }
+  | { kind: "missing"; code: string; message: string }
+  | { kind: "error"; code: string; message: string };
+
 type SubjectStat = {
   subject: string;
   codeCount: number;
@@ -62,6 +69,7 @@ function readRequestedCode() {
 
 export function AtlasClient() {
   const { isLoaded, isSignedIn, getToken } = useClerkAuth();
+  const router = useRouter();
   const [state, setState] = useState<LoadState>({ kind: "loading" });
   const [requestedCode] = useState(readRequestedCode);
   const [query, setQuery] = useState("");
@@ -78,6 +86,10 @@ export function AtlasClient() {
     code: null,
   });
   const [leadMeStart, setLeadMeStart] = useState<LeadMeStartState>({
+    kind: "idle",
+    code: null,
+  });
+  const [codeDrillStart, setCodeDrillStart] = useState<CodeDrillStartState>({
     kind: "idle",
     code: null,
   });
@@ -340,6 +352,50 @@ export function AtlasClient() {
     }
   }
 
+  async function startCodeDrill() {
+    if (!selected) return;
+    if (selected.question_count === 0) {
+      setCodeDrillStart({
+        kind: "missing",
+        code: selected.code,
+        message: "No approved questions are connected to this outline code yet.",
+      });
+      return;
+    }
+    setCodeDrillStart({ kind: "starting", code: selected.code });
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("no session token");
+      const result = await api.startDrill(
+        {
+          kind: "outline_code",
+          outline_code: selected.code,
+          size: Math.min(selected.question_count, 12),
+          exclude_mastered: true,
+        },
+        token,
+      );
+      if (!result.drill_id) {
+        setCodeDrillStart({
+          kind: "missing",
+          code: selected.code,
+          message: "No runnable questions matched this outline code yet.",
+        });
+        return;
+      }
+      router.push(`/drills/${result.drill_id}`);
+    } catch (err) {
+      setCodeDrillStart({
+        kind: "error",
+        code: selected.code,
+        message:
+          err instanceof ApiClientError && err.status === 403
+            ? "Enrollment required to start this drill."
+            : "Could not start this outline-code drill.",
+      });
+    }
+  }
+
   return (
     <section className="min-h-screen bg-[#f4f1ea] text-zinc-950">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
@@ -589,6 +645,28 @@ export function AtlasClient() {
                       >
                         Direct link
                       </Link>
+                      <button
+                        type="button"
+                        onClick={startCodeDrill}
+                        disabled={
+                          selected.question_count === 0 ||
+                          (codeDrillStart.kind === "starting" &&
+                            codeDrillStart.code === selected.code)
+                        }
+                        className="mt-2 inline-flex w-full items-center justify-center rounded-md bg-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-red-800 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-300"
+                      >
+                        {codeDrillStart.kind === "starting" &&
+                        codeDrillStart.code === selected.code
+                          ? "Starting drill..."
+                          : "Drill this code"}
+                      </button>
+                      {codeDrillStart.code === selected.code &&
+                      codeDrillStart.kind !== "idle" &&
+                      codeDrillStart.kind !== "starting" ? (
+                        <p className="mt-2 rounded-md bg-white/10 p-3 text-sm leading-6 text-zinc-200">
+                          {codeDrillStart.message}
+                        </p>
+                      ) : null}
 
                       <section className="mt-5 rounded-lg bg-white p-4 text-zinc-950">
                         <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-red-700">

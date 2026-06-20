@@ -52,10 +52,18 @@ type ComponentFilter = (typeof COMPONENT_FILTERS)[number]["key"];
 
 const ALL_SUBJECTS = "All subjects";
 const ALL_SUBTOPICS = "All subtopics";
+const OUTLINE_CODE_RE = /^\d{8}$/;
+
+function readRequestedCode() {
+  if (typeof window === "undefined") return null;
+  const code = new URLSearchParams(window.location.search).get("code");
+  return code && OUTLINE_CODE_RE.test(code) ? code : null;
+}
 
 export function AtlasClient() {
   const { isLoaded, isSignedIn, getToken } = useClerkAuth();
   const [state, setState] = useState<LoadState>({ kind: "loading" });
+  const [requestedCode] = useState(readRequestedCode);
   const [query, setQuery] = useState("");
   const [subjectFilter, setSubjectFilter] = useState(ALL_SUBJECTS);
   const [subtopicFilter, setSubtopicFilter] = useState(ALL_SUBTOPICS);
@@ -84,11 +92,15 @@ export function AtlasClient() {
         const data = await api.getAtlasCoverage(token);
         if (cancelled) return;
         setState({ kind: "ready", nodes: data.nodes });
-        setSelectedCode((current) =>
-          current && data.nodes.some((node) => node.code === current)
+        const requestedNode = requestedCode
+          ? data.nodes.find((node) => node.code === requestedCode)
+          : null;
+        setSelectedCode((current) => {
+          if (requestedNode) return requestedNode.code;
+          return current && data.nodes.some((node) => node.code === current)
             ? current
-            : data.nodes[0]?.code ?? null,
-        );
+            : data.nodes[0]?.code ?? null;
+        });
       } catch (err) {
         if (cancelled) return;
         if (err instanceof ApiClientError && err.status === 403) {
@@ -103,7 +115,7 @@ export function AtlasClient() {
     return () => {
       cancelled = true;
     };
-  }, [getToken, isLoaded, isSignedIn]);
+  }, [getToken, isLoaded, isSignedIn, requestedCode]);
 
   const allNodes = useMemo(() => (state.kind === "ready" ? state.nodes : []), [state]);
   const selected = selectedCode
@@ -260,6 +272,18 @@ export function AtlasClient() {
     countMatching(componentData?.leadme_items ?? [], ["tension", "clash"]);
   const loading = !isLoaded || (isSignedIn && state.kind === "loading");
 
+  function selectCode(code: string | null) {
+    setSelectedCode(code);
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    if (code) {
+      url.searchParams.set("code", code);
+    } else {
+      url.searchParams.delete("code");
+    }
+    window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+  }
+
   function chooseSubject(subject: string) {
     setSubjectFilter(subject);
     setSubtopicFilter(ALL_SUBTOPICS);
@@ -267,7 +291,7 @@ export function AtlasClient() {
       subject === ALL_SUBJECTS
         ? allNodes[0]
         : allNodes.find((node) => node.subject_display === subject);
-    setSelectedCode(next?.code ?? null);
+    selectCode(next?.code ?? null);
   }
 
   function chooseSubtopic(subtopic: string) {
@@ -278,7 +302,7 @@ export function AtlasClient() {
       const subtopicOk = subtopic === ALL_SUBTOPICS || node.subtopic === subtopic;
       return subjectOk && subtopicOk;
     });
-    setSelectedCode(next?.code ?? null);
+    selectCode(next?.code ?? null);
   }
 
   async function startLeadMe() {
@@ -485,7 +509,7 @@ export function AtlasClient() {
                             <button
                               key={node.code}
                               type="button"
-                              onClick={() => setSelectedCode(node.code)}
+                              onClick={() => selectCode(node.code)}
                               aria-current={node.code === selectedCode ? "true" : undefined}
                               className={`grid w-full gap-2 px-4 py-3 text-left transition-colors md:grid-cols-[94px_minmax(0,1fr)_92px] ${
                                 node.code === selectedCode
@@ -551,14 +575,20 @@ export function AtlasClient() {
                         <WalkButton
                           label="Previous"
                           disabled={!previousCode}
-                          onClick={() => previousCode && setSelectedCode(previousCode)}
+                          onClick={() => previousCode && selectCode(previousCode)}
                         />
                         <WalkButton
                           label="Next"
                           disabled={!nextCode}
-                          onClick={() => nextCode && setSelectedCode(nextCode)}
+                          onClick={() => nextCode && selectCode(nextCode)}
                         />
                       </div>
+                      <Link
+                        href={`/atlas?code=${encodeURIComponent(selected.code)}`}
+                        className="mt-2 inline-flex w-full items-center justify-center rounded-md border border-white/15 bg-white/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-100 transition-colors hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                      >
+                        Direct link
+                      </Link>
 
                       <section className="mt-5 rounded-lg bg-white p-4 text-zinc-950">
                         <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-red-700">

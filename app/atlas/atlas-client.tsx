@@ -1933,6 +1933,14 @@ export function AtlasClient() {
                                       ? `${leadmeSet.title} is ready for this code.`
                                       : "Approval gate: lessons, drills, flashcards, and debrief components stay hidden until approved."}
                               </p>
+                              {previewCount + leadmeItemTotal + debriefElementTotal > 0 ? (
+                                <a
+                                  href="#atlas-code-components"
+                                  className="mt-2 inline-flex font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600 underline underline-offset-4 transition-colors hover:text-zinc-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                                >
+                                  View support lanes
+                                </a>
+                              ) : null}
                             </li>
                             <li className="border-l-2 border-zinc-300 pl-3">
                               <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
@@ -1943,6 +1951,14 @@ export function AtlasClient() {
                                   ? "Use the live trap, tension, and debrief lanes to drill the same failure pattern."
                                   : "Trap, tension, and red-zone detours remain gated until they are approved for students."}
                               </p>
+                              {detourLinks.length > 0 ? (
+                                <a
+                                  href="#atlas-code-detours"
+                                  className="mt-2 inline-flex font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600 underline underline-offset-4 transition-colors hover:text-zinc-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                                >
+                                  View detour lanes
+                                </a>
+                              ) : null}
                             </li>
                           </ol>
                         </div>

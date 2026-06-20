@@ -10,6 +10,7 @@ const hasClerk = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
 
 const isProtectedRoute = createRouteMatcher([
   "/account(.*)",
+  "/atlas(.*)",
   "/atlas-v1(.*)",
   "/boot-camps(.*)",
   "/certification/(.*)",

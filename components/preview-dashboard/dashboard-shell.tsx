@@ -46,6 +46,7 @@ export function DashboardShell({
       links: [
         { href: "/dashboard", icon: "◧", label: "Dashboard", active: true },
         { href: "/foundations", icon: "≣", label: "The Method" },
+        { href: "/atlas", icon: "▨", label: "Outline Atlas" },
         {
           href: "/drills",
           icon: "▶",

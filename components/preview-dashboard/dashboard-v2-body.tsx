@@ -32,6 +32,11 @@ function PanelLink({ href, label }: { href: string; label: string }) {
 
 const componentLinks = [
   {
+    href: "/atlas",
+    name: "Outline Atlas",
+    desc: "Drill into approved questions by subject, subtopic, and outline code.",
+  },
+  {
     href: "/dashboard/mastery",
     name: "Mastery Board",
     desc: "See the weakest red zones by dimension and choose the next repair.",

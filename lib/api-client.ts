@@ -111,6 +111,51 @@ export interface CustomerPortalSessionResponse {
   session_id?: string;
 }
 
+export interface AtlasCoverageNode {
+  code: string;
+  parent_code: string | null;
+  subject: string;
+  subject_display: string;
+  subtopic: string;
+  outline_text: string;
+  display_label: string;
+  level: number;
+  leaf: boolean;
+  question_count: number;
+}
+
+export interface AtlasCoverageResponse {
+  nodes: AtlasCoverageNode[];
+  summary: { total: number; with_questions: number };
+}
+
+export interface AtlasQuestionListItem {
+  question_id: string;
+  outline_code: string;
+  stem: string;
+  call_text: string;
+}
+
+export interface AtlasQuestionListResponse {
+  items: AtlasQuestionListItem[];
+}
+
+export interface AtlasAnswer {
+  question: {
+    question_id: string;
+    outline_code: string;
+    outline_text: string;
+    subject_display: string;
+    subtopic: string;
+    stem: string;
+    call_text: string;
+    choices: Record<Letter, string>;
+    correct_answer: Letter;
+    minimum_explanation: string;
+  };
+  case_study_modules: Record<string, unknown>;
+}
+
 // --- Hearsay seam (Handoff 10) ---
 
 export type Letter = "A" | "B" | "C" | "D";
@@ -889,6 +934,20 @@ function trapQuery(params: {
   if (params.include_hidden) search.set("include_hidden", "true");
   if (typeof params.page === "number") search.set("page", String(params.page));
   if (typeof params.limit === "number") search.set("limit", String(params.limit));
+  const text = search.toString();
+  return text ? `?${text}` : "";
+}
+
+function atlasQuery(params: {
+  outline_code?: string;
+  subject?: string;
+  subtopic?: string;
+  limit?: number;
+}): string {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== "") search.set(key, String(value));
+  }
   const text = search.toString();
   return text ? `?${text}` : "";
 }
@@ -2002,6 +2061,21 @@ export const api = {
 
   getMyRedZones: (token: string) =>
     authedRequest<RedZoneLibrary>("/api/me/red-zones", token),
+
+  getAtlasCoverage: (token: string) =>
+    authedRequest<AtlasCoverageResponse>("/api/atlas-v1/coverage", token),
+
+  getAtlasQuestions: (token: string, outlineCode: string) =>
+    authedRequest<AtlasQuestionListResponse>(
+      `/api/atlas-v1/questions${atlasQuery({ outline_code: outlineCode, limit: 100 })}`,
+      token,
+    ),
+
+  getAtlasAnswer: (token: string, id: string) =>
+    authedRequest<AtlasAnswer>(
+      `/api/atlas-v1/questions/${encodeURIComponent(id)}/answer`,
+      token,
+    ),
 
   getMyGamification: (token: string, init?: RequestInit) =>
     authedRequest<MyGamification>("/api/me/gamification", token, init),

@@ -9,6 +9,8 @@ export default function robots(): MetadataRoute.Robots {
         "/account",
         "/checkout/success",
         "/diagnostic/*",
+        "/atlas",
+        "/atlas/*",
         "/preview/*",
         "/dashboard",
         "/dashboard/*",

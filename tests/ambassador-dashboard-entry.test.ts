@@ -82,6 +82,7 @@ describe("dashboard guided-path entry", () => {
       assert.match(shell, new RegExp(`href: "${href.replaceAll("/", "\\/")}"`));
     }
     assert.match(body, /Outline Atlas/);
+    assert.match(body, /Walk the outline by code and open approved questions, lessons, traps, and drills/);
     assert.match(body, /Sequenced repair queue/);
     assert.match(body, /Active Red Zones/);
     assert.match(body, /Mastery trend/);
@@ -267,7 +268,7 @@ describe("dashboard guided-path entry", () => {
     assert.match(client, /AtlasDebriefElementPreview/);
     assert.match(client, /AtlasAnswerDetour/);
     assert.match(client, /startAtlasLeadMe/);
-    assert.match(body, /open approved questions, lessons, and component lanes/);
+    assert.match(body, /open approved questions, lessons, traps, and drills/);
     assert.doesNotMatch(atlas, /review_count|source_ref|source_label|included_by/);
   });
 

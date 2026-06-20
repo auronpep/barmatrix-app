@@ -201,6 +201,13 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /ComponentPreviewRow/);
     assert.match(atlas, /leadme_item_previews/);
     assert.match(atlas, /debrief_element_previews/);
+    assert.match(atlas, /detour_previews/);
+    assert.match(atlas, /Related detours/);
+    assert.match(atlas, /atlasCodeDetourHref/);
+    assert.match(atlas, /type: "trap"/);
+    assert.match(atlas, /type: "tension"/);
+    assert.match(atlas, /\/traps\/\$\{encodeURIComponent\(detour\.key\)\}/);
+    assert.match(atlas, /\/tensions\/\$\{encodeURIComponent\(detour\.key\)\}/);
     assert.match(atlas, /Approval gate/);
     assert.match(atlas, /readRequestedCode/);
     assert.match(atlas, /const requestedCode = readRequestedCode\(\)/);

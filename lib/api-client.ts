@@ -176,6 +176,7 @@ export interface AtlasComponentsResponse {
   debrief_elements: AtlasComponentCount[];
   leadme_item_previews: AtlasLeadMeItemPreview[];
   debrief_element_previews: AtlasDebriefElementPreview[];
+  detour_previews: AtlasAnswerDetour[];
 }
 
 export interface AtlasLeadMeStartResponse {

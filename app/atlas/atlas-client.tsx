@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   api,
   ApiClientError,
+  type AtlasAnswerDetour,
   type AtlasComponentsResponse,
   type AtlasCoverageNode,
   type AtlasQuestionListItem,
@@ -62,6 +63,10 @@ const ALL_SUBTOPICS = "All subtopics";
 const OUTLINE_CODE_RE = /^\d{8}$/;
 const LAST_ATLAS_CODE_KEY = "barmatrix:last-atlas-code";
 const STUDIED_ATLAS_CODES_KEY = "barmatrix:studied-atlas-codes";
+const ATLAS_CODE_DETOUR_LABELS = [
+  { type: "trap", label: "Trap" },
+  { type: "tension", label: "Tension" },
+] as const;
 
 function matchesComponentFilter(node: AtlasCoverageNode, filter: ComponentFilter) {
   if (filter === "ready") return hasAnyLane(node);
@@ -457,6 +462,10 @@ export function AtlasClient() {
   const debriefElementTotal = totalCounts(componentData?.debrief_elements ?? []);
   const leadmeItemPreviews = componentData?.leadme_item_previews ?? [];
   const debriefElementPreviews = componentData?.debrief_element_previews ?? [];
+  const detourPreviews = componentData?.detour_previews ?? [];
+  const detourLinks = detourPreviews
+    .map((detour) => ({ detour, href: atlasCodeDetourHref(detour) }))
+    .filter((item): item is { detour: AtlasAnswerDetour; href: string } => item.href !== null);
   const previewCount = leadmeItemPreviews.length + debriefElementPreviews.length;
   const lessonCount = countMatching(componentData?.leadme_items ?? [], [
     "lesson",
@@ -1596,6 +1605,39 @@ export function AtlasClient() {
                             </div>
                           )}
                         </div>
+                        {detourLinks.length > 0 ? (
+                          <div className="mt-4 border-t border-zinc-950/10 pt-4">
+                            <div className="flex items-center justify-between gap-3">
+                              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                                Related detours
+                              </p>
+                              <span className="rounded-md bg-red-50 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-red-800">
+                                {formatCount(detourLinks.length, "path")}
+                              </span>
+                            </div>
+                            <div className="mt-3 grid gap-2">
+                              {detourLinks.map(({ detour, href }) => (
+                                <Link
+                                  key={`${detour.type}:${detour.key}`}
+                                  href={href}
+                                  className="rounded-md border border-zinc-950/10 bg-zinc-50 px-3 py-2 transition-colors hover:border-zinc-950/25 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                                >
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    <span className="rounded-sm bg-red-700 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-white">
+                                      {detourTypeLabel(detour.type)}
+                                    </span>
+                                    <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                                      {formatCount(detour.target_count, "question")}
+                                    </span>
+                                  </div>
+                                  <p className="mt-1 text-sm font-semibold leading-5 text-zinc-900">
+                                    {detour.label}
+                                  </p>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        ) : null}
                       </section>
 
                       <section
@@ -1767,6 +1809,20 @@ function ComponentPreviewRow({
       </p>
     </article>
   );
+}
+
+function atlasCodeDetourHref(detour: AtlasAnswerDetour): string | null {
+  if (detour.type === "trap") {
+    return `/traps/${encodeURIComponent(detour.key)}`;
+  }
+  if (detour.type === "tension") {
+    return `/tensions/${encodeURIComponent(detour.key)}`;
+  }
+  return null;
+}
+
+function detourTypeLabel(type: string): string {
+  return ATLAS_CODE_DETOUR_LABELS.find((item) => item.type === type)?.label ?? "Detour";
 }
 
 function ComponentIndexLink({

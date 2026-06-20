@@ -339,6 +339,10 @@ export function AtlasClient() {
     () => scopedNodes.filter((node) => node.question_count === 0),
     [scopedNodes],
   );
+  const scopedNoLaneNodes = useMemo(
+    () => scopedNodes.filter((node) => !hasAnyLane(node)),
+    [scopedNodes],
+  );
   const scopedUnstudiedNodes = useMemo(
     () => scopedNodes.filter((node) => !studiedCodes.has(node.code)),
     [scopedNodes, studiedCodes],
@@ -352,7 +356,7 @@ export function AtlasClient() {
   const scopedComponentCodeCount = scopedNodes.filter((node) => nodeComponentTotal(node) > 0)
     .length;
   const scopedLaneReadyCount = scopedNodes.filter(hasAnyLane).length;
-  const scopedNoLaneCount = scopedNodes.length - scopedLaneReadyCount;
+  const scopedNoLaneCount = scopedNoLaneNodes.length;
   const scopeLabel =
     subtopicFilter !== ALL_SUBTOPICS
       ? subtopicFilter
@@ -727,6 +731,12 @@ export function AtlasClient() {
     selectCode(scopedNoQuestionNodes[0]?.code ?? null);
   }
 
+  function showScopedContentGaps() {
+    setComponentFilter("needs");
+    setStudyFilter("all");
+    selectCode(scopedNoLaneNodes[0]?.code ?? null);
+  }
+
   function showScopedLessons() {
     setComponentFilter("lessons");
     selectCode(scopedLessonNodes[0]?.code ?? null);
@@ -972,6 +982,7 @@ export function AtlasClient() {
                           { label: "Needs Q", value: String(scopedNoQuestionCount) },
                           { label: "Needs lesson", value: String(scopedNoLessonCount) },
                           { label: "Components", value: String(scopedComponentCodeCount) },
+                          { label: "Lane ready", value: String(scopedLaneReadyCount) },
                           { label: "No lane", value: String(scopedNoLaneCount) },
                         ].map((item) => (
                           <div key={item.label} className="rounded-md bg-white px-2 py-2">
@@ -1004,7 +1015,7 @@ export function AtlasClient() {
                         </button>
                       ) : null}
                     </div>
-                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-8">
+                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-10">
                       <button
                         type="button"
                         onClick={() => scopedWalkCode && selectCode(scopedWalkCode)}
@@ -1028,6 +1039,14 @@ export function AtlasClient() {
                         className="rounded-md bg-zinc-950 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-zinc-800 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
                       >
                         Show question gaps
+                      </button>
+                      <button
+                        type="button"
+                        onClick={showScopedContentGaps}
+                        disabled={scopedNoLaneNodes.length === 0}
+                        className="rounded-md bg-zinc-950 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-zinc-800 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
+                      >
+                        Show content gaps
                       </button>
                       <button
                         type="button"

@@ -187,6 +187,9 @@ function detourHref(detour: AtlasAnswerDetour): string | null {
   if (detour.type === "trap") {
     return `/traps/${encodeURIComponent(detour.key)}`;
   }
+  if (detour.type === "tension") {
+    return `/tensions/${encodeURIComponent(detour.key)}`;
+  }
   return null;
 }
 

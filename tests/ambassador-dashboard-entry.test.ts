@@ -214,6 +214,7 @@ describe("dashboard guided-path entry", () => {
     assert.match(answer, /Related study detours/);
     assert.match(answer, /detourHref/);
     assert.match(answer, /\/traps\/\$\{encodeURIComponent\(detour\.key\)\}/);
+    assert.match(answer, /\/tensions\/\$\{encodeURIComponent\(detour\.key\)\}/);
     assert.match(answer, /answer\.detours/);
     assert.match(answer, /key !== "detours"/);
     assert.match(answer, /Study this outline code/);

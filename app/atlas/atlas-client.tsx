@@ -355,6 +355,20 @@ export function AtlasClient() {
       : subjectFilter !== ALL_SUBJECTS
         ? subjectFilter
         : "Full Atlas";
+  const componentFilterLabel =
+    COMPONENT_FILTERS.find((filter) => filter.key === componentFilter)?.label ?? "All codes";
+  const activeViewTitle =
+    componentFilter === "lessons" && studyFilter === "unstudied"
+      ? "Lesson backlog"
+      : studyFilter === "unstudied"
+        ? `${componentFilterLabel} backlog`
+        : componentFilterLabel;
+  const activeViewDetail =
+    componentFilter === "lessons" && studyFilter === "unstudied"
+      ? "lesson-ready codes not yet studied"
+      : studyFilter === "unstudied"
+        ? "codes not yet studied"
+        : "codes matching the selected component gate";
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -1035,9 +1049,18 @@ export function AtlasClient() {
                 </div>
 
                 <div className="mt-4 grid gap-4">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
-                    Visible codes: {filtered.length} / {allNodes.length} in {scopeLabel}
-                  </p>
+                  <div className="rounded-lg border border-zinc-950/10 bg-white px-4 py-3">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+                      Active Atlas view
+                    </p>
+                    <p className="mt-1 text-sm font-semibold text-zinc-950">
+                      {activeViewTitle}
+                    </p>
+                    <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                      Visible codes: {filtered.length} / {allNodes.length} in {scopeLabel};{" "}
+                      {activeViewDetail}
+                    </p>
+                  </div>
                   {grouped.length === 0 ? (
                     <div className="rounded-lg border border-zinc-950/10 bg-white p-6 text-sm text-zinc-700">
                       No outline codes match this filter.

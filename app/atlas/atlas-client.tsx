@@ -440,10 +440,11 @@ export function AtlasClient() {
       null
     );
   }, [allNodes, scopedNodes, selectedCode, studiedCodes]);
-  const lessonWalkNodes = useMemo(() => {
-    const scopedLessonNodes = scopedNodes.filter(hasLessonLane);
-    return scopedLessonNodes.length > 0 ? scopedLessonNodes : allNodes.filter(hasLessonLane);
-  }, [allNodes, scopedNodes]);
+  const scopedLessonNodes = useMemo(() => scopedNodes.filter(hasLessonLane), [scopedNodes]);
+  const lessonWalkNodes = useMemo(
+    () => (scopedLessonNodes.length > 0 ? scopedLessonNodes : allNodes.filter(hasLessonLane)),
+    [allNodes, scopedLessonNodes],
+  );
   const nextLessonWalkCode = useMemo(() => {
     if (!selectedCode || lessonWalkNodes.length === 0) return null;
     const assumedStudied = new Set(studiedCodes);
@@ -616,6 +617,11 @@ export function AtlasClient() {
   function showScopedPractice() {
     setComponentFilter("questions");
     selectCode(scopedPracticeNodes[0]?.code ?? null);
+  }
+
+  function showScopedLessons() {
+    setComponentFilter("lessons");
+    selectCode(scopedLessonNodes[0]?.code ?? null);
   }
 
   async function startLeadMe() {
@@ -835,7 +841,7 @@ export function AtlasClient() {
                         ))}
                       </div>
                     </div>
-                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
                       <button
                         type="button"
                         onClick={() => scopedWalkCode && selectCode(scopedWalkCode)}
@@ -851,6 +857,14 @@ export function AtlasClient() {
                         className="rounded-md bg-zinc-950 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-zinc-800 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
                       >
                         Show ready codes
+                      </button>
+                      <button
+                        type="button"
+                        onClick={showScopedLessons}
+                        disabled={scopedLessonNodes.length === 0}
+                        className="rounded-md bg-zinc-950 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-zinc-800 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
+                      >
+                        Show lesson codes
                       </button>
                       <button
                         type="button"

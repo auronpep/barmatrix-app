@@ -133,6 +133,8 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /scopedNoLessonCount/);
     assert.match(atlas, /lessonWalkNodes/);
     assert.match(atlas, /Next lesson target/);
+    assert.match(atlas, /scopedLessonNodes/);
+    assert.match(atlas, /Show lesson codes/);
     assert.match(atlas, /Needs Q/);
     assert.match(atlas, /scopedWalkNode/);
     assert.match(atlas, /Next walk target/);

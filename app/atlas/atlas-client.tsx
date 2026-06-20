@@ -634,7 +634,7 @@ export function AtlasClient() {
         <div className="flex flex-col gap-5 border-b border-zinc-950/15 pb-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-red-700">
-              Outline Atlas
+              Outline Atlas V2
             </p>
             <h1 className="mt-2 text-balance font-serif text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
               Walk the MBE outline by code.
@@ -654,11 +654,11 @@ export function AtlasClient() {
 
         {loading && <StateBox text="Loading the Atlas..." />}
         {isLoaded && !isSignedIn && (
-          <StateBox text="Sign in to open the Outline Atlas." href="/sign-in" cta="Sign in" />
+          <StateBox text="Sign in to open the Outline Atlas V2." href="/sign-in" cta="Sign in" />
         )}
         {isSignedIn && state.kind === "locked" && (
           <StateBox
-            text="The Outline Atlas is part of the paid repair program."
+            text="The Outline Atlas V2 is part of the paid repair program."
             href="/checkout"
             cta="Enroll"
           />

@@ -1374,7 +1374,7 @@ export function AtlasClient() {
                               {selectedPosition ?? "-"} / {allNodes.length}
                             </span>
                           </div>
-                          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                          <div className="mt-3 grid gap-2 sm:grid-cols-3">
                             <button
                               type="button"
                               aria-pressed={selectedStudied}
@@ -1387,6 +1387,14 @@ export function AtlasClient() {
                             >
                               {selectedStudied ? "Marked studied" : "Mark lesson studied"}
                             </button>
+                            {firstSelectedQuestion ? (
+                              <Link
+                                href={atlasQuestionPracticeHref(firstSelectedQuestion.question_id)}
+                                className="inline-flex items-center justify-center rounded-md border border-red-300/70 bg-red-600 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-white transition-[transform,background-color,border-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-red-200 hover:bg-red-500 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                              >
+                                Practice this lesson
+                              </Link>
+                            ) : null}
                             <WalkButton
                               label="Next unstudied code"
                               disabled={!nextUnstudiedCode}

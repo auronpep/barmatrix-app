@@ -1069,6 +1069,23 @@ export function AtlasClient() {
                             </p>
                           </div>
                         </div>
+                        <div className="mt-4 rounded-md border border-zinc-950/10 bg-zinc-50 p-3">
+                          <div className="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                                Outline position
+                              </p>
+                              <p className="mt-1 text-sm leading-6 text-zinc-700">
+                                {selected.subject_display} / {selected.subtopic} /{" "}
+                                {selectedPosition ?? "-"} of {allNodes.length}
+                              </p>
+                            </div>
+                            <div className="flex shrink-0 flex-wrap gap-2">
+                              <LessonJump code={previousCode} label="Prior lesson" />
+                              <LessonJump code={nextCode} label="Next lesson" />
+                            </div>
+                          </div>
+                        </div>
                         <div className="mt-4 border-t border-zinc-950/10 pt-4">
                           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                             Study sequence
@@ -1490,6 +1507,25 @@ function ComponentPreviewRow({
         {meta}
       </p>
     </article>
+  );
+}
+
+function LessonJump({ code, label }: { code: string | null; label: string }) {
+  if (!code) {
+    return (
+      <span className="rounded-md border border-zinc-950/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-400">
+        {label}
+      </span>
+    );
+  }
+
+  return (
+    <Link
+      href={`/atlas?code=${encodeURIComponent(code)}#atlas-code-lesson`}
+      className="rounded-md border border-zinc-950/15 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-colors hover:border-zinc-950 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+    >
+      {label}
+    </Link>
   );
 }
 

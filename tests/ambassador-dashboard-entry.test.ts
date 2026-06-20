@@ -109,6 +109,8 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /LessonJump/);
     assert.match(atlas, /Prior lesson/);
     assert.match(atlas, /Next lesson/);
+    assert.match(atlas, /onSelect=\{selectCode\}/);
+    assert.match(atlas, /onClick=\{\(\) => onSelect\(code\)\}/);
     assert.match(atlas, /Study sequence/);
     assert.match(atlas, /Anchor this code/);
     assert.match(atlas, /Work approved questions/);

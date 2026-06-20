@@ -1061,6 +1061,16 @@ export function AtlasClient() {
                             active: drillCount > 0,
                           },
                           {
+                            label: "Flashcards",
+                            value: componentsLoading ? "..." : flashcardCount || "Gate",
+                            active: flashcardCount > 0,
+                          },
+                          {
+                            label: "Boot-camps",
+                            value: componentsLoading ? "..." : bootCampCount || "Gate",
+                            active: bootCampCount > 0,
+                          },
+                          {
                             label: "Traps",
                             value: componentsLoading ? "..." : trapCount || "Gate",
                             active: trapCount > 0,

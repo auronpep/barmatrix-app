@@ -152,6 +152,8 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Codes with components/);
     assert.match(atlas, /Study lesson/);
     assert.match(atlas, /Selected code lanes/);
+    assert.match(atlas, /value: componentsLoading \? "\.\.\." : flashcardCount \|\| "Gate"/);
+    assert.match(atlas, /value: componentsLoading \? "\.\.\." : bootCampCount \|\| "Gate"/);
     assert.match(atlas, /Debriefs/);
     assert.match(atlas, /copySelectedLink/);
     assert.match(atlas, /directLinkMessage/);

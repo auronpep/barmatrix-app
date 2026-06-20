@@ -47,6 +47,13 @@ type SubjectStat = {
   questionCount: number;
 };
 
+type SubtopicStat = {
+  name: string;
+  codeCount: number;
+  readyCodeCount: number;
+  questionCount: number;
+};
+
 const COMPONENT_FILTERS = [
   { key: "all", label: "All codes" },
   { key: "ready", label: "Has any lane" },
@@ -213,12 +220,30 @@ export function AtlasClient() {
     return [...map.values()].sort((a, b) => a.subject.localeCompare(b.subject));
   }, [allNodes]);
 
-  const subtopics = useMemo(() => {
+  const subtopics = useMemo<SubtopicStat[]>(() => {
     const source =
       subjectFilter === ALL_SUBJECTS
         ? allNodes
         : allNodes.filter((node) => node.subject_display === subjectFilter);
-    return [ALL_SUBTOPICS, ...new Set(source.map((node) => node.subtopic))];
+    const stats = new Map<string, SubtopicStat>();
+    for (const node of source) {
+      const stat =
+        stats.get(node.subtopic) ??
+        { name: node.subtopic, codeCount: 0, readyCodeCount: 0, questionCount: 0 };
+      stat.codeCount += 1;
+      stat.questionCount += node.question_count;
+      if (node.question_count > 0) stat.readyCodeCount += 1;
+      stats.set(node.subtopic, stat);
+    }
+    return [
+      {
+        name: ALL_SUBTOPICS,
+        codeCount: source.length,
+        readyCodeCount: source.filter((node) => node.question_count > 0).length,
+        questionCount: source.reduce((sum, node) => sum + node.question_count, 0),
+      },
+      ...stats.values(),
+    ];
   }, [allNodes, subjectFilter]);
 
   const filtered = useMemo(() => {
@@ -510,16 +535,25 @@ export function AtlasClient() {
                   <div className="grid max-h-[360px] gap-1 overflow-y-auto pr-1">
                     {subtopics.map((subtopic) => (
                       <button
-                        key={subtopic}
+                        key={subtopic.name}
                         type="button"
-                        onClick={() => chooseSubtopic(subtopic)}
-                        className={`rounded-md px-2 py-2 text-left text-sm leading-5 transition-colors ${
-                          subtopicFilter === subtopic
+                        onClick={() => chooseSubtopic(subtopic.name)}
+                        className={`rounded-md px-2 py-2 text-left transition-colors ${
+                          subtopicFilter === subtopic.name
                             ? "bg-zinc-950 text-white"
                             : "text-zinc-700 hover:bg-zinc-100"
                         }`}
                       >
-                        {subtopic}
+                        <span className="block text-sm font-medium leading-5">
+                          {subtopic.name}
+                        </span>
+                        <span
+                          className={`mt-1 block font-mono text-[10px] uppercase tracking-[0.12em] ${
+                            subtopicFilter === subtopic.name ? "text-zinc-300" : "text-zinc-500"
+                          }`}
+                        >
+                          {subtopic.readyCodeCount} ready / {subtopic.questionCount} questions
+                        </span>
                       </button>
                     ))}
                   </div>
@@ -565,63 +599,70 @@ export function AtlasClient() {
                       No outline codes match this filter.
                     </div>
                   ) : (
-                    grouped.map(([subtopic, nodes]) => (
-                      <section
-                        key={subtopic}
-                        aria-labelledby={`subtopic-${slug(subtopic)}`}
-                        className="rounded-lg border border-zinc-950/10 bg-white"
-                      >
-                        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-950/10 px-4 py-3">
-                          <h2
-                            id={`subtopic-${slug(subtopic)}`}
-                            className="font-serif text-lg font-semibold"
-                          >
-                            {subtopic}
-                          </h2>
-                          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
-                            {nodes.length} codes
-                          </p>
-                        </div>
-                        <div className="divide-y divide-zinc-950/10">
-                          {nodes.map((node) => (
-                            <button
-                              key={node.code}
-                              type="button"
-                              onClick={() => selectCode(node.code)}
-                              aria-current={node.code === selectedCode ? "true" : undefined}
-                              className={`grid w-full gap-2 px-4 py-3 text-left transition-colors md:grid-cols-[94px_minmax(0,1fr)_92px] ${
-                                node.code === selectedCode
-                                  ? "bg-red-50"
-                                  : "bg-white hover:bg-zinc-50"
-                              }`}
+                    grouped.map(([subtopic, nodes]) => {
+                      const readyCodeCount = nodes.filter((node) => node.question_count > 0).length;
+                      const questionCount = nodes.reduce(
+                        (sum, node) => sum + node.question_count,
+                        0,
+                      );
+                      return (
+                        <section
+                          key={subtopic}
+                          aria-labelledby={`subtopic-${slug(subtopic)}`}
+                          className="rounded-lg border border-zinc-950/10 bg-white"
+                        >
+                          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-950/10 px-4 py-3">
+                            <h2
+                              id={`subtopic-${slug(subtopic)}`}
+                              className="font-serif text-lg font-semibold"
                             >
-                              <span className="font-mono text-xs font-semibold text-zinc-950">
-                                {node.code}
-                              </span>
-                              <span className="min-w-0 text-sm leading-5 text-zinc-800">
-                                <span className="block">{node.outline_text}</span>
-                                <span className="mt-1 block font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
-                                  {nodeComponentTotal(node) > 0
-                                    ? formatCount(nodeComponentTotal(node), "component")
-                                    : "No components"}
-                                </span>
-                              </span>
-                              <span
-                                className={`w-fit rounded-md px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] md:justify-self-end ${
-                                  node.question_count > 0
-                                    ? "bg-emerald-50 text-emerald-800"
-                                    : "bg-amber-50 text-amber-800"
+                              {subtopic}
+                            </h2>
+                            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+                              {nodes.length} codes / {readyCodeCount} ready / {questionCount} questions
+                            </p>
+                          </div>
+                          <div className="divide-y divide-zinc-950/10">
+                            {nodes.map((node) => (
+                              <button
+                                key={node.code}
+                                type="button"
+                                onClick={() => selectCode(node.code)}
+                                aria-current={node.code === selectedCode ? "true" : undefined}
+                                className={`grid w-full gap-2 px-4 py-3 text-left transition-colors md:grid-cols-[94px_minmax(0,1fr)_92px] ${
+                                  node.code === selectedCode
+                                    ? "bg-red-50"
+                                    : "bg-white hover:bg-zinc-50"
                                 }`}
                               >
-                                {node.question_count > 0
-                                  ? `${node.question_count} ready`
-                                  : "Needs item"}
-                              </span>
-                            </button>
-                          ))}
-                        </div>
-                      </section>
-                    ))
+                                <span className="font-mono text-xs font-semibold text-zinc-950">
+                                  {node.code}
+                                </span>
+                                <span className="min-w-0 text-sm leading-5 text-zinc-800">
+                                  <span className="block">{node.outline_text}</span>
+                                  <span className="mt-1 block font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                                    {nodeComponentTotal(node) > 0
+                                      ? formatCount(nodeComponentTotal(node), "component")
+                                      : "No components"}
+                                  </span>
+                                </span>
+                                <span
+                                  className={`w-fit rounded-md px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] md:justify-self-end ${
+                                    node.question_count > 0
+                                      ? "bg-emerald-50 text-emerald-800"
+                                      : "bg-amber-50 text-amber-800"
+                                  }`}
+                                >
+                                  {node.question_count > 0
+                                    ? `${node.question_count} ready`
+                                    : "Needs item"}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        </section>
+                      );
+                    })
                   )}
                 </div>
               </main>

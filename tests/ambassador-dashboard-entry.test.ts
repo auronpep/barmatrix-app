@@ -90,12 +90,16 @@ describe("dashboard guided-path entry", () => {
 
   it("keeps the customer Atlas as a learning map with gated component lanes", () => {
     const atlas = readProjectFile("app/atlas/atlas-client.tsx");
+    const client = readProjectFile("lib/api-client.ts");
     const body = readProjectFile("components/preview-dashboard/dashboard-v2-body.tsx");
 
     assert.match(atlas, /Walk the MBE outline by code/);
-    assert.match(atlas, /Lesson lane/);
+    assert.match(atlas, /LeadMe lesson/);
     assert.match(atlas, /Question bank/);
-    assert.match(atlas, /GATED_LANES/);
+    assert.match(atlas, /Start LeadMe/);
+    assert.match(atlas, /Approval gate/);
+    assert.match(client, /getAtlasComponents/);
+    assert.match(client, /startAtlasLeadMe/);
     assert.match(body, /open approved questions, lessons, and component lanes/);
     assert.doesNotMatch(atlas, /review_count|source_ref|source_label|included_by/);
   });

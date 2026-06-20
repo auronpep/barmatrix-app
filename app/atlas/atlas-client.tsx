@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   api,
   ApiClientError,
+  type AtlasComponentsResponse,
   type AtlasCoverageNode,
   type AtlasQuestionListItem,
 } from "@/lib/api-client";
@@ -21,6 +22,18 @@ type QuestionState =
   | { kind: "ready"; code: string; items: AtlasQuestionListItem[] }
   | { kind: "error"; code: string; message: string };
 
+type ComponentsState =
+  | { kind: "idle"; code: string | null }
+  | { kind: "ready"; code: string; data: AtlasComponentsResponse }
+  | { kind: "error"; code: string; message: string };
+
+type LeadMeStartState =
+  | { kind: "idle"; code: string | null }
+  | { kind: "starting"; code: string }
+  | { kind: "started"; code: string; message: string }
+  | { kind: "missing"; code: string; message: string }
+  | { kind: "error"; code: string; message: string };
+
 type SubjectStat = {
   subject: string;
   codeCount: number;
@@ -30,14 +43,6 @@ type SubjectStat = {
 const ALL_SUBJECTS = "All subjects";
 const ALL_SUBTOPICS = "All subtopics";
 
-const GATED_LANES = [
-  "Traps",
-  "Drills",
-  "Flashcards",
-  "Tensions",
-  "Boot camps",
-];
-
 export function AtlasClient() {
   const { isLoaded, isSignedIn, getToken } = useClerkAuth();
   const [state, setState] = useState<LoadState>({ kind: "loading" });
@@ -46,6 +51,14 @@ export function AtlasClient() {
   const [subtopicFilter, setSubtopicFilter] = useState(ALL_SUBTOPICS);
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
   const [questionState, setQuestionState] = useState<QuestionState>({
+    kind: "idle",
+    code: null,
+  });
+  const [componentsState, setComponentsState] = useState<ComponentsState>({
+    kind: "idle",
+    code: null,
+  });
+  const [leadMeStart, setLeadMeStart] = useState<LeadMeStartState>({
     kind: "idle",
     code: null,
   });
@@ -115,6 +128,35 @@ export function AtlasClient() {
     };
   }, [getToken, selectedCode, state]);
 
+  useEffect(() => {
+    if (state.kind !== "ready" || !selectedCode) return;
+    const node = state.nodes.find((item) => item.code === selectedCode);
+    if (!node) return;
+
+    let cancelled = false;
+    void (async () => {
+      try {
+        const token = await getToken();
+        if (!token) throw new Error("no session token");
+        const data = await api.getAtlasComponents(token, selectedCode);
+        if (!cancelled) {
+          setComponentsState({ kind: "ready", code: selectedCode, data });
+        }
+      } catch {
+        if (!cancelled) {
+          setComponentsState({
+            kind: "error",
+            code: selectedCode,
+            message: "Could not load component lanes for this outline code.",
+          });
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [getToken, selectedCode, state]);
+
   const subjectStats = useMemo(() => {
     const map = new Map<string, SubjectStat>();
     for (const node of allNodes) {
@@ -174,6 +216,31 @@ export function AtlasClient() {
     questionState.kind === "error" && questionState.code === selectedCode
       ? questionState.message
       : null;
+  const componentData =
+    componentsState.kind === "ready" && componentsState.code === selectedCode
+      ? componentsState.data
+      : null;
+  const componentsLoading = Boolean(selectedCode && componentsState.code !== selectedCode);
+  const componentsError =
+    componentsState.kind === "error" && componentsState.code === selectedCode
+      ? componentsState.message
+      : null;
+  const leadmeSet = componentData?.leadme_set ?? null;
+  const leadmeItemTotal = totalCounts(componentData?.leadme_items ?? []);
+  const debriefElementTotal = totalCounts(componentData?.debrief_elements ?? []);
+  const lessonCount = countMatching(componentData?.leadme_items ?? [], [
+    "lesson",
+    "micro_read",
+    "doctrinal",
+  ]);
+  const drillCount = countMatching(componentData?.leadme_items ?? [], ["drill", "quiz"]);
+  const flashcardCount = countMatching(componentData?.leadme_items ?? [], ["flashcard"]);
+  const trapCount =
+    countMatching(componentData?.debrief_elements ?? [], ["trap"]) +
+    countMatching(componentData?.leadme_items ?? [], ["trap"]);
+  const tensionCount =
+    countMatching(componentData?.debrief_elements ?? [], ["tension"]) +
+    countMatching(componentData?.leadme_items ?? [], ["tension", "clash"]);
   const loading = !isLoaded || (isSignedIn && state.kind === "loading");
 
   function chooseSubject(subject: string) {
@@ -195,6 +262,41 @@ export function AtlasClient() {
       return subjectOk && subtopicOk;
     });
     setSelectedCode(next?.code ?? null);
+  }
+
+  async function startLeadMe() {
+    if (!selected) return;
+    setLeadMeStart({ kind: "starting", code: selected.code });
+    try {
+      const token = await getToken();
+      if (!token) throw new Error("no session token");
+      const result = await api.startAtlasLeadMe(token, selected.code);
+      setLeadMeStart({
+        kind: "started",
+        code: selected.code,
+        message: `Queued ${result.started.title}.`,
+      });
+    } catch (err) {
+      if (err instanceof ApiClientError && err.status === 404) {
+        setLeadMeStart({
+          kind: "missing",
+          code: selected.code,
+          message: "No approved LeadMe set is connected to this code yet.",
+        });
+      } else if (err instanceof ApiClientError && err.status === 403) {
+        setLeadMeStart({
+          kind: "error",
+          code: selected.code,
+          message: "This LeadMe set is only available inside the paid repair program.",
+        });
+      } else {
+        setLeadMeStart({
+          kind: "error",
+          code: selected.code,
+          message: "Could not start this LeadMe set.",
+        });
+      }
+    }
   }
 
   return (
@@ -415,16 +517,69 @@ export function AtlasClient() {
 
                       <section className="mt-5 rounded-lg bg-white p-4 text-zinc-950">
                         <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-red-700">
-                          Lesson lane
+                          LeadMe lesson
                         </p>
                         <h3 className="mt-2 font-serif text-xl font-semibold">
                           {selected.outline_text}
                         </h3>
-                        <p className="mt-2 text-sm leading-6 text-zinc-700">
-                          Approved lesson content for this exact code is pending. The node
-                          is live now so students can walk the outline and see which lanes
-                          have approved work attached.
-                        </p>
+                        {componentsLoading ? (
+                          <p className="mt-2 text-sm leading-6 text-zinc-700">
+                            Checking approved lesson content for this code...
+                          </p>
+                        ) : leadmeSet ? (
+                          <>
+                            <p className="mt-2 text-sm leading-6 text-zinc-700">
+                              {leadmeSet.title} is approved for this outline code.
+                            </p>
+                            <div className="mt-3 flex flex-wrap items-center gap-2">
+                              <span className="rounded-md bg-emerald-50 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-emerald-800">
+                                {formatCount(leadmeSet.total_items, "item")}
+                              </span>
+                              <span className="rounded-md bg-zinc-100 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600">
+                                {leadmeSet.set_type.replaceAll("_", " ")}
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={startLeadMe}
+                              disabled={
+                                leadMeStart.kind === "starting" &&
+                                leadMeStart.code === selected.code
+                              }
+                              className="mt-4 inline-flex rounded-md bg-red-700 px-4 py-2 text-sm font-semibold text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-red-800 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
+                            >
+                              {leadMeStart.kind === "starting" &&
+                              leadMeStart.code === selected.code
+                                ? "Starting..."
+                                : "Start LeadMe"}
+                            </button>
+                          </>
+                        ) : (
+                          <p className="mt-2 text-sm leading-6 text-zinc-700">
+                            No approved LeadMe set is connected to this outline code yet.
+                          </p>
+                        )}
+                        {leadMeStart.code === selected.code &&
+                        leadMeStart.kind !== "idle" &&
+                        leadMeStart.kind !== "starting" ? (
+                          <div
+                            className={`mt-3 rounded-md p-3 text-sm leading-6 ${
+                              leadMeStart.kind === "started"
+                                ? "bg-emerald-50 text-emerald-900"
+                                : "bg-amber-50 text-amber-900"
+                            }`}
+                          >
+                            <p>{leadMeStart.message}</p>
+                            {leadMeStart.kind === "started" ? (
+                              <Link
+                                href="/dashboard/path"
+                                className="mt-2 inline-flex font-mono text-[10px] uppercase tracking-[0.12em] underline underline-offset-4"
+                              >
+                                Open My Path
+                              </Link>
+                            ) : null}
+                          </div>
+                        ) : null}
                       </section>
 
                       <section className="mt-4 rounded-lg bg-white p-4 text-zinc-950">
@@ -432,21 +587,77 @@ export function AtlasClient() {
                           Components
                         </p>
                         <div className="mt-3 divide-y divide-zinc-950/10">
+                          {componentsError ? (
+                            <p className="py-2 text-sm leading-6 text-amber-800">
+                              {componentsError}
+                            </p>
+                          ) : null}
                           <LaneRow
                             label="Questions"
                             status={selected.question_count > 0 ? "Live" : "Missing"}
                             meta={`${selected.question_count} approved`}
                             active={selected.question_count > 0}
                           />
-                          {GATED_LANES.map((lane) => (
-                            <LaneRow
-                              key={lane}
-                              label={lane}
-                              status="Approval gate"
-                              meta="Not connected"
-                              active={false}
-                            />
-                          ))}
+                          <LaneRow
+                            label="Guided items"
+                            status={leadmeItemTotal > 0 ? "Live" : "Approval gate"}
+                            meta={
+                              leadmeItemTotal > 0
+                                ? formatCount(leadmeItemTotal, "item")
+                                : "Not connected"
+                            }
+                            active={leadmeItemTotal > 0}
+                          />
+                          <LaneRow
+                            label="Lessons"
+                            status={lessonCount > 0 ? "Live" : "Approval gate"}
+                            meta={lessonCount > 0 ? formatCount(lessonCount, "lesson") : "Not connected"}
+                            active={lessonCount > 0}
+                          />
+                          <LaneRow
+                            label="Drills"
+                            status={drillCount > 0 ? "Live" : "Approval gate"}
+                            meta={drillCount > 0 ? formatCount(drillCount, "drill") : "Not connected"}
+                            active={drillCount > 0}
+                          />
+                          <LaneRow
+                            label="Traps"
+                            status={trapCount > 0 ? "Live" : "Approval gate"}
+                            meta={trapCount > 0 ? formatCount(trapCount, "trap") : "Not connected"}
+                            active={trapCount > 0}
+                          />
+                          <LaneRow
+                            label="Flashcards"
+                            status={flashcardCount > 0 ? "Live" : "Approval gate"}
+                            meta={
+                              flashcardCount > 0
+                                ? formatCount(flashcardCount, "flashcard")
+                                : "Not connected"
+                            }
+                            active={flashcardCount > 0}
+                          />
+                          <LaneRow
+                            label="Tensions"
+                            status={tensionCount > 0 ? "Live" : "Approval gate"}
+                            meta={tensionCount > 0 ? formatCount(tensionCount, "tension") : "Not connected"}
+                            active={tensionCount > 0}
+                          />
+                          <LaneRow
+                            label="Answer debriefs"
+                            status={debriefElementTotal > 0 ? "Live" : "Approval gate"}
+                            meta={
+                              debriefElementTotal > 0
+                                ? formatCount(debriefElementTotal, "element")
+                                : "Not connected"
+                            }
+                            active={debriefElementTotal > 0}
+                          />
+                          <LaneRow
+                            label="Boot camps"
+                            status="Approval gate"
+                            meta="Not connected"
+                            active={false}
+                          />
                         </div>
                       </section>
 
@@ -620,6 +831,26 @@ function StateBox({ text, href, cta }: { text: string; href?: string; cta?: stri
 
 function clip(value: string, max = 150): string {
   return value.length > max ? `${value.slice(0, max - 1)}...` : value;
+}
+
+function totalCounts(counts: { count: number }[]): number {
+  return counts.reduce((sum, item) => sum + item.count, 0);
+}
+
+function countMatching(
+  counts: { component_type: string; count: number }[],
+  needles: string[],
+): number {
+  const normalizedNeedles = needles.map((needle) => needle.toLowerCase());
+  return counts.reduce((sum, item) => {
+    const componentType = item.component_type.toLowerCase();
+    const matched = normalizedNeedles.some((needle) => componentType.includes(needle));
+    return matched ? sum + item.count : sum;
+  }, 0);
+}
+
+function formatCount(count: number, singular: string, plural = `${singular}s`): string {
+  return `${count} ${count === 1 ? singular : plural}`;
 }
 
 function slug(value: string): string {

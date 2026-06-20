@@ -140,6 +140,37 @@ export interface AtlasQuestionListResponse {
   items: AtlasQuestionListItem[];
 }
 
+export interface AtlasComponentCount {
+  component_type: string;
+  count: number;
+}
+
+export interface AtlasLeadMeSet {
+  set_id: string;
+  title: string;
+  set_type: string;
+  total_items: number;
+}
+
+export interface AtlasComponentsResponse {
+  outline_code: string;
+  leadme_set: AtlasLeadMeSet | null;
+  leadme_items: AtlasComponentCount[];
+  debrief_elements: AtlasComponentCount[];
+}
+
+export interface AtlasLeadMeStartResponse {
+  ok: true;
+  started: {
+    set_id: string;
+    title: string;
+    set_type: string;
+    status: string;
+    total_items: number;
+    inserted_items: number;
+  };
+}
+
 export interface AtlasAnswer {
   question: {
     question_id: string;
@@ -2071,10 +2102,23 @@ export const api = {
       token,
     ),
 
+  getAtlasComponents: (token: string, outlineCode: string) =>
+    authedRequest<AtlasComponentsResponse>(
+      `/api/atlas-v1/codes/${encodeURIComponent(outlineCode)}/components`,
+      token,
+    ),
+
   getAtlasAnswer: (token: string, id: string) =>
     authedRequest<AtlasAnswer>(
       `/api/atlas-v1/questions/${encodeURIComponent(id)}/answer`,
       token,
+    ),
+
+  startAtlasLeadMe: (token: string, outlineCode: string) =>
+    authedRequest<AtlasLeadMeStartResponse>(
+      `/api/me/outline-atlas/${encodeURIComponent(outlineCode)}/leadme`,
+      token,
+      { method: "POST", body: JSON.stringify({}) },
     ),
 
   getMyGamification: (token: string, init?: RequestInit) =>

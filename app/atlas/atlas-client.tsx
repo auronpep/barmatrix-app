@@ -1081,16 +1081,8 @@ export function AtlasClient() {
                               </p>
                             </div>
                             <div className="flex shrink-0 flex-wrap gap-2">
-                              <LessonJump
-                                code={previousCode}
-                                label="Prior lesson"
-                                onSelect={selectCode}
-                              />
-                              <LessonJump
-                                code={nextCode}
-                                label="Next lesson"
-                                onSelect={selectCode}
-                              />
+                              <LessonJump code={previousCode} label="Prior lesson" />
+                              <LessonJump code={nextCode} label="Next lesson" />
                             </div>
                           </div>
                         </div>
@@ -1518,15 +1510,7 @@ function ComponentPreviewRow({
   );
 }
 
-function LessonJump({
-  code,
-  label,
-  onSelect,
-}: {
-  code: string | null;
-  label: string;
-  onSelect: (code: string) => void;
-}) {
+function LessonJump({ code, label }: { code: string | null; label: string }) {
   if (!code) {
     return (
       <span className="rounded-md border border-zinc-950/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-400">
@@ -1536,13 +1520,12 @@ function LessonJump({
   }
 
   return (
-    <button
-      type="button"
-      onClick={() => onSelect(code)}
+    <a
+      href={`/atlas?code=${encodeURIComponent(code)}#atlas-code-lesson`}
       className="rounded-md border border-zinc-950/15 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-colors hover:border-zinc-950 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
     >
       {label}
-    </button>
+    </a>
   );
 }
 

@@ -26,8 +26,8 @@ const QUICK_ANSWERS = [
   {
     k: "Access",
     label: "How does enrollment work?",
-    value: "One cohort",
-    detail: "Enrollment is open for the July-cycle guided repair program.",
+    value: "Through July 2026",
+    detail: "Paid Flagship access lasts through the July 2026 bar exam.",
   },
 ] as const;
 

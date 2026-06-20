@@ -76,6 +76,10 @@ export const FAQ: Array<{ q: string; a: string }> = [
     a: "Enrollment is open for the July-cycle guided repair program. If enrollment is ever paused, checkout will say so before payment.",
   },
   {
+    q: "How long does paid access last?",
+    a: "Paid BarMatrix Flagship access runs through the July 2026 bar exam.",
+  },
+  {
     q: "Is this a full bar course?",
     a: "No. BarMatrix is multiple-choice-only and is designed as a companion repair system for the MBE side. It does not replace essay preparation, performance-test preparation, or your broader bar plan.",
   },

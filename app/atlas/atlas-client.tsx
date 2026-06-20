@@ -756,7 +756,7 @@ export function AtlasClient() {
                       </button>
                     ))}
                   </div>
-                  <div className="mt-3 grid gap-3 rounded-md bg-[#f4f1ea] p-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+                  <div className="mt-3 grid gap-3 rounded-md bg-[#f4f1ea] p-3">
                     <div className="min-w-0">
                       <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-red-700">
                         Weak-section drilldown

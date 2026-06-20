@@ -196,12 +196,20 @@ export default function AtlasQuestionPracticePage() {
               {nextQuestion ? <QuestionNavLink question={nextQuestion} label="Next question" /> : null}
             </div>
           ) : null}
-          <Link
-            href={lessonHref}
-            className="mt-4 inline-flex rounded-md border border-zinc-950/15 px-5 py-3 font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-700 transition-[transform,border-color,background-color] duration-200 hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98]"
-          >
-            Study outline lesson
-          </Link>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link
+              href={lessonHref}
+              className="inline-flex rounded-md border border-zinc-950/15 px-5 py-3 font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-700 transition-[transform,border-color,background-color] duration-200 hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98]"
+            >
+              Study outline lesson
+            </Link>
+            <Link
+              href={codeHref}
+              className="inline-flex rounded-md border border-zinc-950/15 px-5 py-3 font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-700 transition-[transform,border-color,background-color] duration-200 hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98]"
+            >
+              Review code question list
+            </Link>
+          </div>
         </section>
       ) : null}
     </Shell>

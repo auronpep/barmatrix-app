@@ -397,7 +397,9 @@ describe("dashboard guided-path entry", () => {
     assert.match(practice, /selected === q\.correct_answer/);
     assert.match(practice, /Study answer debrief/);
     assert.match(practice, /Study outline lesson/);
+    assert.match(practice, /Review code question list/);
     assert.match(practice, /lessonHref/);
+    assert.match(practice, /codeHref/);
     assert.match(practice, /#atlas-code-lesson/);
     assert.match(practice, /QuestionNavLink/);
     assert.match(practice, /Next question/);

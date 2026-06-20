@@ -648,6 +648,12 @@ export function AtlasClient() {
                       >
                         Direct link
                       </Link>
+                      <Link
+                        href={`/atlas?code=${encodeURIComponent(selected.code)}#atlas-code-lesson`}
+                        className="mt-2 inline-flex w-full items-center justify-center rounded-md border border-white/15 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-950 transition-[transform,background-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-zinc-100 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                      >
+                        Study this code
+                      </Link>
                       <button
                         type="button"
                         onClick={startCodeDrill}
@@ -671,13 +677,40 @@ export function AtlasClient() {
                         </p>
                       ) : null}
 
-                      <section className="mt-5 rounded-lg bg-white p-4 text-zinc-950">
+                      <section
+                        id="atlas-code-lesson"
+                        className="mt-5 scroll-mt-6 rounded-lg bg-white p-4 text-zinc-950"
+                      >
                         <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-red-700">
-                          LeadMe lesson
+                          Outline lesson
                         </p>
                         <h3 className="mt-2 font-serif text-xl font-semibold">
                           {selected.outline_text}
                         </h3>
+                        <div className="mt-3 grid gap-2">
+                          <div className="rounded-md bg-zinc-50 px-3 py-2">
+                            <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                              Code
+                            </p>
+                            <p className="mt-1 text-sm font-semibold leading-5">
+                              {selected.code} / {selected.subtopic}
+                            </p>
+                          </div>
+                          <div className="rounded-md bg-zinc-50 px-3 py-2">
+                            <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                              Practice
+                            </p>
+                            <p className="mt-1 text-sm font-semibold leading-5">
+                              {selected.question_count > 0
+                                ? formatCount(selected.question_count, "approved question")
+                                : "Approval gate"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="mt-4 border-t border-zinc-950/10 pt-4">
+                          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                            LeadMe lesson
+                          </p>
                         {componentsLoading ? (
                           <p className="mt-2 text-sm leading-6 text-zinc-700">
                             Checking approved lesson content for this code...
@@ -715,6 +748,7 @@ export function AtlasClient() {
                             No approved LeadMe set is connected to this outline code yet.
                           </p>
                         )}
+                        </div>
                         {leadMeStart.code === selected.code &&
                         leadMeStart.kind !== "idle" &&
                         leadMeStart.kind !== "starting" ? (

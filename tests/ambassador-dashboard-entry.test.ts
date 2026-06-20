@@ -97,6 +97,9 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Has any lane/);
     assert.match(atlas, /Needs content/);
     assert.match(atlas, /Codes with components/);
+    assert.match(atlas, /Study this code/);
+    assert.match(atlas, /atlas-code-lesson/);
+    assert.match(atlas, /Outline lesson/);
     assert.match(atlas, /LeadMe lesson/);
     assert.match(atlas, /Question bank/);
     assert.match(atlas, /Start LeadMe/);

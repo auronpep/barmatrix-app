@@ -117,6 +117,8 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /The Outline Atlas V2 is part of the paid repair program\./);
     assert.match(atlas, /Has any lane/);
     assert.match(atlas, /Practice ready/);
+    assert.match(atlas, /Guided items/);
+    assert.match(atlas, /Debriefs/);
     assert.match(atlas, /Practice-ready codes/);
     assert.match(atlas, /SubtopicStat/);
     assert.match(atlas, /readyCodeCount/);
@@ -265,6 +267,10 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /window\.history\.replaceState/);
     assert.match(atlas, /chooseComponentFilter/);
     assert.match(atlas, /matchesComponentFilter/);
+    assert.match(atlas, /filter === "guided"/);
+    assert.match(atlas, /filter === "debriefs"/);
+    assert.match(atlas, /node\.leadme_item_count > 0/);
+    assert.match(atlas, /node\.debrief_element_count > 0/);
     assert.doesNotMatch(atlas, /Direct link/);
     assert.match(answer, /Case study path/);
     assert.match(answer, /ModuleValue/);

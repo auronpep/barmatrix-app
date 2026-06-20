@@ -468,6 +468,7 @@ export function AtlasClient() {
     );
   }, [allNodes, scopedNodes, selectedCode, studiedCodes]);
   const scopedLessonNodes = useMemo(() => scopedNodes.filter(hasLessonLane), [scopedNodes]);
+  const scopedFirstLessonCode = scopedLessonNodes[0]?.code ?? null;
   const lessonWalkNodes = useMemo(
     () => (scopedLessonNodes.length > 0 ? scopedLessonNodes : allNodes.filter(hasLessonLane)),
     [allNodes, scopedLessonNodes],
@@ -908,7 +909,7 @@ export function AtlasClient() {
                         ))}
                       </div>
                     </div>
-                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-6">
+                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-7">
                       <button
                         type="button"
                         onClick={() => scopedWalkCode && selectCode(scopedWalkCode)}
@@ -940,6 +941,14 @@ export function AtlasClient() {
                         className="rounded-md border border-zinc-950/15 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-[transform,background-color,border-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
                       >
                         Jump to first ready
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => scopedFirstLessonCode && selectCode(scopedFirstLessonCode)}
+                        disabled={!scopedFirstLessonCode}
+                        className="rounded-md border border-zinc-950/15 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-[transform,background-color,border-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
+                      >
+                        Jump to first lesson
                       </button>
                       <button
                         type="button"

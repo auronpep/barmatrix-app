@@ -274,6 +274,8 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /\{studiedCodeCount\} studied \/ \{nodes\.length\} codes/);
     assert.match(atlas, /lessonReadyCount/);
     assert.match(atlas, /\{readyCodeCount\} q-ready \/ \{lessonReadyCount\} lesson-ready/);
+    assert.match(atlas, /laneReadyCount/);
+    assert.match(atlas, /\{laneReadyCount\} lane-ready/);
     assert.match(atlas, /nodes\.map\(\(node\) => \{\s*const rowStudied = studiedCodes\.has\(node\.code\);/);
     assert.match(atlas, /scopedLessonRemainingCount/);
     assert.match(atlas, /lesson-ready codes/);

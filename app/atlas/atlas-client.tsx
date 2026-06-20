@@ -1241,6 +1241,7 @@ export function AtlasClient() {
                     grouped.map(([subtopic, nodes]) => {
                       const readyCodeCount = nodes.filter((node) => node.question_count > 0).length;
                       const lessonReadyCount = nodes.filter(hasLessonLane).length;
+                      const laneReadyCount = nodes.filter(hasAnyLane).length;
                       const studiedCodeCount = nodes.filter((node) =>
                         studiedCodes.has(node.code),
                       ).length;
@@ -1264,7 +1265,7 @@ export function AtlasClient() {
                             <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
                               {studiedCodeCount} studied / {nodes.length} codes /{" "}
                               {readyCodeCount} q-ready / {lessonReadyCount} lesson-ready /{" "}
-                              {questionCount} questions
+                              {laneReadyCount} lane-ready / {questionCount} questions
                             </p>
                           </div>
                           <div className="divide-y divide-zinc-950/10">

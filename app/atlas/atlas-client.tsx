@@ -471,6 +471,10 @@ export function AtlasClient() {
   const scopedLessonRemainingCount = scopedLessonNodes.filter(
     (node) => !studiedCodes.has(node.code),
   ).length;
+  const scopedNextLessonNode =
+    scopedLessonNodes.find((node) => !studiedCodes.has(node.code)) ??
+    scopedLessonNodes[0] ??
+    null;
   const scopedFirstLessonCode = scopedLessonNodes[0]?.code ?? null;
   const lessonWalkNodes = useMemo(
     () => (scopedLessonNodes.length > 0 ? scopedLessonNodes : allNodes.filter(hasLessonLane)),
@@ -912,6 +916,25 @@ export function AtlasClient() {
                           </div>
                         ))}
                       </div>
+                      {scopedNextLessonNode ? (
+                        <button
+                          type="button"
+                          onClick={() => selectCode(scopedNextLessonNode.code)}
+                          className="mt-3 grid w-full grid-cols-[96px_minmax(0,1fr)] gap-3 rounded-md bg-white px-3 py-2 text-left transition-[transform,background-color] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-zinc-50 active:scale-[0.99]"
+                        >
+                          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-red-700">
+                            Next lesson in scope
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block font-mono text-[10px] font-semibold text-zinc-950">
+                              {scopedNextLessonNode.code}
+                            </span>
+                            <span className="mt-1 block truncate text-sm font-semibold text-zinc-900">
+                              {scopedNextLessonNode.outline_text}
+                            </span>
+                          </span>
+                        </button>
+                      ) : null}
                     </div>
                     <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-7">
                       <button

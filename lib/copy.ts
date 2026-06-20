@@ -87,6 +87,14 @@ export const FAQ: Array<{ q: string; a: string }> = [
     q: "Why start with the diagnostic before purchase?",
     a: "The diagnostic is the proof step. It shows the red zones, wrong-answer traps, and repair priority before asking you to decide whether Flagship is worth buying.",
   },
+  {
+    q: "What does the diagnostic show?",
+    a: "It shows your Red-Zone Map, the wrong-answer traps behind your misses, and the repair priority BarMatrix would work first.",
+  },
+  {
+    q: "What makes guided repair different?",
+    a: "Guided repair does not ask you to browse a resource library. It gives you one next MBE repair task tied to the pattern showing up in your missed questions.",
+  },
 ];
 
 export const APP_STATUS = {

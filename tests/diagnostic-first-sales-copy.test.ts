@@ -11,6 +11,7 @@ function readActiveHomePage(): string {
 test("public sales copy keeps the proof-before-price diagnostic path", () => {
   const copy = readFileSync("lib/copy.ts", "utf8");
   const home = readActiveHomePage();
+  const howItWorks = readFileSync("app/how-it-works/page.tsx", "utf8");
   const diagnostic = readFileSync("app/diagnostic/diagnostic-page-client.tsx", "utf8");
   const pricing = readFileSync("app/pricing/page.tsx", "utf8");
 
@@ -20,13 +21,17 @@ test("public sales copy keeps the proof-before-price diagnostic path", () => {
   assert.match(home, /PROOF BEFORE PRICE/);
   assert.match(home, /RED-ZONE MAP/);
   assert.match(home, /Assigned repair drills tied to your diagnostic misses/);
+  assert.match(howItWorks, /Find the trap pattern before you buy/);
+  assert.match(howItWorks, /From diagnostic to directed repair in three steps/);
+  assert.match(howItWorks, /See exactly how we analyze each miss/);
+  assert.match(howItWorks, /Start with clarity\. Repair with purpose\./);
   assert.match(diagnostic, /Repair priorities and sample drill previews tied to your misses/);
   assert.match(pricing, /Try the diagnostic first/);
   assert.match(pricing, /Price comes after the Red-Zone Map/);
   assert.match(pricing, /No card\. No commitment\./);
   assert.match(pricing, /href="\/checkout"|href=\{["']\/checkout["']\}/);
 
-  for (const source of [copy, home, diagnostic, pricing]) {
+  for (const source of [copy, home, howItWorks, diagnostic, pricing]) {
     assert.doesNotMatch(source, /finite universe/);
     assert.doesNotMatch(source, /forensic bank/);
     assert.doesNotMatch(source, /question-bank access/);
@@ -34,4 +39,7 @@ test("public sales copy keeps the proof-before-price diagnostic path", () => {
     assert.doesNotMatch(source, /Sample assigned drills/);
     assert.doesNotMatch(source, /try before you buy/i);
   }
+
+  assert.doesNotMatch(howItWorks, /EDITION : LAUNCH/);
+  assert.doesNotMatch(howItWorks, /full bar course/i);
 });

@@ -1286,7 +1286,7 @@ export function AtlasClient() {
                           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                             Component index
                           </p>
-                          <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                          <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
                             <ComponentIndexLink
                               href="#atlas-code-questions"
                               label="Question bank"
@@ -1296,6 +1296,46 @@ export function AtlasClient() {
                                   : "Approval gate"
                               }
                               active={selected.question_count > 0}
+                            />
+                            <ComponentIndexLink
+                              href="#atlas-code-leadme"
+                              label="LeadMe lesson"
+                              meta={
+                                leadmeSet
+                                  ? formatCount(leadmeSet.total_items, "item")
+                                  : "Approval gate"
+                              }
+                              active={Boolean(leadmeSet)}
+                            />
+                            <ComponentIndexLink
+                              href="#atlas-code-components"
+                              label="Drills"
+                              meta={
+                                drillCount > 0
+                                  ? formatCount(drillCount, "drill")
+                                  : "Approval gate"
+                              }
+                              active={drillCount > 0}
+                            />
+                            <ComponentIndexLink
+                              href="#atlas-code-detours"
+                              label="Trap detours"
+                              meta={
+                                detourLinks.length > 0
+                                  ? formatCount(detourLinks.length, "detour")
+                                  : "Approval gate"
+                              }
+                              active={detourLinks.length > 0}
+                            />
+                            <ComponentIndexLink
+                              href="#atlas-code-components"
+                              label="Answer debriefs"
+                              meta={
+                                debriefElementTotal > 0
+                                  ? formatCount(debriefElementTotal, "debrief")
+                                  : "Approval gate"
+                              }
+                              active={debriefElementTotal > 0}
                             />
                             <ComponentIndexLink
                               href="#atlas-code-components"
@@ -1309,16 +1349,6 @@ export function AtlasClient() {
                                   : "Approval gate"
                               }
                               active={previewCount + leadmeItemTotal + debriefElementTotal > 0}
-                            />
-                            <ComponentIndexLink
-                              href="#atlas-code-leadme"
-                              label="LeadMe lesson"
-                              meta={
-                                leadmeSet
-                                  ? formatCount(leadmeSet.total_items, "item")
-                                  : "Approval gate"
-                              }
-                              active={Boolean(leadmeSet)}
                             />
                           </div>
                         </div>
@@ -2011,19 +2041,31 @@ function ComponentIndexLink({
   meta: string;
   active: boolean;
 }) {
-  return (
-    <a
-      href={href}
-      className={`rounded-md border px-3 py-2 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950 ${
-        active
-          ? "border-zinc-950/20 bg-white text-zinc-950 hover:border-zinc-950"
-          : "border-zinc-950/10 bg-white/70 text-zinc-500 hover:border-zinc-950/25"
-      }`}
-    >
+  const className = `rounded-md border px-3 py-2 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950 ${
+    active
+      ? "border-zinc-950/20 bg-white text-zinc-950 hover:border-zinc-950"
+      : "border-zinc-950/10 bg-white/70 text-zinc-500"
+  }`;
+  const content = (
+    <>
       <span className="block font-mono text-[10px] uppercase tracking-[0.12em]">
         {label}
       </span>
       <span className="mt-1 block text-xs leading-5">{meta}</span>
+    </>
+  );
+
+  if (!active) {
+    return (
+      <span aria-disabled="true" className={className}>
+        {content}
+      </span>
+    );
+  }
+
+  return (
+    <a href={href} className={className}>
+      {content}
     </a>
   );
 }

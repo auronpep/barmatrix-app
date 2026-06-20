@@ -127,6 +127,11 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /ComponentIndexLink/);
     assert.match(atlas, /href="#atlas-code-components"/);
     assert.match(atlas, /href="#atlas-code-leadme"/);
+    assert.match(atlas, /label="Drills"/);
+    assert.match(atlas, /label="Trap detours"/);
+    assert.match(atlas, /label="Answer debriefs"/);
+    assert.match(atlas, /href="#atlas-code-detours"/);
+    assert.match(atlas, /aria-disabled="true"/);
     assert.match(atlas, /Component lanes/);
     assert.match(atlas, /Study sequence/);
     assert.match(atlas, /Anchor this code/);

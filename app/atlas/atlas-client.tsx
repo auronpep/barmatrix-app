@@ -375,6 +375,8 @@ export function AtlasClient() {
   const selectedVisibleIndex = selectedCode
     ? filtered.findIndex((node) => node.code === selectedCode)
     : -1;
+  const selectedVisiblePosition =
+    selectedVisibleIndex >= 0 ? selectedVisibleIndex + 1 : null;
   const previousCode = selectedIndex > 0 ? allNodes[selectedIndex - 1]?.code ?? null : null;
   const nextCode =
     selectedIndex >= 0 && selectedIndex < allNodes.length - 1
@@ -1272,6 +1274,12 @@ export function AtlasClient() {
                       </div>
 
                       <div className="mt-5 grid grid-cols-2 gap-2">
+                        <p className="col-span-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-300">
+                          Visible walk:{" "}
+                          {selectedVisiblePosition
+                            ? `${selectedVisiblePosition} / ${filtered.length}`
+                            : `${filtered.length} visible codes`}
+                        </p>
                         <WalkButton
                           label="Previous"
                           disabled={!previousVisibleCode}

@@ -92,6 +92,7 @@ describe("dashboard guided-path entry", () => {
     const atlas = readProjectFile("app/atlas/atlas-client.tsx");
     const answer = readProjectFile("app/atlas/questions/[id]/answer/answer-client.tsx");
     const practice = readProjectFile("app/atlas/questions/[id]/practice/page.tsx");
+    const drill = readProjectFile("app/drills/[drill_id]/page.tsx");
     const client = readProjectFile("lib/api-client.ts");
     const body = readProjectFile("components/preview-dashboard/dashboard-v2-body.tsx");
 
@@ -234,6 +235,9 @@ describe("dashboard guided-path entry", () => {
     assert.match(practice, /Next question/);
     assert.match(practice, /Previous question/);
     assert.doesNotMatch(practice, /QuestionRunner/);
+    assert.match(drill, /isAtlasOutlineDrill/);
+    assert.match(drill, /router\.replace\(atlasPracticeHref\(firstQuestionId\)\)/);
+    assert.match(drill, /red_zone_dimension === "outline_code"/);
     assert.match(client, /getAtlasComponents/);
     assert.match(client, /AtlasLeadMeItemPreview/);
     assert.match(client, /AtlasDebriefElementPreview/);

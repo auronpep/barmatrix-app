@@ -21,6 +21,9 @@ import { formatDrillName, humanizeTag, proficiencyPct } from "@/lib/drills";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
 import { userFacingResourceError } from "@/lib/user-facing-errors";
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 type State =
   | { phase: "loading" }
   | { phase: "ready"; detail: DrillDetail }
@@ -95,6 +98,11 @@ export default function DrillRunnerPage({
         }
         const detail = await api.getDrill(drillId, token, { cache: "no-store" });
         if (!active) return;
+        const firstQuestionId = detail.question_ids[0];
+        if (isAtlasOutlineDrill(detail, firstQuestionId)) {
+          router.replace(atlasPracticeHref(firstQuestionId));
+          return;
+        }
         trackDrillStarted({ drillId, source: "manual" });
         setState({ phase: "ready", detail });
       } catch (err: unknown) {
@@ -109,7 +117,7 @@ export default function DrillRunnerPage({
     return () => {
       active = false;
     };
-  }, [drillId, getToken, isLoaded, isSignedIn]);
+  }, [drillId, getToken, isLoaded, isSignedIn, router]);
 
   const onComplete = async (summary: RunnerSummary) => {
     if (state.phase !== "ready" || finishing) return;
@@ -261,6 +269,22 @@ function drillLoadErrorMessage(err: ApiClientError): string {
     notFound: "This drill no longer exists.",
     unavailable: "This drill is temporarily unavailable.",
   });
+}
+
+function isAtlasOutlineDrill(
+  detail: DrillDetail,
+  firstQuestionId: string | undefined,
+): firstQuestionId is string {
+  return (
+    detail.red_zone_dimension === "outline_code" &&
+    typeof firstQuestionId === "string" &&
+    firstQuestionId.length > 0 &&
+    !UUID_RE.test(firstQuestionId)
+  );
+}
+
+function atlasPracticeHref(firstQuestionId: string): string {
+  return `/atlas/questions/${encodeURIComponent(firstQuestionId)}/practice`;
 }
 
 function MasteryCard({

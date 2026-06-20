@@ -219,10 +219,13 @@ describe("dashboard guided-path entry", () => {
     assert.match(answer, /Review code questions/);
     assert.match(answer, /#atlas-code-questions/);
     assert.match(answer, /encodeURIComponent\(q\.outline_code\)/);
-    assert.match(practice, /QuestionRunner/);
-    assert.match(practice, /questionIds=\{\[questionId\]\}/);
-    assert.match(practice, /setId=\{`atlas:\$\{questionId\}`\}/);
-    assert.match(practice, /Review answer debrief/);
+    assert.match(practice, /getAtlasAnswer/);
+    assert.match(practice, /Submit answer/);
+    assert.match(practice, /setSelection/);
+    assert.match(practice, /submitted: true/);
+    assert.match(practice, /selected === q\.correct_answer/);
+    assert.match(practice, /Study answer debrief/);
+    assert.doesNotMatch(practice, /QuestionRunner/);
     assert.match(client, /getAtlasComponents/);
     assert.match(client, /AtlasLeadMeItemPreview/);
     assert.match(client, /AtlasDebriefElementPreview/);

@@ -807,7 +807,7 @@ export function AtlasClient() {
       setLeadMeStart({
         kind: "started",
         code: selected.code,
-        message: `Queued ${result.started.title}.`,
+        message: `Queued ${result.started.title} with ${formatCount(result.started.inserted_items, "item")}.`,
       });
     } catch (err) {
       if (err instanceof ApiClientError && err.status === 404) {

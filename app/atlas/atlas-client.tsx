@@ -372,10 +372,19 @@ export function AtlasClient() {
   const selectedIndex = selectedCode
     ? allNodes.findIndex((node) => node.code === selectedCode)
     : -1;
+  const selectedVisibleIndex = selectedCode
+    ? filtered.findIndex((node) => node.code === selectedCode)
+    : -1;
   const previousCode = selectedIndex > 0 ? allNodes[selectedIndex - 1]?.code ?? null : null;
   const nextCode =
     selectedIndex >= 0 && selectedIndex < allNodes.length - 1
       ? allNodes[selectedIndex + 1]?.code ?? null
+      : null;
+  const previousVisibleCode =
+    selectedVisibleIndex > 0 ? filtered[selectedVisibleIndex - 1]?.code ?? null : null;
+  const nextVisibleCode =
+    selectedVisibleIndex >= 0 && selectedVisibleIndex < filtered.length - 1
+      ? filtered[selectedVisibleIndex + 1]?.code ?? null
       : null;
   const selectedPracticeIndex = selectedCode
     ? practiceNodes.findIndex((node) => node.code === selectedCode)
@@ -1265,13 +1274,13 @@ export function AtlasClient() {
                       <div className="mt-5 grid grid-cols-2 gap-2">
                         <WalkButton
                           label="Previous"
-                          disabled={!previousCode}
-                          onClick={() => previousCode && selectCode(previousCode)}
+                          disabled={!previousVisibleCode}
+                          onClick={() => previousVisibleCode && selectCode(previousVisibleCode)}
                         />
                         <WalkButton
                           label="Next"
-                          disabled={!nextCode}
-                          onClick={() => nextCode && selectCode(nextCode)}
+                          disabled={!nextVisibleCode}
+                          onClick={() => nextVisibleCode && selectCode(nextVisibleCode)}
                         />
                       </div>
                       <button

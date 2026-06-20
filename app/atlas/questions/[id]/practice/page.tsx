@@ -87,6 +87,7 @@ export default function AtlasQuestionPracticePage() {
   const submitted = selection.questionId === questionId ? selection.submitted : false;
   const isCorrect = submitted && selected === q.correct_answer;
   const codeHref = `/atlas?code=${encodeURIComponent(q.outline_code)}#atlas-code-questions`;
+  const lessonHref = `/atlas?code=${encodeURIComponent(q.outline_code)}#atlas-code-lesson`;
 
   return (
     <Shell>
@@ -195,6 +196,12 @@ export default function AtlasQuestionPracticePage() {
               {nextQuestion ? <QuestionNavLink question={nextQuestion} label="Next question" /> : null}
             </div>
           ) : null}
+          <Link
+            href={lessonHref}
+            className="mt-4 inline-flex rounded-md border border-zinc-950/15 px-5 py-3 font-mono text-[11px] uppercase tracking-[0.14em] text-zinc-700 transition-[transform,border-color,background-color] duration-200 hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98]"
+          >
+            Study outline lesson
+          </Link>
         </section>
       ) : null}
     </Shell>

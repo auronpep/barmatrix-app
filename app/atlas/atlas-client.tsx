@@ -247,6 +247,11 @@ export function AtlasClient() {
     selectedIndex >= 0 && selectedIndex < allNodes.length - 1
       ? allNodes[selectedIndex + 1]?.code ?? null
       : null;
+  const selectedPosition = selectedIndex >= 0 ? selectedIndex + 1 : null;
+  const selectedProgress =
+    selectedPosition && allNodes.length > 0
+      ? Math.round((selectedPosition / allNodes.length) * 100)
+      : 0;
 
   const selectedQuestions =
     questionState.kind === "ready" && questionState.code === selectedCode
@@ -629,6 +634,26 @@ export function AtlasClient() {
                       <p className="mt-2 text-sm leading-6 text-zinc-300">
                         {selected.subject_display} / {selected.subtopic}
                       </p>
+
+                      <div className="mt-5 rounded-md bg-white/10 p-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+                            Atlas walk
+                          </p>
+                          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-200">
+                            {selectedPosition} / {allNodes.length}
+                          </p>
+                        </div>
+                        <div
+                          className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10"
+                          aria-label={`Atlas walk progress ${selectedProgress}%`}
+                        >
+                          <div
+                            className="h-full rounded-full bg-red-600"
+                            style={{ width: `${selectedProgress}%` }}
+                          />
+                        </div>
+                      </div>
 
                       <div className="mt-5 grid grid-cols-2 gap-2">
                         <WalkButton

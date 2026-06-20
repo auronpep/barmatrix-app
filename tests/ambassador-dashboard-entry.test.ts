@@ -203,6 +203,8 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /ComponentPreviewRow/);
     assert.match(atlas, /leadme_item_previews/);
     assert.match(atlas, /debrief_element_previews/);
+    assert.match(atlas, /Open through LeadMe/);
+    assert.match(atlas, /onOpen=\{leadmeSet \? startLeadMe : undefined\}/);
     assert.match(atlas, /detour_previews/);
     assert.match(atlas, /Related detours/);
     assert.match(atlas, /atlasCodeDetourHref/);

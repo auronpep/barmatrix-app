@@ -1618,6 +1618,17 @@ export function AtlasClient() {
                                       ? `${formatSeconds(item.estimated_seconds)} estimate`
                                       : "Approved item"
                                   }
+                                  actionLabel={
+                                    leadMeStart.kind === "starting" &&
+                                    leadMeStart.code === selected.code
+                                      ? "Opening..."
+                                      : "Open through LeadMe"
+                                  }
+                                  disabled={
+                                    leadMeStart.kind === "starting" &&
+                                    leadMeStart.code === selected.code
+                                  }
+                                  onOpen={leadmeSet ? startLeadMe : undefined}
                                 />
                               ))}
                               {debriefElementPreviews.map((item) => (
@@ -1814,14 +1825,20 @@ function ComponentPreviewRow({
   title,
   type,
   meta,
+  actionLabel,
+  disabled = false,
+  onOpen,
 }: {
   label: string;
   title: string;
   type: string;
   meta: string;
+  actionLabel?: string;
+  disabled?: boolean;
+  onOpen?: () => void;
 }) {
-  return (
-    <article className="rounded-md bg-zinc-50 px-3 py-2">
+  const content = (
+    <>
       <div className="flex flex-wrap items-center gap-2">
         <span className="rounded-sm bg-zinc-950 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-white">
           {label}
@@ -1834,6 +1851,30 @@ function ComponentPreviewRow({
       <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
         {meta}
       </p>
+    </>
+  );
+
+  if (onOpen) {
+    return (
+      <button
+        type="button"
+        onClick={onOpen}
+        disabled={disabled}
+        className="rounded-md border border-zinc-950/10 bg-zinc-50 px-3 py-2 text-left transition-[transform,background-color,border-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950/25 hover:bg-white active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+      >
+        {content}
+        {actionLabel ? (
+          <span className="mt-2 inline-flex rounded-md bg-red-700 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white">
+            {actionLabel}
+          </span>
+        ) : null}
+      </button>
+    );
+  }
+
+  return (
+    <article className="rounded-md bg-zinc-50 px-3 py-2">
+      {content}
     </article>
   );
 }

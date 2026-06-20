@@ -489,6 +489,7 @@ export function AtlasClient() {
   ]);
   const drillCount = countMatching(componentData?.leadme_items ?? [], ["drill", "quiz"]);
   const flashcardCount = countMatching(componentData?.leadme_items ?? [], ["flashcard"]);
+  const bootCampCount = countMatching(componentData?.leadme_items ?? [], ["boot"]);
   const trapCount =
     countMatching(componentData?.debrief_elements ?? [], ["trap"]) +
     countMatching(componentData?.leadme_items ?? [], ["trap"]);
@@ -1330,6 +1331,16 @@ export function AtlasClient() {
                               active={flashcardCount > 0}
                             />
                             <ComponentIndexLink
+                              href="#atlas-code-components"
+                              label="Boot-camps"
+                              meta={
+                                bootCampCount > 0
+                                  ? formatCount(bootCampCount, "boot-camp")
+                                  : "Approval gate"
+                              }
+                              active={bootCampCount > 0}
+                            />
+                            <ComponentIndexLink
                               href="#atlas-code-detours"
                               label="Trap detours"
                               meta={
@@ -1671,9 +1682,19 @@ export function AtlasClient() {
                           />
                           <LaneRow
                             label="Boot camps"
-                            status="Approval gate"
-                            meta="Not connected"
-                            active={false}
+                            status={bootCampCount > 0 ? "Live" : "Approval gate"}
+                            meta={
+                              bootCampCount > 0
+                                ? formatCount(bootCampCount, "boot-camp")
+                                : "Not connected"
+                            }
+                            active={bootCampCount > 0}
+                            actionLabel="Open LeadMe"
+                            disabled={
+                              leadMeStart.kind === "starting" &&
+                              leadMeStart.code === selected.code
+                            }
+                            onOpen={leadmeSet && bootCampCount > 0 ? startLeadMe : undefined}
                           />
                         </div>
                         <div className="mt-4 border-t border-zinc-950/10 pt-4">

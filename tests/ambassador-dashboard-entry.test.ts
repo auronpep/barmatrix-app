@@ -117,8 +117,11 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /The Outline Atlas V2 is part of the paid repair program\./);
     assert.match(atlas, /Has any lane/);
     assert.match(atlas, /Practice ready/);
+    assert.match(atlas, /Needs questions/);
     assert.match(atlas, /Guided items/);
     assert.match(atlas, /Debriefs/);
+    assert.match(atlas, /filter === "needs_questions"/);
+    assert.match(atlas, /node\.question_count === 0/);
     assert.match(atlas, /Practice-ready codes/);
     assert.match(atlas, /SubtopicStat/);
     assert.match(atlas, /readyCodeCount/);

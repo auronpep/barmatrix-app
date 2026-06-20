@@ -52,6 +52,7 @@ const COMPONENT_FILTERS = [
   { key: "all", label: "All codes" },
   { key: "ready", label: "Has any lane" },
   { key: "questions", label: "Practice ready" },
+  { key: "needs_questions", label: "Needs questions" },
   { key: "lessons", label: "Has lesson" },
   { key: "guided", label: "Guided items" },
   { key: "debriefs", label: "Debriefs" },
@@ -73,6 +74,7 @@ const ATLAS_CODE_DETOUR_LABELS = [
 function matchesComponentFilter(node: AtlasCoverageNode, filter: ComponentFilter) {
   if (filter === "ready") return hasAnyLane(node);
   if (filter === "questions") return node.question_count > 0;
+  if (filter === "needs_questions") return node.question_count === 0;
   if (filter === "lessons") return node.leadme_set_count + node.leadme_item_count > 0;
   if (filter === "guided") return node.leadme_item_count > 0;
   if (filter === "debriefs") return node.debrief_element_count > 0;

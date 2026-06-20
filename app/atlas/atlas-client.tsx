@@ -488,6 +488,18 @@ export function AtlasClient() {
         null)
     : null;
   const lessonWalkTargetCode = nextLessonWalkCode ?? lessonWalkNodes[0]?.code ?? null;
+  const lessonWalkStudiedCount = useMemo(
+    () =>
+      lessonWalkNodes.reduce(
+        (count, node) => count + (studiedCodes.has(node.code) ? 1 : 0),
+        0,
+      ),
+    [lessonWalkNodes, studiedCodes],
+  );
+  const lessonWalkProgress =
+    lessonWalkNodes.length > 0
+      ? Math.round((lessonWalkStudiedCount / lessonWalkNodes.length) * 100)
+      : 0;
   const scopedWalkActionLabel =
     scopedStudiedCount === 0
       ? "Start walk"
@@ -1665,6 +1677,25 @@ export function AtlasClient() {
                                   </span>
                                 </div>
                               ))}
+                            </div>
+                          </div>
+                          <div className="mt-3 rounded-md border border-white/10 bg-white/5 p-3">
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+                                Lesson walk progress
+                              </p>
+                              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-200">
+                                {lessonWalkStudiedCount} / {lessonWalkNodes.length}
+                              </p>
+                            </div>
+                            <div
+                              aria-label={`Lesson walk progress ${lessonWalkProgress}%`}
+                              className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10"
+                            >
+                              <div
+                                className="h-full rounded-full bg-emerald-300 transition-[width] duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                                style={{ width: `${lessonWalkProgress}%` }}
+                              />
                             </div>
                           </div>
                           <div className="mt-3 rounded-md border border-white/10 bg-white/5 p-3">

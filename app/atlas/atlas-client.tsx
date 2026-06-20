@@ -2120,6 +2120,11 @@ export function AtlasClient() {
                               onClick={markStudiedAndContinue}
                             />
                           </div>
+                          {lessonWalkTargetCode ? (
+                            <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-400">
+                              Next target: {lessonWalkTargetCode}
+                            </p>
+                          ) : null}
                         </div>
                         <div
                           id="atlas-code-leadme"

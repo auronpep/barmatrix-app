@@ -341,6 +341,7 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Continue lesson walk/);
     assert.match(atlas, /Restart lesson walk/);
     assert.match(atlas, /lessonWalkTargetCode/);
+    assert.match(atlas, /Next target: \{lessonWalkTargetCode\}/);
     assert.match(atlas, /Next unstudied/);
     assert.match(atlas, /window\.localStorage\.setItem/);
     assert.match(atlas, /Saved on this device for next time/);

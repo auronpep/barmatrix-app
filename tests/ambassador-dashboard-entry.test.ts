@@ -156,6 +156,9 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /scopedNoLaneCount/);
     assert.match(atlas, /Scope readiness/);
     assert.match(atlas, /No lane/);
+    assert.match(atlas, /selectedSubtopicNodes/);
+    assert.match(atlas, /This subtopic/);
+    assert.match(atlas, /aria-current=\{active \? "true" : undefined\}/);
     assert.match(atlas, /Scope: \{scopeLabel\}/);
     assert.match(atlas, /scopedWalkCode/);
     assert.match(atlas, /scopedWalkActionLabel/);

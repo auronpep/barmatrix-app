@@ -387,6 +387,17 @@ export function AtlasClient() {
     selectedPosition && allNodes.length > 0
       ? Math.round((selectedPosition / allNodes.length) * 100)
       : 0;
+  const selectedSubtopicNodes = useMemo(
+    () =>
+      selected
+        ? allNodes.filter(
+            (node) =>
+              node.subject_display === selected.subject_display &&
+              node.subtopic === selected.subtopic,
+          )
+        : [],
+    [allNodes, selected],
+  );
   const scopedStudiedCount = useMemo(
     () =>
       scopedNodes.reduce(
@@ -934,6 +945,63 @@ export function AtlasClient() {
                       <p className="mt-3 rounded-md bg-white/10 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-300">
                         Saved on this device for next time
                       </p>
+
+                      <div className="mt-3 rounded-md bg-white/10 p-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+                            This subtopic
+                          </p>
+                          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-200">
+                            {formatCount(selectedSubtopicNodes.length, "code")}
+                          </p>
+                        </div>
+                        <p className="mt-1 truncate text-sm leading-6 text-zinc-300">
+                          {selected.subtopic}
+                        </p>
+                        <div className="mt-3 grid max-h-56 gap-2 overflow-y-auto pr-1">
+                          {selectedSubtopicNodes.map((node) => {
+                            const active = node.code === selected.code;
+                            return (
+                              <button
+                                key={node.code}
+                                type="button"
+                                onClick={() => selectCode(node.code)}
+                                aria-current={active ? "true" : undefined}
+                                className={`grid grid-cols-[72px_minmax(0,1fr)_auto] items-start gap-2 rounded-md px-2 py-2 text-left transition-[transform,background-color,border-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
+                                  active
+                                    ? "bg-white text-zinc-950"
+                                    : "bg-white/10 text-zinc-100 hover:bg-white/15"
+                                }`}
+                              >
+                                <span className="font-mono text-[10px] font-semibold">
+                                  {node.code}
+                                </span>
+                                <span className="min-w-0">
+                                  <span className="block truncate text-xs font-semibold">
+                                    {node.outline_text}
+                                  </span>
+                                  <span
+                                    className={`mt-1 block truncate font-mono text-[9px] uppercase tracking-[0.12em] ${
+                                      active ? "text-zinc-500" : "text-zinc-400"
+                                    }`}
+                                  >
+                                    {laneFootprint(node)}
+                                  </span>
+                                </span>
+                                <span
+                                  className={`rounded-md px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] ${
+                                    node.question_count > 0
+                                      ? "bg-emerald-50 text-emerald-800"
+                                      : "bg-amber-50 text-amber-800"
+                                  }`}
+                                >
+                                  {node.question_count > 0 ? "Ready" : "Needs"}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
 
                       <div className="mt-3 rounded-md bg-white/10 p-3">
                         <div className="flex items-center justify-between gap-3">

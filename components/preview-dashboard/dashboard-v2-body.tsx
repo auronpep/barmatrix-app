@@ -34,7 +34,7 @@ const componentLinks = [
   {
     href: "/atlas",
     name: "Outline Atlas",
-    desc: "Drill into approved questions by subject, subtopic, and outline code.",
+    desc: "Walk the outline by code and open approved questions, lessons, and component lanes.",
   },
   {
     href: "/dashboard/mastery",

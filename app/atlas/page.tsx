@@ -3,7 +3,7 @@ import { AtlasClient } from "./atlas-client";
 
 export const metadata: Metadata = {
   title: "Outline Atlas",
-  description: "Drill into approved BarMatrix questions by MBE outline code.",
+  description: "Walk the MBE outline by code and open approved BarMatrix study components.",
   robots: { index: false, follow: false },
 };
 

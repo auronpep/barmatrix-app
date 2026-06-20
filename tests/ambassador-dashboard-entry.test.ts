@@ -88,6 +88,18 @@ describe("dashboard guided-path entry", () => {
     assert.match(body, /Recent activity/);
   });
 
+  it("keeps the customer Atlas as a learning map with gated component lanes", () => {
+    const atlas = readProjectFile("app/atlas/atlas-client.tsx");
+    const body = readProjectFile("components/preview-dashboard/dashboard-v2-body.tsx");
+
+    assert.match(atlas, /Walk the MBE outline by code/);
+    assert.match(atlas, /Lesson lane/);
+    assert.match(atlas, /Question bank/);
+    assert.match(atlas, /GATED_LANES/);
+    assert.match(body, /open approved questions, lessons, and component lanes/);
+    assert.doesNotMatch(atlas, /review_count|source_ref|source_label|included_by/);
+  });
+
   it("does not expose raw command-deck fetch failures in the dashboard card", () => {
     const dashboard = readProjectFile("app/dashboard/page.tsx");
 

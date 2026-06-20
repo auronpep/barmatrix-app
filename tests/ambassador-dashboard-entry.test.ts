@@ -221,6 +221,7 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /LeadMe lesson/);
     assert.match(atlas, /id="atlas-code-leadme"/);
     assert.match(atlas, /Question bank/);
+    assert.match(atlas, /formatCount\(selected\.question_count, "approved question"\)/);
     assert.match(atlas, /Start LeadMe/);
     assert.doesNotMatch(atlas, /Drill this code/);
     assert.doesNotMatch(atlas, /No runnable questions matched this outline code yet/);

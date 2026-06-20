@@ -2417,9 +2417,14 @@ export function AtlasClient() {
                         id="atlas-code-questions"
                         className="mt-4 scroll-mt-6 rounded-lg bg-white p-4 text-zinc-950"
                       >
-                        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
-                          Question bank
-                        </p>
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                            Question bank
+                          </p>
+                          <span className="rounded-md bg-zinc-100 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                            {formatCount(selected.question_count, "approved question")}
+                          </span>
+                        </div>
                         <div className="mt-3 grid gap-3">
                           {questionError ? (
                             <p className="rounded-md bg-amber-50 p-3 text-sm leading-6 text-amber-900">

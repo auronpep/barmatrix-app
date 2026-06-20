@@ -249,6 +249,29 @@ export function AtlasClient() {
       ...stats.values(),
     ];
   }, [allNodes, subjectFilter]);
+  const scopedNodes = useMemo(
+    () =>
+      allNodes.filter((node) => {
+        if (subjectFilter !== ALL_SUBJECTS && node.subject_display !== subjectFilter) return false;
+        if (subtopicFilter !== ALL_SUBTOPICS && node.subtopic !== subtopicFilter) return false;
+        return true;
+      }),
+    [allNodes, subjectFilter, subtopicFilter],
+  );
+  const scopedPracticeNodes = useMemo(
+    () => scopedNodes.filter((node) => node.question_count > 0),
+    [scopedNodes],
+  );
+  const scopedQuestionCount = scopedPracticeNodes.reduce(
+    (sum, node) => sum + node.question_count,
+    0,
+  );
+  const scopeLabel =
+    subtopicFilter !== ALL_SUBTOPICS
+      ? subtopicFilter
+      : subjectFilter !== ALL_SUBJECTS
+        ? subjectFilter
+        : "Full Atlas";
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -382,6 +405,11 @@ export function AtlasClient() {
       return subjectOk && subtopicOk && matchesComponentFilter(node, filter);
     });
     selectCode(next?.code ?? null);
+  }
+
+  function showScopedPractice() {
+    setComponentFilter("questions");
+    selectCode(scopedPracticeNodes[0]?.code ?? null);
   }
 
   async function startLeadMe() {
@@ -610,6 +638,37 @@ export function AtlasClient() {
                         {filter.label}
                       </button>
                     ))}
+                  </div>
+                  <div className="mt-3 grid gap-3 rounded-md bg-[#f4f1ea] p-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+                    <div className="min-w-0">
+                      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-red-700">
+                        Weak-section drilldown
+                      </p>
+                      <p className="mt-1 truncate text-sm font-semibold text-zinc-900">
+                        {scopeLabel}
+                      </p>
+                      <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                        {scopedPracticeNodes.length} ready codes / {scopedQuestionCount} questions
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={showScopedPractice}
+                        disabled={scopedPracticeNodes.length === 0}
+                        className="rounded-md bg-zinc-950 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white transition-[transform,background-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-zinc-800 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
+                      >
+                        Show ready codes
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => selectCode(scopedPracticeNodes[0]?.code ?? null)}
+                        disabled={scopedPracticeNodes.length === 0}
+                        className="rounded-md border border-zinc-950/15 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-[transform,background-color,border-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
+                      >
+                        Jump to first ready
+                      </button>
+                    </div>
                   </div>
                 </div>
 

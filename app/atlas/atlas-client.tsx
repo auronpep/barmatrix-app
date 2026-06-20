@@ -464,6 +464,8 @@ export function AtlasClient() {
     selectedSubtopicIndex < selectedSubtopicNodes.length - 1
       ? selectedSubtopicNodes[selectedSubtopicIndex + 1]?.code ?? null
       : null;
+  const nextSubtopicUnstudiedCode =
+    selectedSubtopicNodes.find((node) => !studiedCodes.has(node.code))?.code ?? null;
   const scopedStudiedCount = useMemo(
     () =>
       scopedNodes.reduce(
@@ -1279,6 +1281,16 @@ export function AtlasClient() {
                               nextSubtopicCode && selectCode(nextSubtopicCode)
                             }
                           />
+                          <div className="col-span-2">
+                            <WalkButton
+                              label="Next to study here"
+                              disabled={!nextSubtopicUnstudiedCode}
+                              onClick={() =>
+                                nextSubtopicUnstudiedCode &&
+                                selectCode(nextSubtopicUnstudiedCode)
+                              }
+                            />
+                          </div>
                         </div>
                         <div className="mt-3 grid max-h-56 gap-2 overflow-y-auto pr-1">
                           {selectedSubtopicNodes.map((node) => {

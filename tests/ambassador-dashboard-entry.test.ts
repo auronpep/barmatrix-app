@@ -265,6 +265,7 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /selectedSubtopicPosition/);
     assert.match(atlas, /previousSubtopicCode/);
     assert.match(atlas, /nextSubtopicCode/);
+    assert.match(atlas, /nextSubtopicUnstudiedCode/);
     assert.match(atlas, /This subtopic/);
     assert.match(atlas, /Subtopic lessons/);
     assert.match(atlas, /lesson-ready/);
@@ -277,6 +278,7 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /To study/);
     assert.match(atlas, /Prev in subtopic/);
     assert.match(atlas, /Next in subtopic/);
+    assert.match(atlas, /Next to study here/);
     assert.match(atlas, /aria-current=\{active \? "true" : undefined\}/);
     assert.match(atlas, /Scope: \{scopeLabel\}/);
     assert.match(atlas, /scopedWalkCode/);

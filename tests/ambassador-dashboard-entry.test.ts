@@ -110,6 +110,11 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Prior lesson/);
     assert.match(atlas, /Next lesson/);
     assert.match(atlas, /href=\{`\/atlas\?code=\$\{encodeURIComponent\(code\)\}#atlas-code-lesson`\}/);
+    assert.match(atlas, /Component index/);
+    assert.match(atlas, /ComponentIndexLink/);
+    assert.match(atlas, /href="#atlas-code-components"/);
+    assert.match(atlas, /href="#atlas-code-leadme"/);
+    assert.match(atlas, /Component lanes/);
     assert.match(atlas, /Study sequence/);
     assert.match(atlas, /Anchor this code/);
     assert.match(atlas, /Work approved questions/);
@@ -120,9 +125,11 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Open approved support/);
     assert.match(atlas, /Follow approved detours/);
     assert.match(atlas, /LeadMe lesson/);
+    assert.match(atlas, /id="atlas-code-leadme"/);
     assert.match(atlas, /Question bank/);
     assert.match(atlas, /Start LeadMe/);
     assert.match(atlas, /Drill this code/);
+    assert.match(atlas, /id="atlas-code-components"/);
     assert.match(atlas, /Connected previews/);
     assert.match(atlas, /Atlas walk/);
     assert.match(atlas, /Practice walk/);

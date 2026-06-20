@@ -1086,6 +1086,46 @@ export function AtlasClient() {
                             </div>
                           </div>
                         </div>
+                        <div className="mt-4 rounded-md border border-zinc-950/10 bg-zinc-50 p-3">
+                          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                            Component index
+                          </p>
+                          <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                            <ComponentIndexLink
+                              href="#atlas-code-questions"
+                              label="Question bank"
+                              meta={
+                                selected.question_count > 0
+                                  ? formatCount(selected.question_count, "approved question")
+                                  : "Approval gate"
+                              }
+                              active={selected.question_count > 0}
+                            />
+                            <ComponentIndexLink
+                              href="#atlas-code-components"
+                              label="Component lanes"
+                              meta={
+                                previewCount + leadmeItemTotal + debriefElementTotal > 0
+                                  ? `${formatCount(previewCount, "preview")} / ${formatCount(
+                                      leadmeItemTotal + debriefElementTotal,
+                                      "component",
+                                    )}`
+                                  : "Approval gate"
+                              }
+                              active={previewCount + leadmeItemTotal + debriefElementTotal > 0}
+                            />
+                            <ComponentIndexLink
+                              href="#atlas-code-leadme"
+                              label="LeadMe lesson"
+                              meta={
+                                leadmeSet
+                                  ? formatCount(leadmeSet.total_items, "item")
+                                  : "Approval gate"
+                              }
+                              active={Boolean(leadmeSet)}
+                            />
+                          </div>
+                        </div>
                         <div className="mt-4 border-t border-zinc-950/10 pt-4">
                           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                             Study sequence
@@ -1159,7 +1199,10 @@ export function AtlasClient() {
                             </li>
                           </ol>
                         </div>
-                        <div className="mt-4 border-t border-zinc-950/10 pt-4">
+                        <div
+                          id="atlas-code-leadme"
+                          className="mt-4 scroll-mt-6 border-t border-zinc-950/10 pt-4"
+                        >
                           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                             LeadMe lesson
                           </p>
@@ -1224,7 +1267,10 @@ export function AtlasClient() {
                         ) : null}
                       </section>
 
-                      <section className="mt-4 rounded-lg bg-white p-4 text-zinc-950">
+                      <section
+                        id="atlas-code-components"
+                        className="mt-4 scroll-mt-6 rounded-lg bg-white p-4 text-zinc-950"
+                      >
                         <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                           Components
                         </p>
@@ -1507,6 +1553,34 @@ function ComponentPreviewRow({
         {meta}
       </p>
     </article>
+  );
+}
+
+function ComponentIndexLink({
+  href,
+  label,
+  meta,
+  active,
+}: {
+  href: string;
+  label: string;
+  meta: string;
+  active: boolean;
+}) {
+  return (
+    <a
+      href={href}
+      className={`rounded-md border px-3 py-2 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950 ${
+        active
+          ? "border-zinc-950/20 bg-white text-zinc-950 hover:border-zinc-950"
+          : "border-zinc-950/10 bg-white/70 text-zinc-500 hover:border-zinc-950/25"
+      }`}
+    >
+      <span className="block font-mono text-[10px] uppercase tracking-[0.12em]">
+        {label}
+      </span>
+      <span className="mt-1 block text-xs leading-5">{meta}</span>
+    </a>
   );
 }
 

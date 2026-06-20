@@ -218,6 +218,8 @@ describe("dashboard guided-path entry", () => {
     assert.match(answer, /key !== "detours"/);
     assert.match(answer, /Study this outline code/);
     assert.match(answer, /Review code questions/);
+    assert.match(answer, /Practice this question/);
+    assert.match(answer, /practiceHref/);
     assert.match(answer, /#atlas-code-questions/);
     assert.match(answer, /encodeURIComponent\(q\.outline_code\)/);
     assert.match(practice, /getAtlasAnswer/);

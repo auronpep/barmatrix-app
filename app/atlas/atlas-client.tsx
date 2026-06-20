@@ -897,7 +897,9 @@ export function AtlasClient() {
                         {scopeLabel}
                       </p>
                       <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
-                        {scopedPracticeNodes.length} ready codes / {scopedQuestionCount} questions
+                        {scopedPracticeNodes.length} practice-ready codes /{" "}
+                        {scopedLessonNodes.length} lesson-ready codes /{" "}
+                        {scopedQuestionCount} questions
                       </p>
                       <div
                         className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-7"

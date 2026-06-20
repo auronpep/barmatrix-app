@@ -468,6 +468,9 @@ export function AtlasClient() {
     );
   }, [allNodes, scopedNodes, selectedCode, studiedCodes]);
   const scopedLessonNodes = useMemo(() => scopedNodes.filter(hasLessonLane), [scopedNodes]);
+  const scopedLessonRemainingCount = scopedLessonNodes.filter(
+    (node) => !studiedCodes.has(node.code),
+  ).length;
   const scopedFirstLessonCode = scopedLessonNodes[0]?.code ?? null;
   const lessonWalkNodes = useMemo(
     () => (scopedLessonNodes.length > 0 ? scopedLessonNodes : allNodes.filter(hasLessonLane)),
@@ -887,11 +890,12 @@ export function AtlasClient() {
                         {scopedPracticeNodes.length} ready codes / {scopedQuestionCount} questions
                       </p>
                       <div
-                        className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6"
+                        className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-7"
                         aria-label={`Scope readiness for ${scopeLabel}`}
                       >
                         {[
                           { label: "Studied", value: `${scopedStudiedCount}/${scopedNodes.length}` },
+                          { label: "Lessons left", value: String(scopedLessonRemainingCount) },
                           { label: "Practice", value: String(scopedPracticeNodes.length) },
                           { label: "Needs Q", value: String(scopedNoQuestionCount) },
                           { label: "Needs lesson", value: String(scopedNoLessonCount) },

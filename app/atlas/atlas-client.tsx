@@ -1666,6 +1666,30 @@ export function AtlasClient() {
                               ))}
                             </div>
                           </div>
+                          <div className="mt-3 rounded-md border border-white/10 bg-white/5 p-3">
+                            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+                              Up next in lesson walk
+                            </p>
+                            {nextLessonWalkNode ? (
+                              <div className="mt-2 flex flex-wrap items-start justify-between gap-3">
+                                <div>
+                                  <p className="font-mono text-[11px] font-semibold text-zinc-100">
+                                    {nextLessonWalkNode.code}
+                                  </p>
+                                  <p className="mt-1 text-sm leading-6 text-zinc-300">
+                                    {nextLessonWalkNode.outline_text}
+                                  </p>
+                                </div>
+                                <span className="rounded-md bg-white/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-300">
+                                  {nextLessonWalkNode.subtopic}
+                                </span>
+                              </div>
+                            ) : (
+                              <p className="mt-2 text-sm leading-6 text-zinc-300">
+                                Every approved lesson target in this scope is marked studied.
+                              </p>
+                            )}
+                          </div>
                           <div className="mt-3 grid gap-2 sm:grid-cols-3">
                             <button
                               type="button"

@@ -1180,9 +1180,20 @@ export function AtlasClient() {
                         id="atlas-code-lesson"
                         className="mt-5 scroll-mt-6 rounded-lg bg-white p-4 text-zinc-950"
                       >
-                        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-red-700">
-                          Outline lesson
-                        </p>
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-red-700">
+                            Outline lesson
+                          </p>
+                          <span
+                            className={`rounded-md px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] ${
+                              selectedStudied
+                                ? "bg-emerald-50 text-emerald-800"
+                                : "bg-zinc-100 text-zinc-600"
+                            }`}
+                          >
+                            {selectedStudied ? "Studied" : "Not studied"}
+                          </span>
+                        </div>
                         <h3 className="mt-2 font-serif text-xl font-semibold">
                           {selected.outline_text}
                         </h3>
@@ -1335,6 +1346,43 @@ export function AtlasClient() {
                               </p>
                             </li>
                           </ol>
+                        </div>
+                        <div className="mt-4 rounded-md bg-zinc-950 p-3 text-white">
+                          <div className="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+                                Lesson checkpoint
+                              </p>
+                              <p className="mt-1 text-sm leading-6 text-zinc-200">
+                                Mark this code when the rule, approved questions, and attached
+                                support are clear enough to move on.
+                              </p>
+                            </div>
+                            <span className="rounded-md bg-white/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-200">
+                              {selectedPosition ?? "-"} / {allNodes.length}
+                            </span>
+                          </div>
+                          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                            <button
+                              type="button"
+                              aria-pressed={selectedStudied}
+                              onClick={toggleStudiedCode}
+                              className={`rounded-md border px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] transition-[transform,background-color,border-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
+                                selectedStudied
+                                  ? "border-emerald-300/70 bg-emerald-400 text-zinc-950 hover:bg-emerald-300"
+                                  : "border-white/15 bg-white/10 text-white hover:border-white/35 hover:bg-white/15"
+                              }`}
+                            >
+                              {selectedStudied ? "Marked studied" : "Mark lesson studied"}
+                            </button>
+                            <WalkButton
+                              label="Next unstudied code"
+                              disabled={!nextUnstudiedCode}
+                              onClick={() =>
+                                nextUnstudiedCode && selectCode(nextUnstudiedCode)
+                              }
+                            />
+                          </div>
                         </div>
                         <div
                           id="atlas-code-leadme"

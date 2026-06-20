@@ -681,6 +681,18 @@ export function AtlasClient() {
     selectCode(lessonWalkTargetCode);
   }
 
+  function markCodeStudiedAndContinue() {
+    if (!selected || !nextUnstudiedCode) return;
+    setStudiedCodes((current) => {
+      if (current.has(selected.code)) return current;
+      const next = new Set(current);
+      next.add(selected.code);
+      writeStoredStudiedCodes(next);
+      return next;
+    });
+    selectCode(nextUnstudiedCode);
+  }
+
   function focusSelectedSubtopic() {
     if (!selected) return;
     setSubjectFilter(selected.subject_display);
@@ -1473,6 +1485,13 @@ export function AtlasClient() {
                             disabled={!nextUnstudiedCode}
                             onClick={() => nextUnstudiedCode && selectCode(nextUnstudiedCode)}
                           />
+                          <div className="col-span-2">
+                            <WalkButton
+                              label="Mark studied + next code"
+                              disabled={!nextUnstudiedCode}
+                              onClick={markCodeStudiedAndContinue}
+                            />
+                          </div>
                           <div className="col-span-2">
                             <WalkButton
                               label="Reset scope progress"

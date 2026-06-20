@@ -88,7 +88,7 @@ export default async function TensionsPage({
       {!catalog.catalog_ready && !isEmpty && (
         <p className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
           The curated tension catalog isn&apos;t provisioned in this environment
-          yet, so these tensions are derived from the live question bank. Curated
+          yet, so these tensions are derived from the active content set. Curated
           copy (the doctrinal collision and decision axis) appears once the catalog
           migration is applied.
         </p>
@@ -97,7 +97,7 @@ export default async function TensionsPage({
       {isEmpty && (
         <div className="mt-10 rounded-lg border border-zinc-200 bg-zinc-50 p-8">
           <p className="text-zinc-800">
-            The Tension Map populates from the active question bank and the curated
+            The Tension Map populates from the approved question set and the curated
             tension catalog. Once questions are live, every tension point they
             target shows up here with its question count.
           </p>

@@ -87,7 +87,7 @@ export default async function TensionDetailPage({
       {!detail.catalog_ready && (
         <p className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
           The curated tension catalog isn&apos;t provisioned in this environment
-          yet, so this tension is derived from the live question bank. Curated
+          yet, so this tension is derived from the active content set. Curated
           copy (the doctrinal collision and decision axis) appears once the catalog
           migration is applied.
         </p>

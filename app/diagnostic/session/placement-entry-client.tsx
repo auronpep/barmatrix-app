@@ -316,7 +316,7 @@ export function PlacementEntryClient() {
                 paddingBottom: 2,
               }}
             >
-              Take the free 12-question diagnostic instead →
+              Take the free MBE Trap Diagnostic instead →
             </Link>
           </div>
         </div>

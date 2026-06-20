@@ -68,7 +68,7 @@ export default async function TrapDetailPage({
         ))}
         {detail.official ? (
           <span className="rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-emerald-700">
-            Official taxonomy
+            BarMatrix curated
           </span>
         ) : (
           <span className="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-amber-700">

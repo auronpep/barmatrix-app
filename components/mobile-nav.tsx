@@ -5,14 +5,12 @@ import Link from "next/link";
 import { NavPrimaryCta } from "@/app/nav-auth";
 
 const NAV_LINKS = [
-  { href: "/dashboard/path", label: "Dashboard" },
   { href: "/how-it-works", label: "How It Works" },
   { href: "/foundations", label: "The Method" },
   { href: "/mastery", label: "Mastery" },
   { href: "/coach", label: "Coach" },
   { href: "/certification", label: "Certification" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/diagnostic", label: "Diagnostic" },
   { href: "/red-zones", label: "Red Zones" },
   { href: "/faq", label: "FAQ" },
 ];
@@ -34,16 +32,6 @@ export function MobileNavToggle({ hasClerk }: { hasClerk: boolean }) {
 
       {open && (
         <div className="mobile-nav-drawer" role="navigation" aria-label="Site navigation">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="mobile-nav-link"
-              onClick={() => setOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
           {hasClerk ? (
             <NavPrimaryCta
               className="mobile-nav-link mobile-nav-cta"
@@ -58,6 +46,16 @@ export function MobileNavToggle({ hasClerk }: { hasClerk: boolean }) {
               Free Diagnostic →
             </Link>
           )}
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="mobile-nav-link"
+              onClick={() => setOpen(false)}
+            >
+              {link.label}
+            </Link>
+          ))}
         </div>
       )}
     </>

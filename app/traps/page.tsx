@@ -105,14 +105,14 @@ export default async function TrapsPage({
         <ToggleLink
           href="/traps?official=1"
           active={officialOnly}
-          label="Official only"
+          label="Curated only"
         />
       </div>
 
       {isEmpty && (
         <div className="mt-10 rounded-lg border border-zinc-200 bg-zinc-50 p-8">
           <p className="text-zinc-800">
-            The trap catalog populates from the active question bank. Once questions
+            The trap catalog populates from the active content set. Once questions
             are live, every wrong-answer architecture they use shows up here with
             example distractors.
           </p>
@@ -135,7 +135,7 @@ export default async function TrapsPage({
 
       {filteredEmpty && (
         <p className="mt-10 rounded-lg border border-zinc-200 bg-zinc-50 p-6 text-sm text-zinc-700">
-          No official-taxonomy traps are in the bank yet. Switch to{" "}
+          No curated taxonomy traps are in the bank yet. Switch to{" "}
           <Link
             href="/traps"
             className="underline underline-offset-4 hover:text-zinc-900"
@@ -252,7 +252,7 @@ function TrapRow({ trap }: { trap: TrapEntry }) {
           </span>
           {trap.official && (
             <span className="shrink-0 rounded-full border border-emerald-300 bg-emerald-50 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-emerald-700">
-              Official
+              BarMatrix curated
             </span>
           )}
           <PersonalTrapBadge slug={trap.slug} />

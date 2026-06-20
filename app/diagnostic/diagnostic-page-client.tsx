@@ -48,7 +48,7 @@ export function DiagnosticPageClient() {
       });
       if (result.question_ids.length === 0) {
         setEmptyMessage(
-          "Question bank isn't loaded yet — the diagnostic launches once content ingestion completes.",
+          "Diagnostic content isn't loaded yet — the diagnostic launches once content ingestion completes.",
         );
         setPhase("empty_bank");
         return;
@@ -114,7 +114,7 @@ export function DiagnosticPageClient() {
                 {[
                   "Personal Red-Zone Map of your top trap families",
                   "Forensic tags on each of your specific misses",
-                  "Assigned repair drills tied to your diagnostic misses",
+                  "Repair priorities and sample drill previews tied to your misses",
                   "Companion path with your existing bar course",
                 ].map((t) => (
                   <li
@@ -152,7 +152,7 @@ export function DiagnosticPageClient() {
                       className="eyebrow-strong"
                       style={{ marginBottom: 16 }}
                     >
-                      ▸ TRAP-WEIGHTED · 20 QUESTIONS
+                      ▸ TRAP-WEIGHTED DIAGNOSTIC
                     </div>
                     <p
                       style={{
@@ -165,7 +165,8 @@ export function DiagnosticPageClient() {
                     >
                       At the end you&apos;ll see your Red-Zone Map: the top
                       trap families your wrong answers landed in, with the
-                      forensic tag and repair drill for each.
+                      forensic tag, repair priority, and sample drill preview
+                      for each.
                     </p>
                     <button
                       type="button"
@@ -323,7 +324,7 @@ function DiagnosticSkeleton() {
           margin: "0 0 18px",
         }}
       >
-        Loading your diagnostic question bank...
+        Loading your diagnostic set...
       </p>
       <div style={{ display: "grid", gap: 10 }}>
         {rows.map((row, index) => (

@@ -179,11 +179,11 @@ export const NICHE_PAGES: NichePage[] = [
     faq: [
       {
         q: "I was only a few points away. Is a $999 program overkill?",
-        a: "Start with the free diagnostic — it costs nothing and shows your trap profile. The Flagship is for examinees who want the full 2,400-question forensic bank and assigned repair path. A payment plan ($500 + $499) is available.",
+        a: "Start with the free diagnostic — it costs nothing and shows your trap profile. The Flagship is for examinees who want the full Flagship repair library and assigned repair path. A payment plan ($500 + $499) is available.",
       },
       {
         q: "Can a few trap patterns really account for a failing margin?",
-        a: "Trap patterns recur across subjects. A single pattern that misfires once per subject can cost several scaled points across the MBE. BarMatrix maps which patterns recur in your misses; no outcome is guaranteed.",
+        a: "Trap patterns recur across subjects. A single pattern can repeat across subjects and waste multiple questions before you notice the pattern. BarMatrix maps which patterns recur in your misses; no outcome is guaranteed.",
       },
       {
         q: "Does this cover essays?",
@@ -354,23 +354,23 @@ export const NICHE_PAGES: NichePage[] = [
     slug: "full-course-supplement",
     metaTitle: "Your bar course isn't broken. Your MBE feedback loop is.",
     metaDescription:
-      "Enrolled in a full bar course but your MBE percentage plateaued? BarMatrix adds the forensic diagnosis layer your question bank doesn't have. Free MBE Trap Diagnostic.",
+      "Enrolled in a full bar course but your MBE percentage plateaued? BarMatrix adds a wrong-answer forensic layer alongside your course or question bank. Free MBE Trap Diagnostic.",
     stamps: ["AUDIENCE · COURSE COMPANION", "JULY 2026 CYCLE", "EDITION : LAUNCH"],
     eyebrow: "▌ FOR FULL-COURSE STUDENTS",
     headline: [
       { text: "Keep your course. Add the " },
       { text: "diagnosis layer", style: "red" },
-      { text: " it doesn't have." },
+      { text: " alongside it." },
     ],
     subhead:
-      "Your full course covers the law. But when its question bank marks you wrong, you get an explanation — not a diagnosis. BarMatrix reads your wrong answers forensically, maps the recurring trap patterns, and assigns the drills that repair them. Alongside your course, not instead of it.",
+      "Your full course covers the law. BarMatrix adds a wrong-answer forensic layer alongside it: it reads your wrong answers, maps recurring trap patterns, and assigns the drills that repair them.",
     painLabel: "▌ The Question-Bank Gap · 01",
     painHeadline: [
       { text: "\"Read the explanation\" is not a " },
       { text: "repair plan.", style: "red" },
     ],
     painBody:
-      "Big-course question banks report percentages by subject. But your misses don't cluster by subject — they cluster by trap pattern, across subjects. That layer is invisible in a standard bank.",
+      "Subject percentages can hide the pattern inside the misses. BarMatrix adds a cross-subject trap map so the repair target is more precise than another broad review pass.",
     painPoints: [
       ["follow the course calendar", "and your MBE percentage plateaus anyway"],
       ["read every explanation", "and repeat the trap two weeks later"],
@@ -405,10 +405,10 @@ export const NICHE_PAGES: NichePage[] = [
       { text: "stopped moving.", style: "red" },
     ],
     diagnosticBody:
-      "The free MBE Trap Diagnostic shows the trap patterns behind your plateaued bank score — the layer your course percentage can't show you.",
+      "The free MBE Trap Diagnostic shows the trap patterns behind your plateaued bank score — a forensic layer you can use alongside your course percentage.",
     diagnosticBullets: [
       "Personal Red-Zone Map (dashboard)",
-      "Cross-subject trap patterns your bank can't surface",
+      "Cross-subject trap patterns added alongside your question bank",
       "Forensic tags explaining why each miss was attractive",
       "Companion path designed around an existing course",
       "Sample assigned drills — try before you buy",
@@ -501,7 +501,7 @@ export const NICHE_PAGES: NichePage[] = [
       },
       {
         q: "Is enrollment really limited?",
-        a: "Yes. There is one July-cycle cohort with limited seats. Enrollment closes when capacity is reached.",
+        a: "Enrollment is open for the July-cycle guided repair program. If enrollment is ever paused, checkout will say so before payment.",
       },
       {
         q: "What about the California essays and performance test?",

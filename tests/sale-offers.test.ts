@@ -44,7 +44,8 @@ describe("sale offer framework", () => {
     assert.match(source, /PAY IN FULL ONLY/);
     assert.match(source, /BarMatrix Flagship for/);
     assert.match(source, /Open \{price\} checkout/);
-    assert.match(source, /payment plan is not eligible for promotion codes/);
+    assert.match(source, /offer link attaches the campaign code before one-payment/);
+    assert.match(source, /Payment plans are not eligible for promotion codes/);
     assert.match(source, /matched to the promo code/);
     assert.match(source, /Red-Zone Map/);
     assert.doesNotMatch(source, /two_pay_500_499/);

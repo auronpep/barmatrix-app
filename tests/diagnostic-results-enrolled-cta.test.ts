@@ -13,7 +13,7 @@ describe("diagnostic results enrolled CTA", () => {
     assert.match(source, /import \{ useDashboard, type DashboardState \} from "@\/lib\/use-dashboard";/);
     assert.match(source, /const dash = useDashboard\(\);/);
     assert.match(source, /const accessState = resolveDiagnosticResultsAccess\(dash, recentCheckoutAccess\);/);
-    assert.match(source, /<RecommendationCta\s+methodSlug=\{methodSlug\}\s+results=\{results\}/);
+    assert.match(source, /\{accessState === "enrolled" && \(\s*<RecommendationCta\s+methodSlug=\{methodSlug\}\s+results=\{results\}/);
     assert.match(source, /<ResultsDecisionPanel\s+diagnosticId=\{diagnosticId\}\s+results=\{results\}\s+accessState=\{accessState\}/);
     assert.match(source, /case "enrolled":/);
     assert.match(source, /href="\/dashboard\/path"/);

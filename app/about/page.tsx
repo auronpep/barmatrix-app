@@ -26,9 +26,9 @@ export const metadata: Metadata = {
 
 const STATS = [
   { value: "11", label: "years tutoring CA bar", accent: false },
-  { value: "600+", label: "students through the method", accent: false },
-  { value: "47", label: "trap shapes tagged in v1", accent: true },
-  { value: "156", label: "tension points mapped", accent: false },
+  { value: "7", label: "MBE subjects covered", accent: false },
+  { value: "1", label: "diagnostic-first repair path", accent: true },
+  { value: "0", label: "score or pass guarantees", accent: false },
 ] as const;
 
 const TIMELINE = [
@@ -46,9 +46,9 @@ const TIMELINE = [
   },
   {
     marker: "2021",
-    title: "The 47 traps",
+    title: "The trap library",
     body:
-      "By the twelfth cycle, the wrong-answer architectures had stabilized into 47 recurring shapes across the seven MBE subjects.",
+      "Across repeated reviews, the wrong-answer architectures became a reusable library across the seven MBE subjects.",
   },
   {
     marker: "2024",
@@ -178,12 +178,12 @@ export default function AboutPage() {
 
             <section className="border-l-4 border-red-700 bg-zinc-950 p-7 text-white">
               <p className="max-w-3xl font-serif text-2xl italic leading-9">
-                &quot;Second time around, I did more questions. I missed the same
-                traps. The third time, I diagnosed the traps first - and stopped
-                the bleeding.&quot;
+                A repeat-taker can do more questions and still miss the same
+                trap pattern. BarMatrix starts by naming the trap before
+                assigning the repair.
               </p>
               <p className="mt-4 font-mono text-[11px] uppercase tracking-wider text-zinc-400">
-                Composite of repeat-taker patterns BarMatrix is built for
+                Example pattern BarMatrix is built to diagnose
               </p>
             </section>
 

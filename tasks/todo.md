@@ -3995,3 +3995,51 @@ Keep auditing the restored old-app surfaces on the live branch and remove custom
 - 2026-06-13: Live signed-in browser verification passed on `/drills/contracts`: starting the queue showed `1 / 6`, A-D answers, readable queue label `Types Of Agreements`, no external ID, no raw errors, and no horizontal overflow.
 - 2026-06-13: Live signed-in browser verification passed on `/drills/62ec2e5b-458d-4dd5-9574-e8b546ad80e7`: H1 and runner title rendered `Review Missed Questions`, `review_drill` was absent, and there were no raw errors or horizontal overflow.
 - 2026-06-13: Live signed-in browser verification passed on `/coach`: stale diagnostic CTA was absent, `Feed the Coach with more live attempts.` was present, and the coach start/question state rendered with no raw errors or horizontal overflow.
+
+# Public Copy Risk Review - 2026-06-20
+
+## Scope
+
+Review the cited BarMatrix public-copy items 2-11 against the page-rewrite rules and make recommendations only.
+
+## Plan
+
+- [x] Load the BarMatrix page-rewrite rules and relevant project lessons.
+- [x] Verify each cited file/string in the current app checkout.
+- [x] Classify each item as fix now, keep with proof, or campaign/navigation decision.
+- [x] Record recommendations and review result.
+
+## Review Log
+
+- 2026-06-20: Verified all cited app strings still exist except item 5 is broader than listed: public static pages include 12-, 18-, and 20-question diagnostic framing, and some older static pages also contain volume/base-rate proof claims.
+- 2026-06-20: Recommended fixing copy-only compliance risks now: fabricated user count unless founder proof exists, question-bank volume claim, coupon-hosted-entry wording, diagnostic count inconsistency, score-impact wording, and public `question bank` framing.
+- 2026-06-20: Recommended treating the unpaid diagnostic results CTAs, homepage variants, and navigation order as funnel decisions with small code changes after owner confirmation.
+- 2026-06-20: Verification used source inspection and `rg` only; no product source files were changed in this review pass.
+
+# Public Copy Risk Remediation - 2026-06-20
+
+## Scope
+
+Apply the accepted recommendations from the public copy review while keeping item 10's homepage variant setup unchanged.
+
+## Plan
+
+- [x] Confirm item 10 is explicitly kept.
+- [x] Replace unproved user-count, volume-bank, score-impact, coupon, and question-bank copy.
+- [x] Standardize the public free diagnostic offer without changing the separate 18-question C3 placement assessment.
+- [x] Tighten unpaid diagnostic results so enrollment/save-map remains the dominant action.
+- [x] Reorder public navigation toward Diagnostic first while preserving signed-in Dashboard/My Path behavior.
+- [x] Run focused tests, lint, build, and diff hygiene checks.
+- [x] Record results.
+
+## Review Log
+
+- 2026-06-20: Kept `app/page.tsx` homepage variant routing unchanged as requested.
+- 2026-06-20: Removed the flagged copy risks from the active app surfaces: unproved student count was already gone in the current worktree, volume-bank language was replaced, coupon copy now describes pre-attached campaign codes, and score-impact language was replaced with multiple-question waste language.
+- 2026-06-20: Standardized public free diagnostic copy to avoid public question-count claims while leaving the separate 18-question C3 placement assessment labeled as placement.
+- 2026-06-20: Gated diagnostic result recommendation CTAs to enrolled users only, so unpaid users keep the enrollment/save-map action dominant.
+- 2026-06-20: Reordered public nav toward the diagnostic first; mobile now renders the auth-aware primary CTA before module/resource links.
+- 2026-06-20: Also fixed one unrelated nested `<main>` in `app/atlas/questions/[id]/practice/page.tsx` because the full test suite exposed it.
+- 2026-06-20: Verification passed: focused tests, `node --test tests\*.test.ts` (166/166), `npm run lint`, `npm run build`, copy-risk `rg`, and `git diff --check` with normal CRLF warnings only.
+- 2026-06-20: First build rerun failed with `ENOSPC`; removed generated `.next` folders under the repo/worktrees and reran successfully. Drive C: remained tight afterward at roughly 246 MB free.
+- 2026-06-20: Worktree contains concurrent unrelated changes and untracked competitor-route files; they were preserved.

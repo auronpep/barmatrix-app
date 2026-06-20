@@ -133,8 +133,8 @@ export default async function SalePage({ params, searchParams }: SalePageProps) 
                 Open checkout <span className="arrow">-&gt;</span>
               </Link>
               <p>
-                Coupon entry is enabled on one-payment checkout only. The
-                payment plan is not eligible for promotion codes.
+                This offer link attaches the campaign code before one-payment
+                checkout. Payment plans are not eligible for promotion codes.
               </p>
             </aside>
           </div>

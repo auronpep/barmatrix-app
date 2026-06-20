@@ -20,7 +20,7 @@ test("public sales copy keeps the proof-before-price diagnostic path", () => {
   assert.match(home, /PROOF BEFORE PRICE/);
   assert.match(home, /RED-ZONE MAP/);
   assert.match(home, /Assigned repair drills tied to your diagnostic misses/);
-  assert.match(diagnostic, /Assigned repair drills tied to your diagnostic misses/);
+  assert.match(diagnostic, /Repair priorities and sample drill previews tied to your misses/);
   assert.match(pricing, /Try the diagnostic first/);
   assert.match(pricing, /Price comes after the Red-Zone Map/);
   assert.match(pricing, /No card\. No commitment\./);

@@ -198,7 +198,7 @@ export default function DrillRunnerPage({
 
         {state.phase === "ready" && state.detail.question_ids.length === 0 && (
           <Panel tone="zinc" title="No questions matched this drill yet">
-            The active question bank doesn&apos;t have questions for this target yet.
+            The active content set doesn&apos;t have questions for this target yet.
             Try another drill — your progress is saved.
             <div className="mt-5">
               <Link href="/drills" className="btn ghost">

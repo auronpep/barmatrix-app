@@ -231,10 +231,12 @@ export default function DiagnosticResultsPage({
             accessState={accessState}
           />
           <DimensionBreakdown byDimension={results.red_zones.by_dimension} />
-          <RecommendationCta
-            methodSlug={methodSlug}
-            results={results}
-          />
+          {accessState === "enrolled" && (
+            <RecommendationCta
+              methodSlug={methodSlug}
+              results={results}
+            />
+          )}
           <AnchorStack anchors={results.anchors} />
         </>
       )}
@@ -595,14 +597,14 @@ function ResultsDecisionPanel({
         Save this Red-Zone Map
       </p>
       <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
-        This is the proof moment: {topLeak} is costing points now.
+        This is the proof moment: {topLeak} surfaced first.
       </h2>
       <p className="mt-3 text-zinc-300">
         {topPattern
           ? plainEnglishTrapInsight(topPattern)
           : "This diagnostic turned your answers into a repair map instead of a generic score report."}{" "}
         Enroll to carry this diagnostic into checkout, save the map to your
-        account, and unlock the drills built for the pattern.
+        account, and unlock the guided repair path built for the pattern.
       </p>
       <p className="mt-4 font-mono text-sm font-semibold text-zinc-100">
         BarMatrix Flagship is $999. Payment plan: $500 today + $499 in 30 days.

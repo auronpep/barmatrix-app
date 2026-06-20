@@ -19,7 +19,7 @@ describe("mobile navigation width", () => {
     const mobileNav = readProjectFile("components/mobile-nav.tsx");
     const css = readProjectFile("app/globals.css");
 
-    assert.match(mobileNav, /href: "\/dashboard\/path", label: "Dashboard"/);
+    assert.doesNotMatch(mobileNav, /href: "\/dashboard\/path", label: "Dashboard"/);
     assert.match(css, /\.nav-cta > \.btn\.ghost\s*\{[^}]*display:\s*none;/s);
     assert.match(css, /\.nav-inner \{[^}]*gap: 8px;/s);
     assert.match(css, /\.nav-cta \{[^}]*gap: 8px;/s);
@@ -32,6 +32,7 @@ describe("mobile navigation width", () => {
 
     assert.match(layout, /<NavPrimaryCta className="btn btn-sm red hide-md" \/>/);
     assert.match(mobileNav, /<NavPrimaryCta\s+className="mobile-nav-link mobile-nav-cta"\s+onClick=\{\(\) => setOpen\(false\)\}\s+\/>/s);
+    assert.match(mobileNav, /<NavPrimaryCta[\s\S]*\{NAV_LINKS\.map/);
     assert.match(navAuth, /href="\/dashboard\/path"/);
     assert.match(navAuth, /My Path/);
   });

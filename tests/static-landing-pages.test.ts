@@ -32,6 +32,25 @@ describe("static landing page shell", () => {
     }
   });
 
+  it("avoids public diagnostic-count and volume proof claims", () => {
+    const pages = [
+      ...readLandingPages(),
+      {
+        path: "public/campaign.html",
+        source: readFileSync(new URL("../public/campaign.html", import.meta.url), "utf8"),
+      },
+      {
+        path: "public/lp-red-zone.html",
+        source: readFileSync(new URL("../public/lp-red-zone.html", import.meta.url), "utf8"),
+      },
+    ];
+
+    for (const { path, source } of pages) {
+      assert.doesNotMatch(source, /\b(?:12|18|20)-question/i, path);
+      assert.doesNotMatch(source, /2,400-question|1,247/, path);
+    }
+  });
+
   it("wraps non-footer page content in one main landmark", () => {
     for (const { path, source } of readLandingPages()) {
       const openMainCount = (source.match(/<main[\s>]/g) ?? []).length;

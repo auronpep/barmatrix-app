@@ -1738,6 +1738,30 @@ export function AtlasClient() {
                         <h3 className="mt-2 font-serif text-xl font-semibold">
                           {selected.outline_text}
                         </h3>
+                        <div className="mt-3 rounded-md border border-red-700/15 bg-red-50 p-3">
+                          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-red-700">
+                            Lesson checkpoint
+                          </p>
+                          <div className="mt-3 grid gap-2 text-sm leading-6 text-zinc-700">
+                            <p>
+                              Learn the rule tested by {selected.code}:{" "}
+                              <span className="font-semibold text-zinc-950">
+                                {selected.outline_text}
+                              </span>
+                              .
+                            </p>
+                            <p>
+                              Prove it by completing{" "}
+                              {selected.question_count > 0
+                                ? formatCount(selected.question_count, "approved question")
+                                : "an approved question once this code is gated in"}
+                              {leadmeSet ? ` and the ${leadmeSet.title} LeadMe set` : ""}.
+                            </p>
+                            <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                              Status: {selectedStudied ? "studied" : "open"}
+                            </p>
+                          </div>
+                        </div>
                         <div className="mt-3 grid gap-2">
                           <div className="rounded-md bg-zinc-50 px-3 py-2">
                             <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">

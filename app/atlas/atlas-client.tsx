@@ -913,6 +913,11 @@ export function AtlasClient() {
                         Saved code on this device: {resumedCode}
                       </p>
                     ) : null}
+                    {studyFilter === "unstudied" ? (
+                      <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600">
+                        Showing unstudied codes only: {scopedUnstudiedNodes.length} in this scope
+                      </p>
+                    ) : null}
                     {scopedWalkNode ? (
                       <p className="truncate font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
                         Next walk target: {scopedWalkNode.code} / {scopedWalkNode.outline_text}

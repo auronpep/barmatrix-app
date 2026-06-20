@@ -102,7 +102,11 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /readyCodeCount/);
     assert.match(atlas, /Needs content/);
     assert.match(atlas, /Codes with components/);
-    assert.match(atlas, /Study this code/);
+    assert.match(atlas, /Study lesson/);
+    assert.match(atlas, /copySelectedLink/);
+    assert.match(atlas, /directLinkMessage/);
+    assert.match(atlas, /Copy link/);
+    assert.match(atlas, /Link copied/);
     assert.match(atlas, /atlas-code-lesson/);
     assert.match(atlas, /Outline lesson/);
     assert.match(atlas, /Lesson checkpoint/);
@@ -132,7 +136,9 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /id="atlas-code-leadme"/);
     assert.match(atlas, /Question bank/);
     assert.match(atlas, /Start LeadMe/);
-    assert.match(atlas, /Drill this code/);
+    assert.match(atlas, /Open code questions/);
+    assert.doesNotMatch(atlas, /Drill this code/);
+    assert.doesNotMatch(atlas, /No runnable questions matched this outline code yet/);
     assert.match(atlas, /id="atlas-code-components"/);
     assert.match(atlas, /Connected previews/);
     assert.match(atlas, /Atlas walk/);
@@ -188,8 +194,6 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /ComponentPreviewRow/);
     assert.match(atlas, /leadme_item_previews/);
     assert.match(atlas, /debrief_element_previews/);
-    assert.match(atlas, /kind: "outline_code"/);
-    assert.match(atlas, /outline_code: selected\.code/);
     assert.match(atlas, /Approval gate/);
     assert.match(atlas, /readRequestedCode/);
     assert.match(atlas, /const requestedCode = readRequestedCode\(\)/);
@@ -197,7 +201,7 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /window\.history\.replaceState/);
     assert.match(atlas, /chooseComponentFilter/);
     assert.match(atlas, /matchesComponentFilter/);
-    assert.match(atlas, /Direct link/);
+    assert.doesNotMatch(atlas, /Direct link/);
     assert.match(answer, /Case study path/);
     assert.match(answer, /ModuleValue/);
     assert.match(answer, /case_study_modules/);

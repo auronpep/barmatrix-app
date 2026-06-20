@@ -326,6 +326,10 @@ export function AtlasClient() {
     (sum, node) => sum + node.question_count,
     0,
   );
+  const scopedComponentCodeCount = scopedNodes.filter((node) => nodeComponentTotal(node) > 0)
+    .length;
+  const scopedLaneReadyCount = scopedNodes.filter(hasAnyLane).length;
+  const scopedNoLaneCount = scopedNodes.length - scopedLaneReadyCount;
   const scopeLabel =
     subtopicFilter !== ALL_SUBTOPICS
       ? subtopicFilter
@@ -763,6 +767,26 @@ export function AtlasClient() {
                       <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
                         {scopedPracticeNodes.length} ready codes / {scopedQuestionCount} questions
                       </p>
+                      <div
+                        className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4"
+                        aria-label={`Scope readiness for ${scopeLabel}`}
+                      >
+                        {[
+                          { label: "Studied", value: `${scopedStudiedCount}/${scopedNodes.length}` },
+                          { label: "Practice", value: String(scopedPracticeNodes.length) },
+                          { label: "Components", value: String(scopedComponentCodeCount) },
+                          { label: "No lane", value: String(scopedNoLaneCount) },
+                        ].map((item) => (
+                          <div key={item.label} className="rounded-md bg-white px-2 py-2">
+                            <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-zinc-500">
+                              {item.label}
+                            </p>
+                            <p className="mt-1 font-serif text-xl font-semibold tabular-nums text-zinc-950">
+                              {item.value}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                     <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
                       <button

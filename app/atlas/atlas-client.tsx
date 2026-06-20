@@ -398,6 +398,20 @@ export function AtlasClient() {
         : [],
     [allNodes, selected],
   );
+  const selectedSubtopicIndex = selectedCode
+    ? selectedSubtopicNodes.findIndex((node) => node.code === selectedCode)
+    : -1;
+  const selectedSubtopicPosition =
+    selectedSubtopicIndex >= 0 ? selectedSubtopicIndex + 1 : null;
+  const previousSubtopicCode =
+    selectedSubtopicIndex > 0
+      ? selectedSubtopicNodes[selectedSubtopicIndex - 1]?.code ?? null
+      : null;
+  const nextSubtopicCode =
+    selectedSubtopicIndex >= 0 &&
+    selectedSubtopicIndex < selectedSubtopicNodes.length - 1
+      ? selectedSubtopicNodes[selectedSubtopicIndex + 1]?.code ?? null
+      : null;
   const scopedStudiedCount = useMemo(
     () =>
       scopedNodes.reduce(
@@ -952,12 +966,30 @@ export function AtlasClient() {
                             This subtopic
                           </p>
                           <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-200">
-                            {formatCount(selectedSubtopicNodes.length, "code")}
+                            {selectedSubtopicPosition
+                              ? `${selectedSubtopicPosition} / ${selectedSubtopicNodes.length}`
+                              : formatCount(selectedSubtopicNodes.length, "code")}
                           </p>
                         </div>
                         <p className="mt-1 truncate text-sm leading-6 text-zinc-300">
                           {selected.subtopic}
                         </p>
+                        <div className="mt-3 grid grid-cols-2 gap-2">
+                          <WalkButton
+                            label="Prev in subtopic"
+                            disabled={!previousSubtopicCode}
+                            onClick={() =>
+                              previousSubtopicCode && selectCode(previousSubtopicCode)
+                            }
+                          />
+                          <WalkButton
+                            label="Next in subtopic"
+                            disabled={!nextSubtopicCode}
+                            onClick={() =>
+                              nextSubtopicCode && selectCode(nextSubtopicCode)
+                            }
+                          />
+                        </div>
                         <div className="mt-3 grid max-h-56 gap-2 overflow-y-auto pr-1">
                           {selectedSubtopicNodes.map((node) => {
                             const active = node.code === selected.code;

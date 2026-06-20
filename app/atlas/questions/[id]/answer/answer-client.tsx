@@ -80,7 +80,6 @@ export function AtlasAnswerClient() {
     <Shell atlasHref={codeQuestionsHref}>
       <main className={styles.inner}>
         <Hero answer={state.answer} selected={selected} isCorrectPick={isCorrectPick} />
-        <QuestionCard answer={state.answer} selected={selected} />
 
         <Band num="01" title="The fork" meta="tap any node to open the evidence">
           <ForkBoard answer={state.answer} selected={selected} />
@@ -94,11 +93,15 @@ export function AtlasAnswerClient() {
           <AnswerSection answer={state.answer} />
         </Band>
 
+        <Band num="04" title="Question as asked" meta={`${q.question_id} / ${q.subject_display}`}>
+          <QuestionCard answer={state.answer} selected={selected} />
+        </Band>
+
         <p className="sr-only">Case study path</p>
         {answerModules.map(([key, value], index) => (
           <Band
             key={key}
-            num={String(index + 4).padStart(2, "0")}
+            num={String(index + 5).padStart(2, "0")}
             title={moduleBandTitle(key, index)}
             meta={moduleBandMeta(key)}
           >
@@ -107,7 +110,7 @@ export function AtlasAnswerClient() {
         ))}
 
         {detours.length > 0 ? (
-          <Band num={String(answerModules.length + 4).padStart(2, "0")} title="Related study detours" meta="repair this pattern">
+          <Band num={String(answerModules.length + 5).padStart(2, "0")} title="Related study detours" meta="repair this pattern">
             <div id="atlas-answer-detours">
               <a href="#atlas-answer-detours" className="sr-only">Review related detours</a>
               <p className="sr-only">Review related detours</p>
@@ -237,7 +240,7 @@ function ForkNode({ answer, letter, selected }: { answer: AtlasAnswer; letter: L
   const correct = letter === q.correct_answer;
   const picked = letter === selected;
   const explanation = correct
-    ? cleanInline(q.minimum_explanation)
+    ? compactInline(q.minimum_explanation, 260)
     : "This choice can contain a real fact, but the answer key tests whether it actually resolves the question asked.";
   return (
     <details
@@ -571,4 +574,12 @@ function cleanInline(value: string): string {
     .replace(/#+/g, "")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function compactInline(value: string, maxLength: number): string {
+  const cleaned = cleanInline(value);
+  if (cleaned.length <= maxLength) return cleaned;
+  const firstSentence = cleaned.match(/^.*?[.!?](?:\s|$)/)?.[0]?.trim();
+  if (firstSentence && firstSentence.length <= maxLength) return firstSentence;
+  return `${cleaned.slice(0, maxLength - 1).trim()}...`;
 }

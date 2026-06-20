@@ -111,7 +111,7 @@
 .inner {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 0 32px 110px;
+  padding: 0 32px 82px;
 }
 
 .hero {
@@ -119,7 +119,7 @@
   grid-template-columns: 1fr auto;
   gap: 24px;
   align-items: end;
-  padding: 34px 0 22px;
+  padding: 34px 0 24px;
   border-bottom: 3px solid var(--ak-ink);
 }
 
@@ -141,13 +141,13 @@
 }
 
 .hero h1 {
-  max-width: 670px;
+  max-width: 760px;
   margin: 0;
   color: var(--ak-ink);
-  font-size: 46px;
+  font-size: 42px;
   font-weight: 800;
   line-height: 1.04;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 .hero h1 em {
@@ -162,8 +162,8 @@
 }
 
 .stamp {
-  min-width: 178px;
-  padding: 14px 22px;
+  min-width: 180px;
+  padding: 13px 22px;
   border: 2px solid var(--ak-ink);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   letter-spacing: 0.12em;
@@ -184,7 +184,7 @@
 .stamp b {
   display: block;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 25px;
+  font-size: 24px;
   letter-spacing: 0;
 }
 
@@ -330,13 +330,18 @@
 .band {
   padding: 34px 0;
   border-bottom: 1px solid var(--ak-rule);
+  scroll-margin-top: 76px;
+}
+
+.hero + .band {
+  padding-top: 36px;
 }
 
 .bandHead {
   display: flex;
   align-items: baseline;
   gap: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .bandNum {
@@ -375,7 +380,7 @@
 .forkCall p {
   max-width: 62ch;
   margin: 8px auto 0;
-  font-size: 20px;
+  font-size: 22px;
   font-style: italic;
   line-height: 1.45;
 }
@@ -389,6 +394,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   border: 1px solid var(--ak-ink);
+  margin-top: 0;
 }
 
 .forkCol {
@@ -460,7 +466,7 @@
   color: #39342c;
   font-size: 13.5px;
   line-height: 1.5;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .forkFoot,
@@ -683,13 +689,12 @@
 }
 
 .sticky {
-  position: sticky;
-  bottom: 0;
+  position: static;
   z-index: 40;
   border-top: 3px solid var(--ak-red);
   background: var(--ak-ink);
   color: white;
-  box-shadow: 0 -10px 28px rgb(0 0 0 / 20%);
+  box-shadow: none;
 }
 
 .stickyInner {

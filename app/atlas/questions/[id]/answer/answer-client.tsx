@@ -195,6 +195,7 @@ function QuestionCard({ answer, selected }: { answer: AtlasAnswer; selected: Let
 
 function ForkBoard({ answer, selected }: { answer: AtlasAnswer; selected: Letter | null }) {
   const q = answer.question;
+  const explanation = cleanInline(q.minimum_explanation);
   const wrongLetters = LETTERS.filter((letter) => letter !== q.correct_answer);
   const leftLetters = wrongLetters.slice(0, 2);
   const rightLetters = [q.correct_answer, ...wrongLetters.slice(2)];
@@ -225,7 +226,7 @@ function ForkBoard({ answer, selected }: { answer: AtlasAnswer; selected: Letter
       </div>
       <div className={styles.forkFoot}>
         <p className={styles.eyebrow}>Call resolves it</p>
-        <p><b>{q.correct_answer}</b> is credited because it answers the call: {q.minimum_explanation}</p>
+        <p><b>{q.correct_answer}</b> is credited because it answers the call: {explanation}</p>
       </div>
     </div>
   );
@@ -235,6 +236,9 @@ function ForkNode({ answer, letter, selected }: { answer: AtlasAnswer; letter: L
   const q = answer.question;
   const correct = letter === q.correct_answer;
   const picked = letter === selected;
+  const explanation = correct
+    ? cleanInline(q.minimum_explanation)
+    : "This choice can contain a real fact, but the answer key tests whether it actually resolves the question asked.";
   return (
     <details
       className={[
@@ -244,20 +248,19 @@ function ForkNode({ answer, letter, selected }: { answer: AtlasAnswer; letter: L
       ].filter(Boolean).join(" ")}
       open={correct || picked}
     >
-      <summary className="contents">
+      <summary className={styles.nodeSummary}>
         <span className={styles.letter}>{letter}</span>
         <span className={styles.nodeText}>{q.choices[letter]}</span>
         <span className={`${styles.tiny} ${styles.muted}`}>{correct ? "credited" : picked ? "your pick" : "open"}</span>
       </summary>
-      <div className={styles.nodeDetails}>
-        {correct ? q.minimum_explanation : "This choice can contain a real fact, but the answer key tests whether it actually resolves the question asked."}
-      </div>
+      <div className={styles.nodeDetails}>{explanation}</div>
     </details>
   );
 }
 
 function SolveStations({ answer }: { answer: AtlasAnswer }) {
   const q = answer.question;
+  const explanation = cleanInline(q.minimum_explanation);
   return (
     <div className={styles.solve}>
       <div className={styles.solveStation}>
@@ -282,7 +285,7 @@ function SolveStations({ answer }: { answer: AtlasAnswer }) {
         <div className={styles.stationBox}>
           <p className={styles.eyebrow}>The call fixes the remedy</p>
           <h4>{q.call_text}</h4>
-          <p>{q.minimum_explanation}</p>
+          <p>{explanation}</p>
         </div>
       </div>
 
@@ -313,7 +316,8 @@ function SolveStations({ answer }: { answer: AtlasAnswer }) {
 
 function AnswerSection({ answer }: { answer: AtlasAnswer }) {
   const q = answer.question;
-  const script = firstText(answer.case_study_modules.bank_it) ?? firstText(answer.case_study_modules.repair) ?? q.minimum_explanation;
+  const explanation = cleanInline(q.minimum_explanation);
+  const script = cleanInline(firstText(answer.case_study_modules.bank_it) ?? firstText(answer.case_study_modules.repair) ?? q.minimum_explanation);
   return (
     <>
       <div className={styles.answerBox}>
@@ -324,7 +328,7 @@ function AnswerSection({ answer }: { answer: AtlasAnswer }) {
             <h3>{q.choices[q.correct_answer]}</h3>
           </div>
         </div>
-        <p className={styles.answerCopy}>{q.correct_answer} is the best answer. {q.minimum_explanation}</p>
+        <p className={styles.answerCopy}>{q.correct_answer} is the best answer. {explanation}</p>
       </div>
       <div className={styles.scriptBox}>
         <p className={styles.eyebrow}>Say it to yourself / the final script</p>
@@ -559,4 +563,12 @@ function firstText(value: unknown): string | null {
     }
   }
   return null;
+}
+
+function cleanInline(value: string): string {
+  return value
+    .replace(/\*\*/g, "")
+    .replace(/#+/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }

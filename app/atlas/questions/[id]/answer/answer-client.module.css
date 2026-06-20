@@ -253,13 +253,16 @@
 
 .choice,
 .node {
+  padding: 10px 13px;
+  border: 1px solid var(--ak-rule);
+  background: var(--ak-bg);
+}
+
+.choice {
   display: grid;
   grid-template-columns: 28px 1fr auto;
   gap: 13px;
   align-items: center;
-  padding: 10px 13px;
-  border: 1px solid var(--ak-rule);
-  background: var(--ak-bg);
 }
 
 .choiceCorrect,
@@ -437,13 +440,27 @@
   border-color: var(--ak-ink);
 }
 
+.nodeSummary {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 13px;
+  align-items: center;
+  list-style: none;
+}
+
+.nodeSummary::-webkit-details-marker {
+  display: none;
+}
+
 .nodeDetails {
-  grid-column: 1 / -1;
+  display: block;
   padding-top: 10px;
+  margin-top: 10px;
   border-top: 1px solid var(--ak-rule-soft);
   color: #39342c;
   font-size: 13.5px;
   line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 .forkFoot,

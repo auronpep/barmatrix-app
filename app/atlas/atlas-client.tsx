@@ -487,6 +487,7 @@ export function AtlasClient() {
         allNodes.find((node) => node.code === nextLessonWalkCode) ??
         null)
     : null;
+  const lessonWalkTargetCode = nextLessonWalkCode ?? lessonWalkNodes[0]?.code ?? null;
   const scopedWalkActionLabel =
     scopedStudiedCount === 0
       ? "Start walk"
@@ -582,7 +583,7 @@ export function AtlasClient() {
   }
 
   function markStudiedAndContinue() {
-    if (!selected || !nextLessonWalkCode) return;
+    if (!selected || !lessonWalkTargetCode) return;
     setStudiedCodes((current) => {
       if (current.has(selected.code)) return current;
       const next = new Set(current);
@@ -590,7 +591,7 @@ export function AtlasClient() {
       writeStoredStudiedCodes(next);
       return next;
     });
-    selectCode(nextLessonWalkCode);
+    selectCode(lessonWalkTargetCode);
   }
 
   function focusSelectedSubtopic() {
@@ -1713,11 +1714,13 @@ export function AtlasClient() {
                             ) : null}
                             <WalkButton
                               label={
-                                selectedStudied
+                                !nextLessonWalkCode
+                                  ? "Restart lesson walk"
+                                  : selectedStudied
                                   ? "Continue lesson walk"
                                   : "Mark studied + continue"
                               }
-                              disabled={!nextLessonWalkCode}
+                              disabled={!lessonWalkTargetCode}
                               onClick={markStudiedAndContinue}
                             />
                           </div>

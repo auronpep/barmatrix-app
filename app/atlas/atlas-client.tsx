@@ -1144,9 +1144,14 @@ export function AtlasClient() {
                       </button>
                     </div>
                     {resumedCode ? (
-                      <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
-                        Saved code on this device: {resumedCode}
-                      </p>
+                      <div className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2">
+                        <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-emerald-800">
+                          Resumed saved code
+                        </p>
+                        <p className="mt-1 text-sm font-semibold leading-5 text-emerald-950">
+                          {resumedCode}
+                        </p>
+                      </div>
                     ) : null}
                     {studyFilter === "unstudied" ? (
                       <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600">

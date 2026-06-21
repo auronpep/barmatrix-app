@@ -49,6 +49,22 @@ function readSessionCache(diagnosticId: string): SessionCache | null {
   }
 }
 
+function firstMissCaseStudyKey(diagnosticId: string): string {
+  return `barmatrix.diagnostic.${diagnosticId}.firstMissCaseStudySeen`;
+}
+
+function shouldShowFirstMissCaseStudy(diagnosticId: string, correct: boolean): boolean {
+  if (correct || typeof window === "undefined") return false;
+  try {
+    const key = firstMissCaseStudyKey(diagnosticId);
+    if (window.sessionStorage.getItem(key) === "1") return false;
+    window.sessionStorage.setItem(key, "1");
+    return true;
+  } catch {
+    return true;
+  }
+}
+
 export default function DiagnosticQuestionPage({
   params,
 }: {
@@ -67,6 +83,7 @@ export default function DiagnosticQuestionPage({
   const [confidence, setConfidence] = useState<number>(3);
   const [attempt, setAttempt] = useState<AttemptResponse | null>(null);
   const [forensics, setForensics] = useState<ForensicsResponse | null>(null);
+  const [showCaseStudy, setShowCaseStudy] = useState(false);
   const startedAtRef = useRef<number>(0);
 
   // Load the session cache + the question for this index on mount.
@@ -106,6 +123,7 @@ export default function DiagnosticQuestionPage({
       setConfidence(3);
       setAttempt(null);
       setForensics(null);
+      setShowCaseStudy(false);
       setPhase("loading");
     });
 
@@ -190,6 +208,7 @@ export default function DiagnosticQuestionPage({
     }
 
     setForensics(f);
+    setShowCaseStudy(shouldShowFirstMissCaseStudy(diagnosticId, resp.correct));
 
     try {
       if (f) {
@@ -243,12 +262,21 @@ export default function DiagnosticQuestionPage({
       )}
 
       {phase === "forensics" && attempt && (
-        <ForensicsCard
-          attempt={attempt}
-          forensics={forensics}
-          onNext={next}
-          isLast={isLast}
-        />
+        showCaseStudy ? (
+          <DiagnosticMissCaseStudy
+            attempt={attempt}
+            forensics={forensics}
+            onNext={next}
+            isLast={isLast}
+          />
+        ) : (
+          <ForensicsCard
+            attempt={attempt}
+            forensics={forensics}
+            onNext={next}
+            isLast={isLast}
+          />
+        )
       )}
     </section>
   );
@@ -425,6 +453,115 @@ function QuestionCard({
       >
         {disabled ? "Submitting answer..." : "Submit answer"}
       </button>
+    </div>
+  );
+}
+
+function DiagnosticMissCaseStudy({
+  attempt,
+  forensics,
+  onNext,
+  isLast,
+}: {
+  attempt: AttemptResponse;
+  forensics: ForensicsResponse | null;
+  onNext: () => void;
+  isLast: boolean;
+}) {
+  const trapName = forensics?.trap_name ?? "Wrong-answer trap";
+  const continueLabel = isLast ? "Continue to results" : "Continue diagnostic";
+  return (
+    <div className="rounded-lg border border-zinc-900 bg-white shadow-sm">
+      <div className="flex flex-col gap-4 border-b border-zinc-200 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-wider text-red-700">
+            First miss case study
+          </p>
+          <h2 className="mt-2 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
+            This is how a miss becomes a Red-Zone Map.
+          </h2>
+        </div>
+        <button type="button" onClick={onNext} className="btn red shrink-0">
+          {continueLabel} <span aria-hidden>→</span>
+        </button>
+      </div>
+
+      <div className="grid gap-0 md:grid-cols-[1.1fr_0.9fr]">
+        <div className="border-b border-zinc-200 p-5 sm:p-6 md:border-b-0 md:border-r">
+          <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
+            Trap exposed
+          </p>
+          <h3 className="mt-2 font-serif text-2xl font-semibold text-zinc-950">
+            {trapName}
+          </h3>
+          <p className="mt-4 text-base leading-7 text-zinc-700">
+            Your answer was not treated as a random miss. BarMatrix records the
+            answer you chose, the confidence level, the correct answer, and the
+            wrong-answer architecture behind the choice. That is the start of
+            the red zone.
+          </p>
+          {forensics?.focus_group && (
+            <p className="mt-5 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950">
+              {forensics.focus_group.selected_choice_pct}% of{" "}
+              {forensics.focus_group.sample_size} test-takers picked this same
+              answer. That makes it a diagnostic signal, not just a bad moment.
+            </p>
+          )}
+        </div>
+
+        <div className="p-5 sm:p-6">
+          <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
+            Repair move
+          </p>
+          <div className="mt-4 space-y-5">
+            <CaseStudyStep
+              label="What pulled you"
+              body={
+                forensics?.why_attractive ??
+                "The choice likely sounded familiar enough to survive the first cut."
+              }
+            />
+            <CaseStudyStep
+              label="What broke"
+              body={
+                forensics?.why_wrong ??
+                `The credited answer was ${attempt.correct_answer ?? "the controlling answer"}.`
+              }
+            />
+            <CaseStudyStep
+              label="Next cue"
+              body={
+                forensics?.future_cue ??
+                "Slow down at the controlling distinction before the answer choices start sounding familiar."
+              }
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t border-zinc-200 bg-zinc-50 p-5 sm:p-6">
+        <p className="max-w-2xl text-sm leading-6 text-zinc-700">
+          Flagship uses this same structure after the diagnostic: name the trap,
+          isolate the missed distinction, assign the repair, then give one next
+          task instead of another mixed pile.
+        </p>
+        <button type="button" onClick={onNext} className="btn red mt-5">
+          {continueLabel} <span aria-hidden>→</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function CaseStudyStep({ label, body }: { label: string; body: string }) {
+  return (
+    <div>
+      <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">
+        {label}
+      </p>
+      <p className="mt-1 whitespace-pre-line text-sm leading-6 text-zinc-800">
+        {body}
+      </p>
     </div>
   );
 }

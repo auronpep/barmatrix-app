@@ -9,7 +9,62 @@ import { rememberDiagnosticId } from "@/lib/diagnostic-session";
 
 type Phase = "intro" | "starting" | "empty_bank" | "error";
 
-function cacheSession(session: DiagnosticStartResponse): void {
+export type DiagnosticAttributionCache = {
+  source: string;
+  campaign: string;
+  partner_id: string;
+  referrer: string;
+  source_page: string;
+  lp: string;
+  utm_source: string;
+  utm_medium: string;
+  utm_campaign: string;
+  utm_content: string;
+  utm_term: string;
+  referral_click_id: string;
+};
+
+function cleanParam(value: string | null): string {
+  return value?.trim() || "none";
+}
+
+function buildDiagnosticAttribution(
+  searchParams: URLSearchParams,
+  attribution: {
+    source: string;
+    campaign: string;
+    partner_id: string;
+    referrer: string;
+  },
+): DiagnosticAttributionCache {
+  const sourcePage =
+    typeof window === "undefined"
+      ? "/diagnostic"
+      : `${window.location.pathname}${window.location.search}`;
+  return {
+    source: attribution.source,
+    campaign: attribution.campaign,
+    partner_id: attribution.partner_id,
+    referrer: attribution.referrer,
+    source_page: sourcePage,
+    lp: cleanParam(
+      searchParams.get("lp") ??
+        searchParams.get("landing") ??
+        searchParams.get("landing_page"),
+    ),
+    utm_source: cleanParam(searchParams.get("utm_source") ?? searchParams.get("source")),
+    utm_medium: cleanParam(searchParams.get("utm_medium")),
+    utm_campaign: cleanParam(searchParams.get("utm_campaign") ?? searchParams.get("campaign")),
+    utm_content: cleanParam(searchParams.get("utm_content")),
+    utm_term: cleanParam(searchParams.get("utm_term")),
+    referral_click_id: cleanParam(searchParams.get("referral_click_id")),
+  };
+}
+
+function cacheSession(
+  session: DiagnosticStartResponse,
+  attribution: DiagnosticAttributionCache,
+): void {
   if (typeof window === "undefined") return;
   try {
     window.sessionStorage.setItem(
@@ -20,6 +75,7 @@ function cacheSession(session: DiagnosticStartResponse): void {
         total_questions: session.total_questions,
         expected_total: session.expected_total,
         bank_loaded: session.bank_loaded,
+        attribution,
       }),
     );
   } catch {
@@ -53,7 +109,7 @@ export function DiagnosticPageClient() {
         setPhase("empty_bank");
         return;
       }
-      cacheSession(result);
+      cacheSession(result, buildDiagnosticAttribution(searchParams, attribution));
       rememberDiagnosticId(result.diagnostic_id);
       router.push(`/diagnostic/${result.diagnostic_id}/0`);
     } catch (err) {

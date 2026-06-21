@@ -12,6 +12,7 @@ import { use, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   api,
+  ApiClientError,
   type DiagnosticResultsResponse,
   type DiagnosticTrapPattern,
   type DiagnosticRedZoneEntry,
@@ -32,7 +33,92 @@ const DIMENSION_LABELS: Record<string, string> = {
   subject: "By subject",
   subtopic: "By subtopic",
   tension_point: "By tension point",
+  red_zone_dimension: "By red-zone dimension",
   wrong_answer_architecture: "By wrong-answer architecture",
+};
+
+type DiagnosticAttributionCache = {
+  source?: string;
+  campaign?: string;
+  partner_id?: string;
+  referrer?: string;
+  source_page?: string;
+  lp?: string;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  utm_content?: string;
+  utm_term?: string;
+  referral_click_id?: string;
+};
+
+interface SessionCache {
+  diagnostic_id: string;
+  question_ids: string[];
+  total_questions: number;
+  expected_total: number;
+  bank_loaded: boolean;
+  attribution?: DiagnosticAttributionCache;
+}
+
+type EmailGateStatus = "checking" | "locked" | "submitting" | "unlocked";
+
+type ResultsSalesVariant = {
+  key: string;
+  source: string;
+  campaign: string;
+  lp: string;
+  eyebrow: string;
+  headline: string;
+  body: string;
+  ctaLabel: string;
+};
+
+const SALES_VARIANTS: Record<string, ResultsSalesVariant> = {
+  default: {
+    key: "default",
+    source: "diagnostic_results",
+    campaign: "red_zone_map",
+    lp: "diagnostic-results",
+    eyebrow: "Save this Red-Zone Map",
+    headline: "This is the proof moment: {topLeak} surfaced first.",
+    body:
+      "Enroll to carry this diagnostic into checkout, save the map to your account, and unlock the guided repair path built for the pattern.",
+    ctaLabel: "Enroll and save this map",
+  },
+  red_zone: {
+    key: "red_zone",
+    source: "diagnostic_red_zone_results",
+    campaign: "red_zone_map",
+    lp: "red-zone-diagnostic",
+    eyebrow: "Your red zone is not random",
+    headline: "The map found {topLeak}; Flagship turns it into the next repair task.",
+    body:
+      "If you came for a Red-Zone Map, this is the handoff: the paid path keeps the map, assigns the repair, and keeps the next task tied to the miss that actually showed up.",
+    ctaLabel: "Save map and start repair",
+  },
+  comparison: {
+    key: "comparison",
+    source: "diagnostic_comparison_results",
+    campaign: "diagnostic_comparison",
+    lp: "comparison-diagnostic",
+    eyebrow: "Beyond another question pile",
+    headline: "More volume will not fix {topLeak} unless the repair path targets it.",
+    body:
+      "This diagnostic shows the difference between doing more MBE questions and repairing the wrong-answer pattern that keeps pulling points away.",
+    ctaLabel: "Start targeted repair",
+  },
+  pricing: {
+    key: "pricing",
+    source: "diagnostic_pricing_results",
+    campaign: "diagnostic_to_checkout",
+    lp: "pricing-diagnostic",
+    eyebrow: "Checkout should follow proof",
+    headline: "{topLeak} is the reason to buy, not a generic promise.",
+    body:
+      "Use the diagnostic evidence you just created. Flagship saves this map and turns it into assigned repair instead of asking you to trust a generic course pitch.",
+    ctaLabel: "Checkout with this map",
+  },
 };
 
 function scoreBandFromPct(pct: number): string {
@@ -117,13 +203,101 @@ const LEVEL_FALLBACKS: Record<
   },
 };
 
-function checkoutHrefForDiagnostic(diagnosticId: string): string {
+function cleanToken(value: string | null | undefined): string | null {
+  const trimmed = value?.trim();
+  return trimmed && trimmed !== "none" ? trimmed : null;
+}
+
+function readSessionCache(diagnosticId: string): SessionCache | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.sessionStorage.getItem(`barmatrix.diagnostic.${diagnosticId}`);
+    return raw ? (JSON.parse(raw) as SessionCache) : null;
+  } catch {
+    return null;
+  }
+}
+
+function emailGateKey(diagnosticId: string): string {
+  return `barmatrix.diagnostic.${diagnosticId}.emailGate`;
+}
+
+function hasEmailGate(diagnosticId: string): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    if (new URLSearchParams(window.location.search).get("gate") === "emailed") {
+      window.localStorage.setItem(emailGateKey(diagnosticId), "1");
+      return true;
+    }
+    return window.localStorage.getItem(emailGateKey(diagnosticId)) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markEmailGate(diagnosticId: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(emailGateKey(diagnosticId), "1");
+  } catch {
+    // localStorage can be unavailable; in-memory gate state still unlocks.
+  }
+}
+
+function currentSourcePage(): string {
+  if (typeof window === "undefined") return "/diagnostic/results";
+  return `${window.location.pathname}${window.location.search}`;
+}
+
+function currentSearchParams(): URLSearchParams {
+  if (typeof window === "undefined") return new URLSearchParams();
+  return new URLSearchParams(window.location.search);
+}
+
+function resolveSalesVariant(
+  attribution: DiagnosticAttributionCache | null,
+): ResultsSalesVariant {
+  const params = currentSearchParams();
+  const joined = [
+    params.get("variant"),
+    params.get("lp"),
+    params.get("source"),
+    params.get("utm_campaign"),
+    attribution?.lp,
+    attribution?.source,
+    attribution?.campaign,
+    attribution?.source_page,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  if (joined.match(/compare|comparison|alternative|alternatives|question.?bank|course/)) {
+    return SALES_VARIANTS.comparison;
+  }
+  if (joined.match(/pricing|checkout|sale|offer/)) {
+    return SALES_VARIANTS.pricing;
+  }
+  if (joined.match(/red.?zone|diagnostic|map/)) {
+    return SALES_VARIANTS.red_zone;
+  }
+  return SALES_VARIANTS.default;
+}
+
+function checkoutHrefForDiagnostic(
+  diagnosticId: string,
+  variant: ResultsSalesVariant,
+  attribution: DiagnosticAttributionCache | null,
+): string {
   const params = new URLSearchParams({
     diagnostic_id: diagnosticId,
-    source: "diagnostic_results",
-    campaign: "red_zone_map",
-    lp: "diagnostic-results",
+    source: cleanToken(attribution?.source) ?? variant.source,
+    campaign: cleanToken(attribution?.campaign) ?? variant.campaign,
+    lp: cleanToken(attribution?.lp) ?? variant.lp,
   });
+  const partnerId = cleanToken(attribution?.partner_id);
+  const referralClickId = cleanToken(attribution?.referral_click_id);
+  if (partnerId) params.set("partner_id", partnerId);
+  if (referralClickId) params.set("referral_click_id", referralClickId);
   return `/checkout?${params.toString()}`;
 }
 
@@ -136,6 +310,9 @@ export default function DiagnosticResultsPage({
   const completedEventRef = useRef<string | null>(null);
   const [results, setResults] = useState<DiagnosticResultsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [sessionCache, setSessionCache] = useState<SessionCache | null>(null);
+  const [gateStatus, setGateStatus] = useState<EmailGateStatus>("checking");
+  const [gateError, setGateError] = useState<string | null>(null);
   const dash = useDashboard();
   const recentCheckoutAccess = useRecentConfirmedCheckoutAccess();
   const accessState = resolveDiagnosticResultsAccess(dash, recentCheckoutAccess);
@@ -144,8 +321,23 @@ export default function DiagnosticResultsPage({
     foundations.data?.progress.next_slug ??
     foundations.data?.lessons[0]?.slug ??
     "lesson-01";
+  const attribution = sessionCache?.attribution ?? null;
+  const salesVariant = resolveSalesVariant(attribution);
 
   useEffect(() => {
+    let active = true;
+    queueMicrotask(() => {
+      if (!active) return;
+      setSessionCache(readSessionCache(diagnosticId));
+      setGateStatus(hasEmailGate(diagnosticId) ? "unlocked" : "locked");
+    });
+    return () => {
+      active = false;
+    };
+  }, [diagnosticId]);
+
+  useEffect(() => {
+    if (gateStatus !== "unlocked") return;
     let active = true;
 
     // Remember this diagnostic so checkout can carry it (via localStorage) and
@@ -197,7 +389,38 @@ export default function DiagnosticResultsPage({
     return () => {
       active = false;
     };
-  }, [diagnosticId]);
+  }, [diagnosticId, gateStatus]);
+
+  const submitGate = async (input: { email: string; fullName: string }) => {
+    setGateStatus("submitting");
+    setGateError(null);
+    try {
+      await api.createDiagnosticLead({
+        email: input.email,
+        full_name: input.fullName || null,
+        diagnostic_id: diagnosticId,
+        source_page: attribution?.source_page ?? currentSourcePage(),
+        utm_source: cleanToken(attribution?.utm_source) ?? cleanToken(attribution?.source),
+        utm_medium: cleanToken(attribution?.utm_medium),
+        utm_campaign: cleanToken(attribution?.utm_campaign) ?? cleanToken(attribution?.campaign),
+        utm_content: cleanToken(attribution?.utm_content),
+        utm_term: cleanToken(attribution?.utm_term),
+        partner_id: cleanToken(attribution?.partner_id),
+        referral_click_id: cleanToken(attribution?.referral_click_id),
+      });
+      markEmailGate(diagnosticId);
+      setGateStatus("unlocked");
+    } catch (err) {
+      setGateError(
+        err instanceof ApiClientError
+          ? `API ${err.status}: ${err.message}`
+          : err instanceof Error
+            ? err.message
+            : "Email capture failed. Try again.",
+      );
+      setGateStatus("locked");
+    }
+  };
 
   return (
     <section className="mx-auto max-w-3xl px-6 py-12">
@@ -213,12 +436,23 @@ export default function DiagnosticResultsPage({
           : "The trap patterns most likely costing you points, ranked from your answers."}
       </p>
 
-      {!results && !error && <ResultsLoading />}
-      {error && <ResultsError message={error} />}
+      {gateStatus !== "unlocked" && (
+        <EmailGateCard
+          status={gateStatus}
+          error={gateError}
+          variant={salesVariant}
+          onSubmit={submitGate}
+        />
+      )}
 
-      {results && results.answered === 0 && !error && <NoSessionPanel />}
+      {gateStatus === "unlocked" && !results && !error && <ResultsLoading />}
+      {gateStatus === "unlocked" && error && <ResultsError message={error} />}
 
-      {results && results.answered > 0 && (
+      {gateStatus === "unlocked" && results && results.answered === 0 && !error && (
+        <NoSessionPanel />
+      )}
+
+      {gateStatus === "unlocked" && results && results.answered > 0 && (
         <>
           <SummaryCard results={results} />
           <TopTrapPatterns
@@ -229,6 +463,8 @@ export default function DiagnosticResultsPage({
             diagnosticId={diagnosticId}
             results={results}
             accessState={accessState}
+            variant={salesVariant}
+            attribution={attribution}
           />
           <DimensionBreakdown byDimension={results.red_zones.by_dimension} />
           {accessState === "enrolled" && (
@@ -241,7 +477,7 @@ export default function DiagnosticResultsPage({
         </>
       )}
 
-      {!error && (
+      {gateStatus === "unlocked" && !error && (
         <div className="mt-10">
           <Link
             href="/diagnostic"
@@ -252,6 +488,85 @@ export default function DiagnosticResultsPage({
         </div>
       )}
     </section>
+  );
+}
+
+function EmailGateCard({
+  status,
+  error,
+  variant,
+  onSubmit,
+}: {
+  status: EmailGateStatus;
+  error: string | null;
+  variant: ResultsSalesVariant;
+  onSubmit: (input: { email: string; fullName: string }) => Promise<void>;
+}) {
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+  const disabled = status === "submitting" || status === "checking";
+  return (
+    <div className="mt-10 rounded-lg border border-zinc-900 bg-white p-6 shadow-sm sm:p-8">
+      <p className="font-mono text-xs uppercase tracking-wider text-red-700">
+        Email required for results
+      </p>
+      <h2 className="mt-3 font-serif text-3xl font-semibold tracking-tight text-zinc-950">
+        Send yourself the map, then view the breakdown.
+      </h2>
+      <p className="mt-3 max-w-2xl text-base leading-7 text-zinc-700">
+        {variant.body} The email includes the saved result link, first red-zone
+        signal, and the Flagship repair path if the diagnostic exposed the gap
+        you need to fix.
+      </p>
+      <form
+        className="mt-6 grid gap-4"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void onSubmit({ email, fullName });
+        }}
+      >
+        <div>
+          <label className="block text-sm font-medium text-zinc-900" htmlFor="diagnostic-email">
+            Email
+          </label>
+          <input
+            id="diagnostic-email"
+            type="email"
+            required
+            value={email}
+            disabled={disabled}
+            onChange={(event) => setEmail(event.target.value)}
+            className="mt-2 min-h-12 w-full rounded-md border border-zinc-300 px-4 text-base text-zinc-950 focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10"
+            autoComplete="email"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-zinc-900" htmlFor="diagnostic-name">
+            First name
+          </label>
+          <input
+            id="diagnostic-name"
+            type="text"
+            value={fullName}
+            disabled={disabled}
+            onChange={(event) => setFullName(event.target.value)}
+            className="mt-2 min-h-12 w-full rounded-md border border-zinc-300 px-4 text-base text-zinc-950 focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10"
+            autoComplete="given-name"
+          />
+        </div>
+        {error && (
+          <p className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            {error}
+          </p>
+        )}
+        <button type="submit" disabled={disabled} className="btn red w-full justify-center">
+          {status === "submitting" ? "Sending map..." : "Email my Red-Zone Map"}
+        </button>
+      </form>
+      <p className="mt-4 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
+        No card required. The emailed link reopens this result page.
+      </p>
+    </div>
   );
 }
 
@@ -452,14 +767,19 @@ function ResultsDecisionPanel({
   diagnosticId,
   results,
   accessState,
+  variant,
+  attribution,
 }: {
   diagnosticId: string;
   results: DiagnosticResultsResponse;
   accessState: DiagnosticResultsAccessState;
+  variant: ResultsSalesVariant;
+  attribution: DiagnosticAttributionCache | null;
 }) {
   const topPattern = results.top_trap_patterns[0];
   const topLeak = resolveTopLeak(results);
-  const checkoutHref = checkoutHrefForDiagnostic(diagnosticId);
+  const checkoutHref = checkoutHrefForDiagnostic(diagnosticId, variant, attribution);
+  const headline = variant.headline.replace("{topLeak}", topLeak);
 
   switch (accessState) {
     case "checking":
@@ -594,24 +914,23 @@ function ResultsDecisionPanel({
   return (
     <div className="mt-8 rounded-lg border border-zinc-900 bg-zinc-950 p-8 text-white shadow-sm">
       <p className="font-mono text-xs uppercase tracking-wider text-red-400">
-        Save this Red-Zone Map
+        {variant.eyebrow}
       </p>
       <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
-        This is the proof moment: {topLeak} surfaced first.
+        {headline}
       </h2>
       <p className="mt-3 text-zinc-300">
         {topPattern
           ? plainEnglishTrapInsight(topPattern)
           : "This diagnostic turned your answers into a repair map instead of a generic score report."}{" "}
-        Enroll to carry this diagnostic into checkout, save the map to your
-        account, and unlock the guided repair path built for the pattern.
+        {variant.body}
       </p>
       <p className="mt-4 font-mono text-sm font-semibold text-zinc-100">
         BarMatrix Flagship is $999. Payment plan: $500 today + $499 in 30 days.
       </p>
       <div className="mt-6 flex flex-wrap items-center gap-4">
         <Link href={checkoutHref} className="btn red">
-          Enroll and save this map <span aria-hidden>→</span>
+          {variant.ctaLabel} <span aria-hidden>→</span>
         </Link>
         <Link
           href="/pricing"

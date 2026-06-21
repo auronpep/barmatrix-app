@@ -100,6 +100,31 @@ export interface WebinarLeadResponse {
   message: string;
 }
 
+export interface DiagnosticLeadRequest {
+  email: string;
+  diagnostic_id?: string | null;
+  full_name?: string | null;
+  jurisdiction?: string | null;
+  source_page?: string | null;
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
+  utm_content?: string | null;
+  utm_term?: string | null;
+  partner_id?: string | null;
+  referral_click_id?: string | null;
+  website?: string | null;
+}
+
+export interface DiagnosticLeadResponse {
+  ok: true;
+  lead_id: string | null;
+  status: "created" | "updated" | "ignored";
+  email_status?: "sent" | "skipped" | "failed" | "not_requested";
+  email_reason?: string;
+  message: string;
+}
+
 export interface CustomerPortalSessionRequest {
   checkout_session_id?: string | null;
   return_url: string;
@@ -2025,6 +2050,12 @@ export const api = {
 
   createWebinarLead: (payload: WebinarLeadRequest) =>
     request<WebinarLeadResponse>("/api/webinar/leads", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  createDiagnosticLead: (payload: DiagnosticLeadRequest) =>
+    request<DiagnosticLeadResponse>("/api/diagnostic/lead", {
       method: "POST",
       body: JSON.stringify(payload),
     }),

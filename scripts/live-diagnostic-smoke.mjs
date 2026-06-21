@@ -70,6 +70,14 @@ async function main() {
       });
     }
 
+    const preGateResults = await fetch(`${API_URL}/api/diagnostic/${diagnosticId}/results`);
+    if (preGateResults.status !== 403) {
+      const text = await preGateResults.text();
+      throw new Error(
+        `expected pre-email diagnostic results gate to return 403, got ${preGateResults.status}: ${text}`,
+      );
+    }
+
     await page.goto(`${BASE_URL}/diagnostic/${diagnosticId}/results`, {
       waitUntil: "networkidle",
     });

@@ -54,13 +54,18 @@ describe("J7 guided path dashboard", () => {
 
     assert.match(apiClient, /LeadMeV5DayPlanItem/);
     assert.match(apiClient, /leadme_v5_item\?: LeadMeV5DayPlanItem/);
+    assert.match(apiClient, /LeadMeV5CompletionResult/);
+    assert.match(apiClient, /leadme_v5_result: LeadMeV5CompletionResult \| null/);
     assert.match(source, /step\.leadme_v5_item/);
     assert.match(source, /V5LeadMeCard/);
     assert.match(source, /item\.front_blocks\.map/);
     assert.match(source, /item\.options\.map/);
-    assert.match(source, /onClick=\{onSelect\}/);
+    assert.match(source, /onClick=\{\(\) => onSelect\(option\.id\)\}/);
     assert.match(source, /aria-label=\{`Choose \$\{option\.id\}: \$\{option\.label\}`\}/);
     assert.match(source, /v5Options\.length === 0/);
+    assert.match(source, /selected_response: selectedResponse/);
+    assert.match(source, /result\.leadme_v5_result/);
+    assert.match(source, /V5ResultBanner/);
     assert.match(cards, /Live Lead Me Module/);
     assert.match(cards, /V5 Assault Test Path/);
   });

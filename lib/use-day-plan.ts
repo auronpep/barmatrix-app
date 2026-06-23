@@ -15,7 +15,10 @@ export interface DayPlanState {
   signedIn: boolean;
   data: MyDayPlan | null;
   error: string | null;
-  completeStep: (stepId: string) => Promise<MyDayPlanCompleteResponse>;
+  completeStep: (
+    stepId: string,
+    payload?: { selected_response?: string },
+  ) => Promise<MyDayPlanCompleteResponse>;
   refresh: () => Promise<void>;
 }
 
@@ -72,10 +75,10 @@ export function useDayPlan(): DayPlanState {
   }, [authKey, getToken, isLoaded, isSignedIn]);
 
   const completeStep = useCallback(
-    async (stepId: string) => {
+    async (stepId: string, payload: { selected_response?: string } = {}) => {
       const token = await getToken();
       if (!token) throw new Error("no session token");
-      const data = await api.completeMyDayPlanStep(token, stepId);
+      const data = await api.completeMyDayPlanStep(token, stepId, payload);
       setResult({ data, error: null, authKey });
       return data;
     },

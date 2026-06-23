@@ -4,7 +4,12 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import ProgressRing from "@/components/gamification/progress-ring";
 import GamificationSummary from "@/components/gamification/gamification-summary";
-import type { DayPlanMainItem, DayPlanStep, MyDayPlan } from "@/lib/api-client";
+import type {
+  DayPlanMainItem,
+  DayPlanStep,
+  LeadMeV5CompletionResult,
+  MyDayPlan,
+} from "@/lib/api-client";
 import { useDayPlan } from "@/lib/use-day-plan";
 import { InfoCell } from "@/components/dashboard/info-cell";
 import { StatusPill } from "@/components/dashboard/status-pill";
@@ -14,6 +19,7 @@ export default function DashboardPage() {
   const dayPlan = useDayPlan();
   const [completionError, setCompletionError] = useState<string | null>(null);
   const [completingStepId, setCompletingStepId] = useState<string | null>(null);
+  const [lastV5Result, setLastV5Result] = useState<LeadMeV5CompletionResult | null>(null);
 
   const data = dayPlan.data;
   const plan = data?.plan ?? null;
@@ -27,12 +33,16 @@ export default function DashboardPage() {
   );
   const daySummaries = data?.day_summaries ?? [];
 
-  async function completeCurrentStep() {
+  async function completeCurrentStep(selectedResponse?: string) {
     if (!currentStep) return;
     setCompletingStepId(currentStep.step_id);
     setCompletionError(null);
     try {
-      await dayPlan.completeStep(currentStep.step_id);
+      const result = await dayPlan.completeStep(
+        currentStep.step_id,
+        selectedResponse ? { selected_response: selectedResponse } : {},
+      );
+      setLastV5Result(result.leadme_v5_result);
     } catch (err) {
       setCompletionError(err instanceof Error ? err.message : "Could not complete this task.");
     } finally {
@@ -129,6 +139,7 @@ export default function DashboardPage() {
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_390px]">
         <CurrentTask
           step={currentStep}
+          lastV5Result={lastV5Result}
           completing={completingStepId === currentStep?.step_id}
           completionError={completionError}
           onComplete={completeCurrentStep}
@@ -156,14 +167,16 @@ export default function DashboardPage() {
 
 function CurrentTask({
   step,
+  lastV5Result,
   completing,
   completionError,
   onComplete,
 }: {
   step: DayPlanStep | null;
+  lastV5Result: LeadMeV5CompletionResult | null;
   completing: boolean;
   completionError: string | null;
-  onComplete: () => void;
+  onComplete: (selectedResponse?: string) => void;
 }) {
   if (!step) {
     return (
@@ -185,6 +198,8 @@ function CurrentTask({
 
   return (
     <section className="border-2 border-zinc-900 bg-white p-7" aria-labelledby="current-task">
+      {lastV5Result ? <V5ResultBanner result={lastV5Result} /> : null}
+
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="font-mono text-xs uppercase tracking-wider text-red-700">
@@ -205,7 +220,7 @@ function CurrentTask({
         <V5LeadMeCard
           item={step.leadme_v5_item}
           completing={completing}
-          onSelect={onComplete}
+          onSelect={(response) => onComplete(response)}
         />
       ) : null}
 
@@ -223,7 +238,7 @@ function CurrentTask({
         {v5Options.length === 0 ? (
           <button
             type="button"
-            onClick={onComplete}
+            onClick={() => onComplete()}
             disabled={completing}
             className="btn btn-lg ghost disabled:cursor-not-allowed disabled:opacity-60"
           >
@@ -248,7 +263,7 @@ function V5LeadMeCard({
 }: {
   item: NonNullable<DayPlanStep["leadme_v5_item"]>;
   completing: boolean;
-  onSelect: () => void;
+  onSelect: (selectedResponse: string) => void;
 }) {
   return (
     <div className="mt-6 border border-zinc-300 bg-zinc-50">
@@ -275,7 +290,7 @@ function V5LeadMeCard({
               >
                 <button
                   type="button"
-                  onClick={onSelect}
+                  onClick={() => onSelect(option.id)}
                   disabled={completing}
                   className="flex h-full w-full gap-3 p-3 text-left text-sm leading-6 text-zinc-800 hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-700 disabled:cursor-wait disabled:opacity-60"
                   aria-label={`Choose ${option.id}: ${option.label}`}
@@ -290,6 +305,38 @@ function V5LeadMeCard({
           </ol>
         ) : null}
       </div>
+    </div>
+  );
+}
+
+function V5ResultBanner({ result }: { result: LeadMeV5CompletionResult }) {
+  return (
+    <div
+      className={`mb-6 border p-4 ${
+        result.correct
+          ? "border-emerald-700 bg-emerald-50 text-emerald-950"
+          : "border-amber-600 bg-amber-50 text-amber-950"
+      }`}
+    >
+      <p className="font-mono text-[11px] uppercase tracking-wider">
+        {result.correct ? "Correct" : "Not yet"}
+      </p>
+      <p className="mt-2 text-sm leading-6">
+        You chose {result.selected_response}: {result.selected_label}
+        {!result.correct && result.correct_responses.length > 0
+          ? `. Correct answer: ${result.correct_responses
+              .map((answer) => `${answer.id}: ${answer.label}`)
+              .join(", ")}.`
+          : "."}
+      </p>
+      {result.feedback_blocks.map((block, index) => (
+        <p
+          className="mt-2 text-sm leading-6"
+          key={`${block.type}-${index}`}
+        >
+          {block.markdown ?? block.caption ?? block.alt_text}
+        </p>
+      ))}
     </div>
   );
 }

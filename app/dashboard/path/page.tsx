@@ -181,6 +181,8 @@ function CurrentTask({
     );
   }
 
+  const v5Options = step.leadme_v5_item?.options ?? [];
+
   return (
     <section className="border-2 border-zinc-900 bg-white p-7" aria-labelledby="current-task">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -200,7 +202,11 @@ function CurrentTask({
       <p className="mt-5 max-w-2xl text-base leading-8 text-zinc-800">{step.prompt}</p>
 
       {step.leadme_v5_item ? (
-        <V5LeadMeCard item={step.leadme_v5_item} />
+        <V5LeadMeCard
+          item={step.leadme_v5_item}
+          completing={completing}
+          onSelect={onComplete}
+        />
       ) : null}
 
       <div className="mt-5 grid gap-3 border-t border-zinc-200 pt-5 sm:grid-cols-2">
@@ -214,14 +220,16 @@ function CurrentTask({
             {step.action.label}
           </Link>
         )}
-        <button
-          type="button"
-          onClick={onComplete}
-          disabled={completing}
-          className="btn btn-lg ghost disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {completing ? "Saving..." : "Mark Complete"}
-        </button>
+        {v5Options.length === 0 ? (
+          <button
+            type="button"
+            onClick={onComplete}
+            disabled={completing}
+            className="btn btn-lg ghost disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {completing ? "Saving..." : "Mark Complete"}
+          </button>
+        ) : null}
       </div>
 
       {completionError && (
@@ -235,8 +243,12 @@ function CurrentTask({
 
 function V5LeadMeCard({
   item,
+  completing,
+  onSelect,
 }: {
   item: NonNullable<DayPlanStep["leadme_v5_item"]>;
+  completing: boolean;
+  onSelect: () => void;
 }) {
   return (
     <div className="mt-6 border border-zinc-300 bg-zinc-50">
@@ -259,12 +271,20 @@ function V5LeadMeCard({
             {item.options.map((option) => (
               <li
                 key={option.id}
-                className="flex gap-3 border border-zinc-200 bg-white p-3 text-sm leading-6 text-zinc-800"
+                className="border border-zinc-200 bg-white"
               >
-                <span className="flex size-7 shrink-0 items-center justify-center border border-zinc-300 font-mono text-xs font-semibold text-zinc-700">
-                  {option.id}
-                </span>
-                <span>{option.label}</span>
+                <button
+                  type="button"
+                  onClick={onSelect}
+                  disabled={completing}
+                  className="flex h-full w-full gap-3 p-3 text-left text-sm leading-6 text-zinc-800 hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-700 disabled:cursor-wait disabled:opacity-60"
+                  aria-label={`Choose ${option.id}: ${option.label}`}
+                >
+                  <span className="flex size-7 shrink-0 items-center justify-center border border-zinc-300 font-mono text-xs font-semibold text-zinc-700">
+                    {option.id}
+                  </span>
+                  <span>{option.label}</span>
+                </button>
               </li>
             ))}
           </ol>

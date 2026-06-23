@@ -58,6 +58,9 @@ describe("J7 guided path dashboard", () => {
     assert.match(source, /V5LeadMeCard/);
     assert.match(source, /item\.front_blocks\.map/);
     assert.match(source, /item\.options\.map/);
+    assert.match(source, /onClick=\{onSelect\}/);
+    assert.match(source, /aria-label=\{`Choose \$\{option\.id\}: \$\{option\.label\}`\}/);
+    assert.match(source, /v5Options\.length === 0/);
     assert.match(cards, /Live Lead Me Module/);
     assert.match(cards, /V5 Assault Test Path/);
   });

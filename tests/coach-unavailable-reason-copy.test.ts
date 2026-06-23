@@ -14,7 +14,7 @@ describe("coach unavailable copy", () => {
     assert.match(source, /current\.reason/);
     assert.match(source, /no_tagged_items/);
     assert.match(source, /c3_not_provisioned/);
-    assert.match(source, /C3 Coach is waiting on tagged question coverage/);
+    assert.match(source, /C3 Coach is waiting on validated choice diagnostics/);
   });
 
   it("labels starter-baseline coach questions honestly", () => {

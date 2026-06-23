@@ -9,16 +9,11 @@ function readProjectFile(path: string): string {
 describe("paid program display labels", () => {
   it("formats raw drill names before rendering dashboard and drill runner headings", () => {
     const helpers = readProjectFile("lib/drills.ts");
-    const drillLibrary = readProjectFile("app/drills/page.tsx");
     const drillRunner = readProjectFile("app/drills/[drill_id]/page.tsx");
 
     assert.match(helpers, /function formatDrillName/);
     assert.match(helpers, /review_drill/);
     assert.match(helpers, /Review Missed Questions/);
-
-    assert.match(drillLibrary, /formatDrillName\(d\.drill_name\)/);
-    assert.doesNotMatch(drillLibrary, /title:\s*d\.drill_name/);
-    assert.doesNotMatch(drillLibrary, /\{d\.drill_name\}/);
 
     assert.match(
       drillRunner,
@@ -70,15 +65,14 @@ describe("paid program display labels", () => {
     assert.doesNotMatch(recentFeed, /\{a\.subject\}/);
   });
 
-  it("formats raw drill catalog API labels before rendering catalog cards", () => {
-    const helpers = readProjectFile("lib/drills.ts");
+  it("renders the Drill Library from C3 packet taxonomy instead of legacy drill catalog labels", () => {
     const drillLibrary = readProjectFile("app/drills/page.tsx");
 
-    assert.match(helpers, /function formatCatalogDrillLabel/);
-    assert.match(helpers, /CON: "Constitutional Law"/);
-    assert.match(helpers, /\$\{subject\} Targeted Drill \$\{number\}/);
-    assert.match(drillLibrary, /formatCatalogDrillLabel\(item\.label, item\.slug\)/);
-    assert.doesNotMatch(drillLibrary, /\{item\.label\}/);
+    assert.match(drillLibrary, /getC3Axes/);
+    assert.match(drillLibrary, /getC3ChoicePatterns/);
+    assert.match(drillLibrary, /formatPatternName/);
+    assert.doesNotMatch(drillLibrary, /formatCatalogDrillLabel/);
+    assert.doesNotMatch(drillLibrary, /getDrillCatalog/);
   });
 
   it("keeps cohort capacity copy user-facing instead of exposing raw status codes", () => {

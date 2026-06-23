@@ -96,10 +96,11 @@ export default function DashboardPage() {
           Command Deck
         </p>
         <h1 className="mt-2 font-serif text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl">
-          Your repair briefing.
+          Your C3 repair briefing.
         </h1>
         <p className="mt-2 text-sm text-zinc-600">
-          The full command deck inside a persistent left-hand navigation shell.
+          The command deck now opens from the locked red-zone, axis, and
+          choice-pattern packet libraries.
         </p>
       </div>
 

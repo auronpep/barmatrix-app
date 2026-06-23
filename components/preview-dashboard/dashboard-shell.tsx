@@ -51,23 +51,23 @@ export function DashboardShell({
           href: "/atlas",
           icon: "▨",
           label: "Outline Atlas V2",
-          description: "Code-by-code lessons, questions, traps, drills",
+          description: "Code-by-code packets, axes, choice patterns, drills",
         },
         {
           href: "/drills",
           icon: "▶",
-          label: "Drill Mode",
+          label: "Packet Drills",
           badge: due > 0 ? `${due} DUE` : null,
           redBadge: true,
         },
         {
           href: "/red-zones",
           icon: "▌",
-          label: "Red Zones",
+          label: "Red-Zone V5",
           badge: activeRz > 0 ? String(activeRz) : null,
           redBadge: true,
         },
-        { href: "/matrix", icon: "▦", label: "Tension Matrix" },
+        { href: "/tensions", icon: "▦", label: "C3 Axis Map" },
       ],
     },
     {
@@ -83,11 +83,9 @@ export function DashboardShell({
     {
       section: "DIAGNOSTICS",
       links: [
-        { href: "/pattern-board", icon: "▤", label: "Pattern Board" },
-        { href: "/misconceptions", icon: "✕", label: "Misconceptions" },
+        { href: "/traps", icon: "▤", label: "Choice Patterns" },
         { href: "/question-history", icon: "≡", label: "Question History" },
-        { href: "/traps", icon: "×", label: "Trap Taxonomy" },
-        { href: "/tensions", icon: "⌁", label: "Tension Map" },
+        { href: "/coach", icon: "◎", label: "C3 Coach" },
       ],
     },
     {

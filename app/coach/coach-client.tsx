@@ -28,7 +28,7 @@ export default function CoachClient() {
       </button>
     );
   }
-  if (loading) return <p className="mt-6 text-sm text-zinc-500" role="status">Finding your weak spot…</p>;
+  if (loading) return <p className="mt-6 text-sm text-zinc-500" role="status">Reading the next C3 signal…</p>;
   if (error) {
     return (
       <p className="mt-6 text-sm text-red-600" role="alert">
@@ -62,15 +62,15 @@ export default function CoachClient() {
             <>
               Starting with a baseline question: <strong>{coaching.name}</strong>{" "}
               <span className="text-amber-700">({coaching.family.replaceAll("_", " ").toLowerCase()})</span>
-              <> — your C3-specific pattern is not measured yet, so this item starts the coaching loop.</>
+              <> — no validated C3 choice diagnostic is attached yet, so this item stays a baseline signal.</>
             </>
           ) : (
             <>
-              Targeting your weak break: <strong>{coaching.name}</strong>{" "}
+              Targeting the measured C3 signal: <strong>{coaching.name}</strong>{" "}
               <span className="text-amber-700">({coaching.family.replaceAll("_", " ").toLowerCase()})</span>
               {coaching.measured
-                ? <> — you bite this {coaching.deficit_pct}% of the time.</>
-                : <> — based on the exam blueprint (not yet measured for you).</>}
+                ? <> — the attempt bridge has measured this {coaching.deficit_pct}% of the time.</>
+                : <> — based on the outline blueprint until a choice diagnostic is validated.</>}
             </>
           )}
         </p>
@@ -113,9 +113,9 @@ function getCoachUnavailableState(reason: string): {
       title: "Coach coverage pending",
       body: (
         <>
-          C3 Coach is waiting on tagged question coverage. Work{" "}
-          <Link className="underline" href="/practice">practice questions</Link> or a{" "}
-          <Link className="underline" href="/diagnostic">diagnostic</Link> while the bank is being tagged.
+          C3 Coach is waiting on validated choice diagnostics. Review the{" "}
+          <Link className="underline" href="/tensions">axis map</Link> or{" "}
+          <Link className="underline" href="/traps">choice-pattern taxonomy</Link> while the attempt bridge is gated.
         </>
       ),
     };
@@ -125,8 +125,8 @@ function getCoachUnavailableState(reason: string): {
     title: "Not measurable yet",
     body: (
       <>
-        Finish <Link className="underline" href="/foundations">The Method</Link>, then work questions or a{" "}
-        <Link className="underline" href="/diagnostic">diagnostic</Link> so the Coach can find your weak C3 break.
+        Review <Link className="underline" href="/red-zones">the locked red-zone catalog</Link>, then work questions or a{" "}
+        <Link className="underline" href="/diagnostic">diagnostic</Link> so the Coach can attach attempt signal when diagnostics are validated.
       </>
     ),
   };

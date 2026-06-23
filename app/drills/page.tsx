@@ -1,192 +1,21 @@
-"use client";
-
-// Drill Library index — Web Component 04.
-//   Tab 1 "Prescribed for you": red-zone-driven suggestions + resumable drills
-//     (needs a signed-in, enrolled student; empty -> take the diagnostic).
-//   Tab 2 "Catalog": tension- and trap-anchored drills from the active bank,
-//     plus the seven existing subject quick-drills.
-// Starting a drill creates a drill_assignments row and routes to the runner.
-
-import { Suspense } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import {
-  api,
-  ApiClientError,
-  type DrillCatalogResponse,
-  type DrillStartRequest,
-  type PrescribedDrillsResponse,
-  type PrescribedDrillSuggestion,
-} from "@/lib/api-client";
-import { useDashboard } from "@/lib/use-dashboard";
-import { useClerkAuth } from "@/lib/use-clerk-auth";
-import { trackAnalyticsEvent } from "@/lib/analytics";
-import {
-  SUBJECT_QUICK_DRILLS,
-  formatCatalogDrillLabel,
-  formatDrillName,
-  humanizeTag,
-  proficiencyBand,
-  proficiencyPct,
-} from "@/lib/drills";
+import type { C3ChoicePattern, C3TaxonomyAxis } from "@/lib/api-client";
+import { getC3Axes, getC3ChoicePatterns, getC3RedZoneCatalog } from "@/lib/c3-taxonomy";
+import { humanizeSubject } from "@/lib/format-subject";
 
-type TabId = "prescribed" | "catalog";
+export const metadata = {
+  title: "C3 Drill Library - BarMatrix",
+  description:
+    "Packet-derived C3 repair drills organized by locked red zone, axis, and choice pattern.",
+  alternates: { canonical: "/drills" },
+};
 
-const TABS: ReadonlyArray<{ id: TabId; label: string }> = [
-  { id: "prescribed", label: "Prescribed for you" },
-  { id: "catalog", label: "Catalog" },
-];
-
-export default function DrillsPage() {
-  return (
-    <Suspense fallback={<DrillsPageFallback />}>
-      <DrillsPageContent />
-    </Suspense>
-  );
-}
-
-function DrillsPageFallback() {
-  return (
-    <section className="mx-auto max-w-7xl px-6 py-10 sm:py-14">
-      <p className="text-zinc-600">Loading drill library…</p>
-    </section>
-  );
-}
-
-function DrillsPageContent() {
-  const dash = useDashboard();
-  const { isLoaded: authLoaded, isSignedIn: authSignedIn, getToken } = useClerkAuth();
-  const studentId = dash.data?.student_id ?? null;
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const tensionParam = searchParams.get("tension");
-
-  const [tab, setTab] = useState<TabId>(tensionParam ? "catalog" : "prescribed");
-  const [catalog, setCatalog] = useState<DrillCatalogResponse | null>(null);
-  const [prescribed, setPrescribed] = useState<PrescribedDrillsResponse | null>(null);
-  const [busy, setBusy] = useState<string | null>(null);
-  const [startError, setStartError] = useState<string | null>(null);
-  const viewedRef = useRef(false);
-
-  // Catalog is anonymous + cacheable.
-  useEffect(() => {
-    let active = true;
-    api
-      .getDrillCatalog()
-      .then((c) => {
-        if (active) setCatalog(c);
-      })
-      .catch(() => {
-        if (active) setCatalog({ tensions: [], traps: [] });
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  // Prescribed needs a Clerk token.
-  useEffect(() => {
-    if (!authLoaded || !authSignedIn) return;
-    let active = true;
-    void (async () => {
-      try {
-        const token = await getToken();
-        if (!token || !active) return;
-        const p = await api.getPrescribedDrills(token);
-        if (active) setPrescribed(p);
-      } catch {
-        if (active) setPrescribed({ suggested: [], in_progress: [] });
-      }
-    })();
-    return () => {
-      active = false;
-    };
-  }, [authLoaded, authSignedIn, getToken]);
-
-  // Scroll to tension in catalog if passed via ?tension parameter.
-  useEffect(() => {
-    if (!tensionParam || !catalog) return;
-    const timer = setTimeout(() => {
-      const element = document.getElementById(`tension-${tensionParam}`);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [tensionParam, catalog]);
-
-  // Fire drill_library_viewed once, after the catalog resolves.
-  useEffect(() => {
-    if (viewedRef.current || !catalog) return;
-    viewedRef.current = true;
-    const freeCount = catalog.tensions.length + catalog.traps.length;
-    const prescribedCount = prescribed
-      ? prescribed.suggested.length + prescribed.in_progress.length
-      : 0;
-    trackAnalyticsEvent("drill_library_viewed", {
-      free_count: freeCount,
-      prescribed_count: prescribedCount,
-      student_id: studentId ?? undefined,
-    });
-  }, [catalog, prescribed, studentId]);
-
-  const startDrill = useCallback(
-    async (key: string, payload: DrillStartRequest) => {
-      if (busy) return;
-      setStartError(null);
-      if (!authLoaded) {
-        setStartError("Checking sign-in. Try again in a moment.");
-        return;
-      }
-      if (!authSignedIn) {
-        setStartError("Sign in to start a drill.");
-        return;
-      }
-      setBusy(key);
-      try {
-        const token = await getToken();
-        if (!token) {
-          setStartError("Sign in again to start a drill.");
-          setBusy(null);
-          return;
-        }
-        const res = await api.startDrill({ ...payload }, token);
-        if (!res.drill_id) {
-          setStartError(
-            "No active questions matched that drill yet. Try another while the bank is loading.",
-          );
-          setBusy(null);
-          return;
-        }
-        router.push(`/drills/${res.drill_id}`);
-      } catch (err) {
-        if (err instanceof ApiClientError && err.status === 401) {
-          setStartError("Sign in to start a drill.");
-        } else if (err instanceof ApiClientError && err.status === 403) {
-          setStartError("Enrollment required — enroll at barmatrix.app/checkout.");
-        } else {
-          setStartError(
-            err instanceof ApiClientError
-              ? `Could not start drill (API ${err.status}).`
-              : "Could not start drill.",
-          );
-        }
-        setBusy(null);
-      }
-    },
-    [busy, router, authLoaded, authSignedIn, getToken],
-  );
-
-  const onTabKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
-    const idx = TABS.findIndex((t) => t.id === tab);
-    if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-      e.preventDefault();
-      const delta = e.key === "ArrowRight" ? 1 : -1;
-      const nextTab = TABS[(idx + delta + TABS.length) % TABS.length];
-      if (nextTab) setTab(nextTab.id);
-    }
-  };
+export default async function DrillsPage() {
+  const [catalog, axes, patterns] = await Promise.all([
+    getC3RedZoneCatalog(),
+    getC3Axes({ limit: 9 }),
+    getC3ChoicePatterns({ limit: 9 }),
+  ]);
 
   return (
     <section className="mx-auto max-w-7xl px-6 py-10 sm:py-14">
@@ -195,380 +24,179 @@ function DrillsPageContent() {
           Drill Library
         </p>
         <h1 className="mt-3 max-w-3xl font-serif text-4xl font-semibold tracking-tight text-zinc-950 sm:text-5xl">
-          Targeted repair drills, prescribed from your weakest patterns.
+          Packet-based repair drills, organized by C3 axis and choice pattern.
         </h1>
         <p className="mt-5 max-w-3xl text-lg leading-8 text-zinc-600">
-          Run a focused set on one tension point or trap architecture. Every
-          answer feeds the Wrong-Answer Forensics loop and moves your Red-Zone Map.
+          Use the locked Red-Zone V5 model to choose the axis fight, then open
+          the choice-pattern mechanics attached to the same outline code.
         </p>
       </div>
 
-      {startError && (
-        <p className="mt-6 border border-amber-300 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
-          {startError}
-        </p>
-      )}
-
-      <div
-        role="tablist"
-        aria-label="Drill views"
-        className="mt-8 flex gap-2 border-b border-zinc-200"
-      >
-        {TABS.map((t) => {
-          const selected = t.id === tab;
-          return (
-            <button
-              key={t.id}
-              role="tab"
-              id={`drills-tab-${t.id}`}
-              aria-selected={selected}
-              aria-controls={`drills-panel-${t.id}`}
-              tabIndex={selected ? 0 : -1}
-              onClick={() => setTab(t.id)}
-              onKeyDown={onTabKeyDown}
-              className={`-mb-px border-b-2 px-4 py-3 text-sm font-medium transition ${
-                selected
-                  ? "border-red-700 text-zinc-950"
-                  : "border-transparent text-zinc-500 hover:text-zinc-800"
-              }`}
-            >
-              {t.label}
-            </button>
-          );
-        })}
+      <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        {catalog.categories.map((category) => (
+          <Link
+            key={category.red_zone_id}
+            href={`/tensions?red_zone_id=${encodeURIComponent(category.red_zone_id)}`}
+            className="min-w-0 border border-zinc-300 bg-white p-4 transition hover:border-zinc-900"
+          >
+            <p className="font-mono text-[11px] uppercase tracking-wider text-red-700">
+              {category.red_zone_id}
+            </p>
+            <h2 className="mt-2 font-serif text-lg font-semibold leading-tight text-zinc-950">
+              {category.locked_title}
+            </h2>
+            <p className="mt-2 text-xs leading-5 text-zinc-600">
+              {category.core_idea}
+            </p>
+          </Link>
+        ))}
       </div>
 
-      {tab === "prescribed" && (
-        <div
-          role="tabpanel"
-          id="drills-panel-prescribed"
-          aria-labelledby="drills-tab-prescribed"
-          className="mt-8"
-        >
-          <PrescribedPanel
-            dash={dash}
-            prescribed={prescribed}
-            busy={busy}
-            onStart={startDrill}
-          />
-        </div>
-      )}
-
-      {tab === "catalog" && (
-        <div
-          role="tabpanel"
-          id="drills-panel-catalog"
-          aria-labelledby="drills-tab-catalog"
-          className="mt-8"
-        >
-          <CatalogPanel catalog={catalog} busy={busy} onStart={startDrill} />
-        </div>
-      )}
+      <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <AxisDrillGroup axes={axes.axes} total={axes.total} />
+        <ChoicePatternDrillGroup patterns={patterns.choice_patterns} total={patterns.total} />
+      </div>
     </section>
   );
 }
 
-function PrescribedPanel({
-  dash,
-  prescribed,
-  busy,
-  onStart,
-}: {
-  dash: ReturnType<typeof useDashboard>;
-  prescribed: PrescribedDrillsResponse | null;
-  busy: string | null;
-  onStart: (key: string, payload: DrillStartRequest) => void;
-}) {
-  if (dash.loading) {
-    return <p className="text-sm text-zinc-600">Loading your prescribed drills…</p>;
-  }
-  if (!dash.signedIn) {
-    return (
-      <EmptyState
-        text="Sign in to see drills prescribed from your Red-Zone Map."
-        href="/sign-in"
-        label="Sign in"
-      />
-    );
-  }
-  if (dash.data && !dash.data.enrolled) {
-    return (
-      <EmptyState
-        text="Enroll to unlock prescribed repair drills targeted at your weakest patterns."
-        href="/checkout"
-        label="Enroll now"
-      />
-    );
-  }
-
-  const suggested = prescribed?.suggested ?? [];
-  const inProgress = prescribed?.in_progress ?? [];
-  const review = prescribed?.review;
-  const hasReview = !!review && review.available_count > 0;
-
-  if (suggested.length === 0 && inProgress.length === 0 && !hasReview) {
-    return (
-      <EmptyState
-        text="No prescribed drills yet. Take the diagnostic to build your Red-Zone Map and unlock targeted drills."
-        href="/diagnostic"
-        label="Take the diagnostic"
-      />
-    );
-  }
-
+function AxisDrillGroup({ axes, total }: { axes: C3TaxonomyAxis[]; total: number }) {
   return (
-    <div className="space-y-10">
-      {hasReview && review && (
-        <section aria-labelledby="review-heading">
-          <h2
-            id="review-heading"
-            className="font-mono text-xs uppercase tracking-wider text-zinc-700"
-          >
-            Review your misses
+    <section aria-labelledby="axis-drills">
+      <div className="flex items-end justify-between gap-4 border-b border-zinc-900 pb-3">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-wider text-zinc-700">
+            Axis drills
+          </p>
+          <h2 id="axis-drills" className="mt-1 font-serif text-2xl font-semibold text-zinc-950">
+            Work the legal fight
           </h2>
-          <div className="mt-4">
-            <article className="flex flex-col border border-red-300 bg-red-50 p-5 md:max-w-md">
-              <h3 className="font-serif text-xl font-semibold leading-tight text-zinc-950">
-                Review missed questions
-              </h3>
-              <p className="mt-2 text-sm text-zinc-600">
-                {review.available_count} question
-                {review.available_count === 1 ? "" : "s"} you most recently
-                missed, newest first.
-              </p>
-              <button
-                type="button"
-                disabled={busy !== null}
-                onClick={() =>
-                  onStart("review", { kind: "review", size: review.suggested_size })
-                }
-                className="btn btn-sm red mt-4 self-start"
-              >
-                {busy === "review" ? "Starting…" : "Start review drill"}
-              </button>
-            </article>
-          </div>
-        </section>
-      )}
-
-      {inProgress.length > 0 && (
-        <section aria-labelledby="resume-heading">
-          <h2
-            id="resume-heading"
-            className="font-mono text-xs uppercase tracking-wider text-zinc-700"
-          >
-            Resume
-          </h2>
-          <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {inProgress.map((d) => (
-              <article key={d.drill_id} className="border border-zinc-300 bg-white p-5">
-                <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">
-                  {d.red_zone_dimension ? humanizeTag(d.red_zone_dimension) : "In progress"}
-                </p>
-                <h3 className="mt-2 font-serif text-xl font-semibold leading-tight text-zinc-950">
-                  {formatDrillName(d.drill_name)}
-                </h3>
-                <p className="mt-2 text-sm text-zinc-600">{d.question_count} questions</p>
-                <Link href={`/drills/${d.drill_id}`} className="btn btn-sm red mt-4">
-                  Resume drill
-                </Link>
-              </article>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {suggested.length > 0 && (
-        <section aria-labelledby="suggested-heading">
-          <h2
-            id="suggested-heading"
-            className="font-mono text-xs uppercase tracking-wider text-zinc-700"
-          >
-            Prescribed from your red zones
-          </h2>
-          <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {suggested.map((s) => (
-              <SuggestionCard key={`${s.red_zone_dimension}:${s.red_zone_tag}`} s={s} busy={busy} onStart={onStart} />
-            ))}
-          </div>
-        </section>
-      )}
-    </div>
-  );
-}
-
-function SuggestionCard({
-  s,
-  busy,
-  onStart,
-}: {
-  s: PrescribedDrillSuggestion;
-  busy: string | null;
-  onStart: (key: string, payload: DrillStartRequest) => void;
-}) {
-  const key = `pre:${s.red_zone_dimension}:${s.red_zone_tag}`;
-  const band = proficiencyBand(s.proficiency_score);
-  const tone =
-    band.tone === "critical"
-      ? "text-red-700"
-      : band.tone === "watch"
-        ? "text-amber-700"
-        : "text-emerald-700";
-  return (
-    <article className="flex flex-col border border-zinc-300 bg-white p-5">
-      <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">
-        {humanizeTag(s.red_zone_dimension)}
-      </p>
-      <h3 className="mt-2 font-serif text-xl font-semibold leading-tight text-zinc-950">
-        {s.label}
-      </h3>
-      <p className={`mt-2 font-mono text-xs uppercase tracking-wider ${tone}`}>
-        {band.label} · {proficiencyPct(s.proficiency_score)}% proficiency
-      </p>
-      <p className="mt-2 text-sm text-zinc-600">
-        {s.candidate_question_count} questions available
-      </p>
-      <button
-        type="button"
-        disabled={busy !== null}
-        onClick={() =>
-          onStart(key, {
-            kind: "prescribed_red_zone",
-            red_zone_dimension: s.red_zone_dimension,
-            red_zone_tag: s.red_zone_tag,
-            size: s.suggested_size,
-          })
-        }
-        className="btn btn-sm red mt-4 self-start"
-      >
-        {busy === key ? "Starting…" : "Start drill"}
-      </button>
-    </article>
-  );
-}
-
-function CatalogPanel({
-  catalog,
-  busy,
-  onStart,
-}: {
-  catalog: DrillCatalogResponse | null;
-  busy: string | null;
-  onStart: (key: string, payload: DrillStartRequest) => void;
-}) {
-  if (!catalog) {
-    return <p className="text-sm text-zinc-600">Loading the drill catalog…</p>;
-  }
-  return (
-    <div className="space-y-10">
-      <CatalogGroup
-        heading="By tension point"
-        empty="No tension-anchored drills are available in the active bank yet."
-        items={catalog.tensions}
-        kind="tension"
-        busy={busy}
-        onStart={onStart}
-      />
-      <CatalogGroup
-        heading="By trap architecture"
-        empty="No trap-anchored drills are available in the active bank yet."
-        items={catalog.traps}
-        kind="trap"
-        busy={busy}
-        onStart={onStart}
-      />
-
-      <section aria-labelledby="subjects-heading">
-        <h2
-          id="subjects-heading"
-          className="font-mono text-xs uppercase tracking-wider text-zinc-700"
-        >
-          By subject
-        </h2>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {SUBJECT_QUICK_DRILLS.map((s) => (
-            <Link
-              key={s.slug}
-              href={s.href}
-              className="border border-zinc-300 bg-white p-4 text-sm font-medium text-zinc-800 transition hover:border-zinc-500"
-            >
-              {s.label} quick drill →
-            </Link>
-          ))}
         </div>
-      </section>
-    </div>
-  );
-}
+        <Link href="/tensions" className="font-mono text-[11px] uppercase tracking-wider text-red-700">
+          All axes ({total}) -&gt;
+        </Link>
+      </div>
 
-function CatalogGroup({
-  heading,
-  empty,
-  items,
-  kind,
-  busy,
-  onStart,
-}: {
-  heading: string;
-  empty: string;
-  items: Array<{ slug: string; label: string; question_count: number }>;
-  kind: "tension" | "trap";
-  busy: string | null;
-  onStart: (key: string, payload: DrillStartRequest) => void;
-}) {
-  return (
-    <section aria-label={heading}>
-      <h2 className="font-mono text-xs uppercase tracking-wider text-zinc-700">{heading}</h2>
-      {items.length === 0 ? (
+      {axes.length === 0 ? (
         <p className="mt-4 border border-zinc-200 bg-zinc-50 p-5 text-sm leading-6 text-zinc-600">
-          {empty}
+          C3 axis packets are not available from the API yet.
         </p>
       ) : (
-        <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {items.map((item) => {
-            const key = `${kind}:${item.slug}`;
-            const elementId = kind === "tension" ? `tension-${item.slug}` : undefined;
-            return (
-              <article key={key} id={elementId} className="flex flex-col border border-zinc-300 bg-white p-5">
-                <h3 className="font-serif text-xl font-semibold leading-tight text-zinc-950">
-                  {formatCatalogDrillLabel(item.label, item.slug)}
-                </h3>
-                <p className="mt-2 text-sm text-zinc-600">{item.question_count} questions</p>
-                <button
-                  type="button"
-                  disabled={busy !== null}
-                  onClick={() => onStart(key, { kind, slug: item.slug, size: 12 })}
-                  className="btn btn-sm red mt-4 self-start"
-                >
-                  {busy === key ? "Starting…" : "Start drill"}
-                </button>
-              </article>
-            );
-          })}
+        <div className="mt-4 space-y-4">
+          {axes.map((axis) => (
+            <article key={axis.axis_id} className="min-w-0 border border-zinc-300 bg-white p-5">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-mono text-[11px] uppercase tracking-wider text-red-700">
+                    {axis.red_zone_id} / {axis.outline_code}
+                  </p>
+                  <h3 className="mt-2 break-words font-serif text-xl font-semibold leading-tight text-zinc-950">
+                    {axis.axis_name}
+                  </h3>
+                </div>
+                <span className="shrink-0 border border-zinc-300 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-zinc-600">
+                  {humanizeSubject(axis.subject)}
+                </span>
+              </div>
+              <div className="mt-4 grid gap-3 border-t border-zinc-200 pt-4 sm:grid-cols-2">
+                <AxisSide label="Side A" value={axis.side_a} />
+                <AxisSide label="Side B" value={axis.side_b} />
+              </div>
+              {axis.resolver ? (
+                <p className="mt-3 text-sm leading-6 text-zinc-700">{axis.resolver}</p>
+              ) : null}
+              <Link
+                href={`/tensions?outline_code=${encodeURIComponent(axis.outline_code)}`}
+                className="mt-4 inline-block rounded-md bg-red-700 px-4 py-2 text-sm font-medium text-white hover:bg-red-900"
+              >
+                Open axis packet
+              </Link>
+            </article>
+          ))}
         </div>
       )}
     </section>
   );
 }
 
-function EmptyState({
-  text,
-  href,
-  label,
-}: {
-  text: string;
-  href: string;
-  label: string;
-}) {
+function AxisSide({ label, value }: { label: string; value: string | null }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4 border border-zinc-300 bg-zinc-50 p-6">
-      <p className="text-sm leading-6 text-zinc-800">{text}</p>
-      <Link
-        href={href}
-        className="rounded-md bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-900"
-      >
-        {label}
-      </Link>
+    <div className="min-w-0 bg-zinc-50 p-3">
+      <p className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">{label}</p>
+      <p className="mt-1 break-words text-sm leading-6 text-zinc-800">{value ?? "Packet detail pending"}</p>
     </div>
   );
+}
+
+function ChoicePatternDrillGroup({
+  patterns,
+  total,
+}: {
+  patterns: C3ChoicePattern[];
+  total: number;
+}) {
+  return (
+    <section aria-labelledby="choice-pattern-drills">
+      <div className="flex items-end justify-between gap-4 border-b border-zinc-900 pb-3">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-wider text-zinc-700">
+            Choice-pattern drills
+          </p>
+          <h2 id="choice-pattern-drills" className="mt-1 font-serif text-2xl font-semibold text-zinc-950">
+            Work the wrong-answer mechanic
+          </h2>
+        </div>
+        <Link href="/traps" className="font-mono text-[11px] uppercase tracking-wider text-red-700">
+          All patterns ({total}) -&gt;
+        </Link>
+      </div>
+
+      {patterns.length === 0 ? (
+        <p className="mt-4 border border-zinc-200 bg-zinc-50 p-5 text-sm leading-6 text-zinc-600">
+          C3 choice-pattern packets are not available from the API yet.
+        </p>
+      ) : (
+        <div className="mt-4 space-y-4">
+          {patterns.map((pattern) => (
+            <article key={pattern.choice_pattern_id} className="min-w-0 border border-zinc-300 bg-white p-5">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-mono text-[11px] uppercase tracking-wider text-red-700">
+                    {pattern.red_zone_id} / {pattern.outline_code}
+                  </p>
+                  <h3 className="mt-2 break-words font-serif text-xl font-semibold leading-tight text-zinc-950">
+                    {formatPatternName(pattern)}
+                  </h3>
+                </div>
+                <span className="shrink-0 border border-zinc-300 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-zinc-600">
+                  {pattern.filter_broken}
+                </span>
+              </div>
+              {pattern.why_it_attracts_students ? (
+                <p className="mt-4 text-sm leading-6 text-zinc-700">
+                  {pattern.why_it_attracts_students}
+                </p>
+              ) : null}
+              {pattern.true_responsive_repair ? (
+                <p className="mt-3 border-l-2 border-red-700 pl-3 text-sm leading-6 text-zinc-800">
+                  {pattern.true_responsive_repair}
+                </p>
+              ) : null}
+              <Link
+                href={`/traps?mold_code=${encodeURIComponent(pattern.mold_code)}`}
+                className="mt-4 inline-block rounded-md bg-red-700 px-4 py-2 text-sm font-medium text-white hover:bg-red-900"
+              >
+                Open pattern packet
+              </Link>
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function formatPatternName(pattern: C3ChoicePattern): string {
+  if (pattern.wrong_answer_form) return pattern.wrong_answer_form;
+  return pattern.mold_code.replaceAll("_", " ").replace(/\b\w/g, (char) => char.toUpperCase());
 }

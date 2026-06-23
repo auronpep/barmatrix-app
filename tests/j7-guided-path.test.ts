@@ -47,6 +47,21 @@ describe("J7 guided path dashboard", () => {
     assert.match(source, /Finish card/);
   });
 
+  it("renders V5 candidate cards inside the live Lead Me task surface", () => {
+    const source = readProjectFile("app/dashboard/path/page.tsx");
+    const cards = readProjectFile("app/dashboard/day-cards.tsx");
+    const apiClient = readProjectFile("lib/api-client.ts");
+
+    assert.match(apiClient, /LeadMeV5DayPlanItem/);
+    assert.match(apiClient, /leadme_v5_item\?: LeadMeV5DayPlanItem/);
+    assert.match(source, /step\.leadme_v5_item/);
+    assert.match(source, /V5LeadMeCard/);
+    assert.match(source, /item\.front_blocks\.map/);
+    assert.match(source, /item\.options\.map/);
+    assert.match(cards, /Live Lead Me Module/);
+    assert.match(cards, /V5 Assault Test Path/);
+  });
+
   it("preserves Lead Me step context through placement questions and Criminal Law drills", () => {
     const placementEntry = readProjectFile("app/diagnostic/session/placement-entry-client.tsx");
     const placementSession = readProjectFile("app/diagnostic/session/[sessionId]/page.tsx");

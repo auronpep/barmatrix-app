@@ -35,6 +35,13 @@ type LeadMeStartState =
   | { kind: "missing"; code: string; message: string }
   | { kind: "error"; code: string; message: string };
 
+export interface AtlasClientPreview {
+  nodes: AtlasCoverageNode[];
+  selectedCode?: string;
+  questionsByCode?: Record<string, AtlasQuestionListItem[]>;
+  componentsByCode?: Record<string, AtlasComponentsResponse>;
+}
+
 type SubjectStat = {
   subject: string;
   codeCount: number;
@@ -69,9 +76,35 @@ const ALL_SUBTOPICS = "All subtopics";
 const OUTLINE_CODE_RE = /^\d{8}$/;
 const LAST_ATLAS_CODE_KEY = "barmatrix:last-atlas-code";
 const STUDIED_ATLAS_CODES_KEY = "barmatrix:studied-atlas-codes";
+const PREVIEW_GET_TOKEN = async () => "atlas-preview-token";
 const ATLAS_CODE_DETOUR_LABELS = [
   { type: "trap", label: "Trap" },
   { type: "tension", label: "Tension" },
+] as const;
+const ATLAS_APP_RAIL_SECTIONS = [
+  {
+    label: "Study",
+    links: [
+      { href: "/dashboard/path", label: "My Path", meta: "Daily repair queue" },
+      { href: "/atlas", label: "Outline Atlas", meta: "Code map", active: true },
+      { href: "/practice", label: "Practice", meta: "Approved questions" },
+    ],
+  },
+  {
+    label: "Repair",
+    links: [
+      { href: "/red-zones", label: "Red Zones", meta: "Weak sections" },
+      { href: "/drills", label: "Drills", meta: "Targeted reps" },
+      { href: "/dashboard/mastery", label: "Mastery", meta: "Pattern progress" },
+    ],
+  },
+  {
+    label: "Plan",
+    links: [
+      { href: "/dashboard/final-sprint", label: "Final Sprint", meta: "Countdown plan" },
+      { href: "/dashboard", label: "Full Dashboard", meta: "Program overview" },
+    ],
+  },
 ] as const;
 
 function matchesComponentFilter(node: AtlasCoverageNode, filter: ComponentFilter) {
@@ -127,15 +160,23 @@ function writeStoredStudiedCodes(codes: Set<string>) {
   }
 }
 
-export function AtlasClient() {
-  const { isLoaded, isSignedIn, getToken } = useClerkAuth();
-  const [state, setState] = useState<LoadState>({ kind: "loading" });
+export function AtlasClient({ preview }: { preview?: AtlasClientPreview } = {}) {
+  const clerkAuth = useClerkAuth();
+  const isPreview = Boolean(preview);
+  const isLoaded = isPreview ? true : clerkAuth.isLoaded;
+  const isSignedIn = isPreview ? true : clerkAuth.isSignedIn;
+  const getToken = isPreview ? PREVIEW_GET_TOKEN : clerkAuth.getToken;
+  const [state, setState] = useState<LoadState>(() =>
+    preview ? { kind: "ready", nodes: preview.nodes } : { kind: "loading" },
+  );
   const [query, setQuery] = useState("");
   const [subjectFilter, setSubjectFilter] = useState(ALL_SUBJECTS);
   const [subtopicFilter, setSubtopicFilter] = useState(ALL_SUBTOPICS);
   const [componentFilter, setComponentFilter] = useState<ComponentFilter>("all");
   const [studyFilter, setStudyFilter] = useState<StudyFilter>("all");
-  const [selectedCode, setSelectedCode] = useState<string | null>(null);
+  const [selectedCode, setSelectedCode] = useState<string | null>(
+    () => preview?.selectedCode ?? preview?.nodes[0]?.code ?? null,
+  );
   const [resumedCode, setResumedCode] = useState<string | null>(null);
   const [studiedCodes, setStudiedCodes] = useState<Set<string>>(() => new Set());
   const [questionState, setQuestionState] = useState<QuestionState>({
@@ -153,6 +194,7 @@ export function AtlasClient() {
   const [directLinkMessage, setDirectLinkMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    if (preview) return;
     if (!isLoaded || !isSignedIn) return;
     let cancelled = false;
     void (async () => {
@@ -190,15 +232,16 @@ export function AtlasClient() {
     return () => {
       cancelled = true;
     };
-  }, [getToken, isLoaded, isSignedIn]);
+  }, [getToken, isLoaded, isSignedIn, preview]);
 
   useEffect(() => {
+    if (preview) return;
     if (!isLoaded || !isSignedIn) return;
     const handle = window.setTimeout(() => {
       setStudiedCodes(readStoredStudiedCodes());
     }, 0);
     return () => window.clearTimeout(handle);
-  }, [isLoaded, isSignedIn]);
+  }, [isLoaded, isSignedIn, preview]);
 
   const allNodes = useMemo(() => (state.kind === "ready" ? state.nodes : []), [state]);
   const selected = selectedCode
@@ -215,6 +258,7 @@ export function AtlasClient() {
   }, [selectedCode]);
 
   useEffect(() => {
+    if (preview) return;
     if (state.kind !== "ready" || !selectedCode) return;
     const node = state.nodes.find((item) => item.code === selectedCode);
     if (!node) return;
@@ -241,9 +285,10 @@ export function AtlasClient() {
     return () => {
       cancelled = true;
     };
-  }, [getToken, selectedCode, state]);
+  }, [getToken, preview, selectedCode, state]);
 
   useEffect(() => {
+    if (preview) return;
     if (state.kind !== "ready" || !selectedCode) return;
     const node = state.nodes.find((item) => item.code === selectedCode);
     if (!node) return;
@@ -270,7 +315,7 @@ export function AtlasClient() {
     return () => {
       cancelled = true;
     };
-  }, [getToken, selectedCode, state]);
+  }, [getToken, preview, selectedCode, state]);
 
   const subjectStats = useMemo(() => {
     const map = new Map<string, SubjectStat>();
@@ -288,6 +333,20 @@ export function AtlasClient() {
     () => allNodes.filter((node) => node.question_count > 0),
     [allNodes],
   );
+  const atlasSubtopicCount = useMemo(
+    () =>
+      new Set(allNodes.map((node) => `${node.subject_display}::${node.subtopic}`)).size,
+    [allNodes],
+  );
+  const atlasQuestionCount = allNodes.reduce((sum, node) => sum + node.question_count, 0);
+  const atlasComponentCodeCount = allNodes.filter((node) => nodeComponentTotal(node) > 0)
+    .length;
+  const atlasStudiedCount = allNodes.filter((node) => studiedCodes.has(node.code)).length;
+  const atlasUnstudiedCount = Math.max(0, allNodes.length - atlasStudiedCount);
+  const atlasComponentCoverage =
+    allNodes.length > 0 ? Math.round((atlasComponentCodeCount / allNodes.length) * 100) : 0;
+  const atlasLessonReadyCount = allNodes.filter(hasLessonLane).length;
+  const atlasLaneReadyCount = allNodes.filter(hasAnyLane).length;
 
   const subtopics = useMemo<SubtopicStat[]>(() => {
     const source =
@@ -568,24 +627,49 @@ export function AtlasClient() {
         ? "Restart walk"
         : "Continue walk";
 
+  const effectiveQuestionState: QuestionState =
+    preview && selectedCode
+      ? {
+          kind: "ready",
+          code: selectedCode,
+          items: preview.questionsByCode?.[selectedCode] ?? [],
+        }
+      : questionState;
+  const effectiveComponentsState: ComponentsState =
+    preview && selectedCode
+      ? {
+          kind: "ready",
+          code: selectedCode,
+          data: preview.componentsByCode?.[selectedCode] ?? {
+            outline_code: selectedCode,
+            leadme_set: null,
+            leadme_items: [],
+            debrief_elements: [],
+            leadme_item_previews: [],
+            debrief_element_previews: [],
+            detour_previews: [],
+          },
+        }
+      : componentsState;
+
   const selectedQuestions =
-    questionState.kind === "ready" && questionState.code === selectedCode
-      ? questionState.items
+    effectiveQuestionState.kind === "ready" && effectiveQuestionState.code === selectedCode
+      ? effectiveQuestionState.items
       : [];
   const firstSelectedQuestion = selectedQuestions[0] ?? null;
-  const questionLoading = Boolean(selectedCode && questionState.code !== selectedCode);
+  const questionLoading = Boolean(selectedCode && effectiveQuestionState.code !== selectedCode);
   const questionError =
-    questionState.kind === "error" && questionState.code === selectedCode
-      ? questionState.message
+    effectiveQuestionState.kind === "error" && effectiveQuestionState.code === selectedCode
+      ? effectiveQuestionState.message
       : null;
   const componentData =
-    componentsState.kind === "ready" && componentsState.code === selectedCode
-      ? componentsState.data
+    effectiveComponentsState.kind === "ready" && effectiveComponentsState.code === selectedCode
+      ? effectiveComponentsState.data
       : null;
-  const componentsLoading = Boolean(selectedCode && componentsState.code !== selectedCode);
+  const componentsLoading = Boolean(selectedCode && effectiveComponentsState.code !== selectedCode);
   const componentsError =
-    componentsState.kind === "error" && componentsState.code === selectedCode
-      ? componentsState.message
+    effectiveComponentsState.kind === "error" && effectiveComponentsState.code === selectedCode
+      ? effectiveComponentsState.message
       : null;
   const leadmeSet = componentData?.leadme_set ?? null;
   const leadmeItemTotal = totalCounts(componentData?.leadme_items ?? []);
@@ -809,6 +893,14 @@ export function AtlasClient() {
 
   async function startLeadMe() {
     if (!selected) return;
+    if (preview) {
+      setLeadMeStart({
+        kind: "started",
+        code: selected.code,
+        message: "Preview mode: LeadMe sequence is shown without creating a live task.",
+      });
+      return;
+    }
     setLeadMeStart({ kind: "starting", code: selected.code });
     try {
       const token = await getToken();
@@ -844,19 +936,15 @@ export function AtlasClient() {
 
   return (
     <section className="min-h-screen bg-[#f4f1ea] text-zinc-950">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
-        <div className="flex flex-col gap-5 border-b border-zinc-950/15 pb-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl">
-            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-red-700">
-              Outline Atlas V2
+      <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:py-8">
+        <div className="flex flex-col gap-4 border-b border-zinc-950/20 pb-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-zinc-500">
+              BarMatrix / Atlas
             </p>
-            <h1 className="mt-2 text-balance font-serif text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
-              Walk the MBE outline by code.
+            <h1 className="mt-1 font-serif text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+              Outline Atlas
             </h1>
-            <p className="mt-3 max-w-2xl text-base leading-7 text-zinc-700">
-              Each outline code is a learning node: lesson, questions, traps, drills,
-              flashcards, tensions, and boot-camps attach here as each lane is approved.
-            </p>
           </div>
           <Link
             href="/dashboard"
@@ -883,28 +971,87 @@ export function AtlasClient() {
         )}
 
         {isSignedIn && state.kind === "ready" && state.nodes.length > 0 && (
-          <>
-            <div className="grid gap-3 py-5 sm:grid-cols-2 lg:grid-cols-4">
-              <Metric label="Outline codes" value={String(state.nodes.length)} />
-              <Metric
-                label="Practice-ready codes"
-                value={String(state.nodes.filter((node) => node.question_count > 0).length)}
-              />
-              <Metric
-                label="Approved questions"
-                value={String(
-                  state.nodes.reduce((sum, node) => sum + node.question_count, 0),
-                )}
-              />
-              <Metric
-                label="Codes with components"
-                value={String(state.nodes.filter((node) => nodeComponentTotal(node) > 0).length)}
-              />
-            </div>
+          <div className="my-5 grid gap-5 xl:grid-cols-[240px_minmax(0,1fr)] xl:items-start">
+            <AtlasAppRail />
+            <div className="min-w-0">
+            <section
+              aria-label="Master outline progress"
+              className="overflow-hidden border border-zinc-950 bg-zinc-950 text-white shadow-[0_22px_70px_rgba(24,24,27,0.24)]"
+            >
+              <div className="grid gap-4 border-t-4 border-red-700 px-5 py-4 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
+                <div className="flex items-baseline gap-3 border-white/10 pr-5 sm:border-r">
+                  <span className="font-serif text-4xl font-semibold leading-none">MBE</span>
+                  <span className="font-mono text-[10px] uppercase leading-tight tracking-[0.16em] text-zinc-400">
+                    Master
+                    <br />
+                    Outline
+                  </span>
+                </div>
+                <div className="min-w-0">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-red-300">
+                    Master outline
+                  </p>
+                  <h2 className="mt-1 font-serif text-2xl font-semibold leading-tight">
+                    Code-by-code learning map
+                  </h2>
+                </div>
+                <div className="rounded-md border border-white/15 px-3 py-2 text-right">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+                    Current view
+                  </p>
+                  <p className="mt-1 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-white">
+                    {scopeLabel}
+                  </p>
+                </div>
+              </div>
+              <div className="grid gap-3 px-4 py-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+                <AtlasSummaryStat label="Subjects" value={String(subjectStats.length)} />
+                <AtlasSummaryStat label="Subtopics" value={String(atlasSubtopicCount)} />
+                <AtlasSummaryStat label="Outline codes" value={String(state.nodes.length)} />
+                <AtlasSummaryStat label="Practice-ready codes" value={String(practiceNodes.length)} />
+                <AtlasSummaryStat label="Approved questions" value={String(atlasQuestionCount)} />
+                <AtlasSummaryStat
+                  label="Codes with components"
+                  value={String(atlasComponentCodeCount)}
+                />
+                <AtlasSummaryStat label="Studied" value={String(atlasStudiedCount)} />
+                <AtlasSummaryStat label="To repair" value={String(atlasUnstudiedCount)} />
+              </div>
+              <div className="border-t border-white/10 px-4 py-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+                      Component coverage
+                    </p>
+                    <p className="mt-1 text-sm leading-6 text-zinc-200">
+                      {atlasComponentCodeCount} / {state.nodes.length} codes have approved Atlas
+                      lanes; {atlasLessonReadyCount} lesson-ready and {atlasLaneReadyCount} with
+                      any lane.
+                    </p>
+                  </div>
+                  <span className="font-serif text-3xl font-semibold tabular-nums text-white">
+                    {atlasComponentCoverage}%
+                  </span>
+                </div>
+                <div
+                  className="mt-3 h-2 overflow-hidden rounded-full bg-white/10"
+                  aria-label={`Component coverage ${atlasComponentCoverage}%`}
+                >
+                  <div
+                    className="h-full rounded-full bg-red-600 transition-[width] duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]"
+                    style={{ width: `${atlasComponentCoverage}%` }}
+                  />
+                </div>
+              </div>
+            </section>
 
-            <div className="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)_390px]">
-              <aside className="min-w-0">
-                <div className="rounded-lg border border-zinc-950/10 bg-white p-3 shadow-[0_18px_60px_rgba(24,24,27,0.08)]">
+            <div className="grid gap-5 xl:h-[calc(100dvh-15rem)] xl:min-h-[680px] xl:grid-cols-[540px_minmax(0,1fr)]">
+              <div
+                id="atlas-navigator-pane"
+                className="grid min-w-0 gap-4 lg:grid-cols-[180px_minmax(0,1fr)] xl:h-full xl:overflow-hidden"
+              >
+              <aside className="min-w-0 xl:h-full xl:overflow-y-auto xl:pr-1">
+                <div className="border border-zinc-950/10 bg-white p-3 shadow-[0_18px_60px_rgba(24,24,27,0.08)]">
                   <p className="px-2 pb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                     Subjects
                   </p>
@@ -927,7 +1074,7 @@ export function AtlasClient() {
                   </div>
                 </div>
 
-                <div className="mt-4 rounded-lg border border-zinc-950/10 bg-white p-3">
+                <div className="mt-4 border border-zinc-950/10 bg-white p-3">
                   <p className="px-2 pb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
                     Subtopics
                   </p>
@@ -960,8 +1107,25 @@ export function AtlasClient() {
                 </div>
               </aside>
 
-              <main className="min-w-0">
-                <div className="rounded-lg border border-zinc-950/10 bg-white p-3">
+              <main
+                id="atlas-outline-tree"
+                className="min-w-0 xl:h-full xl:overflow-hidden"
+                aria-label="Outline tree"
+              >
+                <div className="border border-zinc-950/10 bg-white p-3">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3 border-b border-zinc-950/10 pb-3">
+                    <div>
+                      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-red-700">
+                        Outline tree
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-zinc-950">
+                        Code-by-code repair map
+                      </p>
+                    </div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+                      {filtered.length} visible / {allNodes.length} total
+                    </p>
+                  </div>
                   <label className="sr-only" htmlFor="atlas-search">
                     Search outline codes
                   </label>
@@ -1012,7 +1176,7 @@ export function AtlasClient() {
                         {scopedQuestionCount} questions
                       </p>
                       <div
-                        className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-7"
+                        className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4"
                         aria-label={`Scope readiness for ${scopeLabel}`}
                       >
                         {[
@@ -1093,7 +1257,7 @@ export function AtlasClient() {
                         </button>
                       ) : null}
                     </div>
-                    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-12">
+                    <div className="grid gap-2 sm:grid-cols-2">
                       <button
                         type="button"
                         onClick={() => scopedWalkCode && selectCode(scopedWalkCode)}
@@ -1176,6 +1340,14 @@ export function AtlasClient() {
                       </button>
                       <button
                         type="button"
+                        onClick={() => selectCode(scopedGuidedNodes[0]?.code ?? null)}
+                        disabled={scopedGuidedNodes.length === 0}
+                        className="rounded-md border border-zinc-950/15 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-[transform,background-color,border-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
+                      >
+                        Jump to first guided
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => selectCode(scopedDebriefNodes[0]?.code ?? null)}
                         disabled={scopedDebriefNodes.length === 0}
                         className="rounded-md border border-zinc-950/15 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-700 transition-[transform,background-color,border-color,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-zinc-950 hover:bg-zinc-50 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45"
@@ -1228,8 +1400,8 @@ export function AtlasClient() {
                   </div>
                 </div>
 
-                <div className="mt-4 grid gap-4">
-                  <div className="rounded-lg border border-zinc-950/10 bg-white px-4 py-3">
+                  <div className="mt-4 grid max-h-[calc(100dvh-300px)] min-h-[520px] gap-4 overflow-y-auto pr-1 xl:h-[calc(100%-17.5rem)] xl:min-h-0 xl:max-h-none">
+                  <div className="border border-zinc-950/10 bg-white px-4 py-3">
                     <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
                       Active Atlas view
                     </p>
@@ -1242,7 +1414,7 @@ export function AtlasClient() {
                     </p>
                   </div>
                   {grouped.length === 0 ? (
-                    <div className="rounded-lg border border-zinc-950/10 bg-white p-6 text-sm text-zinc-700">
+                    <div className="border border-zinc-950/10 bg-white p-6 text-sm text-zinc-700">
                       No outline codes match this filter.
                     </div>
                   ) : (
@@ -1262,7 +1434,7 @@ export function AtlasClient() {
                         <section
                           key={subtopic}
                           aria-labelledby={`subtopic-${slug(subtopic)}`}
-                          className="rounded-lg border border-zinc-950/10 bg-white"
+                          className="border border-zinc-950/10 bg-white"
                         >
                           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-950/10 px-4 py-3">
                             <h2
@@ -1343,15 +1515,20 @@ export function AtlasClient() {
                   )}
                 </div>
               </main>
+              </div>
 
-              <aside className="min-w-0">
-                <div className="rounded-lg border border-zinc-950/10 bg-zinc-950 p-4 text-white shadow-[0_28px_90px_rgba(24,24,27,0.24)] lg:sticky lg:top-6">
+              <aside
+                id="atlas-code-workbench"
+                className="min-w-0"
+                aria-label="Selected code workbench"
+              >
+                <div className="rounded-lg border border-zinc-950/10 bg-zinc-950 p-4 text-white shadow-[0_28px_90px_rgba(24,24,27,0.24)] lg:sticky lg:top-6 xl:max-h-[calc(100dvh-3rem)] xl:overflow-y-auto xl:overscroll-contain">
                   {selected ? (
                     <>
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div>
                           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
-                            Selected code
+                            Selected code workbench
                           </p>
                           <h2 className="mt-2 font-serif text-2xl font-semibold leading-tight">
                             {selected.code}
@@ -1366,6 +1543,44 @@ export function AtlasClient() {
                       <p className="mt-2 text-sm leading-6 text-zinc-300">
                         {selected.subject_display} / {selected.subtopic}
                       </p>
+                      <div
+                        className="mt-4 grid gap-2 sm:grid-cols-3"
+                        aria-label="Selected lesson performance drill summary"
+                      >
+                        <article className="rounded-md bg-white p-3 text-zinc-950">
+                          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-red-700">
+                            Lesson
+                          </p>
+                          <p className="mt-2 font-serif text-xl font-semibold">
+                            {hasLessonLane(selected) ? "Ready" : "Gate"}
+                          </p>
+                          <p className="mt-1 text-xs leading-5 text-zinc-600">
+                            {selectedStudied ? "Studied" : "Open"} in this scope
+                          </p>
+                        </article>
+                        <article className="rounded-md bg-white p-3 text-zinc-950">
+                          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-red-700">
+                            Performance
+                          </p>
+                          <p className="mt-2 font-serif text-xl font-semibold tabular-nums">
+                            {selectedPosition ?? "-"} / {allNodes.length}
+                          </p>
+                          <p className="mt-1 text-xs leading-5 text-zinc-600">
+                            {selectedProgress}% through Atlas
+                          </p>
+                        </article>
+                        <article className="rounded-md bg-white p-3 text-zinc-950">
+                          <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-red-700">
+                            Drill
+                          </p>
+                          <p className="mt-2 font-serif text-xl font-semibold">
+                            {componentsLoading ? "..." : drillCount > 0 ? drillCount : "Gate"}
+                          </p>
+                          <p className="mt-1 text-xs leading-5 text-zinc-600">
+                            {selected.question_count > 0 ? "Practice ready" : "Needs questions"}
+                          </p>
+                        </article>
+                      </div>
                       <div
                         className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3"
                         aria-label="Selected code lanes"
@@ -2639,10 +2854,76 @@ export function AtlasClient() {
                 </div>
               </aside>
             </div>
-          </>
+            </div>
+          </div>
         )}
       </div>
     </section>
+  );
+}
+
+function AtlasAppRail() {
+  return (
+    <aside
+      id="atlas-app-rail"
+      aria-label="Atlas app navigation"
+      className="hidden min-w-0 xl:block"
+    >
+      <div className="sticky top-6 overflow-hidden rounded-lg bg-zinc-950 text-white shadow-[0_28px_90px_rgba(24,24,27,0.22)]">
+        <div className="border-t-4 border-red-700 p-4">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-md bg-white font-serif text-xl font-semibold text-zinc-950">
+              B
+            </div>
+            <div className="min-w-0">
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-400">
+                BarMatrix app rail
+              </p>
+              <p className="mt-1 truncate font-serif text-lg font-semibold leading-5">
+                Atlas Workspace
+              </p>
+            </div>
+          </div>
+          <div className="mt-5 grid gap-5">
+            {ATLAS_APP_RAIL_SECTIONS.map((section) => (
+              <nav key={section.label} aria-label={`${section.label} navigation`}>
+                <p className="px-2 font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                  {section.label}
+                </p>
+                <div className="mt-2 grid gap-1">
+                  {section.links.map((link) => {
+                    const active = "active" in link && link.active;
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        aria-current={active ? "page" : undefined}
+                        className={`rounded-md px-3 py-2 text-left transition-[background-color,color] ${
+                          active
+                            ? "bg-white text-zinc-950"
+                            : "text-zinc-300 hover:bg-white/10 hover:text-white"
+                        }`}
+                      >
+                        <span className="block text-sm font-semibold leading-5">
+                          {link.label}
+                        </span>
+                        <span
+                          className={`mt-1 block font-mono text-[10px] uppercase tracking-[0.12em] ${
+                            active ? "text-red-700" : "text-zinc-500"
+                          }`}
+                        >
+                          {link.meta}
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </nav>
+            ))}
+          </div>
+        </div>
+      </div>
+    </aside>
   );
 }
 
@@ -2677,13 +2958,15 @@ function SubjectButton({
   );
 }
 
-function Metric({ label, value }: { label: string; value: string }) {
+function AtlasSummaryStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-zinc-950/10 bg-white px-4 py-3">
-      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
+    <div className="rounded-md border border-white/10 bg-white/5 px-3 py-3">
+      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-400">
         {label}
       </p>
-      <p className="mt-1 font-serif text-3xl font-semibold tabular-nums">{value}</p>
+      <p className="mt-1 font-serif text-3xl font-semibold tabular-nums text-white">
+        {value}
+      </p>
     </div>
   );
 }

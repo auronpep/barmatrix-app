@@ -72,20 +72,31 @@ describe("dashboard guided-path entry", () => {
     assert.match(shell, /section: "VIEWS"/);
     assert.match(shell, /label: "My Path"/);
     assert.match(shell, /label: "Outline Atlas V2"/);
-    assert.match(shell, /description: "Code-by-code lessons, questions, traps, drills"/);
+    assert.match(shell, /description: "Code-by-code packets, axes, choice patterns, drills"/);
+    assert.match(shell, /label: "Red-Zone V5"/);
+    assert.match(shell, /label: "C3 Axis Map"/);
+    assert.match(shell, /label: "Choice Patterns"/);
+    assert.doesNotMatch(shell, /label: "Tension Matrix"/);
+    assert.doesNotMatch(shell, /label: "Trap Taxonomy"/);
     assert.match(shell, /l\.description/);
     for (const href of [
       "/dashboard/path",
       "/atlas",
       "/red-zones",
       "/drills",
+      "/tensions",
+      "/traps",
       "/dashboard/mastery",
       "/dashboard/final-sprint",
     ]) {
       assert.match(shell, new RegExp(`href: "${href.replaceAll("/", "\\/")}"`));
     }
     assert.match(body, /Outline Atlas/);
-    assert.match(body, /Walk the outline by code and open approved questions, lessons, traps, and drills/);
+    assert.match(body, /Walk the outline by code and open packet axes, choice patterns, and component payloads/);
+    assert.match(body, /Red-Zone V5/);
+    assert.match(body, /C3 Axis Map/);
+    assert.match(body, /Choice Patterns/);
+    assert.match(body, /Packet Drills/);
     assert.match(body, /Sequenced repair queue/);
     assert.match(body, /Active Red Zones/);
     assert.match(body, /Mastery trend/);
@@ -97,7 +108,10 @@ describe("dashboard guided-path entry", () => {
 
     assert.match(layout, /href: "\/atlas"/);
     assert.match(layout, /label: "Outline Atlas V2"/);
-    assert.match(layout, /Interactive outline map: code-by-code lessons, questions, traps, and drills/);
+    assert.match(layout, /Interactive outline map: code-by-code packets, axes, choice patterns, and drills/);
+    assert.match(layout, /label: "Red-Zone V5"/);
+    assert.match(layout, /label: "C3 Axis Map"/);
+    assert.match(layout, /label: "Choice Patterns"/);
     assert.match(layout, /title=\{link\.title\}/);
   });
 
@@ -106,6 +120,13 @@ describe("dashboard guided-path entry", () => {
 
     assert.match(page, /title: "Outline Atlas V2"/);
     assert.match(page, /robots: \{ index: false, follow: false \}/);
+  });
+
+  it("hides marketing chrome on the Atlas app shell", () => {
+    const chromeGate = readProjectFile("components/chrome-gate.tsx");
+
+    assert.match(chromeGate, /pathname === "\/atlas"/);
+    assert.match(chromeGate, /pathname === "\/preview\/atlas-live"/);
   });
 
   it("keeps the customer Atlas as a learning map with gated component lanes", () => {
@@ -118,8 +139,30 @@ describe("dashboard guided-path entry", () => {
     const client = readProjectFile("lib/api-client.ts");
     const body = readProjectFile("components/preview-dashboard/dashboard-v2-body.tsx");
 
-    assert.match(atlas, /Walk the MBE outline by code/);
-    assert.match(atlas, />\s*Outline Atlas V2\s*</);
+    assert.match(atlas, /BarMatrix \/ Atlas/);
+    assert.match(atlas, />\s*Outline Atlas\s*</);
+    assert.match(atlas, /Code-by-code learning map/);
+    assert.match(atlas, /Master outline/);
+    assert.match(atlas, /Component coverage/);
+    assert.match(atlas, /AtlasSummaryStat/);
+    assert.match(atlas, /ATLAS_APP_RAIL_SECTIONS/);
+    assert.match(atlas, /id="atlas-app-rail"/);
+    assert.match(atlas, /aria-label="Atlas app navigation"/);
+    assert.match(atlas, /BarMatrix app rail/);
+    assert.match(atlas, /Atlas Workspace/);
+    assert.match(atlas, /href: "\/atlas", label: "Outline Atlas", meta: "Code map", active: true/);
+    assert.match(atlas, /href: "\/dashboard\/path", label: "My Path"/);
+    assert.match(atlas, /href: "\/dashboard", label: "Full Dashboard"/);
+    assert.match(atlas, /id="atlas-navigator-pane"/);
+    assert.match(atlas, /id="atlas-outline-tree"/);
+    assert.match(atlas, /id="atlas-code-workbench"/);
+    assert.match(atlas, /xl:h-\[calc\(100dvh-15rem\)\]/);
+    assert.match(atlas, /xl:max-h-\[calc\(100dvh-3rem\)\]/);
+    assert.match(atlas, /xl:overflow-y-auto/);
+    assert.doesNotMatch(atlas, /xl:grid-cols-12/);
+    assert.doesNotMatch(atlas, /xl:grid-cols-7/);
+    assert.match(atlas, /Selected code workbench/);
+    assert.match(atlas, /Selected lesson performance drill summary/);
     assert.match(atlas, /Sign in to open the Outline Atlas V2\./);
     assert.match(atlas, /The Outline Atlas V2 is part of the paid repair program\./);
     assert.match(atlas, /Has any lane/);
@@ -268,6 +311,8 @@ describe("dashboard guided-path entry", () => {
     assert.match(atlas, /Show debriefs/);
     assert.match(atlas, /scopedFirstLessonCode/);
     assert.match(atlas, /Jump to first lesson/);
+    assert.match(atlas, /Jump to first guided/);
+    assert.match(atlas, /selectCode\(scopedGuidedNodes\[0\]\?\.code \?\? null\)/);
     assert.match(atlas, /Jump to first detour/);
     assert.match(atlas, /selectCode\(scopedDebriefNodes\[0\]\?\.code \?\? null\)/);
     assert.match(atlas, /Lesson ready/);
@@ -477,7 +522,7 @@ describe("dashboard guided-path entry", () => {
     assert.match(client, /AtlasDebriefElementPreview/);
     assert.match(client, /AtlasAnswerDetour/);
     assert.match(client, /startAtlasLeadMe/);
-    assert.match(body, /open approved questions, lessons, traps, and drills/);
+    assert.match(body, /open packet axes, choice patterns, and component payloads/);
     assert.doesNotMatch(atlas, /review_count|source_ref|source_label|included_by/);
   });
 

@@ -4,25 +4,25 @@ import CoachClient from "./coach-client";
 export const metadata = {
   title: "C3 Coach — Adaptive MBE Repair",
   description:
-    "The C3 Coach finds your weakest break, serves the question that targets it, and re-surfaces the lesson that fixes it. Adaptive, one trap at a time.",
+    "The C3 Coach works from the locked Red-Zone V5 model: red zone, axis, choice pattern, choice diagnostic, and attempt signal.",
   alternates: { canonical: "/coach" },
 };
 
 const HOW = [
   {
     num: "STEP 01",
-    title: "Finds the weakest break",
-    body: "The Coach reads your C3 mastery and the exam blueprint, then picks the skill break that is costing you the most — not a random next question.",
+    title: "Names the red zone",
+    body: "The Coach starts from the locked Red-Zone V5 catalog, then narrows the work to the axis and outline code that explain the miss.",
   },
   {
     num: "STEP 02",
-    title: "Serves the targeted question",
-    body: "You get one question chosen to hit that exact break, with Wrong Answer Forensics on every choice so a miss turns into a diagnosis, not a guess.",
+    title: "Reads the choice pattern",
+    body: "Each wrong choice is treated as a pattern: the mold, the filter that broke, the attraction, and the responsive repair.",
   },
   {
     num: "STEP 03",
-    title: "Re-surfaces the fix",
-    body: "When a break keeps biting, the Coach links you straight back to the lesson that repairs it, then spaces it until the pattern stops.",
+    title: "Waits for validated signal",
+    body: "Attempt-based mastery stays gated until a validated C3 choice diagnostic exists for the selected choice.",
   },
 ] as const;
 
@@ -43,15 +43,14 @@ export default function CoachPage() {
             className="display display-lg"
             style={{ margin: "0 0 24px", maxWidth: "20ch" }}
           >
-            Your weakest break,{" "}
-            <span style={{ fontStyle: "italic" }}>worked first.</span>{" "}
-            <span style={{ color: "var(--red)" }}>Then the fix.</span>
+            Your red zone,{" "}
+            <span style={{ fontStyle: "italic" }}>axis,</span>{" "}
+            <span style={{ color: "var(--red)" }}>and choice pattern.</span>
           </h1>
           <p className="body-lg" style={{ marginBottom: 0 }}>
-            The Coach doesn&apos;t hand you the next random question. It finds the
-            C3 break that&apos;s draining the most points, serves the question
-            built to expose it, and re-surfaces the lesson that repairs it — then
-            keeps spacing it until the pattern stops.
+            The Coach shell now uses the same packet taxonomy as the redesigned
+            library: Red Zone to Axis to Choice Pattern to Choice Diagnostic to
+            Attempt Signal.
           </p>
         </div>
       </section>
@@ -98,8 +97,8 @@ export default function CoachPage() {
                     margin: "0 0 4px",
                   }}
                 >
-                  Works your weakest C3 break first, then re-surfaces the lesson
-                  that fixes it.
+                  Works from the packet taxonomy first, then routes live attempts
+                  only when the validated C3 diagnostic exists.
                 </p>
                 <CoachClient />
               </div>
@@ -143,7 +142,7 @@ export default function CoachPage() {
             className="display display-md"
             style={{ color: "white", margin: "0 auto 20px", maxWidth: "22ch" }}
           >
-            Feed the Coach with more live attempts.
+            Keep the C3 taxonomy in view.
           </h2>
           <p
             className="body-lg"
@@ -153,8 +152,8 @@ export default function CoachPage() {
               maxWidth: "52ch",
             }}
           >
-            Your dashboard, drills, and red-zone map keep adding signal. The
-            Coach uses that work to choose the next break worth repairing.
+            Use the redesigned red-zone, axis, and choice-pattern libraries as
+            the front door while the attempt bridge stays gated.
           </p>
           <div
             style={{
@@ -168,11 +167,11 @@ export default function CoachPage() {
               Open Dashboard <span className="arrow">→</span>
             </Link>
             <Link
-              href="/drills"
+              href="/traps"
               className="btn btn-lg ghost"
               style={{ color: "white", borderColor: "white" }}
             >
-              Work Drills
+              Open Choice Patterns
             </Link>
           </div>
         </div>

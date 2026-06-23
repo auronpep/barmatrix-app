@@ -8,10 +8,15 @@ import { usePathname } from "next/navigation";
 // Diagnostic / FAQ …) and the marketing footer are redundant noise inside the
 // paid app. Everywhere else renders the chrome unchanged.
 //
-// Scope is intentionally tight: only the command-deck shell surfaces. Other
-// study pages keep the marketing chrome until they get their own shell.
+// Scope is intentionally tight: only routes with their own app navigation.
+// Other study pages keep the marketing chrome until they get their own shell.
 function isAppShellRoute(pathname: string): boolean {
-  return pathname === "/dashboard" || pathname.startsWith("/preview/dashboard-");
+  return (
+    pathname === "/dashboard" ||
+    pathname === "/atlas" ||
+    pathname === "/preview/atlas-live" ||
+    pathname.startsWith("/preview/dashboard-")
+  );
 }
 
 export function ChromeGate({ children }: { children: React.ReactNode }) {

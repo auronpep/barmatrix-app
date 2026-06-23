@@ -14,41 +14,35 @@ interface Lens {
 // fabricated number).
 function lenses(d: CommandDeckData): Lens[] {
   const activeRz = d.red_zones.filter((r) => r.active).length;
-  const hotCells = d.tension_matrix
-    ? d.tension_matrix.rows.reduce(
-        (a, row) => a + row.heat.filter((h) => h >= 3).length,
-        0,
-      )
-    : null;
-  const climbing = d.subject_mastery.filter((s) => s.delta > 0).length;
+  const recentMisses = d.recent_attempts.filter((attempt) => !attempt.correct).length;
 
   return [
     {
       href: "/red-zones",
       icon: "▌",
-      name: "Red Zones",
-      desc: "Your top recurring miss patterns, ranked by damage.",
-      stat: `${activeRz} active`,
+      name: "Red-Zone V5",
+      desc: "The locked repair categories that organize the new packet corpus.",
+      stat: activeRz > 0 ? `${activeRz} live signals` : null,
     },
     {
-      href: "/matrix",
+      href: "/tensions",
       icon: "▦",
-      name: "Tension Matrix",
-      desc: "Where subject meets trap-dimension — the heat map.",
-      stat: hotCells === null ? null : `${hotCells} hot cells`,
+      name: "C3 Axis Map",
+      desc: "The legal fights by outline code: side A, side B, resolver, method.",
+      stat: null,
     },
     {
-      href: "/pattern-board",
+      href: "/traps",
       icon: "▤",
-      name: "Pattern Board",
-      desc: "Which patterns are climbing, which are stalling.",
-      stat: `${climbing} climbing`,
+      name: "Choice Patterns",
+      desc: "Wrong-answer molds, broken filters, attractions, signals, and repairs.",
+      stat: recentMisses > 0 ? `${recentMisses} recent misses` : null,
     },
     {
-      href: "/misconceptions",
-      icon: "✕",
-      name: "Misconceptions",
-      desc: "The exact false rules behind your wrong answers.",
+      href: "/atlas",
+      icon: "□",
+      name: "Outline Packets",
+      desc: "The component payloads attached to outline codes.",
       stat: null,
     },
   ];

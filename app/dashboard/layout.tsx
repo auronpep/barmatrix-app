@@ -26,27 +26,23 @@ const VIEW_TABS: readonly NavItem[] = [
   { href: "/dashboard/final-sprint", label: "Final Sprint" },
 ];
 
-// Study-program surfaces reachable from any dashboard view. The five program
-// components lead (Tension Map, Trap Taxonomy, Practice, Drills, Boot Camps),
-// then the supporting surfaces. These navigate out of the /dashboard subtree,
-// so they carry no active state. Every href is a real route with a page.tsx
-// (no /subjects — it has only per-subject sub-pages, no index, so it 404s).
+// Study-program surfaces reachable from any dashboard view. Red-Zone V5
+// surfaces lead: locked red-zone catalog, C3 axis map, choice-pattern taxonomy,
+// and packet-first drills.
 const PROGRAM_LINKS: readonly NavItem[] = [
-  { href: "/foundations", label: "The Method" },
+  { href: "/red-zones", label: "Red-Zone V5" },
+  { href: "/tensions", label: "C3 Axis Map" },
+  { href: "/traps", label: "Choice Patterns" },
+  { href: "/drills", label: "Packet Drills" },
   {
     href: "/atlas",
     label: "Outline Atlas V2",
-    title: "Interactive outline map: code-by-code lessons, questions, traps, and drills",
+    title: "Interactive outline map: code-by-code packets, axes, choice patterns, and drills",
   },
-  { href: "/matrix", label: "Tension Matrix" },
-  { href: "/tensions", label: "Tension Map" },
-  { href: "/misconceptions", label: "Misconceptions" },
-  { href: "/question-history", label: "Question History" },
-  { href: "/traps", label: "Trap Taxonomy" },
+  { href: "/foundations", label: "The Method" },
   { href: "/practice", label: "Practice" },
-  { href: "/drills", label: "Drills" },
   { href: "/boot-camps", label: "Boot Camps" },
-  { href: "/red-zones", label: "Red-Zone Map" },
+  { href: "/question-history", label: "Question History" },
   { href: "/timed-sets", label: "Timed Sets" },
   { href: "/mobile-apps", label: "Mobile Access" },
   { href: "/support", label: "Support" },

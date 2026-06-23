@@ -713,6 +713,125 @@ export interface TensionQuestionsResponse {
   questions: TensionQuestionSummary[];
 }
 
+// --- C3 Red-Zone V5 packet taxonomy — new-content-only read surface ---
+
+export interface C3RedZoneCategory {
+  red_zone_id: string;
+  locked_title: string;
+  grid_label: string;
+  short_label: string;
+  display_order: number;
+  core_idea: string;
+  student_question: string;
+  student_move: string;
+  failure_signature: string;
+  mantra: string;
+  axis_count: number;
+  choice_pattern_count: number;
+  packet_count: number;
+  subjects: string[];
+}
+
+export interface C3RedZoneCatalogResponse {
+  version: string;
+  categories: C3RedZoneCategory[];
+  totals: {
+    files: number;
+    packets: number;
+    visible_packets: number;
+    blocked_packets: number;
+    axes: number;
+    visible_axes: number;
+    choice_patterns: number;
+    visible_choice_patterns: number;
+    human_review_rows: number;
+  };
+}
+
+export interface C3TaxonomyAxis {
+  axis_id: string;
+  outline_code: string;
+  axis_name: string;
+  red_zone_id: string;
+  subject: string;
+  subtopic: string | null;
+  node_title: string | null;
+  side_a: string | null;
+  side_b: string | null;
+  resolver_type: string | null;
+  resolver: string | null;
+  c3_phase: string | null;
+  method_class: string | null;
+  merge_guard: string | null;
+  qa_score_12: number | null;
+  source_file: string;
+  packet_id: string | null;
+}
+
+export interface C3ChoicePattern {
+  choice_pattern_id: string;
+  axis_id: string;
+  outline_code: string;
+  red_zone_id: string;
+  subject: string;
+  filter_broken: string;
+  mold_code: string;
+  bait_architecture_code: string | null;
+  wrong_answer_form: string | null;
+  why_it_attracts_students: string | null;
+  student_visible_signal: string | null;
+  true_responsive_repair: string | null;
+  method_class: string | null;
+  qa_score_12: number | null;
+  source_file: string;
+  packet_id: string | null;
+}
+
+export interface C3AxisListResponse {
+  axes: C3TaxonomyAxis[];
+  total: number;
+  returned: number;
+}
+
+export interface C3ChoicePatternListResponse {
+  choice_patterns: C3ChoicePattern[];
+  total: number;
+  returned: number;
+}
+
+export interface C3AxisDetailResponse {
+  axis: C3TaxonomyAxis;
+  choice_patterns: C3ChoicePattern[];
+}
+
+export interface C3ChoicePatternDetailResponse {
+  choice_pattern: C3ChoicePattern;
+  axis: C3TaxonomyAxis | null;
+}
+
+export interface C3OutlineComponentsResponse {
+  packet: {
+    outline_code: string;
+    source_file: string;
+    packet_id: string | null;
+    subject: string;
+    subject_display: string | null;
+    subtopic: string | null;
+    node_title: string | null;
+    red_zone_ids: string[];
+    component_targets: string[];
+  };
+  axes: C3TaxonomyAxis[];
+  choice_patterns: C3ChoicePattern[];
+  component_payloads: Array<{
+    outline_code: string;
+    component_target: string;
+    status: string;
+    axis_ids: string[];
+    choice_pattern_ids: string[];
+  }>;
+}
+
 export interface ApiError {
   error: string | Record<string, unknown>;
 }
@@ -998,6 +1117,24 @@ function trapQuery(params: {
   return text ? `?${text}` : "";
 }
 
+function c3TaxonomyQuery(params: {
+  red_zone_id?: string | null;
+  subject?: string | null;
+  outline_code?: string | null;
+  mold_code?: string | null;
+  filter_broken?: string | null;
+  limit?: number;
+}): string {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null && value !== "") {
+      search.set(key, String(value));
+    }
+  }
+  const text = search.toString();
+  return text ? `?${text}` : "";
+}
+
 function atlasQuery(params: {
   outline_code?: string;
   subject?: string;
@@ -1173,6 +1310,20 @@ export interface DayPlanAction {
   href?: string;
 }
 
+export interface LeadMeV5DayPlanItem {
+  item_id: string;
+  item_type: string;
+  title: string;
+  prompt: string;
+  front_blocks: Array<{
+    type: string;
+    markdown?: string | null;
+    alt_text?: string | null;
+    caption?: string | null;
+  }>;
+  options: Array<{ id: string; label: string }>;
+}
+
 export interface DayPlanMainItem {
   main_item_id: string;
   order: number;
@@ -1197,6 +1348,7 @@ export interface DayPlanStep {
   xp: number;
   source: DayPlanStepSource;
   completed: boolean;
+  leadme_v5_item?: LeadMeV5DayPlanItem;
   catchup?: {
     catchup_id: string;
     original_day_key: string;
@@ -2228,6 +2380,50 @@ export const api = {
   ) =>
     request<TensionQuestionsResponse>(
       `/api/tensions/${encodeURIComponent(slug)}/questions${trapQuery(params)}`,
+      init,
+    ),
+
+  // --- C3 Red-Zone V5 packet taxonomy — anonymous, read-only ---
+  listC3RedZoneCatalog: (init?: RequestInit) =>
+    request<C3RedZoneCatalogResponse>("/api/red-zones/catalog", init),
+
+  listC3Tensions: (
+    params: {
+      red_zone_id?: string | null;
+      subject?: string | null;
+      outline_code?: string | null;
+      limit?: number;
+    } = {},
+    init?: RequestInit,
+  ) => request<C3AxisListResponse>(`/api/c3/tensions${c3TaxonomyQuery(params)}`, init),
+
+  getC3Tension: (axisId: string, init?: RequestInit) =>
+    request<C3AxisDetailResponse>(
+      `/api/c3/tensions/${encodeURIComponent(axisId)}`,
+      init,
+    ),
+
+  listC3Traps: (
+    params: {
+      red_zone_id?: string | null;
+      subject?: string | null;
+      outline_code?: string | null;
+      mold_code?: string | null;
+      filter_broken?: string | null;
+      limit?: number;
+    } = {},
+    init?: RequestInit,
+  ) => request<C3ChoicePatternListResponse>(`/api/c3/traps${c3TaxonomyQuery(params)}`, init),
+
+  getC3Trap: (choicePatternId: string, init?: RequestInit) =>
+    request<C3ChoicePatternDetailResponse>(
+      `/api/c3/traps/${encodeURIComponent(choicePatternId)}`,
+      init,
+    ),
+
+  getC3OutlineComponents: (outlineCode: string, init?: RequestInit) =>
+    request<C3OutlineComponentsResponse>(
+      `/api/c3/outlines/${encodeURIComponent(outlineCode)}/components`,
       init,
     ),
 

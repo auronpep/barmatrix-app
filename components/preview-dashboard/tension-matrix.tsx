@@ -20,7 +20,7 @@ interface HoverCell {
   attempts: number;
 }
 
-// Personal tension matrix heatmap: subject × trap-dimension. Renders a
+// Personal axis-signal heatmap: subject x choice-pattern dimension. Renders a
 // "building" state when the server returns null (e.g. JSON_TABLE unsupported or
 // not enough data). Ported from the prototype's MiniMatrix.
 export function TensionMatrix({ matrix }: { matrix: CommandDeckTensionMatrix | null }) {
@@ -29,8 +29,8 @@ export function TensionMatrix({ matrix }: { matrix: CommandDeckTensionMatrix | n
   if (!matrix || matrix.rows.length === 0) {
     return (
       <p className="px-5 py-6 text-sm leading-6 text-zinc-500">
-        Your personal tension matrix is building. Once you&apos;ve missed a few
-        tagged questions, the subject × trap-dimension heatmap will appear here.
+        Your personal axis signal is building. Once validated diagnostics attach
+        to attempts, this panel can show subject by choice-pattern pressure.
       </p>
     );
   }
@@ -41,8 +41,8 @@ export function TensionMatrix({ matrix }: { matrix: CommandDeckTensionMatrix | n
       <div className="mb-3.5 flex min-w-0 flex-wrap items-baseline justify-between gap-2">
         <span className="min-w-0 font-mono text-[11px] tracking-[0.05em] text-zinc-500">
           {hover
-            ? `${hover.row} × ${hover.col} — ${hover.attempts} misses, heat ${hover.heat}/5`
-            : "Hover any cell · darker = more misses on attractive traps"}
+            ? `${hover.row} x ${hover.col} - ${hover.attempts} misses, heat ${hover.heat}/5`
+            : "Hover any cell - darker = more validated attempt pressure"}
         </span>
         <span className="whitespace-nowrap font-mono text-[10px] tracking-[0.05em] text-zinc-400">
           {matrix.rows.length} SUBJECTS × {cols.length} TRAP DIMS

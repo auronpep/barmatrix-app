@@ -199,6 +199,10 @@ function CurrentTask({
 
       <p className="mt-5 max-w-2xl text-base leading-8 text-zinc-800">{step.prompt}</p>
 
+      {step.leadme_v5_item ? (
+        <V5LeadMeCard item={step.leadme_v5_item} />
+      ) : null}
+
       <div className="mt-5 grid gap-3 border-t border-zinc-200 pt-5 sm:grid-cols-2">
         <InfoCell label="Content" value={contentRefLabel(step)} />
         <InfoCell label="XP" value={`+${step.xp}`} />
@@ -226,6 +230,67 @@ function CurrentTask({
         </p>
       )}
     </section>
+  );
+}
+
+function V5LeadMeCard({
+  item,
+}: {
+  item: NonNullable<DayPlanStep["leadme_v5_item"]>;
+}) {
+  return (
+    <div className="mt-6 border border-zinc-300 bg-zinc-50">
+      <div className="border-b border-zinc-300 bg-white px-5 py-4">
+        <p className="font-mono text-[11px] uppercase tracking-wider text-red-700">
+          {item.item_type.replaceAll("_", " ")}
+        </p>
+        <h3 className="mt-2 font-serif text-2xl font-semibold leading-tight text-zinc-950">
+          {item.title}
+        </h3>
+      </div>
+
+      <div className="space-y-4 p-5">
+        {item.front_blocks.map((block, index) => (
+          <V5LeadMeBlock block={block} key={`${block.type}-${index}`} />
+        ))}
+
+        {item.options.length > 0 ? (
+          <ol className="grid gap-3 sm:grid-cols-2">
+            {item.options.map((option) => (
+              <li
+                key={option.id}
+                className="flex gap-3 border border-zinc-200 bg-white p-3 text-sm leading-6 text-zinc-800"
+              >
+                <span className="flex size-7 shrink-0 items-center justify-center border border-zinc-300 font-mono text-xs font-semibold text-zinc-700">
+                  {option.id}
+                </span>
+                <span>{option.label}</span>
+              </li>
+            ))}
+          </ol>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function V5LeadMeBlock({
+  block,
+}: {
+  block: NonNullable<DayPlanStep["leadme_v5_item"]>["front_blocks"][number];
+}) {
+  const body = block.markdown ?? block.caption ?? block.alt_text ?? "";
+  if (!body.trim()) return null;
+
+  return (
+    <div className="border border-zinc-200 bg-white p-4">
+      <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-zinc-500">
+        {block.type.replaceAll("_", " ")}
+      </p>
+      <p className="whitespace-pre-wrap text-sm leading-7 text-zinc-800">
+        {body}
+      </p>
+    </div>
   );
 }
 

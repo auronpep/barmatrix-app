@@ -66,8 +66,8 @@ export function RedZoneList({
   if (items.length === 0) {
     return (
       <p className="px-5 py-6 text-sm leading-6 text-zinc-500">
-        No active red zones yet. Take the diagnostic or work a drill to build
-        your Red-Zone Map.
+        No active attempt signals yet. Use the Red-Zone V5 catalog while the
+        personal bridge builds.
       </p>
     );
   }

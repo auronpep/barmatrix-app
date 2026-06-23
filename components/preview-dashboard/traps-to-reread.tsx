@@ -1,7 +1,6 @@
 import type { DashboardRecentAttempt } from "@/lib/api-client";
 
-// One recent miss, rendered as a forensic card — ported from the original
-// dashboard's ForensicsCard ("Traps to reread before the next set").
+// One recent miss, rendered as a choice-pattern review card.
 function TrapCard({ item }: { item: DashboardRecentAttempt }) {
   return (
     <article className="border border-zinc-300 bg-white p-5">
@@ -14,7 +13,7 @@ function TrapCard({ item }: { item: DashboardRecentAttempt }) {
         </span>
       </div>
       <h3 className="mt-3 font-serif text-2xl font-semibold leading-tight text-zinc-950">
-        {item.trap_name ?? "Wrong-answer trap"}
+        {item.trap_name ?? "Choice pattern"}
       </h3>
       <div className="mt-4 grid grid-cols-2 gap-3 border-t border-zinc-200 pt-4 text-sm">
         <div>
@@ -36,10 +35,8 @@ function TrapCard({ item }: { item: DashboardRecentAttempt }) {
   );
 }
 
-// "Traps to reread" — the recent wrong-answer forensics from the original
-// dashboard, surfaced on the command deck. Filters the live recent-attempts feed
-// to misses (the traps that pulled a wrong answer) and shows the most recent few
-// to re-read before the next set. Honest empty state when there are no misses.
+// Recent wrong-answer forensics from the command deck, framed as choice-pattern
+// review. The payload shape is unchanged until the C3 attempt bridge lands.
 export function TrapsToReread({ items }: { items: DashboardRecentAttempt[] }) {
   const misses = items.filter((a) => !a.correct).slice(0, 6);
 
@@ -47,7 +44,7 @@ export function TrapsToReread({ items }: { items: DashboardRecentAttempt[] }) {
     return (
       <p className="p-5 text-sm leading-6 text-zinc-600">
         No recent misses to reread — your latest attempts were clean. Keep
-        working drills and any new traps will surface here.
+        working drills and any validated choice patterns will surface here.
       </p>
     );
   }

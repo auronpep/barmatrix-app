@@ -34,52 +34,52 @@ const componentLinks = [
   {
     href: "/atlas",
     name: "Outline Atlas",
-    desc: "Walk the outline by code and open approved questions, lessons, traps, and drills.",
+    desc: "Walk the outline by code and open packet axes, choice patterns, and component payloads.",
   },
   {
-    href: "/dashboard/mastery",
-    name: "Mastery Board",
-    desc: "See the weakest red zones by dimension and choose the next repair.",
+    href: "/red-zones",
+    name: "Red-Zone V5",
+    desc: "Review the 10 locked C3 repair modes before drilling the packet map.",
+  },
+  {
+    href: "/tensions",
+    name: "C3 Axis Map",
+    desc: "Open the legal fights by outline code: side A, side B, resolver, method class.",
+  },
+  {
+    href: "/traps",
+    name: "Choice Patterns",
+    desc: "Review the mold, broken filter, attraction, signal, and responsive repair.",
+  },
+  {
+    href: "/drills",
+    name: "Packet Drills",
+    desc: "Choose drills from packet axes and choice-pattern mechanics.",
+  },
+  {
+    href: "/coach",
+    name: "C3 Coach",
+    desc: "Use the Coach shell after validated choice diagnostics attach attempt signal.",
   },
   {
     href: "/diagnostic",
     name: "Diagnostic",
-    desc: "Refresh the Red-Zone Map with a live 20-question trap diagnostic.",
+    desc: "Create attempt signal without changing the gated C3 mastery bridge.",
   },
   {
     href: "/foundations",
     name: "The Method",
-    desc: "C3 lessons, drills, and the core wrong-answer forensics workflow.",
+    desc: "Review the core method beside the packet taxonomy.",
   },
   {
     href: "/practice",
     name: "Practice",
-    desc: "Work live bank questions by subject while preserving dashboard signal.",
+    desc: "Work live bank questions while the C3 attempt bridge remains gated.",
   },
   {
     href: "/timed-sets",
     name: "Timed Sets",
     desc: "Pressure-test repaired patterns under exam pacing.",
-  },
-  {
-    href: "/boot-camps",
-    name: "Boot Camps",
-    desc: "Focused repair circuits for high-damage subjects and traps.",
-  },
-  {
-    href: "/traps",
-    name: "Trap Taxonomy",
-    desc: "Review the recurring wrong-answer molds behind missed choices.",
-  },
-  {
-    href: "/certification",
-    name: "Certification",
-    desc: "Prove the repair skills that The Method and drills are building.",
-  },
-  {
-    href: "/coach",
-    name: "Coach",
-    desc: "Ask JJ for the next explanation, repair task, or C3 walkthrough.",
   },
 ] as const;
 
@@ -156,7 +156,7 @@ export function DashboardV2Body({
       <div className="mb-6">
         <Panel
           title="▌ Where to dig next"
-          meta="Four lenses on the same misses"
+          meta="Red-Zone V5 packet lenses"
           flush
         >
           <DiagRouter data={data} />
@@ -166,7 +166,7 @@ export function DashboardV2Body({
       <div className="mb-6">
         <Panel
           title="▌ Repair components"
-          meta="Secondary tools behind today's move"
+          meta="Packet-first routes behind today's move"
           flush
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -207,7 +207,7 @@ export function DashboardV2Body({
       <div className="mb-6 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <Panel
           title="▌ Active Red Zones"
-          actions={<PanelLink href="/red-zones" label="Open library" />}
+          actions={<PanelLink href="/red-zones" label="Open V5 catalog" />}
           flush
         >
           <RedZoneList
@@ -227,8 +227,8 @@ export function DashboardV2Body({
       {/* RE-READ — recent wrong-answer traps (from the original dashboard) */}
       <div className="mb-6">
         <Panel
-          title="▌ Traps to reread before the next set"
-          actions={<PanelLink href="/red-zones" label="Open Red-Zone Map" />}
+          title="▌ Choice patterns to reread before the next set"
+          actions={<PanelLink href="/traps" label="Open patterns" />}
           flush
         >
           <TrapsToReread items={data.recent_attempts} />
@@ -238,8 +238,8 @@ export function DashboardV2Body({
       {/* MAP — personal tension heatmap + subject mastery */}
       <div className="mb-6 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <Panel
-          title="▌ Your tension matrix"
-          actions={<PanelLink href="/matrix" label="Full matrix" />}
+          title="▌ Your axis signal"
+          actions={<PanelLink href="/tensions" label="Axis map" />}
           flush
         >
           <TensionMatrix matrix={data.tension_matrix} />

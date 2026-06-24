@@ -64,6 +64,10 @@ describe("J7 guided path dashboard", () => {
     assert.match(source, /item\.options\.map/);
     assert.match(source, /onClick=\{\(\) => onSelect\(option\.id\)\}/);
     assert.match(source, /data-leadme-option-style=\{optionMode\}/);
+    assert.match(source, /Teach First/);
+    assert.match(source, /task_type === "acknowledge"/);
+    assert.match(source, /micro_task_kind === "lead_me"/);
+    assert.match(source, /Continue/);
     assert.match(source, /Rule Lock/);
     assert.match(source, /Gate \$\{index \+ 1\}/);
     assert.match(source, /Trap Hunt/);

@@ -218,6 +218,8 @@ function CurrentTask({
   }
 
   const v5Options = step.leadme_v5_item?.options ?? [];
+  const noOptionActionLabel = v5NoOptionActionLabel(step);
+  const noOptionActionTone = noOptionActionLabel === "Continue" ? "red" : "ghost";
 
   return (
     <section
@@ -272,9 +274,9 @@ function CurrentTask({
             type="button"
             onClick={() => onComplete()}
             disabled={completing}
-            className="btn btn-lg ghost disabled:cursor-not-allowed disabled:opacity-60"
+            className={`btn btn-lg ${noOptionActionTone} disabled:cursor-not-allowed disabled:opacity-60`}
           >
-            {completing ? "Saving..." : "Mark Complete"}
+            {completing ? "Saving..." : noOptionActionLabel}
           </button>
         ) : null}
       </div>
@@ -381,9 +383,12 @@ function V5ResultBanner({ result }: { result: LeadMeV5CompletionResult }) {
   );
 }
 
-type V5OptionMode = "answer" | "gate" | "signal" | "filter" | "repair";
+type V5OptionMode = "teach" | "answer" | "gate" | "signal" | "filter" | "repair";
 
 function v5OptionMode(item: NonNullable<DayPlanStep["leadme_v5_item"]>): V5OptionMode {
+  if (item.task_type === "acknowledge" || item.micro_task_kind === "lead_me" || (item.item_type === "instruction" && item.options.length === 0)) {
+    return "teach";
+  }
   if (item.item_type === "micro_task" || item.coverage_role === "rule_anchor" || item.micro_task_kind === "gate_check" || item.micro_task_kind === "rule_gate") {
     return "gate";
   }
@@ -401,6 +406,12 @@ function v5OptionMode(item: NonNullable<DayPlanStep["leadme_v5_item"]>): V5Optio
 
 function v5ModeCopy(mode: V5OptionMode) {
   switch (mode) {
+    case "teach":
+      return {
+        label: "Teach First",
+        instruction: "Read this first. The next cards check whether you picked it up.",
+        actionLabel: "Continue",
+      };
     case "gate":
       return {
         label: "Rule Lock",
@@ -435,6 +446,7 @@ function v5ModeCopy(mode: V5OptionMode) {
 }
 
 function optionLabel(mode: V5OptionMode, option: { id: string }, index: number) {
+  if (mode === "teach") return "Read";
   if (mode === "answer") return option.id;
   if (mode === "gate") return `Gate ${index + 1}`;
   if (mode === "signal") return `Signal ${index + 1}`;
@@ -443,6 +455,7 @@ function optionLabel(mode: V5OptionMode, option: { id: string }, index: number) 
 }
 
 function v5OptionShellClass(mode: V5OptionMode) {
+  if (mode === "teach") return "border border-zinc-200 bg-white";
   if (mode === "answer") return "border border-zinc-200 bg-white";
   if (mode === "gate") return "border border-cyan-200 bg-cyan-50";
   if (mode === "signal") return "border border-red-200 bg-red-50";
@@ -452,6 +465,7 @@ function v5OptionShellClass(mode: V5OptionMode) {
 
 function v5OptionButtonClass(mode: V5OptionMode) {
   const base = "flex h-full w-full gap-3 p-3 text-left text-sm leading-6 focus-visible:outline focus-visible:outline-2 disabled:cursor-wait disabled:opacity-60";
+  if (mode === "teach") return `${base} text-zinc-800 hover:bg-zinc-100 focus-visible:outline-zinc-900`;
   if (mode === "gate") return `${base} text-cyan-950 hover:bg-cyan-100 focus-visible:outline-cyan-800`;
   if (mode === "signal") return `${base} text-red-950 hover:bg-red-100 focus-visible:outline-red-700`;
   if (mode === "filter") return `${base} text-zinc-900 hover:bg-zinc-100 focus-visible:outline-zinc-900`;
@@ -461,6 +475,7 @@ function v5OptionButtonClass(mode: V5OptionMode) {
 
 function v5OptionBadgeClass(mode: V5OptionMode) {
   const base = "flex min-h-7 shrink-0 items-center justify-center border px-2 font-mono text-[11px] font-semibold uppercase tracking-wider";
+  if (mode === "teach") return `${base} border-zinc-300 bg-white text-zinc-700`;
   if (mode === "gate") return `${base} border-cyan-300 bg-white text-cyan-800`;
   if (mode === "signal") return `${base} border-red-300 bg-white text-red-800`;
   if (mode === "filter") return `${base} border-zinc-400 bg-zinc-50 text-zinc-800`;
@@ -474,6 +489,12 @@ function v5ResultAnswerLabel(result: LeadMeV5CompletionResult) {
   if (result.item_type === "filter_drill" || result.micro_task_kind === "true_responsive_filter") return "Correct filter";
   if (result.item_type === "repair_drill" || result.micro_task_kind === "repair_rewrite") return "Correct repair";
   return "Correct answer";
+}
+
+function v5NoOptionActionLabel(step: DayPlanStep) {
+  const item = step.leadme_v5_item;
+  if (item && v5OptionMode(item) === "teach") return "Continue";
+  return "Mark Complete";
 }
 
 function V5LeadMeBlock({

@@ -4,9 +4,41 @@ const baseUrl = process.env.LEADME_SMOKE_URL ?? "http://127.0.0.1:3024";
 const screenshot = process.env.LEADME_SMOKE_SCREENSHOT;
 const debug = process.env.LEADME_SMOKE_DEBUG === "1";
 
+const teachStep = {
+  step_id: "leadme-v5-lm-torts-assault-000",
+  order: 1,
+  main_item_id: "leadme-v5-intentional-torts",
+  kind: "lesson_slice",
+  title: "Assault Teach First",
+  prompt: "Read this first. The next cards check whether you picked it up.",
+  estimated_seconds: 45,
+  content_ref: { type: "leadme_v5_candidate", id: "LM-TORTS-ASSAULT-000", label: "ASSAULT-000" },
+  action: { label: "Continue" },
+  xp: 10,
+  source: "daily",
+  completed: false,
+  leadme_v5_item: {
+    item_id: "LM-TORTS-ASSAULT-000",
+    item_type: "instruction",
+    task_type: "acknowledge",
+    micro_task_kind: "lead_me",
+    coverage_role: "memory_line",
+    layout: "standard",
+    title: "Assault Teach First",
+    prompt: "Read this first. The next cards check whether you picked it up.",
+    front_blocks: [
+      { type: "text", markdown: "Assault requires apprehension of imminent contact." },
+      { type: "callout", markdown: "First move: Did the plaintiff reasonably apprehend imminent contact?" },
+      { type: "warning", markdown: "Common trap: no assault because there was no touching" },
+      { type: "repair", markdown: "Repair move: use apprehension of imminent contact, not actual contact." },
+    ],
+    options: [],
+  },
+};
+
 const gateStep = {
   step_id: "leadme-v5-lm-torts-assault-001",
-  order: 1,
+  order: 2,
   main_item_id: "leadme-v5-intentional-torts",
   kind: "lesson_slice",
   title: "Assault Rule Lock",
@@ -41,7 +73,7 @@ const gateStep = {
 
 const trapStep = {
   step_id: "leadme-v5-lm-torts-assault-002",
-  order: 2,
+  order: 3,
   main_item_id: "leadme-v5-intentional-torts",
   kind: "lesson_slice",
   title: "Assault Trap Hunt",
@@ -77,7 +109,7 @@ const trapStep = {
 const answerStep = {
   ...trapStep,
   step_id: "leadme-v5-lm-torts-assault-005",
-  order: 3,
+  order: 4,
   title: "Assault Answer Check",
   prompt: "Which answer should survive?",
   content_ref: { type: "leadme_v5_candidate", id: "LM-TORTS-ASSAULT-005", label: "ASSAULT-005" },
@@ -100,7 +132,7 @@ const answerStep = {
   },
 };
 
-const steps = [gateStep, trapStep, answerStep];
+const steps = [teachStep, gateStep, trapStep, answerStep];
 
 function stepIndex(currentStep) {
   return Math.max(0, steps.findIndex((step) => step.step_id === currentStep.step_id));
@@ -172,6 +204,7 @@ const resultByStep = {
 };
 
 function expectedResponseFor(stepId) {
+  if (stepId === teachStep.step_id) return undefined;
   if (stepId === gateStep.step_id) return "G2";
   if (stepId === trapStep.step_id) return "S3";
   return "C";
@@ -185,7 +218,7 @@ function completionResponseFor(stepId) {
     ok: true,
     completed_step_id: stepId,
     completion_gamification: null,
-    leadme_v5_result: resultByStep[stepId],
+    leadme_v5_result: resultByStep[stepId] ?? null,
     ...response(nextStep),
   };
 }
@@ -199,7 +232,7 @@ async function clickAndWaitForCompletion(page, locator) {
   await completionPromise;
 }
 
-let currentApiStep = gateStep;
+let currentApiStep = teachStep;
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
@@ -231,10 +264,14 @@ await page.route("**/api/me/day-plan", async (route) => {
 
 await page.route("**/api/me/day-plan/steps/**/complete", async (route) => {
   completionRequests += 1;
-  const body = route.request().postDataJSON();
+  const body = route.request().postDataJSON() ?? {};
   const stepId = decodeURIComponent(route.request().url().match(/\/steps\/([^/]+)\/complete$/)?.[1] ?? "");
   const expectedResponse = expectedResponseFor(stepId);
-  if (body.selected_response !== expectedResponse) {
+  if (expectedResponse === undefined && Object.hasOwn(body, "selected_response")) {
+    await route.fulfill({ status: 400, json: { error: "unexpected selected_response" } });
+    return;
+  }
+  if (expectedResponse !== undefined && body.selected_response !== expectedResponse) {
     await route.fulfill({ status: 400, json: { error: "unexpected selected_response" } });
     return;
   }
@@ -242,6 +279,16 @@ await page.route("**/api/me/day-plan/steps/**/complete", async (route) => {
 });
 
 await page.goto(`${baseUrl}/dashboard/path`);
+await expect(page.getByText("Teach First").first()).toBeVisible();
+await expect(page.getByText("Read this first. The next cards check whether you picked it up.").first()).toBeVisible();
+await expect(page.locator("[data-leadme-option-style]")).toHaveCount(0);
+await clickAndWaitForCompletion(
+  page,
+  page.getByRole("button", { name: "Continue" }),
+);
+if (completionRequests !== 1) {
+  throw new Error(`Expected one completion request after teach card, saw ${completionRequests}. Day-plan requests: ${dayPlanRequests}.`);
+}
 await expect(page.getByText("Rule Lock").first()).toBeVisible();
 await expect(page.getByText("This is not an MBE answer choice")).toBeVisible();
 await expect(page.locator('[data-leadme-option-style="gate"]').first()).toBeVisible();
@@ -251,8 +298,8 @@ await clickAndWaitForCompletion(
   page,
   page.getByRole("button", { name: /Gate 2: Did the plaintiff reasonably apprehend imminent contact/i }),
 );
-if (completionRequests !== 1) {
-  throw new Error(`Expected one completion request after gate, saw ${completionRequests}. Day-plan requests: ${dayPlanRequests}.`);
+if (completionRequests !== 2) {
+  throw new Error(`Expected two completion requests after gate, saw ${completionRequests}. Day-plan requests: ${dayPlanRequests}.`);
 }
 await expect(page.getByText("Correct").first()).toBeVisible();
 await expect(page.getByText("Assault Rule Lock").first()).toBeVisible();
@@ -266,8 +313,8 @@ await clickAndWaitForCompletion(
   page,
   page.getByRole("button", { name: /Signal 3: no assault because there was no touching/i }),
 );
-if (completionRequests !== 2) {
-  throw new Error(`Expected two completion requests after signal, saw ${completionRequests}. Day-plan requests: ${dayPlanRequests}.`);
+if (completionRequests !== 3) {
+  throw new Error(`Expected three completion requests after signal, saw ${completionRequests}. Day-plan requests: ${dayPlanRequests}.`);
 }
 await expect(page.getByText("Correct").first()).toBeVisible();
 await expect(page.getByText("Assault Trap Hunt").first()).toBeVisible();

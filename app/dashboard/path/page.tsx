@@ -20,6 +20,7 @@ export default function DashboardPage() {
   const [completionError, setCompletionError] = useState<string | null>(null);
   const [completingStepId, setCompletingStepId] = useState<string | null>(null);
   const [lastV5Result, setLastV5Result] = useState<LeadMeV5CompletionResult | null>(null);
+  const [submittedV5Step, setSubmittedV5Step] = useState<DayPlanStep | null>(null);
 
   const data = dayPlan.data;
   const plan = data?.plan ?? null;
@@ -35,6 +36,7 @@ export default function DashboardPage() {
 
   async function completeCurrentStep(selectedResponse?: string) {
     if (!currentStep) return;
+    const submittedStep = currentStep;
     setCompletingStepId(currentStep.step_id);
     setCompletionError(null);
     try {
@@ -43,11 +45,22 @@ export default function DashboardPage() {
         selectedResponse ? { selected_response: selectedResponse } : {},
       );
       setLastV5Result(result.leadme_v5_result);
+      setSubmittedV5Step(result.leadme_v5_result ? submittedStep : null);
     } catch (err) {
       setCompletionError(err instanceof Error ? err.message : "Could not complete this task.");
     } finally {
       setCompletingStepId(null);
     }
+  }
+
+  function continueAfterV5Result() {
+    setLastV5Result(null);
+    setSubmittedV5Step(null);
+    window.requestAnimationFrame(() => {
+      document
+        .querySelector("[data-leadme-current-task]")
+        ?.scrollIntoView({ block: "start", behavior: "auto" });
+    });
   }
 
   if (dayPlan.loading) {
@@ -138,11 +151,13 @@ export default function DashboardPage() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_390px]">
         <CurrentTask
-          step={currentStep}
+          step={submittedV5Step ?? currentStep}
           lastV5Result={lastV5Result}
-          completing={completingStepId === currentStep?.step_id}
+          completing={completingStepId === (submittedV5Step ?? currentStep)?.step_id}
           completionError={completionError}
+          reviewingResult={Boolean(lastV5Result && submittedV5Step)}
           onComplete={completeCurrentStep}
+          onContinueResult={continueAfterV5Result}
         />
 
         <aside className="space-y-6">
@@ -170,17 +185,25 @@ function CurrentTask({
   lastV5Result,
   completing,
   completionError,
+  reviewingResult,
   onComplete,
+  onContinueResult,
 }: {
   step: DayPlanStep | null;
   lastV5Result: LeadMeV5CompletionResult | null;
   completing: boolean;
   completionError: string | null;
+  reviewingResult: boolean;
   onComplete: (selectedResponse?: string) => void;
+  onContinueResult: () => void;
 }) {
   if (!step) {
     return (
-      <section className="border-2 border-emerald-700 bg-emerald-50 p-7" aria-labelledby="current-task">
+      <section
+        className="scroll-mt-28 border-2 border-emerald-700 bg-emerald-50 p-7"
+        aria-labelledby="current-task"
+        data-leadme-current-task
+      >
         <p className="font-mono text-xs uppercase tracking-wider text-emerald-800">
           Day Complete
         </p>
@@ -197,7 +220,11 @@ function CurrentTask({
   const v5Options = step.leadme_v5_item?.options ?? [];
 
   return (
-    <section className="border-2 border-zinc-900 bg-white p-7" aria-labelledby="current-task">
+    <section
+      className="scroll-mt-28 border-2 border-zinc-900 bg-white p-7"
+      aria-labelledby="current-task"
+      data-leadme-current-task
+    >
       {lastV5Result ? <V5ResultBanner result={lastV5Result} /> : null}
 
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -219,7 +246,7 @@ function CurrentTask({
       {step.leadme_v5_item ? (
         <V5LeadMeCard
           item={step.leadme_v5_item}
-          completing={completing}
+          completing={completing || reviewingResult}
           onSelect={(response) => onComplete(response)}
         />
       ) : null}
@@ -230,12 +257,17 @@ function CurrentTask({
       </div>
 
       <div className="mt-7 flex flex-wrap items-center gap-3">
-        {step.action.href && (
+        {reviewingResult ? (
+          <button type="button" onClick={onContinueResult} className="btn btn-lg red">
+            Next task
+          </button>
+        ) : null}
+        {!reviewingResult && step.action.href && (
           <Link href={step.action.href} className="btn btn-lg red">
             {step.action.label}
           </Link>
         )}
-        {v5Options.length === 0 ? (
+        {!reviewingResult && v5Options.length === 0 ? (
           <button
             type="button"
             onClick={() => onComplete()}
@@ -265,15 +297,21 @@ function V5LeadMeCard({
   completing: boolean;
   onSelect: (selectedResponse: string) => void;
 }) {
+  const optionMode = v5OptionMode(item);
+  const mode = v5ModeCopy(optionMode);
+
   return (
     <div className="mt-6 border border-zinc-300 bg-zinc-50">
       <div className="border-b border-zinc-300 bg-white px-5 py-4">
         <p className="font-mono text-[11px] uppercase tracking-wider text-red-700">
-          {item.item_type.replaceAll("_", " ")}
+          {mode.label}
         </p>
         <h3 className="mt-2 font-serif text-2xl font-semibold leading-tight text-zinc-950">
           {item.title}
         </h3>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-600">
+          {mode.instruction}
+        </p>
       </div>
 
       <div className="space-y-4 p-5">
@@ -282,21 +320,22 @@ function V5LeadMeCard({
         ))}
 
         {item.options.length > 0 ? (
-          <ol className="grid gap-3 sm:grid-cols-2">
-            {item.options.map((option) => (
+          <ol className={`grid gap-3 ${optionMode === "answer" ? "sm:grid-cols-2" : ""}`}>
+            {item.options.map((option, index) => (
               <li
                 key={option.id}
-                className="border border-zinc-200 bg-white"
+                className={v5OptionShellClass(optionMode)}
               >
                 <button
                   type="button"
                   onClick={() => onSelect(option.id)}
                   disabled={completing}
-                  className="flex h-full w-full gap-3 p-3 text-left text-sm leading-6 text-zinc-800 hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-700 disabled:cursor-wait disabled:opacity-60"
-                  aria-label={`Choose ${option.id}: ${option.label}`}
+                  data-leadme-option-style={optionMode}
+                  className={v5OptionButtonClass(optionMode)}
+                  aria-label={`${mode.actionLabel} ${optionLabel(optionMode, option, index)}: ${option.label}`}
                 >
-                  <span className="flex size-7 shrink-0 items-center justify-center border border-zinc-300 font-mono text-xs font-semibold text-zinc-700">
-                    {option.id}
+                  <span className={v5OptionBadgeClass(optionMode)}>
+                    {optionLabel(optionMode, option, index)}
                   </span>
                   <span>{option.label}</span>
                 </button>
@@ -310,6 +349,7 @@ function V5LeadMeCard({
 }
 
 function V5ResultBanner({ result }: { result: LeadMeV5CompletionResult }) {
+  const resultLabel = v5ResultAnswerLabel(result);
   return (
     <div
       className={`mb-6 border p-4 ${
@@ -324,7 +364,7 @@ function V5ResultBanner({ result }: { result: LeadMeV5CompletionResult }) {
       <p className="mt-2 text-sm leading-6">
         You chose {result.selected_response}: {result.selected_label}
         {!result.correct && result.correct_responses.length > 0
-          ? `. Correct answer: ${result.correct_responses
+          ? `. ${resultLabel}: ${result.correct_responses
               .map((answer) => `${answer.id}: ${answer.label}`)
               .join(", ")}.`
           : "."}
@@ -339,6 +379,101 @@ function V5ResultBanner({ result }: { result: LeadMeV5CompletionResult }) {
       ))}
     </div>
   );
+}
+
+type V5OptionMode = "answer" | "gate" | "signal" | "filter" | "repair";
+
+function v5OptionMode(item: NonNullable<DayPlanStep["leadme_v5_item"]>): V5OptionMode {
+  if (item.item_type === "micro_task" || item.coverage_role === "rule_anchor" || item.micro_task_kind === "gate_check" || item.micro_task_kind === "rule_gate") {
+    return "gate";
+  }
+  if (item.item_type === "signal_drill" || item.coverage_role === "trap_spotter" || item.micro_task_kind === "wrong_answer_cut") {
+    return "signal";
+  }
+  if (item.item_type === "filter_drill" || item.task_type === "choose_filter" || item.micro_task_kind === "true_responsive_filter") {
+    return "filter";
+  }
+  if (item.item_type === "repair_drill" || item.task_type === "rewrite_repair" || item.micro_task_kind === "repair_rewrite") {
+    return "repair";
+  }
+  return "answer";
+}
+
+function v5ModeCopy(mode: V5OptionMode) {
+  switch (mode) {
+    case "gate":
+      return {
+        label: "Rule Lock",
+        instruction: "Choose the legal gate. This is not an MBE answer choice.",
+        actionLabel: "Choose gate",
+      };
+    case "signal":
+      return {
+        label: "Trap Hunt",
+        instruction: "Tap the broken signal. This is not an MBE answer choice.",
+        actionLabel: "Choose signal",
+      };
+    case "filter":
+      return {
+        label: "Filter Cut",
+        instruction: "Choose which C3 filter the trap breaks.",
+        actionLabel: "Choose filter",
+      };
+    case "repair":
+      return {
+        label: "Repair Move",
+        instruction: "Choose the fixed answer path.",
+        actionLabel: "Choose repair",
+      };
+    default:
+      return {
+        label: "Answer Check",
+        instruction: "Choose the true and responsive answer.",
+        actionLabel: "Choose",
+      };
+  }
+}
+
+function optionLabel(mode: V5OptionMode, option: { id: string }, index: number) {
+  if (mode === "answer") return option.id;
+  if (mode === "gate") return `Gate ${index + 1}`;
+  if (mode === "signal") return `Signal ${index + 1}`;
+  if (mode === "filter") return `Filter ${index + 1}`;
+  return `Repair ${index + 1}`;
+}
+
+function v5OptionShellClass(mode: V5OptionMode) {
+  if (mode === "answer") return "border border-zinc-200 bg-white";
+  if (mode === "gate") return "border border-cyan-200 bg-cyan-50";
+  if (mode === "signal") return "border border-red-200 bg-red-50";
+  if (mode === "filter") return "border border-zinc-300 bg-white";
+  return "border border-emerald-200 bg-emerald-50";
+}
+
+function v5OptionButtonClass(mode: V5OptionMode) {
+  const base = "flex h-full w-full gap-3 p-3 text-left text-sm leading-6 focus-visible:outline focus-visible:outline-2 disabled:cursor-wait disabled:opacity-60";
+  if (mode === "gate") return `${base} text-cyan-950 hover:bg-cyan-100 focus-visible:outline-cyan-800`;
+  if (mode === "signal") return `${base} text-red-950 hover:bg-red-100 focus-visible:outline-red-700`;
+  if (mode === "filter") return `${base} text-zinc-900 hover:bg-zinc-100 focus-visible:outline-zinc-900`;
+  if (mode === "repair") return `${base} text-emerald-950 hover:bg-emerald-100 focus-visible:outline-emerald-800`;
+  return `${base} text-zinc-800 hover:bg-red-50 focus-visible:outline-red-700`;
+}
+
+function v5OptionBadgeClass(mode: V5OptionMode) {
+  const base = "flex min-h-7 shrink-0 items-center justify-center border px-2 font-mono text-[11px] font-semibold uppercase tracking-wider";
+  if (mode === "gate") return `${base} border-cyan-300 bg-white text-cyan-800`;
+  if (mode === "signal") return `${base} border-red-300 bg-white text-red-800`;
+  if (mode === "filter") return `${base} border-zinc-400 bg-zinc-50 text-zinc-800`;
+  if (mode === "repair") return `${base} border-emerald-300 bg-white text-emerald-800`;
+  return "flex size-7 shrink-0 items-center justify-center border border-zinc-300 font-mono text-xs font-semibold text-zinc-700";
+}
+
+function v5ResultAnswerLabel(result: LeadMeV5CompletionResult) {
+  if (result.item_type === "micro_task" || result.micro_task_kind === "gate_check" || result.micro_task_kind === "rule_gate") return "Correct gate";
+  if (result.item_type === "signal_drill" || result.micro_task_kind === "wrong_answer_cut") return "Trap signal";
+  if (result.item_type === "filter_drill" || result.micro_task_kind === "true_responsive_filter") return "Correct filter";
+  if (result.item_type === "repair_drill" || result.micro_task_kind === "repair_rewrite") return "Correct repair";
+  return "Correct answer";
 }
 
 function V5LeadMeBlock({

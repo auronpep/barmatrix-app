@@ -19,7 +19,8 @@ export interface ClerkAuthState {
   getToken: () => Promise<string | null>;
 }
 
-const CLERK_ENABLED = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
+const PREVIEW_AUTH_ENABLED = process.env.NEXT_PUBLIC_LEADME_PREVIEW_AUTH === "1";
+const CLERK_ENABLED = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) && !PREVIEW_AUTH_ENABLED;
 const AUTH_LOAD_TIMEOUT_MS = 3000;
 
 function useRealClerkAuth(): ClerkAuthState {
@@ -44,11 +45,23 @@ function useRealClerkAuth(): ClerkAuthState {
 }
 
 const ANON_GET_TOKEN = async (): Promise<string | null> => null;
+const PREVIEW_GET_TOKEN = async (): Promise<string | null> => "leadme-preview-token";
 
 function useAnonClerkAuth(): ClerkAuthState {
   return { isLoaded: true, isSignedIn: false, authKey: null, getToken: ANON_GET_TOKEN };
 }
 
+function usePreviewClerkAuth(): ClerkAuthState {
+  return {
+    isLoaded: true,
+    isSignedIn: true,
+    authKey: "leadme-preview",
+    getToken: PREVIEW_GET_TOKEN,
+  };
+}
+
 export const useClerkAuth: () => ClerkAuthState = CLERK_ENABLED
   ? useRealClerkAuth
+  : PREVIEW_AUTH_ENABLED
+    ? usePreviewClerkAuth
   : useAnonClerkAuth;

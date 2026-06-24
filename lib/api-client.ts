@@ -1313,6 +1313,10 @@ export interface DayPlanAction {
 export interface LeadMeV5DayPlanItem {
   item_id: string;
   item_type: string;
+  task_type: string | null;
+  micro_task_kind: string | null;
+  coverage_role: string | null;
+  layout: string | null;
   title: string;
   prompt: string;
   front_blocks: Array<{
@@ -1326,6 +1330,9 @@ export interface LeadMeV5DayPlanItem {
 
 export interface LeadMeV5CompletionResult {
   item_id: string;
+  item_type: string;
+  task_type: string | null;
+  micro_task_kind: string | null;
   title: string;
   selected_response: string;
   selected_label: string;

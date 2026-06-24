@@ -77,6 +77,8 @@ describe("J7 guided path dashboard", () => {
     assert.match(source, /v5Options\.length === 0/);
     assert.match(source, /selected_response: selectedResponse/);
     assert.match(source, /result\.leadme_v5_result/);
+    assert.match(source, /v5Result\?\.correct \? null : v5Result/);
+    assert.match(source, /v5Result && !v5Result\.correct \? submittedStep : null/);
     assert.match(source, /V5ResultBanner/);
     assert.match(source, /Correct gate/);
     assert.match(source, /Trap signal/);

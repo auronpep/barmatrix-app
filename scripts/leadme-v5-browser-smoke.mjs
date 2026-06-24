@@ -301,11 +301,8 @@ await clickAndWaitForCompletion(
 if (completionRequests !== 2) {
   throw new Error(`Expected two completion requests after gate, saw ${completionRequests}. Day-plan requests: ${dayPlanRequests}.`);
 }
-await expect(page.getByText("Correct").first()).toBeVisible();
-await expect(page.getByText("Assault Rule Lock").first()).toBeVisible();
-await expect(page.getByRole("button", { name: "Next task" })).toBeVisible();
-await page.getByRole("button", { name: "Next task" }).click();
 await expect(page.getByText("Trap Hunt").first()).toBeVisible();
+await expect(page.getByRole("button", { name: "Next task" })).toHaveCount(0);
 await expect(page.getByText("This is not an MBE answer choice")).toBeVisible();
 await expect(page.locator('[data-leadme-option-style="signal"]').first()).toBeVisible();
 await expect(page.getByText("Signal 1")).toBeVisible();
@@ -316,11 +313,8 @@ await clickAndWaitForCompletion(
 if (completionRequests !== 3) {
   throw new Error(`Expected three completion requests after signal, saw ${completionRequests}. Day-plan requests: ${dayPlanRequests}.`);
 }
-await expect(page.getByText("Correct").first()).toBeVisible();
-await expect(page.getByText("Assault Trap Hunt").first()).toBeVisible();
-await expect(page.getByRole("button", { name: "Next task" })).toBeVisible();
-await page.getByRole("button", { name: "Next task" }).click();
 await expect(page.getByText("Assault Answer Check").first()).toBeVisible();
+await expect(page.getByRole("button", { name: "Next task" })).toHaveCount(0);
 await expect(page.locator('[data-leadme-option-style="answer"]').first()).toBeVisible();
 
 if (screenshot) {

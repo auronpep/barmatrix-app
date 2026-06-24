@@ -44,8 +44,9 @@ export default function DashboardPage() {
         currentStep.step_id,
         selectedResponse ? { selected_response: selectedResponse } : {},
       );
-      setLastV5Result(result.leadme_v5_result);
-      setSubmittedV5Step(result.leadme_v5_result ? submittedStep : null);
+      const v5Result = result.leadme_v5_result;
+      setLastV5Result(v5Result?.correct ? null : v5Result);
+      setSubmittedV5Step(v5Result && !v5Result.correct ? submittedStep : null);
     } catch (err) {
       setCompletionError(err instanceof Error ? err.message : "Could not complete this task.");
     } finally {

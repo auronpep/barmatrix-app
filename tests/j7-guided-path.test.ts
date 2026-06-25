@@ -47,6 +47,46 @@ describe("J7 guided path dashboard", () => {
     assert.match(source, /Finish card/);
   });
 
+  it("renders V5 candidate cards inside the live Lead Me task surface", () => {
+    const source = readProjectFile("app/dashboard/path/page.tsx");
+    const cards = readProjectFile("app/dashboard/day-cards.tsx");
+    const apiClient = readProjectFile("lib/api-client.ts");
+
+    assert.match(apiClient, /LeadMeV5DayPlanItem/);
+    assert.match(apiClient, /leadme_v5_item\?: LeadMeV5DayPlanItem/);
+    assert.match(apiClient, /LeadMeV5CompletionResult/);
+    assert.match(apiClient, /leadme_v5_result: LeadMeV5CompletionResult \| null/);
+    assert.match(apiClient, /micro_task_kind: string \| null/);
+    assert.match(apiClient, /coverage_role: string \| null/);
+    assert.match(source, /step\.leadme_v5_item/);
+    assert.match(source, /V5LeadMeCard/);
+    assert.match(source, /item\.front_blocks\.map/);
+    assert.match(source, /item\.options\.map/);
+    assert.match(source, /onClick=\{\(\) => onSelect\(option\.id\)\}/);
+    assert.match(source, /data-leadme-option-style=\{optionMode\}/);
+    assert.match(source, /Teach First/);
+    assert.match(source, /task_type === "acknowledge"/);
+    assert.match(source, /micro_task_kind === "lead_me"/);
+    assert.match(source, /Continue/);
+    assert.match(source, /Rule Lock/);
+    assert.match(source, /Gate \$\{index \+ 1\}/);
+    assert.match(source, /Trap Hunt/);
+    assert.match(source, /Signal \$\{index \+ 1\}/);
+    assert.match(source, /This is not an MBE answer choice/);
+    assert.match(source, /v5Options\.length === 0/);
+    assert.match(source, /selected_response: selectedResponse/);
+    assert.match(source, /result\.leadme_v5_result/);
+    assert.match(source, /v5Result\?\.correct \? null : v5Result/);
+    assert.match(source, /V5ResultBanner/);
+    assert.match(source, /Correct gate/);
+    assert.match(source, /Trap signal/);
+    assert.doesNotMatch(source, /submittedV5Step/);
+    assert.doesNotMatch(source, /reviewingResult/);
+    assert.doesNotMatch(source, /Next task/);
+    assert.match(cards, /Live Lead Me Module/);
+    assert.match(cards, /V5 Assault Test Path/);
+  });
+
   it("preserves Lead Me step context through placement questions and Criminal Law drills", () => {
     const placementEntry = readProjectFile("app/diagnostic/session/placement-entry-client.tsx");
     const placementSession = readProjectFile("app/diagnostic/session/[sessionId]/page.tsx");

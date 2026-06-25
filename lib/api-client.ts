@@ -1172,6 +1172,42 @@ export interface DayPlanAction {
   href?: string;
 }
 
+export interface LeadMeV5DayPlanItem {
+  item_id: string;
+  item_type: string;
+  task_type: string | null;
+  micro_task_kind: string | null;
+  coverage_role: string | null;
+  layout: string | null;
+  title: string;
+  prompt: string;
+  front_blocks: Array<{
+    type: string;
+    markdown?: string | null;
+    alt_text?: string | null;
+    caption?: string | null;
+  }>;
+  options: Array<{ id: string; label: string }>;
+}
+
+export interface LeadMeV5CompletionResult {
+  item_id: string;
+  item_type: string;
+  task_type: string | null;
+  micro_task_kind: string | null;
+  title: string;
+  selected_response: string;
+  selected_label: string;
+  correct: boolean;
+  correct_responses: Array<{ id: string; label: string }>;
+  feedback_blocks: Array<{
+    type: string;
+    markdown?: string | null;
+    alt_text?: string | null;
+    caption?: string | null;
+  }>;
+}
+
 export interface DayPlanMainItem {
   main_item_id: string;
   order: number;
@@ -1196,6 +1232,7 @@ export interface DayPlanStep {
   xp: number;
   source: DayPlanStepSource;
   completed: boolean;
+  leadme_v5_item?: LeadMeV5DayPlanItem;
   catchup?: {
     catchup_id: string;
     original_day_key: string;
@@ -1255,6 +1292,7 @@ export interface MyDayPlanCompleteResponse extends MyDayPlan {
   ok: true;
   completed_step_id: string;
   completion_gamification: BootCampGamificationGrant | null;
+  leadme_v5_result: LeadMeV5CompletionResult | null;
 }
 
 // --- Drill Library (Web Component 04) — anonymous-first prescriptive drills ---
@@ -2379,11 +2417,15 @@ export const api = {
   getMyDayPlan: (token: string, init?: RequestInit) =>
     authedRequest<MyDayPlan>("/api/me/day-plan", token, init),
 
-  completeMyDayPlanStep: (token: string, stepId: string) =>
+  completeMyDayPlanStep: (
+    token: string,
+    stepId: string,
+    payload: { selected_response?: string } = {},
+  ) =>
     authedRequest<MyDayPlanCompleteResponse>(
       `/api/me/day-plan/steps/${encodeURIComponent(stepId)}/complete`,
       token,
-      { method: "POST", body: JSON.stringify({}) },
+      { method: "POST", body: JSON.stringify(payload) },
     ),
 
   // Public flashcard deck content.

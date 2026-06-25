@@ -4,15 +4,16 @@ import { StatusPill } from "@/components/dashboard/status-pill";
 
 export function DayCards({ cards }: { cards: DayPlanSummary[] }) {
   if (cards.length === 0) return null;
+  const singleV5Module = cards.length === 1 && cards[0]?.plan_key.startsWith("leadme-v5-");
   return (
     <section className="mt-6" aria-labelledby="guided-days">
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="font-mono text-xs uppercase tracking-wider text-zinc-700">
-            First 3 Days
+            {singleV5Module ? "Live Lead Me Module" : "First 3 Days"}
           </p>
           <h2 id="guided-days" className="mt-2 font-serif text-2xl font-semibold text-zinc-950">
-            Criminal Law and Procedure Questline
+            {singleV5Module ? "V5 Assault Test Path" : "Criminal Law and Procedure Questline"}
           </h2>
         </div>
         <p className="hidden font-mono text-[11px] uppercase tracking-wider text-zinc-600 sm:block">
@@ -32,7 +33,7 @@ export function DayCards({ cards }: { cards: DayPlanSummary[] }) {
           >
             <div className="flex items-start justify-between gap-3">
               <p className="font-mono text-[11px] uppercase tracking-wider text-zinc-600">
-                Day {card.day_index}
+                {singleV5Module ? "Module" : `Day ${card.day_index}`}
               </p>
               <StatusPill
                 tone={

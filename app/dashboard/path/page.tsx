@@ -20,7 +20,6 @@ export default function DashboardPage() {
   const [completionError, setCompletionError] = useState<string | null>(null);
   const [completingStepId, setCompletingStepId] = useState<string | null>(null);
   const [lastV5Result, setLastV5Result] = useState<LeadMeV5CompletionResult | null>(null);
-  const [submittedV5Step, setSubmittedV5Step] = useState<DayPlanStep | null>(null);
 
   const data = dayPlan.data;
   const plan = data?.plan ?? null;
@@ -36,7 +35,6 @@ export default function DashboardPage() {
 
   async function completeCurrentStep(selectedResponse?: string) {
     if (!currentStep) return;
-    const submittedStep = currentStep;
     setCompletingStepId(currentStep.step_id);
     setCompletionError(null);
     try {
@@ -46,22 +44,11 @@ export default function DashboardPage() {
       );
       const v5Result = result.leadme_v5_result;
       setLastV5Result(v5Result?.correct ? null : v5Result);
-      setSubmittedV5Step(v5Result && !v5Result.correct ? submittedStep : null);
     } catch (err) {
       setCompletionError(err instanceof Error ? err.message : "Could not complete this task.");
     } finally {
       setCompletingStepId(null);
     }
-  }
-
-  function continueAfterV5Result() {
-    setLastV5Result(null);
-    setSubmittedV5Step(null);
-    window.requestAnimationFrame(() => {
-      document
-        .querySelector("[data-leadme-current-task]")
-        ?.scrollIntoView({ block: "start", behavior: "auto" });
-    });
   }
 
   if (dayPlan.loading) {
@@ -152,13 +139,11 @@ export default function DashboardPage() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_390px]">
         <CurrentTask
-          step={submittedV5Step ?? currentStep}
+          step={currentStep}
           lastV5Result={lastV5Result}
-          completing={completingStepId === (submittedV5Step ?? currentStep)?.step_id}
+          completing={completingStepId === currentStep?.step_id}
           completionError={completionError}
-          reviewingResult={Boolean(lastV5Result && submittedV5Step)}
           onComplete={completeCurrentStep}
-          onContinueResult={continueAfterV5Result}
         />
 
         <aside className="space-y-6">
@@ -186,17 +171,13 @@ function CurrentTask({
   lastV5Result,
   completing,
   completionError,
-  reviewingResult,
   onComplete,
-  onContinueResult,
 }: {
   step: DayPlanStep | null;
   lastV5Result: LeadMeV5CompletionResult | null;
   completing: boolean;
   completionError: string | null;
-  reviewingResult: boolean;
   onComplete: (selectedResponse?: string) => void;
-  onContinueResult: () => void;
 }) {
   if (!step) {
     return (
@@ -249,7 +230,7 @@ function CurrentTask({
       {step.leadme_v5_item ? (
         <V5LeadMeCard
           item={step.leadme_v5_item}
-          completing={completing || reviewingResult}
+          completing={completing}
           onSelect={(response) => onComplete(response)}
         />
       ) : null}
@@ -260,17 +241,12 @@ function CurrentTask({
       </div>
 
       <div className="mt-7 flex flex-wrap items-center gap-3">
-        {reviewingResult ? (
-          <button type="button" onClick={onContinueResult} className="btn btn-lg red">
-            Next task
-          </button>
-        ) : null}
-        {!reviewingResult && step.action.href && (
+        {step.action.href && (
           <Link href={step.action.href} className="btn btn-lg red">
             {step.action.label}
           </Link>
         )}
-        {!reviewingResult && v5Options.length === 0 ? (
+        {v5Options.length === 0 ? (
           <button
             type="button"
             onClick={() => onComplete()}

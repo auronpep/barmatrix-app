@@ -189,7 +189,25 @@ const resultByStep = {
     correct_responses: [{ id: "G2", label: "Did the plaintiff reasonably apprehend imminent contact?" }],
     feedback_blocks: [{ type: "feedback", markdown: "Correct. That is the assault gate." }],
   },
-  [trapStep.step_id]: {
+};
+
+function resultForStep(stepId, selectedResponse) {
+  if (stepId === trapStep.step_id && selectedResponse === "S1") {
+    return {
+      item_id: "LM-TORTS-ASSAULT-002",
+      item_type: "signal_drill",
+      task_type: "identify_phrase",
+      micro_task_kind: "wrong_answer_cut",
+      title: "Assault Trap Hunt",
+      selected_response: "S1",
+      selected_label: "legally correct phrase",
+      correct: false,
+      correct_responses: [{ id: "S3", label: "no assault because there was no touching" }],
+      feedback_blocks: [{ type: "feedback", markdown: "That phrase is useful law work, but this mode asked for the broken phrase." }],
+    };
+  }
+  if (stepId === trapStep.step_id) {
+    return {
     item_id: "LM-TORTS-ASSAULT-002",
     item_type: "signal_drill",
     task_type: "identify_phrase",
@@ -200,25 +218,30 @@ const resultByStep = {
     correct: true,
     correct_responses: [{ id: "S3", label: "no assault because there was no touching" }],
     feedback_blocks: [{ type: "feedback", markdown: "Correct. The trap is no assault because there was no touching." }],
-  },
-};
+    };
+  }
+  return resultByStep[stepId] ?? null;
+}
 
 function expectedResponseFor(stepId) {
   if (stepId === teachStep.step_id) return undefined;
   if (stepId === gateStep.step_id) return "G2";
-  if (stepId === trapStep.step_id) return "S3";
+  if (stepId === trapStep.step_id) return ["S1", "S3"];
   return "C";
 }
 
-function completionResponseFor(stepId) {
+function completionResponseFor(stepId, selectedResponse) {
   const completedIndex = steps.findIndex((step) => step.step_id === stepId);
-  const nextStep = steps[Math.min(completedIndex + 1, steps.length - 1)];
+  const result = resultForStep(stepId, selectedResponse);
+  const nextStep = result?.correct === false
+    ? steps[completedIndex]
+    : steps[Math.min(completedIndex + 1, steps.length - 1)];
   currentApiStep = nextStep;
   return {
     ok: true,
     completed_step_id: stepId,
     completion_gamification: null,
-    leadme_v5_result: resultByStep[stepId] ?? null,
+    leadme_v5_result: result,
     ...response(nextStep),
   };
 }
@@ -271,11 +294,15 @@ await page.route("**/api/me/day-plan/steps/**/complete", async (route) => {
     await route.fulfill({ status: 400, json: { error: "unexpected selected_response" } });
     return;
   }
-  if (expectedResponse !== undefined && body.selected_response !== expectedResponse) {
+  if (Array.isArray(expectedResponse) && !expectedResponse.includes(body.selected_response)) {
     await route.fulfill({ status: 400, json: { error: "unexpected selected_response" } });
     return;
   }
-  await route.fulfill({ json: completionResponseFor(stepId) });
+  if (typeof expectedResponse === "string" && body.selected_response !== expectedResponse) {
+    await route.fulfill({ status: 400, json: { error: "unexpected selected_response" } });
+    return;
+  }
+  await route.fulfill({ json: completionResponseFor(stepId, body.selected_response) });
 });
 
 await page.goto(`${baseUrl}/dashboard/path`);
@@ -308,10 +335,21 @@ await expect(page.locator('[data-leadme-option-style="signal"]').first()).toBeVi
 await expect(page.getByText("Signal 1")).toBeVisible();
 await clickAndWaitForCompletion(
   page,
-  page.getByRole("button", { name: /Signal 3: no assault because there was no touching/i }),
+  page.getByRole("button", { name: /Signal 1: Did the plaintiff reasonably apprehend imminent contact/i }),
 );
 if (completionRequests !== 3) {
-  throw new Error(`Expected three completion requests after signal, saw ${completionRequests}. Day-plan requests: ${dayPlanRequests}.`);
+  throw new Error(`Expected three completion requests after wrong signal, saw ${completionRequests}. Day-plan requests: ${dayPlanRequests}.`);
+}
+await expect(page.getByText("Not yet").first()).toBeVisible();
+await expect(page.getByText("Assault Trap Hunt").first()).toBeVisible();
+await expect(page.getByRole("button", { name: /Signal 3: no assault because there was no touching/i })).toBeEnabled();
+await expect(page.getByRole("button", { name: "Next task" })).toHaveCount(0);
+await clickAndWaitForCompletion(
+  page,
+  page.getByRole("button", { name: /Signal 3: no assault because there was no touching/i }),
+);
+if (completionRequests !== 4) {
+  throw new Error(`Expected four completion requests after signal retry, saw ${completionRequests}. Day-plan requests: ${dayPlanRequests}.`);
 }
 await expect(page.getByText("Assault Answer Check").first()).toBeVisible();
 await expect(page.getByRole("button", { name: "Next task" })).toHaveCount(0);

@@ -73,15 +73,16 @@ describe("J7 guided path dashboard", () => {
     assert.match(source, /Trap Hunt/);
     assert.match(source, /Signal \$\{index \+ 1\}/);
     assert.match(source, /This is not an MBE answer choice/);
-    assert.match(source, /Next task/);
     assert.match(source, /v5Options\.length === 0/);
     assert.match(source, /selected_response: selectedResponse/);
     assert.match(source, /result\.leadme_v5_result/);
     assert.match(source, /v5Result\?\.correct \? null : v5Result/);
-    assert.match(source, /v5Result && !v5Result\.correct \? submittedStep : null/);
     assert.match(source, /V5ResultBanner/);
     assert.match(source, /Correct gate/);
     assert.match(source, /Trap signal/);
+    assert.doesNotMatch(source, /submittedV5Step/);
+    assert.doesNotMatch(source, /reviewingResult/);
+    assert.doesNotMatch(source, /Next task/);
     assert.match(cards, /Live Lead Me Module/);
     assert.match(cards, /V5 Assault Test Path/);
   });

@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { DISCLAIMER } from "@/lib/copy";
 
 export const metadata: Metadata = {
   title: "About",
   description:
-    "The BarMatrix founder story: eleven years of bar tutoring condensed into an MBE trap diagnosis and repair system.",
+    "BarMatrix is a diagnostic-first MBE repair system that maps recurring wrong-answer patterns into a Red-Zone Map and a guided repair path.",
   alternates: {
     canonical: "/about",
   },
   openGraph: {
     title: "About BarMatrix",
     description:
-      "Eleven years of bar tutoring condensed into an MBE trap diagnosis and repair system.",
+      "A diagnostic-first MBE repair system for recurring wrong-answer patterns, Red-Zone Maps, and guided repair.",
     url: "/about",
     images: ["/og-image.svg"],
   },
@@ -19,216 +20,343 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "About BarMatrix",
     description:
-      "Eleven years of bar tutoring condensed into an MBE trap diagnosis and repair system.",
+      "A diagnostic-first MBE repair system for recurring wrong-answer patterns, Red-Zone Maps, and guided repair.",
     images: ["/og-image.svg"],
   },
 };
 
-const STATS = [
-  { value: "11", label: "years tutoring CA bar", accent: false },
-  { value: "7", label: "MBE subjects covered", accent: false },
-  { value: "1", label: "diagnostic-first repair path", accent: true },
-  { value: "0", label: "score or pass guarantees", accent: false },
+const METHOD_LEDGER = [
+  {
+    label: "Miss",
+    value: "True rule, wrong question",
+    detail: "The answer sounded familiar but did not answer the call.",
+  },
+  {
+    label: "Red zone",
+    value: "Issue-fit failure",
+    detail: "The student recognized law before checking responsiveness.",
+  },
+  {
+    label: "Repair",
+    value: "Call-first drill",
+    detail: "Repeat the filter until the first cut is automatic.",
+  },
 ] as const;
 
-const TIMELINE = [
+const METHOD_STEPS = [
   {
-    marker: "2015",
-    title: "First cohort, first pattern",
-    body:
-      "The first postmortems showed students missing by similar margins and choosing the same attractive wrong answers across recurring Criminal Procedure questions.",
+    title: "Diagnose the miss",
+    body: "The diagnostic looks past raw score and reads the selected wrong answer for the trap pattern underneath it.",
   },
   {
-    marker: "2018",
-    title: "The spreadsheet",
-    body:
-      "Every miss was logged by subject, subtopic, rule, exception, trigger fact, attractive wrong answer, and why it pulled. The Tension Matrix started as that spreadsheet.",
+    title: "Map the red zone",
+    body: "Related misses are grouped by subject, subtopic, and wrong-answer architecture so the next move is not random review.",
   },
   {
-    marker: "2021",
-    title: "The trap library",
-    body:
-      "Across repeated reviews, the wrong-answer architectures became a reusable library across the seven MBE subjects.",
+    title: "Assign the repair",
+    body: "The guided repair path turns the highest-priority pattern into one targeted task, drill, or review loop.",
   },
-  {
-    marker: "2024",
-    title: "The trap taxonomy",
-    body:
-      "The trap labels were refined and validated so the product could show not just what was wrong, but why the wrong answer was attractive.",
-  },
-  {
-    marker: "2026",
-    title: "BarMatrix v1",
-    body:
-      "The system now connects each miss to a trap shape and a repair drill built for that recurring pattern.",
-  },
+] as const;
+
+const SCOPE_ROWS = [
+  ["Built for", "MBE multiple-choice misses, Red-Zone Maps, and targeted repair drills."],
+  ["Not built for", "Replacing a full bar course, essay prep, performance tests, or outcome promises."],
+  ["Best first step", "Take the free diagnostic and inspect the map before deciding whether to enroll."],
 ] as const;
 
 export default function AboutPage() {
   return (
-    <div>
-      <section className="mx-auto max-w-7xl px-6 py-14 sm:py-16">
-        <div className="border-b border-zinc-200 pb-10">
-          <div className="mb-8 flex flex-wrap gap-2 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
-            <span className="border border-zinc-200 px-2 py-1">About BarMatrix</span>
-            <span className="border border-zinc-200 px-2 py-1">Founded 2026</span>
-            <span className="border border-zinc-200 px-2 py-1">Vera Brooks</span>
+    <>
+      <section className="hero">
+        <div className="container">
+          <div className="hero-grid">
+            <div>
+              <div className="hero-meta" style={{ marginBottom: 32 }}>
+                <span className="stamp">Diagnostic-first MBE repair</span>
+              </div>
+              <h1
+                className="display display-lg"
+                style={{ margin: "0 0 24px", maxWidth: "18ch" }}
+              >
+                Built for the moment your MBE misses stop looking random.
+              </h1>
+              <p className="body-lg" style={{ margin: "0 0 28px" }}>
+                BarMatrix diagnoses recurring wrong-answer patterns and turns
+                the next repair into one guided task.
+              </p>
+              <div className="hero-actions">
+                <Link href="/diagnostic" className="btn btn-lg red">
+                  Start the Free Diagnostic
+                </Link>
+                <Link href="/how-it-works" className="btn btn-lg ghost">
+                  See the Method
+                </Link>
+              </div>
+            </div>
+
+            <aside
+              className="info-panel"
+              aria-label="Sample BarMatrix method ledger"
+              style={{ padding: 0, overflow: "hidden" }}
+            >
+              <div
+                style={{
+                  alignItems: "center",
+                  background: "var(--ink)",
+                  color: "white",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: "18px 20px",
+                }}
+              >
+                <span className="mono" style={{ fontSize: 12 }}>
+                  Method Ledger
+                </span>
+                <span className="mono" style={{ color: "#d6d0c4", fontSize: 12 }}>
+                  Red-Zone Map
+                </span>
+              </div>
+              <div style={{ padding: 24 }}>
+                {METHOD_LEDGER.map((item) => (
+                  <div
+                    key={item.label}
+                    style={{
+                      borderBottom: "1px solid var(--rule-soft)",
+                      padding: "18px 0",
+                    }}
+                  >
+                    <div
+                      className="mono"
+                      style={{
+                        color: "var(--red)",
+                        fontSize: 11,
+                        fontWeight: 600,
+                        letterSpacing: "0.12em",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      {item.label}
+                    </div>
+                    <h2
+                      className="serif"
+                      style={{
+                        color: "var(--ink)",
+                        fontSize: 28,
+                        lineHeight: 1.05,
+                        margin: "8px 0 8px",
+                      }}
+                    >
+                      {item.value}
+                    </h2>
+                    <p
+                      style={{
+                        color: "var(--ink-soft)",
+                        fontSize: 15,
+                        lineHeight: 1.55,
+                        margin: 0,
+                      }}
+                    >
+                      {item.detail}
+                    </p>
+                  </div>
+                ))}
+                <div
+                  style={{
+                    background: "var(--red)",
+                    color: "white",
+                    marginTop: 22,
+                    padding: 18,
+                  }}
+                >
+                  <div className="mono" style={{ fontSize: 11, marginBottom: 8 }}>
+                    Next action
+                  </div>
+                  <p className="serif" style={{ fontSize: 24, lineHeight: 1.15, margin: 0 }}>
+                    Run the repair drill before adding more random volume.
+                  </p>
+                </div>
+              </div>
+            </aside>
           </div>
-          <p className="font-mono text-xs uppercase tracking-wider text-red-700">
-            Founder and method
-          </p>
-          <h1 className="mt-3 max-w-4xl font-serif text-4xl font-semibold tracking-tight text-zinc-950 sm:text-6xl">
-            Eleven years of bar tutoring, condensed into a system.
-          </h1>
-          <p className="mt-6 max-w-3xl font-serif text-2xl italic leading-9 text-zinc-700">
-            BarMatrix was built from the patterns students kept falling into
-            across cycles, subjects, and late-stage MBE repair work.
-          </p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-16">
-        <div className="grid gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
-          <aside className="border border-zinc-950 bg-white p-6 shadow-sm lg:sticky lg:top-24 lg:self-start">
-            <div className="grid size-36 place-items-center bg-red-700 font-serif text-6xl font-semibold text-white">
-              VB
-            </div>
-            <h2 className="mt-5 font-serif text-3xl font-semibold text-zinc-950">
-              Vera Brooks
+      <section className="section-tight">
+        <div className="container">
+          <div className="section-rule">
+            <span className="label">What BarMatrix Is</span>
+          </div>
+          <div style={{ maxWidth: 900 }}>
+            <h2
+              className="display display-md"
+              style={{ margin: "0 0 20px", maxWidth: "18ch" }}
+            >
+              A repair system, not a pile of questions.
             </h2>
-            <p className="mt-2 font-mono text-xs uppercase tracking-wider text-red-700">
-              Founder - BarMatrix
+            <p className="body-lg" style={{ margin: 0 }}>
+              BarMatrix is built for students who have already seen plenty of
+              law but keep losing points to the same answer-choice traps.
             </p>
-            <p className="mt-4 text-sm leading-6 text-zinc-600">
-              MBE Tension Matrix Method. Wrong-answer architecture. Diagnostic
-              repair for repeatable trap patterns.
-            </p>
-          </aside>
+          </div>
+        </div>
+      </section>
 
-          <div className="grid gap-10">
-            <section className="border border-zinc-200 bg-white p-6 shadow-sm">
-              <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-                The story
-              </p>
-              <div className="mt-5 grid gap-5 text-base leading-7 text-zinc-700">
-                <p>
-                  The repeated finding was simple: students often did not fail
-                  because they knew no rules. They failed because the same shapes
-                  of wrong answers kept pulling them in.
+      <section className="section alt">
+        <div className="container">
+          <div className="info-panel" style={{ padding: "8px 28px" }}>
+            {METHOD_STEPS.map((step) => (
+              <article
+                key={step.title}
+                style={{
+                  borderBottom: "1px solid var(--rule-soft)",
+                  display: "grid",
+                  gap: 18,
+                  padding: "24px 0",
+                }}
+              >
+                <h3
+                  className="serif"
+                  style={{
+                    color: "var(--ink)",
+                    fontSize: 30,
+                    lineHeight: 1.05,
+                    margin: "0 0 14px",
+                  }}
+                >
+                  {step.title}
+                </h3>
+                <p
+                  style={{
+                    color: "var(--ink-soft)",
+                    fontSize: 15,
+                    lineHeight: 1.6,
+                    margin: 0,
+                  }}
+                >
+                  {step.body}
                 </p>
-                <p>
-                  A vehicle-search miss in Criminal Procedure, a UCC merchant
-                  formation miss in Contracts, and a state-of-mind miss in
-                  Evidence can look unrelated. Underneath, they can share the
-                  same wrong-answer architecture.
-                </p>
-                <p>
-                  BarMatrix names those shapes so students can stop treating each
-                  miss as random and start repairing the trap pattern behind it.
-                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container">
+          <div className="two-col" style={{ alignItems: "start" }}>
+            <div>
+              <div className="section-rule">
+                <span className="label">Scope</span>
               </div>
-            </section>
-
-            <section className="grid gap-3 sm:grid-cols-4" aria-label="About stats">
-              {STATS.map((stat) => (
-                <div key={stat.label} className="border border-zinc-200 bg-zinc-50 p-5">
-                  <p
-                    className={`font-serif text-4xl font-semibold tracking-tight ${
-                      stat.accent ? "text-red-700" : "text-zinc-950"
-                    }`}
+              <h2
+                className="display display-md"
+                style={{ margin: "0 0 20px", maxWidth: "16ch" }}
+              >
+                Narrow on purpose.
+              </h2>
+              <p className="body-lg" style={{ margin: 0 }}>
+                The product stays focused because the problem is focused:
+                repeated MBE misses that need diagnosis before more practice.
+              </p>
+            </div>
+            <div className="info-panel" style={{ padding: "6px 24px" }}>
+              {SCOPE_ROWS.map(([label, body]) => (
+                <div
+                  className="grid gap-3 py-5 sm:grid-cols-[150px_minmax(0,1fr)]"
+                  key={label}
+                  style={{
+                    borderBottom: "1px solid var(--rule-soft)",
+                  }}
+                >
+                  <div
+                    className="mono"
+                    style={{
+                      color: "var(--red)",
+                      fontSize: 11,
+                      fontWeight: 600,
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                    }}
                   >
-                    {stat.value}
-                  </p>
-                  <p className="mt-2 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
-                    {stat.label}
+                    {label}
+                  </div>
+                  <p
+                    style={{
+                      color: "var(--ink-soft)",
+                      fontSize: 15,
+                      lineHeight: 1.55,
+                      margin: 0,
+                    }}
+                  >
+                    {body}
                   </p>
                 </div>
               ))}
-            </section>
-
-            <section>
-              <div className="mb-5 flex items-center gap-4">
-                <div className="h-px flex-1 bg-zinc-200" />
-                <h2 className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-                  Method timeline
-                </h2>
-                <div className="h-px flex-1 bg-zinc-200" />
-              </div>
-              <div className="border-t-2 border-zinc-950">
-                {TIMELINE.map((item) => (
-                  <article
-                    key={item.marker}
-                    className="grid gap-3 border-b border-zinc-200 py-5 sm:grid-cols-[120px_minmax(0,1fr)]"
-                  >
-                    <p className="font-mono text-xs font-semibold uppercase tracking-wider text-red-700">
-                      {item.marker}
-                    </p>
-                    <div>
-                      <h3 className="font-serif text-2xl font-semibold tracking-tight text-zinc-950">
-                        {item.title}
-                      </h3>
-                      <p className="mt-2 max-w-3xl leading-7 text-zinc-600">
-                        {item.body}
-                      </p>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </section>
-
-            <section className="border-l-4 border-red-700 bg-zinc-950 p-7 text-white">
-              <p className="max-w-3xl font-serif text-2xl italic leading-9">
-                A repeat-taker can do more questions and still miss the same
-                trap pattern. BarMatrix starts by naming the trap before
-                assigning the repair.
-              </p>
-              <p className="mt-4 font-mono text-[11px] uppercase tracking-wider text-zinc-400">
-                Example pattern BarMatrix is built to diagnose
-              </p>
-            </section>
-
-            <section className="grid gap-6 md:grid-cols-2">
-              <div className="border border-zinc-200 bg-white p-6 shadow-sm">
-                <h2 className="font-serif text-3xl font-semibold tracking-tight text-zinc-950">
-                  Why now.
-                </h2>
-                <p className="mt-3 leading-7 text-zinc-600">
-                  Students are doing more questions than ever. The missing
-                  product layer is diagnosis: which trap shape pulled the student
-                  in, how often it repeats, and what repair action follows.
-                </p>
-              </div>
-              <div className="border border-zinc-200 bg-white p-6 shadow-sm">
-                <h2 className="font-serif text-3xl font-semibold tracking-tight text-zinc-950">
-                  Why this scope.
-                </h2>
-                <p className="mt-3 leading-7 text-zinc-600">
-                  BarMatrix is multiple-choice only by design. It complements a
-                  full bar course by diagnosing the MBE traps students keep
-                  repeating and assigning targeted repair drills.
-                </p>
-              </div>
-            </section>
-
-            <section className="border border-zinc-200 bg-zinc-50 p-6">
-              <p className="font-mono text-xs uppercase tracking-wider text-red-700">
-                Start here
-              </p>
-              <h2 className="mt-2 font-serif text-3xl font-semibold tracking-tight text-zinc-950">
-                Twelve questions. Your trap map.
-              </h2>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <Link className="btn btn-lg red" href="/diagnostic">
-                  Take the Free Diagnostic <span className="arrow">-&gt;</span>
-                </Link>
-                <Link className="btn btn-lg ghost" href="/how-it-works">
-                  See the method
-                </Link>
-              </div>
-            </section>
+            </div>
           </div>
         </div>
       </section>
-    </div>
+
+      <section
+        className="section"
+        style={{ background: "var(--ink)", color: "var(--bg)" }}
+      >
+        <div className="container center">
+          <h2
+            className="display display-md"
+            style={{ color: "white", margin: "0 auto 24px", maxWidth: "20ch" }}
+          >
+            See your map before you buy.
+          </h2>
+          <p
+            className="body-lg"
+            style={{ color: "#f6f3ec", margin: "0 auto 32px" }}
+          >
+            The free diagnostic shows the first repair priority and a sample of
+            the guided repair path. No card. No commitment.
+          </p>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 16,
+              justifyContent: "center",
+            }}
+          >
+            <Link href="/diagnostic" className="btn btn-lg red">
+              Start the Free Diagnostic
+            </Link>
+            <Link
+              href="/pricing"
+              className="btn btn-lg ghost"
+              style={{ borderColor: "white", color: "white" }}
+            >
+              View Pricing
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="section alt">
+        <div className="container">
+          <div style={{ margin: "0 auto", maxWidth: 880 }}>
+            <div className="section-rule">
+              <span className="label">Important</span>
+            </div>
+            <p
+              style={{
+                color: "var(--ink-soft)",
+                fontSize: 13,
+                lineHeight: 1.6,
+                margin: 0,
+                maxWidth: "80ch",
+              }}
+            >
+              {DISCLAIMER}
+            </p>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

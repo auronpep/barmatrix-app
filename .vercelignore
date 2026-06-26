@@ -1,0 +1,8 @@
+output/
+coverage/
+tasks/
+tests/
+docs/
+*.log
+*.md
+!README.md

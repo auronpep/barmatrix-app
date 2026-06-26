@@ -3,9 +3,10 @@
 // Ported from the design bundle's window.BM_OP_DATA. PHASE 2 PREVIEW data: in
 // production this is a GET /api/me/operator aggregation over Stripe / enrollment
 // / refunds / partners. Commercial framing rewritten to the LOCKED model
-// (BARMATRIX/CLAUDE.md): price $999, plan $500 today + $499 in 30 days, no public
-// discount, "limited seats · enrollment closes when capacity is reached". The
-// 1,000 internal cap appears here because this console is founder-only / internal.
+// (BARMATRIX/CLAUDE.md): standard price $999, plan $500 today + $499 in 30 days.
+// The current approved public discount exception is the HALFOFF499 pay-in-full
+// campaign; do not model a discounted payment plan unless it is explicitly approved.
+// The 1,000 internal cap appears here because this console is founder-only / internal.
 
 export interface Kpi {
   value: number;

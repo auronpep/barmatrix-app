@@ -1,11 +1,50 @@
 import Link from "next/link";
-import { DIAGNOSTIC_FIRST, PRICING, FAQ, DISCLAIMER } from "@/lib/copy";
+import { DISCLAIMER, FAQ, PRICING } from "@/lib/copy";
 import { PricingAnalytics } from "./pricing-analytics";
 
+const included = [
+  "Free MBE Trap Diagnostic",
+  "Red-Zone Map",
+  "Wrong Answer Forensics",
+  "Guided repair question work",
+  "Targeted Red-Zone Drills",
+  "Boot camps",
+  "Timed mixed sets",
+  "Pattern Mastery Board",
+] as const;
+
+const methodRows = [
+  {
+    title: "Diagnose first",
+    body: "Take the free diagnostic before buying. The result is a Red-Zone Map built from your own misses.",
+  },
+  {
+    title: "Repair the pattern",
+    body: "Flagship turns the highest-priority miss pattern into guided repair work, drills, and focused review.",
+  },
+  {
+    title: "Keep one next task visible",
+    body: "The product stays narrow: one repair priority, one assigned task, and fewer resource-browsing decisions.",
+  },
+] as const;
+
+const fitRows = [
+  "You are using a full course and need MBE repair alongside it.",
+  "You keep narrowing to two answers and choosing the attractive trap.",
+  "You want the diagnostic to prove the method before checkout.",
+] as const;
+
+const notRows = [
+  "Not a full bar review course",
+  "Not essay or performance-test prep",
+  "Not official bar material",
+  "Not a score or outcome guarantee",
+] as const;
+
 export const metadata = {
-  title: "Pricing — BarMatrix Flagship $999",
+  title: "Pricing - BarMatrix Flagship $999",
   description:
-    "BarMatrix Flagship is $999 with a payment plan of $500 today and $499 in 30 days. Enrollment is open for the July-cycle guided repair program.",
+    "BarMatrix Flagship is $999 with a payment plan of $500 today and $499 in 30 days. Start with the free diagnostic before checkout.",
 };
 
 export default function PricingPage() {
@@ -27,192 +66,115 @@ export default function PricingPage() {
       <PricingAnalytics />
       <section className="hero">
         <div className="container">
-          <div className="hero-meta">
-            <span className="stamp">PRICING · ONE COHORT</span>
-            <span className="stamp">CALIFORNIA · JULY 2026 CYCLE</span>
-            <span className="stamp">EDITION : LAUNCH</span>
-          </div>
-          <div className="eyebrow-red" style={{ marginBottom: 24 }}>
-            ▌ BARMATRIX FLAGSHIP
-          </div>
-          <h1
-            className="display display-lg"
-            style={{ margin: "0 0 24px", maxWidth: "20ch" }}
+          <div
+            className="two-col"
+            style={{ alignItems: "center", gap: 48 }}
           >
-            One price. <span style={{ fontStyle: "italic" }}>One cohort.</span>{" "}
-            <span style={{ color: "var(--red)" }}>Full repair access.</span>
-          </h1>
-          <p className="body-lg" style={{ marginBottom: 0 }}>
-            BarMatrix Flagship is a multiple-choice-only MBE repair system.
-            Diagnostic, Red-Zone Map, guided repair question work, assigned
-            drills, boot camps, timed sets, guided path, and full web access —
-            all included.
-          </p>
-        </div>
-      </section>
+            <div>
+              <h1
+                className="display display-lg"
+                style={{ margin: "0 0 24px", maxWidth: "14ch" }}
+              >
+                Choose the repair path after the diagnostic proves the gap.
+              </h1>
+              <p className="body-lg" style={{ marginBottom: 0 }}>
+                Flagship is {PRICING.priceLabel}, or $500 today + $499 in 30
+                days. Start with the free diagnostic, then enroll when the
+                Red-Zone Map makes the repair path clear.
+              </p>
+              <div className="hero-actions" style={{ marginTop: 32 }}>
+                <Link href="/diagnostic" className="btn btn-lg red">
+                  Start free diagnostic <span className="arrow">-&gt;</span>
+                </Link>
+                <Link href="/checkout" className="btn btn-lg ghost">
+                  Enroll in Flagship
+                </Link>
+              </div>
+            </div>
 
-      <section className="section">
-        <div className="container">
-          <div className="two-col" style={{ alignItems: "start" }}>
-            {/* Flagship card */}
-            <div className="price-card flagship">
+            <aside className="price-card flagship" aria-label="Pricing summary">
               <span className="ribbon">JULY 2026 COHORT</span>
               <h2 className="name">{PRICING.flagshipName}</h2>
               <p className="summary">
-                One cohort. Full MBE trap-repair access. Web access live now.
+                One cohort. Multiple-choice-only MBE repair. Web access live
+                now.
               </p>
               <div className="price">
                 <span className="num">{PRICING.priceLabel}</span>
               </div>
-              <div className="plan">{PRICING.paymentPlanLabel}</div>
-              <ul>
-                {PRICING.includes.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
+              <div className="plan">or $500 today + $499 in 30 days</div>
               <Link
                 href="/checkout"
                 className="btn btn-lg red"
                 style={{ width: "100%", justifyContent: "center" }}
               >
-                Enroll in Flagship <span className="arrow">→</span>
+                Open checkout <span className="arrow">-&gt;</span>
               </Link>
               <p
-                className="mono"
                 style={{
-                  fontSize: 11,
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
                   color: "var(--muted-light)",
-                  marginTop: 18,
+                  fontSize: 13,
+                  lineHeight: 1.6,
+                  margin: "18px 0 0",
                   textAlign: "center",
                 }}
               >
-                {PRICING.capacityLine}
+                Checkout verifies enrollment status before payment.
+              </p>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container">
+          <div className="pricing-proof-grid">
+            <div>
+              <h2
+                className="display display-md"
+                style={{ margin: "0 0 18px", maxWidth: "13ch" }}
+              >
+                Price comes after the Red-Zone Map.
+              </h2>
+              <p className="body-lg" style={{ margin: 0 }}>
+                The diagnostic should tell you something real before the
+                purchase decision. It names the red zones, the wrong-answer
+                pull, and the first repair priority.
               </p>
             </div>
-
-            {/* Right column: capacity policy + try-first */}
             <div
-              style={{ display: "flex", flexDirection: "column", gap: 32 }}
+              style={{
+                display: "grid",
+                gap: 16,
+              }}
             >
-              <div className="info-panel">
-                <div
-                  className="eyebrow"
-                  style={{ marginBottom: 12, color: "var(--ink)" }}
+              {methodRows.map((row) => (
+                <article
+                  key={row.title}
+                  className="info-panel"
+                  style={{ background: "var(--paper)" }}
                 >
-                  ▸ ENROLLMENT POLICY
-                </div>
-                <h3
-                  className="serif"
-                  style={{
-                    fontSize: 24,
-                    fontWeight: 700,
-                    margin: "0 0 12px",
-                    letterSpacing: "-0.01em",
-                  }}
-                >
-                  Checkout verifies availability before payment.
-                </h3>
-                <p
-                  style={{
-                    color: "var(--ink-soft)",
-                    fontSize: 15,
-                    margin: 0,
-                    lineHeight: 1.55,
-                  }}
-                >
-                  Checkout verifies live enrollment status before payment. If
-                  enrollment is ever paused, the checkout page will say so
-                  before Stripe opens.
-                </p>
-              </div>
-
-              <div
-                className="info-panel"
-                style={{ background: "var(--paper)" }}
-              >
-                <div
-                  className="eyebrow-strong"
-                  style={{ marginBottom: 12 }}
-                >
-                  ▸ START FREE
-                </div>
-                <h3
-                  className="serif"
-                  style={{
-                    fontSize: 24,
-                    fontWeight: 700,
-                    margin: "0 0 12px",
-                    letterSpacing: "-0.01em",
-                  }}
-                >
-                  Try the diagnostic first.
-                </h3>
-                <p
-                  style={{
-                    color: "var(--ink-soft)",
-                    fontSize: 15,
-                    margin: "0 0 20px",
-                    lineHeight: 1.55,
-                  }}
-                >
-                  Price comes after the Red-Zone Map.{" "}
-                  The Free MBE Trap Diagnostic builds your Red-Zone Map,
-                  names the trap pattern from your own answers, and shows the
-                  same diagnostic-to-repair loop Flagship uses after
-                  enrollment. No card. No commitment.
-                </p>
-                <Link href={DIAGNOSTIC_FIRST.cta.href} className="btn red">
-                  {DIAGNOSTIC_FIRST.cta.label}{" "}
-                  <span className="arrow">→</span>
-                </Link>
-              </div>
-
-              <div className="info-panel">
-                <div
-                  className="eyebrow"
-                  style={{ marginBottom: 12, color: "var(--ink)" }}
-                >
-                  ▸ WHAT FLAGSHIP IS NOT
-                </div>
-                <ul
-                  style={{
-                    listStyle: "none",
-                    padding: 0,
-                    margin: 0,
-                    fontSize: 14,
-                    color: "var(--ink-soft)",
-                    lineHeight: 1.55,
-                  }}
-                >
-                  {[
-                    "A full bar review course",
-                    "Essay or performance-test prep",
-                    "Official NCBE material",
-                    "A guarantee of any exam outcome",
-                  ].map((t) => (
-                    <li
-                      key={t}
-                      style={{
-                        padding: "8px 0",
-                        borderBottom: "1px solid var(--rule-soft)",
-                      }}
-                    >
-                      <span
-                        className="mono"
-                        style={{
-                          color: "var(--muted-light)",
-                          marginRight: 12,
-                        }}
-                      >
-                        ×
-                      </span>
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                  <h3
+                    className="serif"
+                    style={{
+                      fontSize: 26,
+                      lineHeight: 1.05,
+                      margin: "0 0 8px",
+                    }}
+                  >
+                    {row.title}
+                  </h3>
+                  <p
+                    style={{
+                      color: "var(--ink-soft)",
+                      lineHeight: 1.55,
+                      margin: 0,
+                    }}
+                  >
+                    {row.body}
+                  </p>
+                </article>
+              ))}
             </div>
           </div>
         </div>
@@ -220,14 +182,115 @@ export default function PricingPage() {
 
       <section className="section alt">
         <div className="container">
-          <div className="section-rule">
-            <span className="label">▌ Frequently Asked</span>
+          <div className="two-col" style={{ alignItems: "start" }}>
+            <div className="price-card">
+              <h2 className="name">Included in Flagship</h2>
+              <p className="summary">
+                The repair layer that sits beside your full bar course.
+              </p>
+              <ul>
+                {included.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+              <Link href="/diagnostic" className="btn red">
+                Start free diagnostic <span className="arrow">-&gt;</span>
+              </Link>
+            </div>
+
+            <div className="pricing-fit-grid">
+              <div className="info-panel">
+                <h2
+                  className="serif"
+                  style={{ fontSize: 28, margin: "0 0 14px" }}
+                >
+                  Built for
+                </h2>
+                <ul
+                  style={{
+                    listStyle: "none",
+                    padding: 0,
+                    margin: 0,
+                    display: "grid",
+                    gap: 14,
+                    color: "var(--ink-soft)",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {fitRows.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="info-panel">
+                <h2
+                  className="serif"
+                  style={{ fontSize: 28, margin: "0 0 14px" }}
+                >
+                  Not built as
+                </h2>
+                <ul
+                  style={{
+                    listStyle: "none",
+                    padding: 0,
+                    margin: 0,
+                    display: "grid",
+                    gap: 14,
+                    color: "var(--ink-soft)",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {notRows.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+              <div
+                className="info-panel"
+                style={{
+                  gridColumn: "1 / -1",
+                  background: "var(--ink)",
+                  color: "var(--bg)",
+                }}
+              >
+                <h2
+                  className="serif"
+                  style={{ fontSize: 32, lineHeight: 1, margin: "0 0 12px" }}
+                >
+                  Try the diagnostic first.
+                </h2>
+                <p
+                  style={{
+                    color: "var(--muted-light)",
+                    lineHeight: 1.55,
+                    margin: "0 0 20px",
+                  }}
+                >
+                  Take the diagnostic, read the Red-Zone Map, then decide
+                  whether the full guided repair path is worth buying. No card. No commitment.
+                </p>
+                <Link href="/diagnostic" className="btn red">
+                  Get my Red-Zone Map <span className="arrow">-&gt;</span>
+                </Link>
+              </div>
+            </div>
           </div>
-          <div style={{ maxWidth: 880, margin: "0 auto" }}>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container">
+          <div style={{ maxWidth: 900, margin: "0 auto" }}>
+            <h2
+              className="display display-md center"
+              style={{ margin: "0 0 28px" }}
+            >
+              Pricing questions
+            </h2>
             {FAQ.map((item) => (
               <details key={item.q} className="faq-item">
                 <summary className="q">
-                  <h4>{item.q}</h4>
+                  <h3>{item.q}</h3>
                   <span className="toggle">+</span>
                 </summary>
                 <div className="a">{item.a}</div>

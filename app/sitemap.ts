@@ -17,8 +17,6 @@ const ROUTES = [
   "/red-zones",
   "/traps",
   "/tensions",
-  "/boot-camps",
-  "/timed-sets",
   "/subjects/civil-procedure",
   "/subjects/constitutional-law",
   "/subjects/contracts",

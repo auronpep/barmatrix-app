@@ -10,7 +10,7 @@ export const HERO = {
     "BarMatrix uses the C3 method to diagnose the wrong-answer patterns behind your missed MBE questions, map your red zones, and assign the next repair drill instead of sending you back into random practice.",
   primaryCta: { label: "Take the Free MBE Trap Diagnostic", href: "/diagnostic" },
   secondaryCta: { label: "See Wrong Answer Forensics", href: "/how-it-works" },
-  flagshipLine: "BarMatrix Flagship — $999. Limited July-cycle cohort seats available.",
+  flagshipLine: "BarMatrix Flagship - $999, or $500 today + $499 in 30 days.",
 } as const;
 
 export const PRICING = {
@@ -19,7 +19,7 @@ export const PRICING = {
   priceCents: 99900,
   paymentPlanLabel: "Payment plan: $500 today + $499 in 30 days",
   paymentPlanTotalCents: 99900,
-  capacityLine: "Limited seats available. Enrollment closes when capacity is reached.",
+  capacityLine: "Enrollment is open for the July-cycle guided repair program.",
   includes: [
     "Free MBE Trap Diagnostic",
     "Red-Zone Map",
@@ -37,11 +37,11 @@ export const PRICING = {
 // Dynamic capacity bands, per BARMATRIX/engineering/SCHEMA_ONE_COHORT.sql cohort_public_status view (SRC-0024).
 // The actual band is returned by GET /api/cohort/status — these constants are the fallback when no API yet.
 export const CAPACITY_COPY = {
-  open: "July-cycle cohort enrollment is open. Limited seats available.",
-  limited: "Limited July-cycle cohort seats available.",
-  almost_full: "The July-cycle cohort is almost full.",
-  last_seats: "Last July-cycle cohort seats available.",
-  waitlist: "Cohort capacity reached. Join the waitlist.",
+  open: "July-cycle cohort enrollment is open.",
+  limited: "July-cycle cohort enrollment is open.",
+  almost_full: "July-cycle cohort enrollment is open.",
+  last_seats: "July-cycle cohort enrollment is open.",
+  waitlist: "Enrollment is currently paused. Contact support for the next available start.",
 } as const;
 
 export const PROOF_CARD = {
@@ -64,8 +64,8 @@ export const FAQ: Array<{ q: string; a: string }> = [
     a: "Yes. The payment plan is $500 today and $499 in 30 days.",
   },
   {
-    q: "Is enrollment limited?",
-    a: "Yes. The July-cycle cohort has limited seats, and enrollment closes when capacity is reached.",
+    q: "How does enrollment work?",
+    a: "Enrollment is open for the July-cycle guided repair program. If enrollment is ever paused, checkout will say so before payment.",
   },
   {
     q: "Is this a full bar course?",

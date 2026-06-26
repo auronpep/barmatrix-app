@@ -14,6 +14,8 @@ export type SaleOffer = {
 
 export type SalePageQueryInput = Record<string, string | string[] | undefined>;
 
+export type SalePageVariant = "standard" | "legacy" | "flash";
+
 export const STANDARD_FLAGSHIP_PRICE_CENTS = 99900;
 
 export const PROMO_CODE_DISCOUNTS_CENTS: Record<string, number> = {
@@ -77,6 +79,27 @@ export const SALE_QUERY_KEYS = [
   "promo",
   "coupon_code",
 ] as const;
+
+export function splitSaleVariantSlug(slug: string): {
+  baseSlug: string;
+  variant: SalePageVariant;
+} {
+  if (slug.endsWith("_jly")) {
+    return { baseSlug: slug.slice(0, -4), variant: "legacy" };
+  }
+  if (slug.endsWith("_flash")) {
+    return { baseSlug: slug.slice(0, -6), variant: "flash" };
+  }
+  return { baseSlug: slug, variant: "standard" };
+}
+
+export function saleStaticParams() {
+  return SALE_OFFERS.flatMap((offer) => [
+    { slug: offer.slug },
+    { slug: `${offer.slug}_jly` },
+    { slug: `${offer.slug}_flash` },
+  ]);
+}
 
 export function getSaleOfferBySlug(slug: string): SaleOffer | null {
   return SALE_OFFERS.find((offer) => offer.slug === slug) ?? null;

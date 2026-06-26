@@ -39,4 +39,11 @@ describe("sitemap static surface", () => {
       assert.match(sitemap, new RegExp(`"${route}"`), `${route} should be in the sitemap`);
     }
   });
+
+  it("does not list auth-gated app routes as public sitemap pages", () => {
+    const sitemap = readProjectFile("app/sitemap.ts");
+
+    assert.doesNotMatch(sitemap, /"\/boot-camps"/);
+    assert.doesNotMatch(sitemap, /"\/timed-sets"/);
+  });
 });

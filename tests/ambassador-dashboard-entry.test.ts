@@ -225,6 +225,9 @@ describe("dashboard guided-path entry", () => {
     assert.match(practice, /getAtlasAnswer/);
     assert.match(practice, /getAtlasQuestions/);
     assert.match(practice, /Submit answer/);
+    assert.match(practice, /useRouter/);
+    assert.match(practice, /hasRenderableCaseStudyModules/);
+    assert.match(practice, /router\.push\(answerHref\)/);
     assert.match(practice, /setSelection/);
     assert.match(practice, /submitted: true/);
     assert.match(practice, /selected === q\.correct_answer/);

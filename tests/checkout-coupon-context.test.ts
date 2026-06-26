@@ -15,8 +15,12 @@ describe("checkout coupon context", () => {
     assert.match(source, /params\.get\("code"\)/);
     assert.match(source, /params\.get\("promo"\)/);
 
+    assert.match(source, /getSaleOfferByCode\(attribution\.coupon\)/);
+    assert.match(source, /formatPrice\(saleOffer\.salePriceCents\)/);
+    assert.match(source, /Code \$\{saleOffer\.couponCode\} lowers pay-in-full checkout to \$\{payInFullPrice\}/);
+    assert.match(source, /Enroll with \$\{payInFullPrice\} sale/);
     assert.match(source, /Coupons apply to pay-in-full checkout only/);
-    assert.match(source, /Code \{attribution\.coupon\} will be applied automatically/);
+    assert.match(source, /Code \$\{attribution\.coupon\} will be applied automatically/);
     assert.match(source, /coupon_code: plan === "pay_in_full" \? getCouponCode\(checkoutSearchParams\) : null/);
     assert.match(source, /const hasCouponContext = attribution\.coupon !== null/);
     assert.match(source, /plan === "two_pay_500_499" && hasCouponContext/);

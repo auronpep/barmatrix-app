@@ -171,10 +171,10 @@ export default function Home() {
                 </span>
               </h2>
               <p className="body-lg">
-                You have done thousands of MBE questions. Your score plateaued
-                anyway. The problem is not volume. It is that every miss is
-                treated the same: read the explanation, move on, repeat the
-                trap on the real exam.
+                You have done plenty of MBE questions. The same miss patterns
+                keep showing up anyway. The problem is not simply volume. It is
+                that every miss gets treated the same: read the explanation,
+                move on, repeat the trap when pressure rises.
               </p>
             </div>
             <div

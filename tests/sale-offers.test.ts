@@ -38,18 +38,23 @@ describe("sale offer framework", () => {
 
     assert.match(source, /generateStaticParams/);
     assert.match(source, /searchParams: Promise<SalePageQueryInput>/);
-    assert.match(source, /buildSaleOfferFromQuery\(slug, sp\)/);
+    assert.match(source, /splitSaleVariantSlug\(slug\)/);
+    assert.match(source, /buildSaleOfferFromQuery\(baseSlug, sp\)/);
     assert.match(source, /notFound\(\)/);
     assert.match(source, /checkoutHrefForSaleOffer\(offer\)/);
-    assert.match(source, /PAY IN FULL ONLY/);
-    assert.match(source, /BarMatrix Flagship for/);
+    assert.match(source, /pay-in-full checkout/);
+    assert.match(source, /50% off BarMatrix Flagship/);
     assert.match(source, /Open \{price\} checkout/);
-    assert.match(source, /offer link attaches the campaign code before one-payment/);
-    assert.match(source, /Payment plans are not eligible for promotion codes/);
-    assert.match(source, /matched to the promo code/);
+    assert.match(source, /Code attached before checkout/);
+    assert.match(source, /Payment\s+plans use the standard checkout/);
+    assert.match(source, /The 50% off sale applies to pay-in-full checkout/);
+    assert.match(source, /matched to the campaign code/);
+    assert.match(source, /robots: \{ index: false, follow: false \}/);
     assert.match(source, /Red-Zone Map/);
     assert.doesNotMatch(source, /two_pay_500_499/);
     assert.doesNotMatch(source, /comes from the URL/);
+    assert.doesNotMatch(source, /checkout does not yet support/i);
+    assert.doesNotMatch(source, /split-pay approval/i);
     assert.doesNotMatch(source, /guarantee/i);
   });
 
@@ -73,5 +78,18 @@ describe("sale offer framework", () => {
     assert.match(source, /plan === "two_pay_500_499" && hasCouponContext/);
     assert.match(source, /disabled=\{phase === "redirecting" \|\| hasCouponContext\}/);
     assert.match(source, /Payment plan unavailable with coupon/);
+  });
+
+  it("keeps the flash sale preview on supported payment terms", () => {
+    const source = readProjectFile("app/preview/pricing-flash-sale/page.tsx");
+
+    assert.match(source, /Flash-sale pricing variant for BarMatrix Flagship at \$499 pay-in-full checkout/);
+    assert.match(source, /The payment plan stays on standard pricing/);
+    assert.match(source, /not part of this 50% off campaign/);
+    assert.doesNotMatch(source, /\$250/);
+    assert.doesNotMatch(source, /\$249/);
+    assert.doesNotMatch(source, /checkout does not yet support/i);
+    assert.doesNotMatch(source, /split-pay approval/i);
+    assert.doesNotMatch(source, /Hold split-pay/i);
   });
 });

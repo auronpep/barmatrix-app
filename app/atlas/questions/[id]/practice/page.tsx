@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { api, ApiClientError, type AtlasAnswer, type AtlasQuestionListItem, type Letter } from "@/lib/api-client";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
@@ -16,6 +16,7 @@ type State =
 
 export default function AtlasQuestionPracticePage() {
   const params = useParams<{ id: string | string[] }>();
+  const router = useRouter();
   const { isLoaded, isSignedIn, getToken } = useClerkAuth();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const questionId = id ?? "";
@@ -87,6 +88,7 @@ export default function AtlasQuestionPracticePage() {
   const submitted = selection.questionId === questionId ? selection.submitted : false;
   const isCorrect = submitted && selected === q.correct_answer;
   const codeHref = `/atlas?code=${encodeURIComponent(q.outline_code)}#atlas-code-questions`;
+  const hasCaseStudyPath = hasRenderableCaseStudyModules(state.answer.case_study_modules);
 
   return (
     <Shell>
@@ -160,7 +162,13 @@ export default function AtlasQuestionPracticePage() {
           <button
             type="button"
             disabled={!selected || submitted}
-            onClick={() => setSelection({ questionId, selected, submitted: true })}
+            onClick={() => {
+              if (hasCaseStudyPath) {
+                router.push(answerHref);
+                return;
+              }
+              setSelection({ questionId, selected, submitted: true });
+            }}
             className="rounded-md border border-red-700 bg-red-700 px-5 py-3 font-mono text-[11px] uppercase tracking-[0.14em] text-white transition-[transform,background-color,border-color] duration-200 hover:border-red-800 hover:bg-red-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-zinc-300 disabled:bg-zinc-200 disabled:text-zinc-500"
           >
             Submit answer
@@ -210,6 +218,20 @@ function QuestionNavLink({ question, label }: { question: AtlasQuestionListItem;
       {label}
     </Link>
   );
+}
+
+function hasRenderableCaseStudyModules(modules: Record<string, unknown>): boolean {
+  return Object.entries(modules).some(([key, value]) => key !== "detours" && isRenderableModule(value));
+}
+
+function isRenderableModule(value: unknown): boolean {
+  if (value === null || value === undefined) return false;
+  if (typeof value === "string") return value.trim().length > 0;
+  if (typeof value === "number") return Number.isFinite(value);
+  if (typeof value === "boolean") return true;
+  if (Array.isArray(value)) return value.some(isRenderableModule);
+  if (typeof value === "object") return Object.values(value).some(isRenderableModule);
+  return false;
 }
 
 function Shell({ children }: { children: ReactNode }) {

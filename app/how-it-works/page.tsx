@@ -107,7 +107,7 @@ function MiniIcon({ type }: { type: string }) {
 
 export default function HowItWorksPage() {
   return (
-    <main className="hiw-page">
+    <div className="hiw-page">
       <section className="hiw-hero">
         <div className="hiw-wrap hiw-hero-grid">
           <div className="hiw-hero-copy">
@@ -1089,6 +1089,6 @@ export default function HowItWorksPage() {
           }
         }
       `}</style>
-    </main>
+    </div>
   );
 }

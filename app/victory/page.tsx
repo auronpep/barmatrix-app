@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DIAGNOSTIC_FIRST, HERO, PRICING, PROOF_CARD } from "./copy";
+import { DIAGNOSTIC_FIRST, FAQ, HERO, PRICING, PROOF_CARD } from "./copy";
 
 export const metadata: Metadata = {
   alternates: {
@@ -9,9 +9,16 @@ export const metadata: Metadata = {
 };
 
 const stats = [
-  { num: "Every", red: ".", lbl: "Question · forensically tagged" },
-  { num: "156", lbl: "Tension points mapped" },
-  { num: "07", lbl: "MBE subjects covered" },
+  { num: "07", lbl: "MBE subjects in the Red-Zone Map" },
+  { num: "04", lbl: "C3 dimensions checked per miss" },
+  { num: "01", lbl: "Next guided repair task surfaced" },
+];
+
+const heroProof = [
+  "Free diagnostic first",
+  "Red-Zone Map output",
+  "Wrong-answer forensics",
+  "One guided repair task",
 ];
 
 const problemList: [string, string][] = [
@@ -68,6 +75,83 @@ const anatomy = [
   },
 ];
 
+const redZoneCards = [
+  {
+    subject: "Evidence",
+    trap: "Purpose-of-offer hearsay trap",
+    signal: "High trap pull",
+    repair: "Run Hearsay Purpose Drill",
+  },
+  {
+    subject: "Contracts",
+    trap: "Acceptance timing drift",
+    signal: "Medium trap pull",
+    repair: "Run Formation Trigger Drill",
+  },
+  {
+    subject: "Civil Procedure",
+    trap: "Wrong procedural standard",
+    signal: "High priority",
+    repair: "Run Standard-Selection Drill",
+  },
+];
+
+const patternDashboard = [
+  ["Top red zone", "Evidence · Hearsay purpose"],
+  ["Why it repeats", "Out-of-court statement instinct overrides purpose"],
+  ["Wrong answer pull", "The tempting answer uses a true rule too broadly"],
+  ["Next task", "Hearsay Purpose-of-Offer Drill"],
+];
+
+const trapTaxonomy = [
+  ["Stale rule", "A remembered rule fires before the changed fact is processed."],
+  ["Wrong party", "The answer fits someone in the fact pattern, but not the tested actor."],
+  ["Wrong timing", "The rule is correct before or after the decisive procedural moment."],
+  ["Overbroad scope", "A true principle is stretched beyond the exception or limit."],
+  ["Exception miss", "The exception carries the question, but the broad rule feels safer."],
+  ["Purpose drift", "Evidence is offered for one purpose while the answer treats another."],
+];
+
+const c3Cells = [
+  ["Call", "What is the question asking you to decide?"],
+  ["Controlling Rule", "Which rule governs after the facts are sorted?"],
+  ["Collision", "Where does the tempting wrong answer collide with the trigger fact?"],
+  ["Answer", "Which choice survives the collision without overclaiming?"],
+];
+
+const diagnosticTimeline = [
+  ["01", "Answer diagnostic prompts", "Use a short MBE diagnostic to expose the repeated trap pattern."],
+  ["02", "Read the Red-Zone Map", "See the subject, trap, and repair priority before checkout."],
+  ["03", "Enter Flagship if it fits", "Follow one guided repair task at a time after enrollment."],
+];
+
+const proofPanels = [
+  ["Diagnostic artifact", "A sample Red-Zone Map shows what the student receives, without invented social proof."],
+  ["Answer autopsy", "The miss is explained through the attractive wrong answer and the trigger fact."],
+  ["Repair assignment", "The next drill is tied to the diagnosed trap instead of a broad resource shelf."],
+];
+
+const priceCards = [
+  ["Pay in full", PRICING.priceLabel, "One July-cycle guided repair program."],
+  ["Payment plan", "$500 + $499", "Same total price, split across two payments."],
+];
+
+const enhancedFaq = [
+  ...FAQ,
+  {
+    q: "I already have a bar course. Where does this fit?",
+    a: "Keep the full course. BarMatrix is the MBE diagnostic and repair layer beside it: red zones, wrong-answer forensics, and one next MBE repair task.",
+  },
+  {
+    q: "Is this another dashboard full of resources?",
+    a: "No. The public product promise is Lead Me: one active repair task from the Red-Zone Map, with supporting context only when it helps the task.",
+  },
+  {
+    q: "What proof do I see before paying?",
+    a: "The free diagnostic is the proof step. It returns a Red-Zone Map style readout so you can judge whether the repair path is specific enough to pursue.",
+  },
+];
+
 const builtFor = [
   "Examinees whose MBE percentage is stuck despite high question volume",
   "Full-course users who need deeper MBE diagnosis than their bank provides",
@@ -80,7 +164,7 @@ const notFor = [
   "A full bar review course replacement",
   "Essay preparation or grading",
   "Performance-test preparation",
-  "Official NCBE or State Bar material",
+  "Official bar-exam source material",
   "A guarantee of any score or exam outcome",
 ];
 
@@ -102,12 +186,17 @@ export default function Home() {
                 ▌ RED-ZONE MAP · WRONG-ANSWER FORENSICS · GUIDED REPAIR
               </div>
               <h1 className="display display-xl">
-                Find the{" "}
-                <span style={{ fontStyle: "italic" }}>MBE red zones</span>{" "}
-                your question sets are{" "}
-                <span style={{ color: "var(--red)" }}>hiding.</span>
+                Down to{" "}
+                <span style={{ fontStyle: "italic" }}>two answers</span>{" "}
+                and still choosing the{" "}
+                <span style={{ color: "var(--red)" }}>trap?</span>
               </h1>
               <p className="lede">{HERO.subhead}</p>
+              <div className="hero-proof-strip">
+                {heroProof.map((item) => (
+                  <span key={item}>{item}</span>
+                ))}
+              </div>
               <div className="hero-actions">
                 <Link href={HERO.primaryCta.href} className="btn btn-lg red">
                   {HERO.primaryCta.label} <span className="arrow">→</span>
@@ -118,7 +207,7 @@ export default function Home() {
                 <div className="platforms">
                   WEB
                   <br />
-                  Same account. Same drills.
+                  Diagnose before price.
                 </div>
               </div>
             </div>
@@ -154,6 +243,52 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ============ RED-ZONE MAP ARTIFACT ============ */}
+      <section className="section">
+        <div className="container">
+          <div className="section-rule">
+            <span className="label">▌ Red-Zone Map · Diagnostic Artifact</span>
+          </div>
+          <div className="diagnostic-artifact-grid">
+            <div>
+              <h2 className="display display-md" style={{ margin: "0 0 20px" }}>
+                Your free diagnostic should feel like a product, not a form.
+              </h2>
+              <p className="body-lg">
+                The Red-Zone Map names the subject, trap pattern, and next
+                repair task. It does not sell a score promise. It shows whether
+                BarMatrix can identify the miss pattern you keep repeating.
+              </p>
+              <div className="diagnostic-timeline">
+                {diagnosticTimeline.map(([num, title, body]) => (
+                  <div key={num}>
+                    <span>{num}</span>
+                    <strong>{title}</strong>
+                    <p>{body}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="red-zone-map" aria-label="Sample Red-Zone Map">
+              <div className="red-zone-map-header">
+                <span>Sample Red-Zone Map</span>
+                <span>Output example</span>
+              </div>
+              {redZoneCards.map((card) => (
+                <div className="red-zone-row" key={card.subject}>
+                  <div>
+                    <span className="eyebrow-red">{card.subject}</span>
+                    <strong>{card.trap}</strong>
+                  </div>
+                  <span>{card.signal}</span>
+                  <p>{card.repair}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ============ STATS STRIP ============ */}
       <section className="section-tight">
         <div className="container">
@@ -162,11 +297,59 @@ export default function Home() {
               <div key={s.lbl}>
                 <span className="num">
                   {s.num}
-                  {s.red && <span className="red-dot">{s.red}</span>}
                 </span>
                 <span className="lbl">{s.lbl}</span>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ PRODUCT MECHANICS ============ */}
+      <section className="section alt">
+        <div className="container">
+          <div className="section-rule">
+            <span className="label">▌ Product Mechanics · Pattern Dashboard</span>
+          </div>
+          <div className="product-proof-grid">
+            <div className="pattern-dashboard">
+              <div className="pattern-dashboard-top">
+                <span>Pattern Dashboard</span>
+                <span>Lead Me mode</span>
+              </div>
+              {patternDashboard.map(([label, value]) => (
+                <div className="dashboard-line" key={label}>
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                </div>
+              ))}
+              <div className="next-task-card">
+                <span>One next repair task</span>
+                <strong>Run 8 hearsay-purpose misses, then review the collision note.</strong>
+                <Link href="/how-it-works" className="btn btn-sm red">
+                  See how repair works <span className="arrow">→</span>
+                </Link>
+              </div>
+            </div>
+            <div>
+              <h2 className="display display-md" style={{ margin: "0 0 18px" }}>
+                The page should show the mechanism it promises.
+              </h2>
+              <p className="body-lg">
+                BarMatrix is not promising motivation, an outcome statistic, or
+                another bank of questions. The product claim is narrower:
+                diagnose the trap, show why it pulled you, and assign the next
+                repair task.
+              </p>
+              <div className="proof-panel-grid">
+                {proofPanels.map(([title, body]) => (
+                  <div className="proof-panel" key={title}>
+                    <strong>{title}</strong>
+                    <p>{body}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -198,10 +381,10 @@ export default function Home() {
                 </span>
               </h2>
               <p className="body-lg">
-                You have done thousands of MBE questions. Your score plateaued
-                anyway. The problem is not volume. It is that every miss is
-                treated the same: read the explanation, move on, repeat the
-                trap on the real exam.
+                You have done plenty of MBE questions. The same miss patterns
+                keep showing up anyway. The problem is not simply volume. It is
+                that every miss gets treated the same: read the explanation,
+                move on, repeat the trap when pressure rises.
               </p>
             </div>
             <div
@@ -286,6 +469,43 @@ export default function Home() {
                 <p>{s.body}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ C3 + TRAP TAXONOMY ============ */}
+      <section className="section alt">
+        <div className="container">
+          <div className="section-rule">
+            <span className="label">▌ C3 + Trap Taxonomy · 03</span>
+          </div>
+          <div className="two-col" style={{ alignItems: "start" }}>
+            <div>
+              <h2 className="display display-md" style={{ margin: "0 0 22px" }}>
+                C3 turns a miss into four repairable dimensions.
+              </h2>
+              <div className="c3-grid">
+                {c3Cells.map(([title, body]) => (
+                  <div key={title}>
+                    <span>{title}</span>
+                    <p>{body}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h3 className="display display-sm" style={{ margin: "0 0 22px" }}>
+                Trap archetypes students can recognize again.
+              </h3>
+              <div className="trap-taxonomy-grid">
+                {trapTaxonomy.map(([title, body]) => (
+                  <div className="trap-taxonomy-card" key={title}>
+                    <strong>{title}</strong>
+                    <p>{body}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -570,9 +790,9 @@ export default function Home() {
       <section className="section">
         <div className="container">
           <div className="section-rule">
-            <span className="label">▌ The Flagship · 05</span>
+            <span className="label">▌ The Flagship · Proof-Safe Price</span>
           </div>
-          <div className="two-col" style={{ alignItems: "start" }}>
+          <div className="pricing-proof-grid">
             <div>
               <div className="eyebrow-red" style={{ marginBottom: 16 }}>
                 ONE COHORT · JULY 2026
@@ -613,6 +833,15 @@ export default function Home() {
               >
                 {PRICING.capacityLine}
               </p>
+              <div className="price-option-grid">
+                {priceCards.map(([label, price, body]) => (
+                  <div className="price-option-card" key={label}>
+                    <span>{label}</span>
+                    <strong>{price}</strong>
+                    <p>{body}</p>
+                  </div>
+                ))}
+              </div>
               <div style={{ marginTop: 32, display: "flex", gap: 16, flexWrap: "wrap" }}>
                 <Link href="/pricing" className="btn red">
                   See the full flagship <span className="arrow">→</span>
@@ -649,6 +878,37 @@ export default function Home() {
                 </li>
               ))}
             </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ FAQ ============ */}
+      <section className="section alt">
+        <div className="container">
+          <div className="section-rule">
+            <span className="label">▌ Objections · Claim-Safe Answers</span>
+          </div>
+          <div className="faq-proof-grid">
+            <div>
+              <h2 className="display display-md" style={{ margin: "0 0 18px" }}>
+                The offer stays narrow on purpose.
+              </h2>
+              <p className="body-lg">
+                Start with the diagnostic. Buy only if the Red-Zone Map makes
+                the repair target concrete enough to pursue.
+              </p>
+            </div>
+            <div>
+              {enhancedFaq.map((item) => (
+                <details className="faq-item" key={item.q}>
+                  <summary className="q">
+                    <h3>{item.q}</h3>
+                    <span className="toggle">+</span>
+                  </summary>
+                  <p className="a">{item.a}</p>
+                </details>
+              ))}
+            </div>
           </div>
         </div>
       </section>

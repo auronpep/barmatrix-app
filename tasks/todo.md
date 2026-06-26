@@ -4043,3 +4043,108 @@ Apply the accepted recommendations from the public copy review while keeping ite
 - 2026-06-20: Verification passed: focused tests, `node --test tests\*.test.ts` (166/166), `npm run lint`, `npm run build`, copy-risk `rg`, and `git diff --check` with normal CRLF warnings only.
 - 2026-06-20: First build rerun failed with `ENOSPC`; removed generated `.next` folders under the repo/worktrees and reran successfully. Drive C: remained tight afterward at roughly 246 MB free.
 - 2026-06-20: Worktree contains concurrent unrelated changes and untracked competitor-route files; they were preserved.
+
+# Homepage Diagnostic-Proof Enhancement Pass - 2026-06-20
+
+## Scope
+
+Review `C:\BMO-landing_pages\landing-page-full-audit-curated.md`, live-test `https://barmatrix.app`, and ship 50 claim-safe homepage enhancements that make the public content demonstrate BarMatrix mechanics: Red-Zone Map, wrong-answer forensics, trap taxonomy, Pattern Dashboard, guided repair path, and diagnostic-to-price sequencing.
+
+## Plan
+
+- [x] Load BMM/CRO/Playwright/PowerShell guidance, product-marketing context, repo-local Next.js rules, and the curated audit.
+- [x] Capture live before screenshots for desktop and mobile.
+- [x] Implement 50 homepage enhancements across diagnostic artifact, product mechanics, taxonomy, proof-safe pricing, and FAQ/objection handling.
+- [x] Add focused regression coverage for the new homepage mechanics and claim-safety boundaries.
+- [x] Run focused tests, full tests as feasible, lint, build, and browser smoke.
+- [x] Deploy only after private remote/project verification and record live proof.
+
+## Enhancement Checklist
+
+- [x] 01. Make the hero pain point explicitly about narrowing to two answers.
+- [x] 02. Add a hero proof strip naming diagnostic, map, forensics, and guided repair.
+- [x] 03. Show Red-Zone Map as a concrete artifact before price.
+- [x] 04. Show subject-level red-zone cards.
+- [x] 05. Show trap-strength / repair-priority metrics without outcome claims.
+- [x] 06. Add "diagnose before purchase" reassurance near the primary CTA.
+- [x] 07. Add a sample Pattern Dashboard module.
+- [x] 08. Show trap taxonomy buckets tied to curriculum language.
+- [x] 09. Show one active next repair task instead of dashboard browsing.
+- [x] 10. Show C3 dimensions: Call, Controlling Rule, Collision, Answer.
+- [x] 11. Add answer autopsy mechanics after the hero example.
+- [x] 12. Clarify why the attractive wrong answer looked right.
+- [x] 13. Clarify why the correct answer wins.
+- [x] 14. Tie each miss to a specific repair drill.
+- [x] 15. Add method screenshots/proof language instead of testimonials.
+- [x] 16. Add a diagnostic output timeline.
+- [x] 17. Add a guided repair path rail.
+- [x] 18. Add "one diagnostic, one red zone, one repair task" repetition.
+- [x] 19. Add MBE-only companion positioning above price.
+- [x] 20. Add "not a full bar course" before pricing.
+- [x] 21. Add premium price card with full-pay and payment-plan context.
+- [x] 22. Add diagnostic-first reminder inside price section.
+- [x] 23. Remove any fake urgency from price language.
+- [x] 24. Add buyer-fit and not-fit contrast near price.
+- [x] 25. Add FAQ density for objections.
+- [x] 26. Add "already have a bar course" objection handling.
+- [x] 27. Add "I do not want another dashboard" objection handling.
+- [x] 28. Add "why pay $999" diagnostic-first answer.
+- [x] 29. Add "what happens after diagnostic" answer.
+- [x] 30. Add "does it cover essays/PT" answer.
+- [x] 31. Add "what proof can I see" answer.
+- [x] 32. Add visual hierarchy for scan readers.
+- [x] 33. Add mobile-safe dense product panels.
+- [x] 34. Add stable dimensions for repeated cards.
+- [x] 35. Add safe dark-section contrast.
+- [x] 36. Add CTA repetition at decision points.
+- [x] 37. Add "Start the free diagnostic" as dominant action.
+- [x] 38. Add "See how repair works" secondary action.
+- [x] 39. Add method labels that match product language.
+- [x] 40. Add trap archetypes without unsupported official-source claims.
+- [x] 41. Add copy from audit harvest only after claim-safety rewrite.
+- [x] 42. Add clean Christian-safe public wording.
+- [x] 43. Add proof captions that say "sample" / "example" where needed.
+- [x] 44. Add no pass-rate / score-increase / guarantee language.
+- [x] 45. Add no competitor-name claims.
+- [x] 46. Add no official-affiliation language.
+- [x] 47. Add no invented testimonials.
+- [x] 48. Add canonical homepage regression strings.
+- [x] 49. Add browser proof artifacts after local run.
+- [x] 50. Add live proof artifacts after deployment.
+
+## Review Log
+
+- 2026-06-20: Live before screenshots captured at `output\playwright\live-home-before-desktop.png` and `output\playwright\live-home-before-mobile.png`; page renders but under-demonstrates Red-Zone artifact, Pattern Dashboard, trap taxonomy, and diagnostic-to-price bridge.
+- 2026-06-20: Implemented the enhancement pass in `app\victory\page.tsx` and `app\globals.css`: two-answer-trap hero, proof strip, Red-Zone Map artifact, diagnostic timeline, Pattern Dashboard, proof panels, C3 grid, trap taxonomy, proof-safe price cards, and expanded FAQ/objection handling.
+- 2026-06-20: Added `tests\public-marketing-copy-polish.test.ts` coverage for active-homepage diagnostic mechanics and claim-safety boundaries.
+- 2026-06-20: Verification passed: `node --test tests\public-marketing-copy-polish.test.ts tests\metadata-canonical.test.ts`, `node --test tests\*.test.ts` (171/171), `npm run lint`, `npm run build`, `git diff --check`, and `graphify update .`.
+- 2026-06-20: Local production browser proof on `http://127.0.0.1:3061` captured `output\playwright\home-enhanced-local-desktop.png` and `output\playwright\home-enhanced-local-mobile.png`; mobile probe found one `<main>`, no horizontal overflow, all required mechanics, and no console errors.
+- 2026-06-20: Production deployment `dpl_Ehv2aLznL2sRuqqJzVpxcpSs1u8G` completed and was aliased to `https://barmatrix.app`.
+- 2026-06-20: Live browser proof on `https://barmatrix.app?verify=home_50_enhancements_dpl_Ehv2aLzn` captured `output\playwright\home-enhanced-live-desktop.png` and `output\playwright\home-enhanced-live-mobile.png`; mobile probe found one `<main>`, no horizontal overflow, all required mechanics, and no console errors.
+- 2026-06-20: Note: the deployable worktree already contained unrelated dirty changes before this pass; they were preserved and included in the production build.
+
+# Frontend Architecture/Rebuild Readiness Audit - 2026-06-20
+
+## Scope
+
+Review `C:\barmatrix-app` as-is to understand app architecture, stale surfaces, backend/API plumbing, and Vercel/account deployment wiring before deciding whether to rebuild from scratch.
+
+## Plan
+
+- [x] Map repo state, package scripts, framework version, and deploy config.
+- [x] Inventory active route families, static/public surfaces, API routes, and stale/duplicate candidates.
+- [x] Identify backend, auth, payment, analytics, and Vercel plumbing without exposing secrets.
+- [x] Run focused verification commands that prove the audit is based on current disk state.
+- [x] Record review findings and rebuild recommendation.
+
+## Review Log
+
+- 2026-06-20: Current repo is the production Next.js 16 / React 19 App Router frontend. GitHub origin is private `auronpep/barmatrix-app`; local branch is `codex-review`; current production alias `https://barmatrix.app` points at Vercel deployment `dpl_AM44msPffEVAbNCqBczZ7Q8JKjEJ`.
+- 2026-06-20: Vercel project link is `.vercel/project.json` -> project `barmatrix-app`, project id `prj_LwBgARXTft6aeyoRwhIqEDWh5p4P`, org/team id `team_HKHemC6mfIOm0t6aROxfEOug`; local Vercel CLI is signed in as `sunnylwood-7609`.
+- 2026-06-20: Frontend has no local `app/api/**` route handlers. All product data, checkout, billing portal, entitlement, Atlas, diagnostics, drills, certification, and dashboard calls go through `lib/api-client.ts` to `NEXT_PUBLIC_API_URL` or fallback `https://api.barmatrix.app`.
+- 2026-06-20: Auth is Clerk-gated through `proxy.ts` and `app/layout.tsx`; protected surfaces include account, atlas, boot camps, certification runners, dashboard, drills, flashcards, practice, question history, study, and timed sets. Clerk intentionally turns off if no publishable key exists.
+- 2026-06-20: Observability/plumbing includes Sentry via `next.config.ts`, `instrumentation.ts`, browser/server/edge Sentry config, and PostHog via `instrumentation-client.ts` / `lib/posthog-client.ts`. Local env files expose only names in this audit: `.env.example` has API, Clerk, PostHog, and Sentry variables; `.env.local` currently has PostHog public variables only.
+- 2026-06-20: Surface count from current disk/build: 112 `app/**/page.tsx` routes, 0 route handlers, 14 `app/preview/**` page routes, 27 public HTML campaign files, 37 `lib` TS/TSX files, 42 component TSX files, and 65 node tests.
+- 2026-06-20: Cleanup candidates are route/copy sprawl, not core plumbing: `app/preview/**`, `app/atlas-v1`, duplicate `subjects/*` and `drills/*` pages, static `public/lp-*.html`, and alternate landing/sale routes such as `pricing_jly`, `victory_jly`, `getthewin`, `pass`, `success`, `win`, and dynamic sale variants.
+- 2026-06-20: Recommendation: do not rebuild from scratch first. Extract/preserve the thin core (`next.config.ts`, `proxy.ts`, `app/layout.tsx`, `lib/api-client.ts`, `lib/posthog-client.ts`, Sentry instrumentation, checkout/account/auth pages), then prune or quarantine stale routes behind a route manifest. A fresh shell is reasonable only after that manifest proves which pages are live, indexed, or revenue-bearing.
+- 2026-06-20: Verification passed: `npm run lint`, `node --test tests\sitemap-static-surface.test.ts tests\sale-offers.test.ts tests\public-marketing-copy-polish.test.ts` (10/10), and `npm run build` with 100 static pages generated.

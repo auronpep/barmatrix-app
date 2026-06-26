@@ -10,6 +10,7 @@ import {
 } from "@/lib/analytics";
 import { getRememberedDiagnosticId } from "@/lib/diagnostic-session";
 import { PRICING, DISCLAIMER, CAPACITY_COPY } from "@/lib/copy";
+import { formatPrice, getSaleOfferByCode } from "@/lib/sale-offers";
 
 type Phase = "ready" | "redirecting" | "error" | "capacity";
 type AttributionState = {
@@ -66,6 +67,17 @@ export default function CheckoutClient() {
   }, []);
 
   const hasCouponContext = attribution.coupon !== null;
+  const saleOffer = attribution.coupon
+    ? getSaleOfferByCode(attribution.coupon)
+    : null;
+  const payInFullPrice = saleOffer
+    ? formatPrice(saleOffer.salePriceCents)
+    : PRICING.priceLabel;
+  const payInFullPlan = saleOffer
+    ? `${saleOffer.couponCode} campaign price; standard ${formatPrice(
+        saleOffer.basePriceCents,
+      )}`
+    : "$999 USD · one-time";
 
   const enroll = async (plan: PaymentPlan) => {
     if (plan === "two_pay_500_499" && hasCouponContext) {
@@ -184,8 +196,10 @@ export default function CheckoutClient() {
                     lineHeight: 1.55,
                   }}
                 >
-                  Code {attribution.coupon} will be applied automatically after
-                  choosing pay in full. The payment plan is unavailable with a coupon.
+                  {saleOffer
+                    ? `Code ${saleOffer.couponCode} lowers pay-in-full checkout to ${payInFullPrice}.`
+                    : `Code ${attribution.coupon} will be applied automatically after choosing pay in full.`}{" "}
+                  The payment plan is unavailable with a coupon.
                 </p>
               </div>
             )}
@@ -208,9 +222,14 @@ export default function CheckoutClient() {
                       One charge. Immediate access to the full Flagship cohort.
                     </p>
                     <div className="price">
-                      <span className="num">{PRICING.priceLabel}</span>
+                      <span className="num">{payInFullPrice}</span>
+                      {saleOffer && (
+                        <span className="strike">
+                          {formatPrice(saleOffer.basePriceCents)}
+                        </span>
+                      )}
                     </div>
-                    <div className="plan">$999 USD · one-time</div>
+                    <div className="plan">{payInFullPlan}</div>
                     <button
                       type="button"
                       onClick={() => enroll("pay_in_full")}
@@ -225,7 +244,11 @@ export default function CheckoutClient() {
                     >
                       {phase === "redirecting"
                         ? "Redirecting to Stripe…"
-                        : "Enroll in BarMatrix Flagship - $999 →"}
+                        : saleOffer
+                          ? `Enroll with ${payInFullPrice} sale →`
+                          : hasCouponContext
+                            ? "Enroll pay in full - code applies in Stripe →"
+                            : "Enroll in BarMatrix Flagship - $999 →"}
                     </button>
                   </div>
 

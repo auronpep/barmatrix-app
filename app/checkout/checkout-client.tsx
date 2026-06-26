@@ -10,7 +10,7 @@ import {
 } from "@/lib/analytics";
 import { getRememberedDiagnosticId } from "@/lib/diagnostic-session";
 import { PRICING, DISCLAIMER, CAPACITY_COPY } from "@/lib/copy";
-import { formatPrice, getSaleOfferByCode } from "@/lib/sale-offers";
+import { formatPrice, getSaleOfferByCode, type SaleOffer } from "@/lib/sale-offers";
 
 type Phase = "ready" | "redirecting" | "error" | "capacity";
 type AttributionState = {
@@ -342,7 +342,7 @@ export default function CheckoutClient() {
               </div>
             )}
 
-            <CheckoutFaqPanel />
+            <CheckoutFaqPanel saleOffer={saleOffer} />
 
             <p
               style={{
@@ -511,11 +511,13 @@ function CheckoutProofPanel({
   );
 }
 
-function CheckoutFaqPanel() {
+function CheckoutFaqPanel({ saleOffer }: { saleOffer: SaleOffer | null }) {
   const rows = [
     {
       q: "Price",
-      a: "BarMatrix Flagship is $999. The payment plan is $500 today and $499 in 30 days.",
+      a: saleOffer
+        ? `${formatPrice(saleOffer.salePriceCents)} pay-in-full campaign price with ${saleOffer.couponCode}. Standard price is ${formatPrice(saleOffer.basePriceCents)}; the payment plan remains $500 today and $499 in 30 days and cannot be combined with coupons.`
+        : "BarMatrix Flagship is $999. The payment plan is $500 today and $499 in 30 days.",
     },
     {
       q: "Refund window",

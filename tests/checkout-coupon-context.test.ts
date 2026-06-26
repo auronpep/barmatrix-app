@@ -19,6 +19,9 @@ describe("checkout coupon context", () => {
     assert.match(source, /formatPrice\(saleOffer\.salePriceCents\)/);
     assert.match(source, /Code \$\{saleOffer\.couponCode\} lowers pay-in-full checkout to \$\{payInFullPrice\}/);
     assert.match(source, /Enroll with \$\{payInFullPrice\} sale/);
+    assert.match(source, /<CheckoutFaqPanel saleOffer=\{saleOffer\}/);
+    assert.match(source, /\$\{formatPrice\(saleOffer\.salePriceCents\)\} pay-in-full campaign price with \$\{saleOffer\.couponCode\}/);
+    assert.match(source, /cannot be combined with coupons/);
     assert.match(source, /Coupons apply to pay-in-full checkout only/);
     assert.match(source, /Code \$\{attribution\.coupon\} will be applied automatically/);
     assert.match(source, /coupon_code: plan === "pay_in_full" \? getCouponCode\(checkoutSearchParams\) : null/);

@@ -709,7 +709,7 @@ export function AtlasClient() {
                 </div>
               </aside>
 
-              <main className="min-w-0">
+              <div className="min-w-0">
                 <div className="rounded-lg border border-zinc-950/10 bg-white p-3">
                   <label className="sr-only" htmlFor="atlas-search">
                     Search outline codes
@@ -884,7 +884,7 @@ export function AtlasClient() {
                     })
                   )}
                 </div>
-              </main>
+              </div>
 
               <aside className="min-w-0">
                 <div className="rounded-lg border border-zinc-950/10 bg-zinc-950 p-4 text-white shadow-[0_28px_90px_rgba(24,24,27,0.24)] lg:sticky lg:top-6">

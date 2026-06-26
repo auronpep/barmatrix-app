@@ -48,6 +48,11 @@ Current approved campaign exception: `HALFOFF499` may present BarMatrix
 Flagship as a $499 pay-in-full checkout offer for the current 50% off sale.
 This exception does not apply to the $500 + $499 payment plan.
 
+Operational checkout tests and explicitly approved customer-service cases may
+use separate Stripe promotion codes when the task/tracker note names the code,
+audience, and purpose. These codes are not public launch copy and should not be
+turned into additional sale framing.
+
 **Do not** introduce any other launch discounts, "first 250 save $100,"
 "$899," "early bird," or "web-only" framing unless a newer task/tracker note
 explicitly supersedes this section. See `BARMATRIX/DRIFT_CONTROL.md` for the

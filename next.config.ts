@@ -118,6 +118,15 @@ const LEGACY_STATIC_REDIRECTS = [
   ["/welcome", "/account?welcome=1"],
 ] as const;
 
+const LEGACY_APP_REDIRECTS = [
+  ["/checkout/recover", "/account"],
+  ["/dashboard/command-deck", "/dashboard"],
+  ["/dashboard/red-zones", "/red-zones"],
+  ["/dashboard/foundations", "/foundations"],
+  ["/dashboard/c3", "/question-history"],
+  ["/dashboard/gamification", "/dashboard"],
+] as const;
+
 // Vercel hosts both static and server-rendered pages — keep SSR available
 // for future dynamic pages (cohort capacity, dashboard, drills, forensics).
 // Image optimization is on by default on Vercel; no extra config needed.
@@ -144,6 +153,11 @@ const nextConfig: NextConfig = {
         source,
         destination,
         permanent: true,
+      })),
+      ...LEGACY_APP_REDIRECTS.map(([source, destination]) => ({
+        source,
+        destination,
+        permanent: false,
       })),
     ];
   },

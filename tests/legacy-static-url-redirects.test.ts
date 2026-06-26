@@ -55,6 +55,23 @@ describe("legacy static URL redirects", () => {
       assert.match(config, redirectPairPattern(source, destination));
     }
   });
+
+  it("keeps stale app entry URLs off signed-in 404 pages", () => {
+    const config = readProjectFile("next.config.ts");
+
+    const redirects = [
+      ["/checkout/recover", "/account"],
+      ["/dashboard/command-deck", "/dashboard"],
+      ["/dashboard/red-zones", "/red-zones"],
+      ["/dashboard/foundations", "/foundations"],
+      ["/dashboard/c3", "/question-history"],
+      ["/dashboard/gamification", "/dashboard"],
+    ];
+
+    for (const [source, destination] of redirects) {
+      assert.match(config, redirectPairPattern(source, destination));
+    }
+  });
 });
 
 function redirectPairPattern(source: string, destination: string): RegExp {

@@ -28,4 +28,13 @@ describe("tension detail catalog fallback", () => {
       /subject_distribution: entry\.subject\s+\? \[\{ subject: entry\.subject, question_count: entry\.question_count \}\]\s+: \[\]/,
     );
   });
+
+  it("uses catalog fallback without calling detail API for observed catalog-only slugs", () => {
+    const page = readProjectFile("app/tensions/[slug]/page.tsx");
+
+    assert.match(
+      page,
+      /if \(!slug\.startsWith\("observed_"\)\) \{\s+const detail = await getTensionDetail\(slug\);\s+if \(detail\) return detail;\s+\}/,
+    );
+  });
 });

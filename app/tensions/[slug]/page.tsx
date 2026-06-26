@@ -234,8 +234,10 @@ export default async function TensionDetailPage({
 async function getTensionDetailOrCatalogFallback(
   slug: string,
 ): Promise<TensionDetailResponse | null> {
-  const detail = await getTensionDetail(slug);
-  if (detail) return detail;
+  if (!slug.startsWith("observed_")) {
+    const detail = await getTensionDetail(slug);
+    if (detail) return detail;
+  }
 
   const catalog = await getTensionCatalog();
   const entry = catalog.tensions.find((tension) => tension.slug === slug);

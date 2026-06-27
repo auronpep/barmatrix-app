@@ -25,5 +25,11 @@ test("checkout success upgrades the page when signed-in account is already activ
   assert.match(hero, /const signedInAccessActive = dash\.data\?\.enrolled === true/);
   assert.match(hero, /Signed-in access confirmed/);
   assert.match(hero, /Your Flagship access is active\./);
+  assert.match(hero, /Start with Lead Me; The Method and account tools stay available after the first task\./);
   assert.match(hero, /Open Lead Me/);
+  assert.match(hero, /href="\/foundations" className="btn btn-lg ghost"/);
+  assert.match(
+    hero,
+    /className=\{signedInAccessActive \? "btn btn-lg ghost" : "btn btn-lg red"\}/,
+  );
 });

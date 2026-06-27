@@ -17,12 +17,12 @@ export function CheckoutSuccessHero({
   const dash = useDashboard();
   const signedInAccessActive = dash.data?.enrolled === true;
   const copy = signedInAccessActive
-      ? {
+    ? {
         stamp: "ACCOUNT ACTIVE",
         eyebrow: "Signed-in access confirmed",
         headline: "Your Flagship access is active.",
         body:
-          "This browser is signed in to an enrolled BarMatrix account. Open Lead Me, review The Method, or manage your account without starting another checkout.",
+          "This browser is signed in to an enrolled BarMatrix account. Start with Lead Me; The Method and account tools stay available after the first task.",
       }
     : getActivationCopy(activationKind);
 
@@ -67,12 +67,15 @@ export function CheckoutSuccessHero({
               <Link href="/dashboard/path" className="btn btn-lg red">
                 Open Lead Me <span className="arrow">→</span>
               </Link>
-              <Link href="/foundations" className="btn btn-lg red">
+              <Link href="/foundations" className="btn btn-lg ghost">
                 Open The Method <span className="arrow">→</span>
               </Link>
             </>
           )}
-          <Link href={accountHref} className="btn btn-lg red">
+          <Link
+            href={accountHref}
+            className={signedInAccessActive ? "btn btn-lg ghost" : "btn btn-lg red"}
+          >
             Open Account <span className="arrow">→</span>
           </Link>
           {activationKind !== "confirmed" && !signedInAccessActive && (

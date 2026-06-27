@@ -12,7 +12,8 @@ test("refund policy is a first-class checkout/legal route", () => {
   const refund = read("app/refund/page.tsx");
   assert.match(refund, /title:\s*"Refund Policy/);
   assert.match(refund, /3-day window/i);
-  assert.match(refund, /billing@barmatrix\.app/);
+  assert.match(refund, /support@barmatrix\.app/);
+  assert.doesNotMatch(refund, /billing@barmatrix\.app/);
   assert.match(refund, /2-pay plan/i);
   assert.doesNotMatch(refund, /7-day/i);
 

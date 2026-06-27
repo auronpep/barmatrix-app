@@ -38,7 +38,7 @@ export default function RefundPolicyPage() {
             </h2>
             <p className="summary" style={{ marginBottom: 0 }}>
               No questions asked within 3 calendar days from purchase. Email
-              billing@barmatrix.app or reply to your receipt to request.
+              support@barmatrix.app or reply to your receipt to request.
             </p>
           </div>
 
@@ -50,7 +50,7 @@ export default function RefundPolicyPage() {
             <p>
               To request a refund within the window, reply to your receipt email
               or email{" "}
-              <a href="mailto:billing@barmatrix.app">billing@barmatrix.app</a>{" "}
+              <a href="mailto:support@barmatrix.app">support@barmatrix.app</a>{" "}
               with your order details.
             </p>
             <p>
@@ -64,7 +64,7 @@ export default function RefundPolicyPage() {
             <p>
               After the 3-day window closes, refund requests are reviewed
               case-by-case. We do not guarantee refunds outside the window, but
-              we will respond to every request sent to billing@barmatrix.app.
+              we will respond to every request sent to support@barmatrix.app.
             </p>
           </PolicySection>
 
@@ -84,7 +84,7 @@ export default function RefundPolicyPage() {
             <p>
               Within the first 3 days, you may request to switch between the
               pay-in-full option and the 2-pay plan. Email
-              billing@barmatrix.app and we will handle the billing adjustment.
+              support@barmatrix.app and we will handle the billing adjustment.
             </p>
           </PolicySection>
 
@@ -96,7 +96,7 @@ export default function RefundPolicyPage() {
             </p>
             <p>
               Billing and refund requests:{" "}
-              <a href="mailto:billing@barmatrix.app">billing@barmatrix.app</a>.
+              <a href="mailto:support@barmatrix.app">support@barmatrix.app</a>.
               General support:{" "}
               <a href="mailto:support@barmatrix.app">support@barmatrix.app</a>.
             </p>

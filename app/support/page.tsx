@@ -17,8 +17,8 @@ const supportRows = [
   {
     title: "Billing",
     body: "For payment-plan, receipt, refund-window, or Stripe portal questions, include the billing email and the approximate checkout time.",
-    href: "mailto:billing@barmatrix.app?subject=BarMatrix%20billing",
-    label: "billing@barmatrix.app",
+    href: "mailto:support@barmatrix.app?subject=BarMatrix%20billing",
+    label: "support@barmatrix.app",
   },
   {
     title: "Study workflow",

@@ -26,7 +26,7 @@ describe("old BMO sidebar compatibility routes", () => {
 
     assert.match(support, /Support/);
     assert.match(support, /support@barmatrix\.app/);
-    assert.match(support, /billing@barmatrix\.app/);
+    assert.doesNotMatch(support, /billing@barmatrix\.app/);
   });
 
   it("links mobile access and support from the paid program shell", () => {

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { WELCOME } from "@/lib/copy";
+import { SupportSelfCheck } from "@/components/support-self-check";
 import {
   AccountAccessPanel,
   AccountEntitlementPanel,
@@ -45,6 +46,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             isWelcome={isWelcome}
             checkoutSessionId={checkoutSessionId}
           />
+          <SupportSelfCheck />
           <SettingsPanel />
         </aside>
       </div>

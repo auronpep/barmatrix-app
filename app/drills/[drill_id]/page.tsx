@@ -279,6 +279,7 @@ function MasteryCard({
   const drillDisplayName = formatDrillName(detail.drill_name);
   const pct =
     result.total > 0 ? Math.round((result.correct / result.total) * 100) : 0;
+  const redZoneHref = redZoneDetailHref(result.red_zone);
   return (
     <div
       className={`rounded-lg border p-8 shadow-sm ${
@@ -319,17 +320,22 @@ function MasteryCard({
       )}
 
       <div className="mt-8 flex flex-wrap gap-3">
+        {result.red_zone && (
+          <Link href={redZoneHref} className="btn red">
+            Repair this red zone next
+          </Link>
+        )}
         {result.correct < result.total && (
           <button
             type="button"
             onClick={onRetryMissed}
             disabled={retrying}
-            className="btn red"
+            className={result.red_zone ? "btn ghost" : "btn red"}
           >
             {retrying ? "Building…" : "Retry missed questions"}
           </button>
         )}
-        <Link href="/drills" className="btn red">
+        <Link href="/drills" className={result.red_zone ? "btn ghost" : "btn red"}>
           Start another drill
         </Link>
         <Link href="/red-zones" className="btn ghost">
@@ -343,6 +349,11 @@ function MasteryCard({
       )}
     </div>
   );
+}
+
+function redZoneDetailHref(redZone: DrillCompleteResponse["red_zone"]): string {
+  if (!redZone) return "/red-zones";
+  return `/red-zones/${encodeURIComponent(redZone.dimension)}/${encodeURIComponent(redZone.tag)}`;
 }
 
 function Panel({

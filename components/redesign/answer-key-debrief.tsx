@@ -736,7 +736,7 @@ function RepairSection({
             disabled={!onStartRepair || repairBusy}
             className="bg-red-700 px-5 py-3 font-mono text-[11px] font-semibold uppercase tracking-wide text-white hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-45"
           >
-            {repairBusy ? "Starting repair..." : "Start repair →"}
+            {repairBusy ? "Starting repair..." : "Repair this red zone next"}
           </button>
         </div>
       </div>

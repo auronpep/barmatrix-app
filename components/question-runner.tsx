@@ -8,6 +8,8 @@
 // skipped so reopening a day lands on the first unanswered question.
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   api,
   ApiClientError,
@@ -101,12 +103,14 @@ export default function QuestionRunner({
   const [attempt, setAttempt] = useState<AttemptResponse | null>(null);
   const [forensics, setForensics] = useState<ForensicsResponse | null>(null);
   const [answerKey, setAnswerKey] = useState<DebriefData | null>(null);
+  const [repairBusy, setRepairBusy] = useState(false);
   const [correct, setCorrect] = useState(initialCorrect);
   const [answered, setAnswered] = useState(priorAnswered);
   const startedAtRef = useRef(0);
   const { isSignedIn, getToken } = useClerkAuth();
   const submitAttempt = useSubmitAttempt();
   const updateConfusion = useUpdateConfusion();
+  const router = useRouter();
 
   const currentQid = pending[index];
   const isLast = index >= pending.length - 1;
@@ -229,6 +233,44 @@ export default function QuestionRunner({
     setIndex((i) => i + 1);
   };
 
+  const openRedZoneMap = () => {
+    router.push(redZoneMapHref(answerKey));
+  };
+
+  const startRepair = () => {
+    if (repairBusy) return;
+    const redZone = answerKey?.redZone;
+    const dimension = redZone?.dimension;
+    const tag = redZone?.tag;
+    if (!dimension || !tag) {
+      router.push("/red-zones");
+      return;
+    }
+    setRepairBusy(true);
+    void (async () => {
+      try {
+        const token = await getToken();
+        if (!token) {
+          router.push("/sign-in?after=drills");
+          return;
+        }
+        const res = await api.startDrill(
+          {
+            kind: "prescribed_red_zone",
+            red_zone_dimension: dimension,
+            red_zone_tag: tag,
+          },
+          token,
+        );
+        router.push(res?.drill_id ? `/drills/${res.drill_id}` : redZoneMapHref(answerKey));
+      } catch {
+        router.push(redZoneMapHref(answerKey));
+      } finally {
+        setRepairBusy(false);
+      }
+    })();
+  };
+
   if (phase === "done") {
     return (
       <div className="rounded-lg border border-zinc-300 bg-white p-8 shadow-sm" role="status">
@@ -293,6 +335,9 @@ export default function QuestionRunner({
           }}
           onContinue={next}
           continueLabel={nextLabel}
+          onStartRepair={startRepair}
+          onOpenRedZoneMap={openRedZoneMap}
+          repairBusy={repairBusy}
         />
       )}
 
@@ -541,13 +586,23 @@ function ForensicsCard({
         </p>
       )}
 
-      <button
-        type="button"
-        onClick={onNext}
-        className="mt-8 rounded-md bg-zinc-900 px-6 py-3 text-base font-medium text-white hover:bg-zinc-700"
-      >
-        {nextLabel}
-      </button>
+      <div className="mt-8 flex flex-wrap gap-3">
+        {!attempt.correct && forensics.assigned_drill && (
+          <Link
+            href={`/drills/${encodeURIComponent(forensics.assigned_drill.slug)}`}
+            className="btn red"
+          >
+            Repair this red zone next
+          </Link>
+        )}
+        <button
+          type="button"
+          onClick={onNext}
+          className="rounded-md bg-zinc-900 px-6 py-3 text-base font-medium text-white hover:bg-zinc-700"
+        >
+          {nextLabel}
+        </button>
+      </div>
     </div>
   );
 }
@@ -711,4 +766,12 @@ function collectForensicTags(attempt: AttemptResponse, forensics: ForensicsRespo
     forensics.assigned_drill?.slug,
   ].filter((tag): tag is string => Boolean(tag));
   return tags.length > 0 ? tags : ["boot_camp_attempt"];
+}
+
+function redZoneMapHref(answerKey: DebriefData | null): string {
+  const redZone = answerKey?.redZone;
+  if (redZone?.dimension && redZone.tag) {
+    return `/red-zones/${encodeURIComponent(redZone.dimension)}/${encodeURIComponent(redZone.tag)}`;
+  }
+  return "/red-zones";
 }

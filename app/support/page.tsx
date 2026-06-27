@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SupportSelfCheck } from "@/components/support-self-check";
 
 export const metadata: Metadata = {
   title: "Support - BarMatrix",
@@ -60,21 +61,8 @@ export default function SupportPage() {
         ))}
       </div>
 
-      <div className="mt-10 rounded-lg border border-zinc-300 bg-zinc-50 p-6">
-        <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-          Fast self-check
-        </p>
-        <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-          <Link href="/account" className="btn red">
-            Check Account
-          </Link>
-          <Link href="/dashboard" className="btn ghost">
-            Open Dashboard
-          </Link>
-          <Link href="/mobile-apps" className="btn ghost">
-            Mobile Access
-          </Link>
-        </div>
+      <div className="mt-10">
+        <SupportSelfCheck />
       </div>
     </section>
   );

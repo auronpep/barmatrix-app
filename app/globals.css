@@ -70,16 +70,16 @@ body {
   min-height: 100vh;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
 /* Layered so Tailwind v4 @layer utilities win: an unlayered reset would beat
  * layered utilities regardless of specificity, silently dropping utility
- * `border`/`bg` on custom-styled buttons. Keeping it in @layer base fixes that
- * at the source (no per-button !important needed). */
+ * `border`/`bg`/`text-*` on custom-styled controls. Keeping resets in
+ * @layer base fixes that at the source (no per-control !important needed). */
 @layer base {
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
   button {
     font-family: inherit;
     font-size: inherit;

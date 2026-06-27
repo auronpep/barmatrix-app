@@ -4148,3 +4148,18 @@ Review `C:\barmatrix-app` as-is to understand app architecture, stale surfaces, 
 - 2026-06-20: Cleanup candidates are route/copy sprawl, not core plumbing: `app/preview/**`, `app/atlas-v1`, duplicate `subjects/*` and `drills/*` pages, static `public/lp-*.html`, and alternate landing/sale routes such as `pricing_jly`, `victory_jly`, `getthewin`, `pass`, `success`, `win`, and dynamic sale variants.
 - 2026-06-20: Recommendation: do not rebuild from scratch first. Extract/preserve the thin core (`next.config.ts`, `proxy.ts`, `app/layout.tsx`, `lib/api-client.ts`, `lib/posthog-client.ts`, Sentry instrumentation, checkout/account/auth pages), then prune or quarantine stale routes behind a route manifest. A fresh shell is reasonable only after that manifest proves which pages are live, indexed, or revenue-bearing.
 - 2026-06-20: Verification passed: `npm run lint`, `node --test tests\sitemap-static-surface.test.ts tests\sale-offers.test.ts tests\public-marketing-copy-polish.test.ts` (10/10), and `npm run build` with 100 static pages generated.
+
+# Trap Toggle Button Color Fix - 2026-06-26
+
+## Plan
+
+- [x] Identify why the active `/traps` filter button ignores `text-white`.
+- [x] Patch the smallest styling layer that fixes the active button color.
+- [x] Verify with focused test and browser proof.
+
+## Review Log
+
+- 2026-06-26: Root cause found in `app/globals.css`: the global anchor reset was outside `@layer base`, so it could override Tailwind `text-*` utilities on `Link` buttons.
+- 2026-06-26: Moved the anchor reset into the existing `@layer base` reset block and added a focused regression assertion in `tests/mobile-content-overflow.test.ts`.
+- 2026-06-26: Verification passed: `node --test tests\mobile-content-overflow.test.ts` (6/6) and `npm run lint`.
+- 2026-06-26: Local Playwright proof on `http://127.0.0.1:3062/traps` confirmed the active `All traps` filter computed `color: rgb(255, 255, 255)`; screenshot saved at `output\playwright\traps-toggle-color-local-20260626.png`.

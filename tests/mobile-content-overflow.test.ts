@@ -50,6 +50,18 @@ describe("mobile content overflow guards", () => {
     assert.match(tensions, /className="min-w-0 break-words/);
   });
 
+  it("keeps link resets layered so Tailwind color utilities win", () => {
+    const css = readProjectFile("app/globals.css").replace(/\r\n/g, "\n");
+    const baseLayerIndex = css.indexOf("@layer base");
+    const anchorResetIndex = css.indexOf(
+      "a {\n    color: inherit;\n    text-decoration: none;\n  }",
+    );
+
+    assert.ok(baseLayerIndex >= 0, "globals.css should declare a base layer");
+    assert.ok(anchorResetIndex > baseLayerIndex, "anchor reset should be inside @layer base");
+    assert.doesNotMatch(css.slice(0, baseLayerIndex), /a\s*{\s*color:\s*inherit;/);
+  });
+
   it("formats tension subject headings instead of exposing DB enum values", () => {
     const tensions = readProjectFile("app/tensions/page.tsx");
 

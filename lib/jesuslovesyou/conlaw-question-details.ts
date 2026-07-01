@@ -2224,6 +2224,137 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "17170",
+    transformId: "17170_good_samaritan_shelter_remedy",
+    title: "Strict Scrutiny Is Still A Test",
+    selectorCode: "44040300",
+    selectorMatch: "child_code",
+    outlineCode: "44040303",
+    sourceOutlineCode: "44040303",
+    coverageGroup: "due_process_equal_protection_routing",
+    seedBucket: "needs_human_review",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "When a city uses a temporary, individualized race-conscious remedy after a court finds its own intentional exclusion from one program, what Equal Protection test applies?",
+    stem:
+      "After a court found that Esther's city purchasing office had intentionally kept minority-owned repair teams out of the city's Good Samaritan shelter-repair contract roster for many years, the city adopted a race-conscious corrective rule. The rule applies only to that shelter-repair roster, ends after 18 months, and uses case-by-case file review before any contract preference is given. Which statement best describes the Equal Protection analysis?",
+    choices: [
+      {
+        letter: "A",
+        text: "The rule gets rational-basis review because it is meant to assist a disadvantaged group.",
+        verdict: "trap",
+        mold: "benign-purpose downgrade",
+        explanation:
+          "A uses the remedial purpose to lower the standard. Equal Protection chooses the scrutiny level from the racial classification, not from the government's helpful label.",
+      },
+      {
+        letter: "B",
+        text: "The rule gets intermediate scrutiny because the contracts involve economic activity.",
+        verdict: "trap",
+        mold: "economic-setting wrong axis",
+        explanation:
+          "B points to the contract setting instead of the challenged line. Contracting is the program context; race is the classification that selects the scrutiny level.",
+      },
+      {
+        letter: "C",
+        text: "The racial classification triggers strict scrutiny, and the city must prove a compelling remedial interest and narrow tailoring.",
+        verdict: "correct",
+        mold: "strict-scrutiny test stated",
+        explanation:
+          "C is correct. Government racial classifications trigger strict scrutiny, and the city must prove both a compelling remedial interest and narrow tailoring.",
+      },
+      {
+        letter: "D",
+        text: "The rule is automatically invalid as soon as strict scrutiny applies.",
+        verdict: "trap",
+        mold: "strict-scrutiny automatic-loss overclaim",
+        explanation:
+          "D is the dominant trap. Strict scrutiny is demanding, but it is still an interest-and-tailoring test rather than automatic invalidity by label alone.",
+      },
+    ],
+    answerFlow: [
+      "Spot the government actor: the city purchasing office.",
+      "Spot the classification: the corrective rule is race-conscious.",
+      "Use the classification, not the friendly purpose, to choose the scrutiny level.",
+      "Use the classification, not the economic contract setting, to choose the scrutiny level.",
+      "Race triggers strict scrutiny.",
+      "Separate the standard from the outcome.",
+      "Strict scrutiny asks whether the city can prove compelling remedial interest and narrow tailoring.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "The issue is strict scrutiny as a test versus strict scrutiny as automatic defeat.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with benign-purpose rational basis, economic-setting intermediate scrutiny, and strict-scrutiny automatic invalidity.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive words are race-conscious rule, court-found exclusion from the same roster, 18-month limit, and case-by-case review.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: downgrading race classifications because the purpose is helpful or overclaiming strict scrutiny as a one-word loss.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-RACE-STRICT-SCRUTINY-01",
+        body: "A government racial classification triggers strict scrutiny even when the government calls it remedial or benign; the government must prove a compelling interest and narrow tailoring.",
+      },
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-STRICT-NOT-AUTO-INVALID-02",
+        body: "Strict scrutiny is demanding, but it is still a two-part test; a remedy tied to specific identified discrimination must be tested for compelling interest and narrow tailoring rather than rejected by label alone.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-RACE-CLASSIFICATION-01",
+        body: "Pick the scrutiny level from the classification the government used, not from the subject matter of the program or the government's friendly purpose.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-STANDARD-OUTCOME-02",
+        body: "Separate the standard from the result: strict scrutiny tells you what the city must prove, not that the city has already lost.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the government actor.",
+      "Name the classification.",
+      "Ignore the helpful-purpose shortcut.",
+      "Ignore the economic-setting shortcut.",
+      "Apply strict scrutiny.",
+      "Separate test from outcome.",
+      "Require compelling interest and narrow tailoring.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Classification Sort",
+        prompt:
+          "A city uses race-conscious criteria to remedy a court-found exclusion from one contract roster. What scrutiny starts the analysis?",
+        answer: "Strict scrutiny.",
+      },
+      {
+        title: "Standard Versus Outcome",
+        prompt: "Why is 'strict scrutiny means automatic invalidity' too strong?",
+        answer:
+          "Strict scrutiny requires proof of a compelling interest and narrow tailoring; it is not a label-only judgment.",
+      },
+      {
+        title: "Wrong Axis Cut",
+        prompt:
+          "A race-conscious rule appears in an economic contract program. Which fact selects the Equal Protection review level?",
+        answer: "The racial classification, not the economic setting.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

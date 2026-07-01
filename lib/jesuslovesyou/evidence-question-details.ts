@@ -5076,6 +5076,132 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14769",
+    transformId: "14769_animatronic_camel_tag",
+    title: "One Recording, Two Exceptions",
+    outlineCode: "33040302",
+    sourceOutlineCode: "33040302",
+    coverageGroup: "hearsay_exception",
+    seedBucket: "medium_friction",
+    key: "D",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A witness accurately recorded an identifying number while perceiving an event, later cannot remember the number, and the proponent offers the recording at trial. Is the recording admissible under one exception, both, or neither?",
+    stem:
+      "At a private Christian arts fair, Martha sued Galilee Props for damage to her antique handbell table after an animatronic camel rolled off its display track and smashed into the table. At trial, Martha called Stephen, who testified that he watched the camel roll past him and, as it was still moving away, accurately dictated the camel's rental tag number into his properly operating phone voice recorder. Stephen has stated that he no longer remembers the tag number. May the audio recording be played?",
+    choices: [
+      {
+        letter: "A",
+        text: "Yes, as a recorded recollection only.",
+        verdict: "trap",
+        mold: "tiered absolute / recorded-recollection-only trap",
+        explanation:
+          "A sees the memory failure and accurate fresh recording. The defect is the word only, because the recording also describes the event while Stephen was perceiving it.",
+      },
+      {
+        letter: "B",
+        text: "No, because it is hearsay not within any exception.",
+        verdict: "trap",
+        mold: "flat misstatement / exception-blind denial",
+        explanation:
+          "B correctly senses hearsay, but hearsay status starts the analysis. The recording falls within two Rule 803 exceptions.",
+      },
+      {
+        letter: "C",
+        text: "Yes, as a present sense impression only.",
+        verdict: "trap",
+        mold: "tiered absolute / present-sense-only trap",
+        explanation:
+          "C sees the immediate description of the event. The defect is the word only, because Stephen's later memory failure and accurate fresh recording also satisfy recorded recollection.",
+      },
+      {
+        letter: "D",
+        text: "Yes, as a present sense impression and as a recorded recollection.",
+        verdict: "correct",
+        mold: "residue / overlapping hearsay exceptions",
+        explanation:
+          "D grades both exceptions separately. The recording was made while Stephen perceived the event and also meets the recorded-recollection foundation.",
+      },
+    ],
+    answerFlow: [
+      "Start with the offered audio recording.",
+      "Ask whether it describes the event while or immediately after Stephen perceived it.",
+      "Mark present sense impression: yes.",
+      "Ask whether Stephen once knew the tag number.",
+      "Use his current memory failure and accurate fresh recording.",
+      "Mark recorded recollection: yes.",
+      "Cut the two only answers and the no-exception answer.",
+      "Choose D.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "A single recorded statement can satisfy more than one hearsay exception.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps force a false choice between present sense impression and recorded recollection.",
+      },
+      {
+        label: "Blue signal",
+        body: "Stephen recorded the tag while watching the event and later could not remember it.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating answer-choice exclusivity as true before testing both exception elements.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-OVERLAPPING-803-EXCEPTIONS-01",
+        body: "Hearsay exceptions can overlap; if the same statement satisfies two exceptions, choose the answer that keeps both.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-COMBINATION-ARRAY-01",
+        body: "In an only/only/both/neither answer set, grade each proposed exception separately before choosing.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-ONLY-WORD-OVERCLAIM",
+        body: "The word only is wrong when another valid exception also covers the statement.",
+      },
+    ],
+    leadMeSteps: [
+      "Identify the statement: Stephen's recorded tag number.",
+      "Check present sense impression.",
+      "Use the fact that Stephen dictated while the camel was moving away.",
+      "Check recorded recollection.",
+      "Use the fresh, accurate recording and Stephen's current memory failure.",
+      "Reject present-sense-only.",
+      "Reject recorded-recollection-only.",
+      "Pick D.",
+    ],
+    drillSeeds: [
+      {
+        title: "Combination Array",
+        prompt:
+          "A witness accurately records a number while watching an event, later cannot remember it, and the recording is offered. Pick: present sense only, recorded recollection only, both, or neither.",
+        answer: "Both.",
+      },
+      {
+        title: "Overlap Facts",
+        prompt:
+          "What facts make one recording fit both present sense impression and recorded recollection?",
+        answer:
+          "Immediate perception plus current memory failure and an accurate fresh record.",
+      },
+      {
+        title: "Only Word Cut",
+        prompt:
+          "An answer says recorded recollection only when the statement was also made while perceiving the event. What is the defect?",
+        answer:
+          "The word only falsely excludes present sense impression.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

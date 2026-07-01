@@ -3768,6 +3768,135 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "21147",
+    transformId: "21147_stolen-bible-ads",
+    title: "Central Hudson Has A Front Door",
+    selectorCode: "44040502",
+    selectorMatch: "exact",
+    outlineCode: "44040502",
+    sourceOutlineCode: "44040502",
+    coverageGroup: "first_amendment_speech_forum",
+    seedBucket: "needs_human_review",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "Does commercial speech receive First Amendment protection when the advertisement proposes an illegal sale?",
+    stem:
+      "Timothy ran a side business selling collector's study Bibles that he knew had been stolen from a private Christian bookstore. After he was convicted of felony trafficking in stolen property, the state also convicted him under a statute making it a separate offense to post or circulate any advertisement offering stolen goods for sale. Timothy appealed that advertising count on First Amendment grounds. He argues that the statute restricts commercial speech about a real market transaction and therefore must satisfy Central Hudson by proving that the ban directly advances a substantial government interest and is no more extensive than necessary. How should a court rule on Timothy's First Amendment challenge to the advertising statute?",
+    choices: [
+      {
+        letter: "A",
+        text: "The challenge fails because statutes punishing stolen-property trafficking are presumptively valid and courts generally defer to legislative judgments about crime control.",
+        verdict: "trap",
+        mold: "generic-deference misfit",
+        explanation:
+          "A uses the wrong lane. The call asks for a First Amendment commercial-speech ruling, so the court applies that doctrine instead of generic crime-control deference.",
+      },
+      {
+        letter: "B",
+        text: "The challenge fails at the threshold Central Hudson inquiry because the advertisement proposes an unlawful sale of stolen goods, so the commercial speech receives no First Amendment protection.",
+        verdict: "correct",
+        mold: "lawful-activity gate",
+        explanation:
+          "B is correct. Central Hudson starts by asking whether the commercial speech concerns lawful activity and is not misleading; an ad offering stolen goods fails that first gate.",
+      },
+      {
+        letter: "C",
+        text: "The statute is unconstitutional because the state has not shown that banning stolen-goods advertisements directly and materially advances the interest in reducing trafficking.",
+        verdict: "trap",
+        mold: "later-prongs bait",
+        explanation:
+          "C uses real Central Hudson language but starts too late. Direct advancement and fit matter only after the ad clears the lawful-activity threshold.",
+      },
+      {
+        letter: "D",
+        text: "The statute is unconstitutional because speech remains protected even when the proposed sale is illegal, and the government must satisfy strict scrutiny before restricting any communication.",
+        verdict: "trap",
+        mold: "strict-scrutiny overprotection",
+        explanation:
+          "D overprotects the word speech. Commercial speech proposing an illegal transaction is not treated as fully protected expression requiring strict scrutiny.",
+      },
+    ],
+    answerFlow: [
+      "Identify the category: commercial speech.",
+      "Identify the proposed transaction: a sale of stolen goods.",
+      "Ask Central Hudson's first question before the later prongs.",
+      "The ad does not concern lawful activity.",
+      "That means First Amendment commercial-speech protection never attaches.",
+      "Cut A because generic criminal deference is not the First Amendment reason.",
+      "Cut C because it skips to later Central Hudson prongs.",
+      "Cut D because strict scrutiny is the wrong frame.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "The issue is the lawful-activity threshold versus later intermediate-scrutiny prongs.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with criminal-law deference, fluent Central Hudson fit language, and broad overprotection of the word speech.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive fact is that the advertisement offers stolen goods for sale.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: starting Central Hudson at direct advancement before checking whether the ad proposes lawful activity.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-COMMERCIAL-SPEECH-ILLEGAL-01",
+        body: "Commercial speech enters Central Hudson protection only if it concerns lawful activity and is not misleading; an ad proposing an illegal sale fails at the threshold.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-CENTRAL-HUDSON-ORDER-01",
+        body: "When an answer uses Central Hudson's later prongs, first ask whether the ad clears the lawful-activity gate.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-DEFERENCE-MISFIT-01",
+        body: "A First Amendment challenge calls for the speech doctrine first; generic legislative deference is not the rule that decides the commercial-speech issue.",
+      },
+    ],
+    leadMeSteps: [
+      "Name commercial speech.",
+      "Find the proposed transaction.",
+      "Check lawful activity first.",
+      "Stop before later prongs.",
+      "Reject generic deference.",
+      "Reject direct-advancement bait.",
+      "Reject strict-scrutiny overreach.",
+      "Pick B.",
+    ],
+    drillSeeds: [
+      {
+        title: "Central Hudson Gate",
+        prompt:
+          "A paid ad offers to sell stolen goods. Do you apply Central Hudson's direct-advancement prong?",
+        answer:
+          "No. The ad fails the lawful-activity gate before the later prongs apply.",
+      },
+      {
+        title: "Later-Prongs Trap",
+        prompt:
+          "One answer says the ban lacks a substantial-interest fit; another says the ad proposes an illegal sale. Which step comes first?",
+        answer: "The illegal-sale threshold answer comes first.",
+      },
+      {
+        title: "Wrong-Lane Deference",
+        prompt:
+          "The call asks for a First Amendment ruling, but an answer says courts defer to crime policy. What is the flaw?",
+        answer:
+          "It uses the wrong frame and does not apply the commercial-speech doctrine.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

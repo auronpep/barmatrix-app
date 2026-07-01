@@ -3382,6 +3382,135 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14224",
+    transformId: "14224_heritage-row-banner",
+    title: "Content Neutral Still Needs Fit",
+    selectorCode: "44040502",
+    selectorMatch: "exact",
+    outlineCode: "44040502",
+    sourceOutlineCode: "44040502",
+    coverageGroup: "first_amendment_speech_forum",
+    seedBucket: "needs_human_review",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A city applies a color and size limit to all signs in a historic district. What is the political speaker's strongest First Amendment argument?",
+    stem:
+      "Residents of a city complained that bright signs distracted drivers on the narrow streets of Heritage Row and clashed with the district's historic storefronts. In response, the city council enacted an ordinance requiring any sign or visual display visible from the district's public streets to be black and white and no more than four feet long or wide. A political party wants to hang a six-foot red, white, and blue campaign banner in front of its rented office in Heritage Row. The party files suit challenging the ordinance as applied to the banner. Which argument is most useful for the political party?",
+    choices: [
+      {
+        letter: "A",
+        text: "The ordinance is not the least restrictive means of promoting a compelling government interest.",
+        verdict: "trap",
+        mold: "strict-scrutiny overstatement",
+        explanation:
+          "A uses strict-scrutiny language. The ordinance regulates signs without reference to message, so the better lane is content-neutral time, place, and manner scrutiny.",
+      },
+      {
+        letter: "B",
+        text: "The ordinance is not narrowly tailored to further an important government interest, nor does it leave open alternative channels of communication.",
+        verdict: "correct",
+        mold: "time-place-manner test",
+        explanation:
+          "B is correct. A content-neutral sign regulation in a public forum must be narrowly tailored to an important government interest and leave open adequate alternative channels.",
+      },
+      {
+        letter: "C",
+        text: "The ordinance imposes a prior restraint on political expression.",
+        verdict: "trap",
+        mold: "prior-restraint mislabel",
+        explanation:
+          "C mislabels the problem. The ordinance does not require official permission before speaking; it sets generally applicable color and size limits.",
+      },
+      {
+        letter: "D",
+        text: "The ordinance effectively favors some categories of speech over others.",
+        verdict: "trap",
+        mold: "content-discrimination leap",
+        explanation:
+          "D leaps past the text. The ordinance applies to any sign or visual display visible from the street, regardless of subject or viewpoint.",
+      },
+    ],
+    answerFlow: [
+      "Classify the ordinance: it regulates sign color and size, not message.",
+      "That points to a content-neutral time, place, and manner lane.",
+      "Do not use strict scrutiny unless the regulation is content based or otherwise triggers that tier.",
+      "Cut A because least restrictive means and compelling interest are too demanding here.",
+      "Cut C because there is no permit or licensing scheme.",
+      "Cut D because the ordinance does not classify speech by subject or viewpoint.",
+      "Ask whether the rule is narrowly tailored and leaves open alternatives.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "The issue is content-neutral time/place/manner scrutiny for sign regulation.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with strict scrutiny, prior restraint, and content-discrimination labels.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive words are any sign or visual display, black and white, and four feet; the rule is message-neutral but broad.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating political speech facts as automatic strict scrutiny without checking what the ordinance regulates.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-TPM-01",
+        body: "A content-neutral time, place, or manner regulation of speech must be narrowly tailored to serve an important or significant government interest and must leave open adequate alternative channels of communication.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-CONTENT-NEUTRAL-SIGNS-01",
+        body: "A sign rule based on size, color, location, or format can be content neutral even when it affects political speech.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-PRIOR-RESTRAINT-01",
+        body: "Prior restraint usually turns on permission before speech; a generally applicable sign-size rule is not a prior restraint just because it limits expression.",
+      },
+    ],
+    leadMeSteps: [
+      "Find what the ordinance regulates.",
+      "Check content neutrality.",
+      "Reject strict scrutiny.",
+      "Reject prior restraint.",
+      "Reject content-favoring leap.",
+      "Apply time/place/manner scrutiny.",
+      "Check alternatives.",
+      "Pick B.",
+    ],
+    drillSeeds: [
+      {
+        title: "Content Neutral First",
+        prompt:
+          "A sign ordinance limits size and color for every sign in a historic district. Does the political speaker's identity alone trigger strict scrutiny?",
+        answer:
+          "No. First check whether the rule is content neutral; if it is, use time, place, and manner scrutiny.",
+      },
+      {
+        title: "Prior Restraint Cut",
+        prompt:
+          "Why is a sign-size ordinance not automatically a prior restraint?",
+        answer:
+          "Because it does not require official permission before speech; it imposes generally applicable format limits.",
+      },
+      {
+        title: "Alternative Channels",
+        prompt:
+          "What must a content-neutral sign rule leave open?",
+        answer:
+          "Adequate alternative channels of communication.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

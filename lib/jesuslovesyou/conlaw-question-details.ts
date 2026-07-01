@@ -3638,6 +3638,136 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "18911",
+    transformId: "18911_recital_hall_debate_club",
+    title: "Listener Anger Is Not Neutral",
+    selectorCode: "44040502",
+    selectorMatch: "exact",
+    outlineCode: "44040502",
+    sourceOutlineCode: "44040502",
+    coverageGroup: "first_amendment_speech_forum",
+    seedBucket: "needs_human_review",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A city cancels one reserved private lecture because the speaker's message may anger listeners. Is that cancellation content based?",
+    stem:
+      "Grace Harbor owns a city recital hall that it rents to private groups for weekend talks and civic programs. Esther, the coach of a Christian debate club, reserved the hall for a lecture arguing that the city should end a private detention contract. After critics announced that they would pack the hallway and chant through the program, the city canceled only Esther's reservation. The city explained that Esther's message would likely upset listeners. What is the best First Amendment analysis?",
+    choices: [
+      {
+        letter: "A",
+        text: "The cancellation is content neutral because the city described its concern as crowd control.",
+        verdict: "trap",
+        mold: "safety-label trap",
+        explanation:
+          "A accepts the city's label while ignoring the reason sentence. The cancellation turns on Esther's message and likely listener reaction, not a neutral rule for all events.",
+      },
+      {
+        letter: "B",
+        text: "The cancellation is valid because city-owned recital halls are never forums for private speech.",
+        verdict: "trap",
+        mold: "never-forum overclaim",
+        explanation:
+          "B overclaims with never. A government-owned facility opened for private talks can carry forum limits while it remains open for expressive use.",
+      },
+      {
+        letter: "C",
+        text: "The cancellation is content based because it targets Esther's message and the likely listener reaction.",
+        verdict: "correct",
+        mold: "message-and-reaction targeting",
+        explanation:
+          "C is correct. The city canceled only this lecture because this message was expected to upset listeners, which is content-based treatment and a heckler-veto problem.",
+      },
+      {
+        letter: "D",
+        text: "The cancellation is valid because angry listeners allow the city to silence the speaker.",
+        verdict: "trap",
+        mold: "heckler-veto reversal",
+        explanation:
+          "D states the trap as the rule. The city may use lawful neutral tools to manage a crowd, but listener anger is not permission to silence protected speech.",
+      },
+    ],
+    answerFlow: [
+      "Identify the actor: the city controls the hall.",
+      "Identify the speech setting: private talks and civic programs are allowed.",
+      "Find the selective act: only Esther's reservation was canceled.",
+      "Read the reason sentence: her message would upset listeners.",
+      "Classify from the reason, not the label.",
+      "Cut A because crowd control cannot erase message-and-reaction targeting.",
+      "Cut B because government ownership does not automatically end forum limits.",
+      "Cut D because angry listeners do not get a veto.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "The issue is message/listener-reaction targeting versus neutral crowd management.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with public safety language, government-property absolutism, and a practical fear of disruption.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive facts are canceled only Esther's reservation and Esther's message would likely upset listeners.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: accepting a safety label before checking whether the stated reason turns on the message.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-HECKLER-VETO-01",
+        body: "Government may not cancel protected speech because the message is expected to anger listeners; hostile audience reaction is not a content-neutral safety justification.",
+      },
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-FORUM-ACCESS-02",
+        body: "Government ownership does not end the forum inquiry; a facility opened for private expressive use may carry public-forum limits while it remains open.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-SAFETY-LABEL-01",
+        body: "Do not let a crowd-control label outrun the reason sentence; if the reason turns on this message and this audience reaction, classify the restriction from that reason.",
+      },
+    ],
+    leadMeSteps: [
+      "Find the government actor.",
+      "Find the opened facility.",
+      "Find the selective cancellation.",
+      "Read the stated reason.",
+      "Separate crowd management from message targeting.",
+      "Reject the safety-label trap.",
+      "Reject the never-forum overclaim.",
+      "Reject the angry-listener veto.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Heckler-Veto Trigger",
+        prompt:
+          "A city cancels one scheduled lecture because listeners may react angrily to the message. Content based or content neutral?",
+        answer: "Content based.",
+      },
+      {
+        title: "Safety Label Audit",
+        prompt:
+          "The city says crowd control, but the reason is expected listener anger at the message. What should you classify from?",
+        answer:
+          "Classify from the message-and-reaction reason, not the safety label.",
+      },
+      {
+        title: "Forum Ownership Trap",
+        prompt:
+          "A city rents a hall for private talks. Does government ownership automatically defeat forum limits?",
+        answer:
+          "No. The forum category depends on how the facility is opened and limited.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

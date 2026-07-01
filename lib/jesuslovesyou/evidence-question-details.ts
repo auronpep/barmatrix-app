@@ -5202,6 +5202,132 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14791",
+    transformId: "14791_bethlehem_star_handbook",
+    title: "Read Statements, Not the Handbook",
+    outlineCode: "33040302",
+    sourceOutlineCode: "33040302",
+    coverageGroup: "hearsay_exception",
+    seedBucket: "medium_friction",
+    key: "D",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A party asks to let the jury examine an entire learned treatise after experts discuss its reliability. May the court send the publication itself to the jury?",
+    stem:
+      "At a federal civil trial for professional malpractice, Peter claimed that Martha, an electrical engineer, had negligently specified undersized motors for the rotating Bethlehem-star display at Peter's private Nativity-themed mini-golf course. Peter called Daniel, an expert in stage machinery. Daniel based his opinion solely on his own professional experience, but when asked, he also said that Lydia's Handbook of Sacred Stage Motors was a reliable authority in the field and consistent with his views. On cross-examination, Martha's lawyer asked Daniel whether he and Lydia were ever wrong. Daniel answered, \"Only the Lord is perfect.\" The lawyer asked no further questions. Martha later called Hannah, her own expert, and asked whether she accepted Lydia's handbook as reliable. Hannah answered that it once was, but it is now badly out of date. Peter requested that the jury be allowed to examine the handbook and judge for itself the handbook's reliability. Should the court allow the jury to examine the handbook?",
+    choices: [
+      {
+        letter: "A",
+        text: "No, because Peter's expert did not rely on the handbook in forming his opinion but instead relied on his own professional experience.",
+        verdict: "trap",
+        mold: "correct-result wrong-reason / expert-nonreliance trap",
+        explanation:
+          "A reaches the right no outcome, but for the wrong reason. The proponent's expert's nonreliance does not decide whether the jury may examine the publication itself.",
+      },
+      {
+        letter: "B",
+        text: "Yes, because the jury decides the weight and credibility to give written and oral evidence.",
+        verdict: "trap",
+        mold: "jury-weight layer / admissibility-gate misfit",
+        explanation:
+          "B states a familiar jury role, but that role begins after admissibility. The court first applies the learned-treatise exhibit limit.",
+      },
+      {
+        letter: "C",
+        text: "Yes, because an expert has testified that the handbook is a reliable authority.",
+        verdict: "trap",
+        mold: "half truth / reliability-is-enough trap",
+        explanation:
+          "C treats reliability as the whole rule. Reliability may support reading qualifying statements, but it does not let the entire handbook go to the jury.",
+      },
+      {
+        letter: "D",
+        text: "No, because the jury may consider only statements from the handbook that are read to it by counsel or by a witness.",
+        verdict: "correct",
+        mold: "residue / statement-read versus publication-exhibit rule",
+        explanation:
+          "D locks the object. Under the learned-treatise exception, qualifying statements may be read into evidence, but the publication itself is not received as an exhibit.",
+      },
+    ],
+    answerFlow: [
+      "Start with the object Peter wants the jury to examine.",
+      "Mark that the request is for the handbook itself.",
+      "Separate a learned-treatise statement from the publication.",
+      "Use the rule: statements may be read; the publication is not received as an exhibit.",
+      "Reject the nonreliance no answer because it gives the wrong reason.",
+      "Reject the two yes answers because reliability and jury weight do not override the exhibit limit.",
+      "Choose D.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Learned-treatise doctrine turns on the object offered: read statement versus publication as exhibit.",
+      },
+      {
+        label: "Purple profile",
+        body: "The dominant trap gives the correct no outcome but relies on the wrong prerequisite.",
+      },
+      {
+        label: "Blue signal",
+        body: "Peter asked the jury to examine the handbook itself, not merely hear a statement read aloud.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating reliability or nonreliance as the final answer before identifying the offered object.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-LEARNED-TREATISE-READ-NOT-RECEIVED-01",
+        body: "A reliable learned-treatise statement may be read into evidence, but the publication itself is not received as an exhibit.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-OBJECT-LOCK-LEARNED-TREATISE-01",
+        body: "Before choosing, lock the object: a statement read aloud and a book handed to the jury are different evidence moves.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-CORRECT-NO-WRONG-REASON",
+        body: "A no answer is still wrong if its reason does not answer the court's actual admissibility question.",
+      },
+    ],
+    leadMeSteps: [
+      "Identify Peter's request: let the jury examine the handbook.",
+      "Ask whether the offered object is a statement or the publication.",
+      "Use learned-treatise rule language: statements may be read.",
+      "Add the exhibit limit: the publication itself is not received.",
+      "Cut reliability-is-enough.",
+      "Cut jury-weight language.",
+      "Cut the nonreliance no answer as wrong reason.",
+      "Pick D.",
+    ],
+    drillSeeds: [
+      {
+        title: "Object Lock",
+        prompt:
+          "A party asks to send an entire learned treatise to the jury. What object distinction controls?",
+        answer:
+          "Statements may be read into evidence; the publication itself is not received as an exhibit.",
+      },
+      {
+        title: "Wrong No",
+        prompt:
+          "A choice says no because the proponent's expert did not rely on the treatise. What is missing?",
+        answer:
+          "The exhibit-limit reason: the jury cannot examine the whole publication.",
+      },
+      {
+        title: "Reliability Gate",
+        prompt:
+          "An expert calls a learned treatise reliable. Does that let the jury examine the entire publication?",
+        answer:
+          "No. Reliability may support reading qualifying statements, not receiving the publication as an exhibit.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

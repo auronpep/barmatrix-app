@@ -5328,6 +5328,131 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "22150",
+    transformId: "22150_miriam_retreat_scarf",
+    title: "Stress Beats Mere Closeness",
+    outlineCode: "33040302",
+    sourceOutlineCode: "31010405",
+    coverageGroup: "hearsay_exception",
+    seedBucket: "medium_friction",
+    key: "A",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "Which hearsay exception best supports admitting a child's statement identifying who hurt him shortly after a startling injury?",
+    stem:
+      "Miriam ran a small weekday Bible-art club from her apartment. One afternoon, Lydia left her five-year-old son, Timothy, with Miriam while Lydia went to pick up hymnals for a prison-ministry rehearsal. During the club, Timothy began crying near the craft table. Miriam, trying to stop the crying before the other children heard, struck Timothy several times with a knotted scarf, leaving raised red marks across his shoulder and upper back. Not long afterward, Lydia returned, walked Timothy home, and helped him change into pajamas. When she saw the marks, she asked, \"Timothy, what happened?\" Timothy answered, \"Miriam hit me with the scarf.\" Miriam was later charged with child abuse. At Miriam's trial, the prosecution called Lydia during its case-in-chief. When Lydia began to recount Timothy's answer, Miriam's lawyer objected that Timothy's statement was hearsay. What is the prosecutor's strongest argument against the objection?",
+    choices: [
+      {
+        letter: "A",
+        text: "The statement is admissible as an excited utterance.",
+        verdict: "correct",
+        mold: "residue / startling-event stress exception",
+        explanation:
+          "A matches the timing-and-stress facts. Timothy described a startling event, and the short delay plus visible injury gives the prosecutor a plausible stress-based FRE 803(2) argument.",
+      },
+      {
+        letter: "B",
+        text: "The statement is admissible as an identification.",
+        verdict: "trap",
+        mold: "fabricated fit / naming-person overclaim",
+        explanation:
+          "B sounds plausible because Timothy named Miriam. The defect is that naming an actor does not create a freestanding hearsay exception for this out-of-court accusation in this posture.",
+      },
+      {
+        letter: "C",
+        text: "The statement is admissible as a present sense impression.",
+        verdict: "trap",
+        mold: "nearby timing trap / present-sense immediacy",
+        explanation:
+          "C is the dominant trap because the statement is recent. Present sense impression still requires a statement made while perceiving the event or immediately afterward in the perception frame.",
+      },
+      {
+        letter: "D",
+        text: "The statement is admissible as a statement of present physical condition.",
+        verdict: "trap",
+        mold: "condition-label bait / cause-and-actor mismatch",
+        explanation:
+          "D grabs at the visible marks, but Timothy's words identify who caused the injury. That is different from a statement of present pain or a treatment-purpose medical statement.",
+      },
+    ],
+    answerFlow: [
+      "Start by admitting the statement is hearsay if offered to prove Miriam hit Timothy.",
+      "Ask which Rule 803 label fits the timing and purpose facts.",
+      "Cut identification because naming Miriam is not enough by itself.",
+      "Cut physical condition because the statement identifies cause and actor.",
+      "Clash present sense impression against excited utterance.",
+      "Use the short delay, injury context, and startling event stress.",
+      "Choose A.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Excited utterance turns on stress from a startling event, not merely how close the statement is to the event.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set is a label-match fight among hearsay exceptions, with present sense impression as the strongest wrong label.",
+      },
+      {
+        label: "Blue signal",
+        body: "Timothy had just been hurt, was soon seen with marks, and answered what happened.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating every recent statement as present sense impression before checking the stress facts.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-EXCITED-UTTERANCE-01",
+        body: "For FRE 803(2), the key is stress from a startling event; a response to a question can still qualify if the declarant remains under that stress.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-HEARSAY-LABELS-01",
+        body: "When the choices are hearsay labels, match the label to the timing-and-purpose facts before worrying about whether the statement feels reliable.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-RECENT-MEANS-PRESENT-SENSE",
+        body: "Present sense impression requires while-perceiving or immediately-after perception facts; recency alone does not beat continuing stress.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the statement Lydia wants to repeat.",
+      "Call it hearsay if offered to prove Miriam hit Timothy.",
+      "Reject identification as a label without a real fit.",
+      "Reject physical condition because the words identify cause and actor.",
+      "Ask whether present sense impression or excited utterance better fits.",
+      "Use the startling event and continuing stress facts.",
+      "Pick A.",
+    ],
+    drillSeeds: [
+      {
+        title: "Stress Versus Immediacy",
+        prompt:
+          "A child speaks shortly after being hurt, but not while perceiving the event. Which fact matters most for excited utterance?",
+        answer:
+          "Whether the child was still under the stress of the startling event.",
+      },
+      {
+        title: "Condition Label Cut",
+        prompt:
+          "A statement says who caused the injury. Why is present physical condition a bad label?",
+        answer:
+          "The words identify cause and actor rather than merely describing present pain or condition.",
+      },
+      {
+        title: "Identification Overclaim",
+        prompt:
+          "A hearsay answer says identification because the child named the accused. What is the missing step?",
+        answer:
+          "The answer must identify a real hearsay exemption or exception that fits this trial posture.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

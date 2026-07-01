@@ -5952,6 +5952,131 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "17761",
+    transformId: "17761_church_van_uninsured_conviction_rebuttal",
+    title: "Opening The Door To No Insurance Proof",
+    outlineCode: "35030304",
+    sourceOutlineCode: "35030304",
+    coverageGroup: "fre_403_insurance_policy_purpose",
+    seedBucket: "needs_human_review",
+    key: "A",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "If a plaintiff's voir dire questions falsely suggest the defendant had liability insurance, can the defense offer a conviction judgment showing the defendant drove uninsured?",
+    stem:
+      "A state statute makes it a felony to operate a vehicle on public roads without at least $15,000 of automobile liability insurance. After a collision between Hannah and a vehicle driven by Barnabas, Barnabas was convicted of operating an uninsured vehicle. Barnabas later died, and Hannah sued his estate for personal injuries from the collision. During jury selection, Hannah's attorney asked each prospective juror whether he or she owned stock in an automobile liability insurance carrier. At trial, the estate's attorney offered the judgment of Barnabas's conviction for driving an uninsured vehicle. On Hannah's objection, the judgment should be",
+    choices: [
+      {
+        letter: "A",
+        text: "admitted, because Hannah's attorney has falsely suggested that Barnabas was insured at the time of the accident.",
+        verdict: "correct",
+        mold: "residue / opened-door rebuttal of insurance suggestion",
+        explanation:
+          "A is the only workable answer. Insurance status is normally excluded for fault, but a party who creates a misleading insurance suggestion can open the door to rebuttal proof that the defendant was uninsured.",
+      },
+      {
+        letter: "B",
+        text: "excluded, because evidence that a party is or is not covered by liability insurance is inadmissible to establish fault or freedom from fault.",
+        verdict: "trap",
+        mold: "right rule / wrong purpose",
+        explanation:
+          "B states the basic FRE 411 fault-use rule but misses the actual purpose. The judgment is not being used to prove careful or careless driving; it responds to the misleading insurance implication.",
+      },
+      {
+        letter: "C",
+        text: "excluded, because it is self-serving.",
+        verdict: "trap",
+        mold: "fake exclusion label",
+        explanation:
+          "C invents a freestanding bar. Evidence is not excluded merely because it helps the party offering it.",
+      },
+      {
+        letter: "D",
+        text: "excluded, because it is hearsay and not within any hearsay exception.",
+        verdict: "trap",
+        mold: "hearsay overclaim / conviction judgment exception",
+        explanation:
+          "D overlooks the conviction-judgment route. A felony judgment can be admissible when relevant to prove facts essential to the judgment, and relevance exists once the door has been opened.",
+      },
+    ],
+    answerFlow: [
+      "Start with the baseline: insurance status is not fault proof.",
+      "Ask why the estate offers the conviction judgment.",
+      "Spot the opening-door fact: Hannah's attorney asked insurance-stock questions during jury selection.",
+      "Use that question as a possible false suggestion that Barnabas was insured.",
+      "Allow targeted rebuttal that Barnabas was uninsured.",
+      "Cut the self-serving and hearsay labels because they do not answer the actual admissibility route.",
+      "Choose A.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "FRE 411 is purpose-gated: insurance proof is barred for fault, but may be allowed to rebut a misleading insurance implication.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tests whether students stop at the general insurance bar or keep asking what purpose the evidence serves.",
+      },
+      {
+        label: "Blue signal",
+        body: "The voir dire question about insurance-carrier stock is the fact that creates the possible false suggestion of coverage.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating policy exclusions as absolute bans after an opponent has made the excluded topic relevant for rebuttal.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-FRE411-OPENED-DOOR-01",
+        body: "A party who creates a misleading insurance suggestion can make otherwise sensitive insurance-status proof admissible for targeted rebuttal.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-PURPOSE-OF-OFFER-02",
+        body: "Do not apply an exclusion rule until you identify the exact inference the proponent wants the factfinder to draw.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-SELF-SERVING-NO-BAR",
+        body: "Self-serving is not a standalone exclusion rule; most admissible evidence helps the party offering it.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the offered item: a judgment showing Barnabas was convicted of driving uninsured.",
+      "Name the normal insurance rule: insurance status is not admissible to prove fault.",
+      "Ask whether the estate is offering the judgment for fault.",
+      "Use Hannah's voir dire question as the opened-door signal.",
+      "Treat the conviction judgment as targeted rebuttal of a misleading insurance suggestion.",
+      "Reject the self-serving and hearsay shortcut answers.",
+      "Pick A.",
+    ],
+    drillSeeds: [
+      {
+        title: "Opened-Door Insurance Rebuttal",
+        prompt:
+          "During voir dire, a plaintiff implies the defendant had auto insurance. May the defense offer focused proof that the defendant was uninsured to correct the implication?",
+        answer:
+          "Yes, if the court treats the question as a misleading insurance suggestion. The proof is used for rebuttal, not fault.",
+      },
+      {
+        title: "Fault Purpose Versus Rebuttal Purpose",
+        prompt:
+          "Why does the ordinary FRE 411 insurance bar not automatically answer the Q17761 problem?",
+        answer:
+          "Because the defense is not offering no-insurance proof to show careful driving or lack of fault; it is rebutting the plaintiff's suggested coverage.",
+      },
+      {
+        title: "Self-Serving Trap",
+        prompt:
+          "What is wrong with excluding evidence simply because it is self-serving?",
+        answer:
+          "There is no general self-serving exclusion. The real questions are relevance, policy exclusions, hearsay, and any valid exception or permitted purpose.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

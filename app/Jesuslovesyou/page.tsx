@@ -51,6 +51,12 @@ export default function JesuslovesyouPilotPage() {
               Open Evidence pilot <span className="arrow">-&gt;</span>
             </Link>
             <Link
+              href={`${JESUSLOVESYOU_ROUTE_PREFIX}/conlaw-pilot-01`}
+              className="btn btn-lg ghost"
+            >
+              Open Con Law pilot <span className="arrow">-&gt;</span>
+            </Link>
+            <Link
               href={`${JESUSLOVESYOU_ROUTE_PREFIX}/checkout?lp=Jesuslovesyou&source=Jesuslovesyou`}
               className="btn btn-lg ghost"
             >

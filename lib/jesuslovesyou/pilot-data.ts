@@ -234,6 +234,14 @@ export const evidencePilotCodeParams = pilotSubsets[0].codes.map(({ code }) => (
   code,
 }));
 
+export function getConLawPilotCode(code: string): PilotCode | null {
+  return pilotSubsets[1].codes.find((item) => item.code === code) ?? null;
+}
+
+export const conLawPilotCodeParams = pilotSubsets[1].codes.map(({ code }) => ({
+  code,
+}));
+
 export const evidencePilotPageModules = [
   {
     label: "Annotated Solve Board",

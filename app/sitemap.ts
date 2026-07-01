@@ -1,8 +1,10 @@
 import type { MetadataRoute } from "next";
 import {
   JESUSLOVESYOU_ROUTE_PREFIX,
+  conLawPilotCodeParams,
   evidencePilotCodeParams,
 } from "@/lib/jesuslovesyou/pilot-data";
+import { conLawSeedQuestionParams } from "@/lib/jesuslovesyou/conlaw-seed-candidates";
 import { evidenceSeedQuestionParams } from "@/lib/jesuslovesyou/evidence-question-details";
 
 const LAST_MODIFIED = new Date("2026-06-05T00:00:00.000Z");
@@ -17,6 +19,8 @@ const ROUTES = [
   "/Jesuslovesyou",
   "/Jesuslovesyou/evidence-pilot-01",
   "/Jesuslovesyou/evidence-pilot-01/seeds",
+  "/Jesuslovesyou/conlaw-pilot-01",
+  "/Jesuslovesyou/conlaw-pilot-01/seeds",
   "/diagnostic",
   "/foundations",
   "/mastery",
@@ -130,6 +134,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     }),
   );
+  const conLawPilotRoutes = conLawPilotCodeParams.map(({ code }) => ({
+    url: `https://barmatrix.app${JESUSLOVESYOU_ROUTE_PREFIX}/conlaw-pilot-01/${code}`,
+    lastModified: LAST_MODIFIED,
+    changeFrequency: "weekly" as const,
+    priority: 0.65,
+  }));
+  const conLawQuestionRoutes = conLawSeedQuestionParams.map(({ questionId }) => ({
+    url: `https://barmatrix.app${JESUSLOVESYOU_ROUTE_PREFIX}/conlaw-pilot-01/seeds/${questionId}`,
+    lastModified: LAST_MODIFIED,
+    changeFrequency: "weekly" as const,
+    priority: 0.6,
+  }));
   return [
     ...appRoutes,
     ...nicheRoutes,
@@ -137,5 +153,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...campaignRoutes,
     ...evidencePilotRoutes,
     ...evidenceQuestionRoutes,
+    ...conLawPilotRoutes,
+    ...conLawQuestionRoutes,
   ];
 }

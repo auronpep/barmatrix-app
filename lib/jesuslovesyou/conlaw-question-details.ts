@@ -2872,6 +2872,134 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "20231",
+    transformId: "20231_crown_above_caesars",
+    title: "Belief Cannot Be Punished",
+    selectorCode: "44040501",
+    selectorMatch: "exact",
+    outlineCode: "44040501",
+    sourceOutlineCode: "44040501",
+    coverageGroup: "free_exercise",
+    seedBucket: "needs_human_review",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "Can a state criminalize holding or teaching a religious belief because conduct inspired by that belief can be regulated?",
+    stem:
+      'During a private Bible-study art class in a rented storefront, Esther teaches a creed she calls "Crown Above Caesars": that Christ\'s authority is higher than any earthly government. A state statute makes it a misdemeanor to hold or teach that creed. After charging Esther, the state argues that because it may regulate unlawful acts committed by people who invoke the creed, it may also forbid the creed itself. What is the best constitutional response?',
+    choices: [
+      {
+        letter: "A",
+        text: "The law is invalid only if it also violates the Establishment Clause.",
+        verdict: "trap",
+        mold: "Establishment-only overclaim",
+        explanation:
+          "A adds an unnecessary condition. Free Exercise itself answers a statute that punishes religious belief as such.",
+      },
+      {
+        letter: "B",
+        text: "The law is valid if the state has a rational basis for deterring unlawful acts committed under the creed.",
+        verdict: "trap",
+        mold: "conduct-switch bait",
+        explanation:
+          "B follows the state's conduct frame, but the statute punishes holding or teaching the creed. Conduct is the adjacent issue, not the law being tested.",
+      },
+      {
+        letter: "C",
+        text: "The law is unconstitutional because the government may not punish religious belief as such.",
+        verdict: "correct",
+        mold: "belief-as-such rule",
+        explanation:
+          "C is correct. The government may regulate conduct under the applicable constitutional standards, but it may not punish religious belief or profession as such.",
+      },
+      {
+        letter: "D",
+        text: "The law is valid because the Free Exercise Clause protects only formal church organizations.",
+        verdict: "trap",
+        mold: "church-only overclaim",
+        explanation:
+          "D over-narrows Free Exercise. Individuals, not only formal church organizations, are protected in holding and professing religious belief.",
+      },
+    ],
+    answerFlow: [
+      "Start with the object of the statute.",
+      "The law punishes holding or teaching the creed.",
+      "Separate belief/profession from conduct.",
+      "Cut B because it answers the conduct question instead of the belief ban.",
+      "Cut A because Free Exercise does not need an added Establishment Clause violation.",
+      "Cut D because Free Exercise is not limited to formal church organizations.",
+      "C directly matches the belief-as-such rule.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Belief and profession as such are protected; conduct is a separate constitutional lane.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps shift to conduct, Establishment-only invalidity, or church-only protection.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive words are hold or teach, not unlawful acts.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: following the government's conduct justification before locking what the statute actually punishes.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-BELIEF-CONDUCT-01",
+        body: "Free Exercise protects religious belief and profession as such. Conduct inspired by belief is a separate lane and may be regulated under the applicable constitutional standard.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-BELIEF-CONDUCT-OBJECT-01",
+        body: "First lock the object of the law: belief or conduct. If an answer changes the object from belief to unlawful acts, cut it as the adjacent-call answer.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-FREEEX-INDIVIDUALS-01",
+        body: "Free Exercise protection is not limited to formal churches; individuals also hold and profess religious beliefs.",
+      },
+    ],
+    leadMeSteps: [
+      "Read the call.",
+      "Find what the statute punishes.",
+      "Name the belief/conduct split.",
+      "Cut the conduct-switch answer.",
+      "Cut the Establishment-only answer.",
+      "Cut the church-only answer.",
+      "Match the belief-as-such rule.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Belief Or Conduct",
+        prompt:
+          "A statute punishes holding or teaching a religious creed. The state defends the law by pointing to unlawful acts inspired by that creed. What is the first move?",
+        answer:
+          "Lock the object of the statute. It punishes belief or teaching, so conduct-regulation answers are the wrong frame.",
+      },
+      {
+        title: "Only If Trap",
+        prompt:
+          "An answer says a religion law is invalid only if it also violates the Establishment Clause. What is the problem?",
+        answer:
+          "The word only overclaims. Free Exercise can independently invalidate punishment of religious belief as such.",
+      },
+      {
+        title: "Church-Only Trap",
+        prompt: "Does Free Exercise protect only formal church organizations?",
+        answer:
+          "No. It protects individual religious belief and profession as well.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

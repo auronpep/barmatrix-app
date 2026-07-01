@@ -937,6 +937,135 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14237",
+    transformId: "14237_harvest_table_radio_segment",
+    title: "Funding Is Not the Firing",
+    selectorCode: "44040100",
+    selectorMatch: "exact",
+    outlineCode: "44040100",
+    sourceOutlineCode: "44040100",
+    coverageGroup: "state_action",
+    seedBucket: "needs_human_review",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "Does a private, state-accredited school that receives 25 percent of its budget from state funds become a state actor when it fires an instructor for a public statement, without state coercion or participation in the firing?",
+    stem:
+      "A private culinary-and-hospitality institute is owned and operated by a Christian nonprofit foundation. The institute is accredited by the department of education of the state in which it is located, and the accreditation certifies that the institute meets prescribed educational standards for its certificate programs. Because it is accredited, the institute qualifies for state funding for certain operating expenses, and 25 percent of its total operating budget comes from state funds. Mary, an instructor at the institute, also hosted an occasional local radio segment about food and community life. In one broadcast, Mary made a public statement criticizing religious organizations. The institute later discharged Mary, giving as its sole reason her authorship and broadcast of that statement. Mary sued the institute, claiming only that her discharge violated her constitutional right to freedom of speech. The institute moved to dismiss Mary's lawsuit on the ground that the U.S. Constitution does not provide Mary with a cause of action in this case. Should the court grant the institute's motion to dismiss?",
+    choices: [
+      {
+        letter: "A",
+        text: "No, because the state's accreditation and partial funding of the institute are sufficient to make the state an active participant in Mary's discharge.",
+        verdict: "trap",
+        mold: "funding/accreditation state-action overread",
+        explanation:
+          "A is the dominant trap. The state contacts are real, but they do not show that the state drove, encouraged, or participated in Mary's discharge.",
+      },
+      {
+        letter: "B",
+        text: "No, because the U.S. Constitution provides a cause of action against any state-accredited school that restricts freedom of speech as a condition of employment.",
+        verdict: "trap",
+        mold: "fabricated accreditation cause of action",
+        explanation:
+          "B turns accreditation into an automatic constitutional lawsuit. State accreditation alone does not make every private school a constitutional defendant.",
+      },
+      {
+        letter: "C",
+        text: "Yes, because the institute's discharge of Mary is not attributable to the state for purposes of the Fourteenth Amendment.",
+        verdict: "correct",
+        mold: "state-action threshold / missing state responsibility",
+        explanation:
+          "C is correct. The challenged act is Mary's discharge by a private institute, and no fact makes that firing fairly attributable to the state.",
+      },
+      {
+        letter: "D",
+        text: "Yes, because the First and Fourteenth Amendments affirmatively protect the institute's right to employ only instructors who share and communicate its views.",
+        verdict: "trap",
+        mold: "correct result / wrong reason",
+        explanation:
+          "D reaches the grant-the-motion result, but the reason is wrong. The motion is granted because Mary's constitutional claim lacks state action.",
+      },
+    ],
+    answerFlow: [
+      "Start with the claim Mary actually brings: a constitutional free-speech claim against a private institute.",
+      "Circle the challenged act: the institute's decision to discharge Mary.",
+      "Separate background government contacts from responsibility for that discharge.",
+      "Accreditation and 25 percent operating support are not enough by themselves.",
+      "Ask whether the state coerced, significantly encouraged, approved, or participated in the firing.",
+      "No fact supplies that missing link.",
+      "Cut the automatic-accreditation and private-autonomy reasons.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "State action asks whether the challenged private decision is fairly attributable to the state.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set makes accreditation and public funding feel official enough to pull students away from the challenged-act link.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive fact is not who funds part of the school; it is who was responsible for Mary's firing.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating government-adjacent facts as automatic constitutional accountability.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-STATE-ACTION-FUNDING-01",
+        body: "State accreditation, regulation, or partial funding does not make a private school's employment decision state action unless the state coerced, significantly encouraged, or was otherwise responsible for the challenged decision.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-THRESHOLD-BEFORE-SPEECH-01",
+        body: "On a private-actor free-speech claim, do the threshold first: who performed the challenged act, and did the state drive that act?",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-CHALLENGED-ACT-FIRST-02",
+        body: "Circle the act being sued over before weighing public funding, licensing, accreditation, or regulation.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the constitutional claim.",
+      "Name the defendant.",
+      "Identify the challenged firing.",
+      "Separate accreditation and funding from control over the firing.",
+      "Test for state coercion or significant encouragement.",
+      "Reject automatic accreditation liability.",
+      "Reject correct-result wrong-reason autonomy language.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Funding Is Not the Firing",
+        prompt:
+          "A private school receives state accreditation and a quarter of its budget from the state. It fires an instructor without state involvement. What threshold blocks a constitutional speech claim?",
+        answer:
+          "No state action. The firing is not fairly attributable to the state.",
+      },
+      {
+        title: "Rewrite the Trap",
+        prompt:
+          "Rewrite the trap that funding and accreditation automatically make a private school a state actor.",
+        answer:
+          "Funding, accreditation, or regulation may be relevant, but the challenged private decision must be coerced, significantly encouraged, or otherwise fairly attributable to the state.",
+      },
+      {
+        title: "Threshold Before Speech",
+        prompt:
+          "One answer says the speech firing is unconstitutional. Another says the Constitution does not apply because a private school made the decision. What fact decides?",
+        answer:
+          "Whether the state was responsible for the firing.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

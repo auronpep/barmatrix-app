@@ -1297,6 +1297,134 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14807",
+    transformId: "14807_mission_kitchen_notice_letters",
+    title: "Non-Hearsay Purpose: Notice Needs a Limiting Instruction",
+    outlineCode: "33040203",
+    sourceOutlineCode: "33040203",
+    coverageGroup: "non_hearsay_purpose",
+    seedBucket: "clean_teaching",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "When prior complaint letters are offered to show notice rather than the truth of the complaints, should the court admit them for that limited purpose and give a timely requested limiting instruction?",
+    stem:
+      "A mission kitchen sued the manufacturer of an industrial warming oven after volunteers were burned while heating food in sealed containers. The kitchen offered three letters that the manufacturer received before shipping this oven. In the letters, other customers reported similar burn incidents. The manufacturer objects that the letters are hearsay and, in the alternative, asks the court to instruct the jury that the letters may be considered only on notice, not for the truth of the earlier incidents. How should the court rule?",
+    choices: [
+      {
+        letter: "A",
+        text: "Sustain the objection and treat the request for a limiting instruction as moot.",
+        verdict: "trap",
+        mold: "threshold_miss / truth-purpose assumption",
+        explanation:
+          "A assumes the letters are offered for the truth of the earlier incidents. They can instead show the manufacturer had notice before this oven shipped.",
+      },
+      {
+        letter: "B",
+        text: "Overrule the objection and deny the request for a limiting instruction.",
+        verdict: "trap",
+        mold: "half_right / FRE 105 omission",
+        explanation:
+          "B gets admissibility right but misses the requested limiting instruction. When evidence is admitted for one purpose but not another, FRE 105 requires a proper limiting instruction on timely request.",
+      },
+      {
+        letter: "C",
+        text: "Overrule the objection and give the limiting instruction.",
+        verdict: "correct",
+        mold: "residue / non-hearsay notice plus FRE 105",
+        explanation:
+          "The letters are admissible to show notice, not to prove the earlier customers were actually burned. Because the manufacturer timely requested a limiting instruction, the court should restrict the jury to the notice purpose.",
+      },
+      {
+        letter: "D",
+        text: "Overrule the objection but allow only that the letters be read aloud, not received as exhibits.",
+        verdict: "trap",
+        mold: "invented_remedy / exhibit-access distractor",
+        explanation:
+          "D invents a handling limit that does not answer the hearsay and limiting-instruction issue. If the letters are admitted for notice, they may be received as exhibits subject to the limiting instruction.",
+      },
+    ],
+    answerFlow: [
+      "Identify the out-of-court statements: customer letters sent before this shipment.",
+      "Ask why the letters are offered: to show the manufacturer had notice of similar incidents.",
+      "Classify the use as non-hearsay because notice is different from proving the complaints were true.",
+      "Overrule the hearsay objection for the limited notice purpose.",
+      "Apply FRE 105 because the manufacturer made a timely limiting-instruction request.",
+      "Cut A because it misses the non-hearsay notice purpose.",
+      "Cut B because it omits the required limiting instruction.",
+      "Cut D because the exhibit-reading limit is not the governing rule.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Purpose first: the letters matter because they reached the manufacturer, not because every prior incident happened exactly as described.",
+      },
+      {
+        label: "Purple profile",
+        body: "The array splits admissibility from limiting instruction, so the correct answer must satisfy both gates.",
+      },
+      {
+        label: "Blue signal",
+        body: "The phrase only regarding the issue of notice points away from truth use and toward a limited non-hearsay purpose.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: stopping after non-hearsay admissibility and forgetting the requested FRE 105 instruction.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-NOTICE-NONHEARSAY-01",
+        body: "A letter offered to prove that notice was sent or received is not offered for the truth of the letter's contents. Do not use a hearsay exception when the offered purpose is notice rather than truth.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-FRE105-LIMITING-01",
+        body: "When evidence is admissible for one purpose but not another, a timely request requires the court to restrict the evidence to its proper scope and instruct the jury.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-HALF-RIGHT-LIMITING-INSTRUCTION",
+        body: "An answer can be half right by admitting non-hearsay purpose evidence while denying the limiting instruction that FRE 105 requires.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the statement and the listener.",
+      "Say the offered purpose before touching a hearsay exception.",
+      "Classify notice as non-hearsay use.",
+      "Ask whether a limiting instruction was requested.",
+      "Pair admissibility with the limiting instruction.",
+      "Reject the mootness answer.",
+      "Reject the no-instruction answer.",
+      "Pick the answer that does both jobs.",
+    ],
+    drillSeeds: [
+      {
+        title: "Purpose First",
+        prompt:
+          "A complaint letter is offered to show the defendant received warning before the plaintiff was injured. What is the offered purpose?",
+        answer:
+          "Notice. The letter is not being used to prove the earlier complaint was true.",
+      },
+      {
+        title: "FRE 105 Add-On",
+        prompt:
+          "The evidence is admissible for notice but not for truth, and the opponent asks for a limiting instruction. What must the court do?",
+        answer:
+          "Admit for the limited purpose and give the limiting instruction.",
+      },
+      {
+        title: "Half-Right Trap",
+        prompt:
+          "Why is admit the letters but deny a limiting instruction not enough?",
+        answer:
+          "Because FRE 105 requires the instruction on timely request when evidence is limited to a proper purpose.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

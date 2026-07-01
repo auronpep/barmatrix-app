@@ -5,6 +5,7 @@ import {
   pilotSubsets,
 } from "@/lib/jesuslovesyou/pilot-data";
 import { conLawSeedCandidates } from "@/lib/jesuslovesyou/conlaw-seed-candidates";
+import { hasConLawQuestionDetail } from "@/lib/jesuslovesyou/conlaw-question-details";
 
 const conLawPilot = pilotSubsets[1];
 
@@ -222,7 +223,10 @@ export default function ConLawSeedCandidatesPage() {
                           href={`${JESUSLOVESYOU_ROUTE_PREFIX}/conlaw-pilot-01/seeds/${candidate.question_id}`}
                           className="btn ghost"
                         >
-                          Open review row <span className="arrow">-&gt;</span>
+                          {hasConLawQuestionDetail(candidate.question_id)
+                            ? "Open case study"
+                            : "Open review row"}{" "}
+                          <span className="arrow">-&gt;</span>
                         </Link>
                       </div>
                     </div>

@@ -4949,6 +4949,133 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14781",
+    transformId: "14781_farm-insurance-arson",
+    title: "Confession With A Witness",
+    outlineCode: "33040301",
+    sourceOutlineCode: "33040301",
+    coverageGroup: "hearsay_exception",
+    seedBucket: "clean_teaching",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "An unavailable declarant told his spouse, in the presence of a third party, that the defendant paid him to commit arson. Is the spouse's testimony admissible, and under which rule?",
+    stem:
+      "Peter owns a 40-acre wheat farm in eastern Oregon. After a suspicious fire destroys his harvested grain stored in a barn, Peter files a claim on his farm-owner's insurance policy. The insurer denies the claim, alleging that Peter paid his neighbor Daniel to set the fire. While Daniel was recovering in a hospital burn unit, he said to his wife Ruth, in the presence of an attending chaplain: Peter paid me to set fire to the barn. Daniel died two weeks later from an infection caused by the burns. At trial, the insurer calls Ruth to testify to Daniel's statement. Is Ruth's testimony admissible over Peter's objection?",
+    choices: [
+      {
+        letter: "A",
+        text: "No, because the marital privilege survives the communicating spouse's death.",
+        verdict: "trap",
+        mold: "true-rule / confidentiality breaker",
+        explanation:
+          "A states a real privilege rule, but the communication was not confidential. Daniel spoke in the presence of an attending chaplain, so the marital-communication privilege never attached.",
+      },
+      {
+        letter: "B",
+        text: "No, because the statement was made after the conspiracy ended.",
+        verdict: "trap",
+        mold: "true-premise / wrong-conclusion trap",
+        explanation:
+          "B correctly rejects the co-conspirator route, but that does not make the testimony inadmissible. The statement can still come in as a statement against interest.",
+      },
+      {
+        letter: "C",
+        text: "Yes, because it is a statement against interest.",
+        verdict: "correct",
+        mold: "residue / unavailable declarant against-interest statement",
+        explanation:
+          "C matches the facts. Daniel was unavailable, and admitting that Peter paid him to set the fire would expose Daniel to criminal and civil liability.",
+      },
+      {
+        letter: "D",
+        text: "Yes, because it is a statement by a coconspirator.",
+        verdict: "trap",
+        mold: "co-conspirator exemption / wrong reason",
+        explanation:
+          "D reaches the admissible outcome for the wrong reason. Daniel's hospital confession to Ruth was not made during and in furtherance of the conspiracy.",
+      },
+    ],
+    answerFlow: [
+      "Start with the offered testimony from Ruth.",
+      "Ask whether the spouse communication was confidential.",
+      "Cut marital privilege because a chaplain was present.",
+      "Ask whether the co-conspirator route applies.",
+      "Cut co-conspirator treatment because the statement was a post-event confession.",
+      "Check Daniel's unavailability.",
+      "Use statement against interest because Daniel admitted arson for hire.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "An unavailable declarant's damaging confession can come in as a statement against interest even when the co-conspirator route fails.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps are marital-privilege overreach and co-conspirator label shopping.",
+      },
+      {
+        label: "Blue signal",
+        body: "Daniel confessed in front of a third party and later died.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating a true objection to one route as if it blocks every route.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-AGAINST-INTEREST-UNAVAILABLE-01",
+        body: "A statement by an unavailable declarant is admissible as a statement against interest when it was against the declarant's civil, criminal, or financial interest when made.",
+      },
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-MARITAL-CONFIDENTIALITY-01",
+        body: "The marital-communications privilege protects confidential spouse communications; a known third party in the room destroys confidentiality.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-WRONG-ROUTE-NOT-WRONG-RESULT",
+        body: "A choice can correctly reject one hearsay route and still be wrong if another exception admits the statement.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the statement: Daniel admitted Peter paid him to set the fire.",
+      "Check privilege first.",
+      "Use the chaplain's presence to cut confidentiality.",
+      "Check co-conspirator treatment.",
+      "Reject it because the statement was not in furtherance.",
+      "Check Daniel's unavailability.",
+      "Use statement against interest.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Wrong Route",
+        prompt:
+          "A hospital confession was not made in furtherance of a conspiracy. Does that automatically make it inadmissible?",
+        answer:
+          "No. It may still be admissible as a statement against interest if the declarant is unavailable and the statement was damaging when made.",
+      },
+      {
+        title: "Privilege Breaker",
+        prompt:
+          "A spouse confesses to the other spouse in the presence of a chaplain. Is the communication confidential for marital-communications privilege?",
+        answer:
+          "No. A known third party in the room prevents the communication from being confidential.",
+      },
+      {
+        title: "Statement Against Interest",
+        prompt:
+          "A declarant admits he was paid to set a fire and later dies. What hearsay exception should you test?",
+        answer:
+          "Statement against interest, because the admission exposed the declarant to criminal and civil liability and the declarant is unavailable.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

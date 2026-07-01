@@ -3305,6 +3305,131 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14872",
+    transformId: "14872_hannah_sleet_cart",
+    title: "Rule 403: Fit Before Drama",
+    outlineCode: "32020302",
+    sourceOutlineCode: "32020302",
+    coverageGroup: "fre_403_insurance_policy_purpose",
+    seedBucket: "clean_teaching",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "Which offered item is most likely admitted when it helps an expert explain a disputed fact and carries less Rule 403 confusion risk than dramatic alternatives?",
+    stem:
+      "Naomi, as representative of Hannah's estate, has brought a products-liability action against the manufacturer of a three-wheel electric delivery cart that Hannah was driving after a Bible-study coat drive when she was fatally injured in a tip-over on a sloped service road. Naomi claims that a design defect in the cart caused it to tip over. The defendant claims that Hannah was driving too fast during a sleet storm. Witnesses leaving the fellowship hall gave contradictory estimates about the cart's speed just before it tipped. It is also disputed whether Hannah was killed instantly. Which item of offered evidence is the court most likely to admit?",
+    choices: [
+      {
+        letter: "A",
+        text: "Evidence offered by the defendant that Hannah had received two citations for speeding in the previous three years.",
+        verdict: "trap",
+        mold: "flat_misstatement / propensity trap",
+        explanation:
+          "A invites the forbidden inference that Hannah drove fast this time because she had prior speeding citations. That is propensity reasoning.",
+      },
+      {
+        letter: "B",
+        text: "Photographs taken at the accident scene and during the autopsy that would help Naomi's medical expert explain to the jury why she concluded that Hannah did not die instantly.",
+        verdict: "correct",
+        mold: "residue / expert-purpose fit",
+        explanation:
+          "B has the cleanest fit. The photos help a medical expert explain a disputed death-timing issue, and the court can limit the jury's use of them.",
+      },
+      {
+        letter: "C",
+        text: "A videotape offered by the defendant of a test showing that the same model cart did not tip over when driven by a professional driver on a dry proving lane at the top speed testified to by the witnesses.",
+        verdict: "trap",
+        mold: "wrong_element / dissimilar-experiment trap",
+        explanation:
+          "C looks scientific because it uses the same model and speed, but the important conditions changed: professional driver, dry lane, and no sleet.",
+      },
+      {
+        letter: "D",
+        text: "A videotape offered by Naomi of a television news program about three-wheel electric delivery carts that includes footage of accident scenes in which the carts had tipped over.",
+        verdict: "trap",
+        mold: "wrong_element / generalized-footage trap",
+        explanation:
+          "D is dramatic but weakly fitted. Other carts in other accidents do not answer this cart, this road, this weather, or this disputed fact.",
+      },
+    ],
+    answerFlow: [
+      "Read the call as a most-likely-to-admit comparison.",
+      "Cut old speeding citations because they rely on propensity.",
+      "Cut general news footage because it is vivid but not fitted to this accident.",
+      "Cut the dry professional test because the experiment conditions are materially different.",
+      "Keep the item tied to a disputed fact.",
+      "Use the expert-explanation purpose to support probative value.",
+      "Balance Rule 403 risks against that fit.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Rule 403 favors evidence with a clean disputed-fact purpose over dramatic evidence with weak fit.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps are visually or narratively tempting: old citations, a same-model test, and dramatic media footage.",
+      },
+      {
+        label: "Blue signal",
+        body: "The photos are tied to a disputed medical issue and help an expert explain her conclusion.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: choosing the most vivid evidence instead of the evidence with the best purpose-fit.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-403-PHOTOS-01",
+        body: "Graphic or unpleasant photos can be admitted when they help an expert explain a disputed consequential fact; Rule 403 excludes only when unfair prejudice or confusion substantially outweighs probative value.",
+      },
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-SIMILAR-EXPERIMENTS-01",
+        body: "A test or demonstration is weak when the conditions that matter are not sufficiently similar to the litigated event.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-OFFERED-PURPOSE-01",
+        body: "For an admissibility question, read the offered purpose before reacting to the evidence's emotional force.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the disputed facts: speed and death timing.",
+      "Sort each item by offered purpose.",
+      "Reject prior citations as propensity.",
+      "Reject general footage as low-fit drama.",
+      "Reject the experiment for changed conditions.",
+      "Keep the expert photos because they explain a disputed fact.",
+      "Apply Rule 403's substantially-outweighed standard.",
+      "Pick B.",
+    ],
+    drillSeeds: [
+      {
+        title: "Propensity Cut",
+        prompt:
+          "A civil defendant offers old driving citations to prove a party drove fast during the accident. What is the first Evidence cut?",
+        answer: "Cut it as propensity evidence.",
+      },
+      {
+        title: "Similar Experiment Fit",
+        prompt:
+          "A test uses the same product and speed but different weather, surface, and driver skill. What axis should you name?",
+        answer: "Substantial similarity of conditions.",
+      },
+      {
+        title: "Expert Purpose",
+        prompt:
+          "Unpleasant photos help a medical expert explain a disputed death-timing issue. What makes them admissible?",
+        answer:
+          "They are tied to a disputed consequential fact through a proper expert-explanation purpose.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

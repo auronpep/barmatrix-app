@@ -15,6 +15,7 @@ const ROUTES = [
   "/pricing",
   "/Jesuslovesyou",
   "/Jesuslovesyou/evidence-pilot-01",
+  "/Jesuslovesyou/evidence-pilot-01/seeds",
   "/diagnostic",
   "/foundations",
   "/mastery",

@@ -44,12 +44,18 @@ export default function EvidencePilotPage() {
             run, and an Outline Atlas node sample.
           </p>
           <div className="hero-actions" style={{ marginTop: 32 }}>
+            <Link
+              href={`${JESUSLOVESYOU_ROUTE_PREFIX}/evidence-pilot-01/seeds`}
+              className="btn btn-lg red"
+            >
+              Open seed candidates <span className="arrow">-&gt;</span>
+            </Link>
             <Link href={JESUSLOVESYOU_ROUTE_PREFIX} className="btn btn-lg ghost">
               Back to Jesuslovesyou <span className="arrow">-&gt;</span>
             </Link>
             <Link
               href={`${JESUSLOVESYOU_ROUTE_PREFIX}/checkout?lp=Jesuslovesyou-evidence`}
-              className="btn btn-lg red"
+              className="btn btn-lg ghost"
             >
               Open prefixed checkout <span className="arrow">-&gt;</span>
             </Link>

@@ -2680,6 +2680,130 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "18076",
+    transformId: "source_only_18076_attorney-notes-refresh",
+    title: "Refreshing Recollection: Any Material Can Jog Memory",
+    outlineCode: "31010407",
+    sourceOutlineCode: "31010407",
+    coverageGroup: "adjacent_pilot_code",
+    seedBucket: "needs_human_review",
+    key: "D",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "May a witness look at someone else's notes, not yet in evidence, to see whether they refresh present recollection?",
+    stem:
+      "The plaintiff sues the defendant for breaching an agreement to market her products. At trial, the plaintiff testifies that she and the defendant discussed five products at a conference in her attorney's office, but she can remember only four. After having the attorney's conference notes marked for identification, plaintiff's counsel asks whether looking at the notes would refresh her memory of the fifth product. Defense counsel objects before the plaintiff looks at the notes. How should the court rule?",
+    choices: [
+      {
+        letter: "A",
+        text: "Sustain the objection because the notes were not made by the plaintiff.",
+        verdict: "trap",
+        mold: "fabricated_rule / authorship trap",
+        explanation:
+          "A adds an authorship requirement. A witness may use material made by someone else if it actually refreshes present memory.",
+      },
+      {
+        letter: "B",
+        text: "Sustain the objection because the notes were not in evidence.",
+        verdict: "trap",
+        mold: "flat_misstatement / admitted-evidence trap",
+        explanation:
+          "B confuses refreshing recollection with admitting the writing. The writing used to refresh need not already be in evidence.",
+      },
+      {
+        letter: "C",
+        text: "Sustain the objection because asking whether the notes would refresh the plaintiff's memory is leading.",
+        verdict: "trap",
+        mold: "wrong_doctrine / leading-question distraction",
+        explanation:
+          "C mislabels the question. Asking whether a writing may refresh memory does not suggest the missing product name.",
+      },
+      {
+        letter: "D",
+        text: "Overrule the objection.",
+        verdict: "correct",
+        mold: "residue / refresh-foundation permission",
+        explanation:
+          "The judge should let the plaintiff look at the marked notes to see whether they refresh present recollection. If they do, she testifies from memory; if not, the court can handle the problem then.",
+      },
+    ],
+    answerFlow: [
+      "Spot that the notes are offered only to jog memory.",
+      "Ask whether Rule 612 requires the writing to be authored by the witness.",
+      "It does not.",
+      "Ask whether the writing must already be in evidence.",
+      "It does not.",
+      "Check the leading-question objection: the question does not suggest the missing product.",
+      "Overrule the objection and let the witness try to refresh.",
+      "Choose D.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Refreshing recollection can use any material that helps restore present memory.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps impose fake prerequisites: witness authorship, admitted-evidence status, or a leading-question label.",
+      },
+      {
+        label: "Blue signal",
+        body: "The notes were marked for identification and offered only for the witness to look at, not for substantive admission.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating refresh material like it must independently satisfy an admissibility foundation before the witness can look at it.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-612-ANY-MATERIAL-REFRESH-01",
+        body: "A witness may use any material to refresh present recollection; authorship and admissibility of the material are not prerequisites.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-REFRESH-TRY-FIRST-JUDGE-MONITORS",
+        body: "The court can let the witness look first, then decide whether the witness truly has refreshed present memory or is just reading from the writing.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-REFRESH-ADMISSIBILITY-FOUNDATION",
+        body: "Do not require the refresh material itself to be in evidence before the witness may use it to jog memory.",
+      },
+    ],
+    leadMeSteps: [
+      "Classify the use as refreshing recollection, not substantive proof.",
+      "Reject the authorship requirement.",
+      "Reject the admitted-evidence requirement.",
+      "Reject the leading-question label unless the question suggests the factual answer.",
+      "Let the witness look and test whether memory returns.",
+      "Pick the overrule answer.",
+    ],
+    drillSeeds: [
+      {
+        title: "Someone Else's Notes",
+        prompt:
+          "A witness wants to look at notes written by another person to refresh memory. Is authorship required?",
+        answer: "No. Any material may be used if it refreshes present recollection.",
+      },
+      {
+        title: "Not in Evidence",
+        prompt:
+          "A writing has only been marked for identification. Can it still be used to refresh the witness's memory?",
+        answer:
+          "Yes. Refreshing recollection does not require that the writing already be admitted.",
+      },
+      {
+        title: "Leading Label",
+        prompt:
+          "Counsel asks whether looking at notes would refresh memory. Why is that usually not a leading question?",
+        answer:
+          "It asks about memory-refreshing, not the substantive answer the witness forgot.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

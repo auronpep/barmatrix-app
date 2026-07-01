@@ -547,6 +547,129 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14772",
+    transformId: "14772_fishing_vessel_log",
+    title: "Non-Hearsay Purpose: Identity from a Name",
+    outlineCode: "33040203",
+    sourceOutlineCode: "33040203",
+    coverageGroup: "non_hearsay_purpose",
+    seedBucket: "clean_teaching",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A missing person told his heir a pseudonym he intended to use. That pseudonym later appeared on a passenger log for a vessel that disappeared. Is testimony about the conversation admissible?",
+    stem:
+      "Daniel, a well-known Christian documentary filmmaker, held a life insurance policy naming his daughter Esther as beneficiary. Daniel disappeared from a small coastal town two years ago and has not been heard from since. On the day he vanished, a fishing trawler that departed from the town's only working harbor disappeared at sea. The vessel's log listed a passenger under a name that shared Daniel's first name but used a different surname. Esther sues the insurer for the policy proceeds. At trial, Esther offers to testify that Daniel told her he planned to use that same pseudonym when filming an undercover documentary in remote fishing communities. Esther's testimony is:",
+    choices: [
+      {
+        letter: "A",
+        text: "Inadmissible as a party admission, because Daniel's out-of-court statement to Esther binds him as a party.",
+        verdict: "trap",
+        mold: "misfit / party-admission shortcut",
+        explanation:
+          "Daniel is not the opposing party in Esther's suit against the insurer, and the statement does not need a party-admission route because it is not hearsay at the threshold.",
+      },
+      {
+        letter: "B",
+        text: "Inadmissible, because it is hearsay not within any exception.",
+        verdict: "trap",
+        mold: "flat_misstatement / auto-hearsay stamp",
+        explanation:
+          "This is the dominant trap. The testimony is not offered to prove Daniel truly planned a documentary; it is offered to connect Daniel to the name on the trawler log.",
+      },
+      {
+        letter: "C",
+        text: "Admissible as circumstantial evidence that Daniel was on the trawler.",
+        verdict: "correct",
+        mold: "residue / identity inference",
+        explanation:
+          "The statement is offered for a non-truth purpose: it links Daniel to the pseudonym found in the log. That identity inference makes it relevant circumstantial evidence, not hearsay.",
+      },
+      {
+        letter: "D",
+        text: "Inadmissible, because Daniel has not been missing for more than seven years.",
+        verdict: "trap",
+        mold: "fabricated_rule / imported threshold",
+        explanation:
+          "Any missing-person presumption is a different doctrine. The length of Daniel's disappearance does not decide whether the statement is hearsay.",
+      },
+    ],
+    answerFlow: [
+      "Identify the fact Esther needs to prove: Daniel's connection to the trawler name.",
+      "Ask whether Daniel's statement is offered to prove its content. It is not.",
+      "Use the statement as circumstantial evidence linking Daniel to the passenger log.",
+      "Cut B because the auto-hearsay label skips the purpose-of-offer test.",
+      "Cut A because Daniel is not the opposing party and the admission route is unnecessary.",
+      "Choose C because the statement is non-hearsay identity evidence.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Purpose before label: name the fact the statement is being used to prove before calling it hearsay.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set contrasts identity inference against auto-hearsay, party-admission shortcutting, and an imported seven-year rule.",
+      },
+      {
+        label: "Blue signal",
+        body: "The pseudonym appearing elsewhere in the facts turns the statement into a connection clue, not proof of documentary plans.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: stamping every out-of-court statement as hearsay before asking why it is offered.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-NONHEARSAY-PURPOSE-01",
+        body: "An out-of-court statement is not hearsay when offered to prove the speaker's connection to a name, event, or circumstance rather than the truth of what was said.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-PURPOSE-OF-OFFER-01",
+        body: "Before applying any hearsay label, name the precise fact the proponent wants to prove with the statement.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-AUTO-HEARSAY-STAMP",
+        body: "Out-of-court statement is only the start of hearsay analysis. The truth purpose must also be present.",
+      },
+    ],
+    leadMeSteps: [
+      "State the exact fact Esther needs: Daniel was the person using the log name.",
+      "Separate that fact from the statement's literal content.",
+      "Classify the statement as identity-link circumstantial evidence.",
+      "Reject the hearsay-not-within-exception choice.",
+      "Reject party admission unless the declarant is the opposing party or agent.",
+      "Pick the non-hearsay identity inference answer.",
+    ],
+    drillSeeds: [
+      {
+        title: "Purpose Identification",
+        prompt:
+          "A witness says the defendant once said, 'I keep a spare key under the mat.' It is offered to prove the burglar had access. Hearsay?",
+        answer:
+          "No. It is offered to prove access as a circumstance, not to prove the truth of the statement itself.",
+      },
+      {
+        title: "Party Admission Check",
+        prompt:
+          "A plaintiff's mother made an out-of-court statement. The plaintiff offers it against the defendant. Is it automatically a party admission?",
+        answer:
+          "No. Party admission requires the declarant to be the opposing party or an authorized/adopted/agent speaker.",
+      },
+      {
+        title: "Auto-Hearsay Brake",
+        prompt:
+          "A declarant's statement is offered to show the speaker was connected to a place or name, not to prove the statement's contents. Hearsay?",
+        answer:
+          "No. That is a non-truth purpose under FRE 801(c).",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

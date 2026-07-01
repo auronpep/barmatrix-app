@@ -2055,6 +2055,131 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14834",
+    transformId: "14834_orchard-dying-declaration",
+    title: "Preliminary Questions: Dying Declaration Foundation",
+    outlineCode: "31010107",
+    sourceOutlineCode: "31010107",
+    coverageGroup: "preliminary_question_judge_jury",
+    seedBucket: "clean_teaching",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "When the prosecution lays the foundation for a dying declaration, who decides whether it qualifies, and may that decider rely on an affidavit?",
+    stem:
+      "Peter, a vineyard owner, was attacked at dusk among his grape rows and left mortally wounded. Before he died, he took a piece of chalk from his apron and wrote on the side of a wooden crate: \"Barnabas did this.\" In the prosecution of Barnabas for murder, the government seeks to introduce the properly authenticated crate writing as a dying declaration. In laying the foundation, the prosecution offered an affidavit from the attending physician stating that Peter knew he was about to die when he wrote the words. The admissibility of the crate writing as a dying declaration is:",
+    choices: [
+      {
+        letter: "A",
+        text: "A question of weight and credibility for the jury, and the jury may properly consider the affidavit.",
+        verdict: "trap",
+        mold: "backwards / jury-weight trap",
+        explanation:
+          "A sounds natural because juries weigh credibility, but the call asks whether the statement is admissible as a hearsay exception. That preliminary admissibility question belongs to the judge.",
+      },
+      {
+        letter: "B",
+        text: "A preliminary fact question for the judge, and the judge must not consider the affidavit.",
+        verdict: "trap",
+        mold: "half_truth / false affidavit bar",
+        explanation:
+          "B names the right decider but adds the wrong limit. On a Rule 104(a) admissibility ruling, the judge is not bound by the evidence rules except privilege.",
+      },
+      {
+        letter: "C",
+        text: "A preliminary fact question for the judge, and the judge may properly consider the affidavit.",
+        verdict: "correct",
+        mold: "residue / Rule 104(a) admissibility ruling",
+        explanation:
+          "Whether the dying-declaration exception applies is a preliminary admissibility question for the judge, and the judge may rely on the affidavit in deciding it.",
+      },
+      {
+        letter: "D",
+        text: "A question of weight and credibility for the jury, and the jury must not consider the affidavit.",
+        verdict: "trap",
+        mold: "flat_misstatement / double-axis miss",
+        explanation:
+          "D misses both axes. The judge, not the jury, decides admissibility, and the judge may consider the affidavit for the preliminary ruling.",
+      },
+    ],
+    answerFlow: [
+      "Name the offered evidence: a statement offered as a dying declaration.",
+      "Classify the call as admissibility of a hearsay exception.",
+      "Resolve the first axis: admissibility is for the judge, not the jury.",
+      "Cut A and D because both put the decision with the jury.",
+      "Resolve the second axis: Rule 104(a) does not bind the judge to the evidence rules except privilege.",
+      "Cut B because it falsely bars the affidavit.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Admissibility first: whether a hearsay exception applies is a preliminary question for the judge.",
+      },
+      {
+        label: "Purple profile",
+        body: "The array is a 2x2 board: judge or jury crossed with may consider or must not consider the affidavit.",
+      },
+      {
+        label: "Blue signal",
+        body: "The words admissibility and dying declaration point to a Rule 104(a) preliminary ruling, not jury weight.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: confusing jury credibility weighing with the judge's gateway decision on admissibility.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVID-PRELIM-ADMISS-01",
+        body: "Whether a hearsay exception applies is a preliminary admissibility question for the judge under Rule 104(a), and the judge is not bound by the evidence rules except privilege.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVID-DECIDER-FIRST-01",
+        body: "On a who-decides admissibility item, resolve judge versus jury before the sub-question; admissibility equals judge.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-JURY-WEIGHT-ADMISSIBILITY-SWAP",
+        body: "Do not turn a gateway admissibility ruling into a jury weight-and-credibility question.",
+      },
+    ],
+    leadMeSteps: [
+      "Identify the statement as a hearsay-exception candidate.",
+      "Read the call word: admissibility.",
+      "Assign admissibility to the judge.",
+      "Cut both jury choices.",
+      "Ask whether the judge may use the affidavit.",
+      "Apply Rule 104(a)'s not-bound-by-evidence-rules rule.",
+      "Cut the must-not-consider answer.",
+      "Pick judge plus may consider.",
+    ],
+    drillSeeds: [
+      {
+        title: "Decider First",
+        prompt:
+          "A statement is offered under a hearsay exception and the parties dispute whether the exception applies. Who decides admissibility?",
+        answer: "The judge.",
+      },
+      {
+        title: "Affidavit Foundation",
+        prompt:
+          "In deciding a Rule 104(a) preliminary admissibility question, may the judge consider hearsay such as an affidavit?",
+        answer:
+          "Yes, except for privilege, the judge is not bound by the evidence rules.",
+      },
+      {
+        title: "Weight Trap",
+        prompt:
+          "An answer says the jury decides whether a dying declaration is admissible because it is about weight and credibility. What is the error?",
+        answer:
+          "It confuses admissibility, which the judge decides, with the jury's later weighing of admitted evidence.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

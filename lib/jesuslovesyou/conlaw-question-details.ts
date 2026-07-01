@@ -1193,6 +1193,135 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "18457",
+    transformId: "18457_lydia_book_club",
+    title: "Threshold Before Scrutiny",
+    selectorCode: "44040100",
+    selectorMatch: "exact",
+    outlineCode: "44040100",
+    sourceOutlineCode: "44040100",
+    coverageGroup: "state_action",
+    seedBucket: "needs_human_review",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A private social group with no government funding or public-function role limits membership to one racial or ethnic group. Does an Equal Protection claim reach scrutiny?",
+    stem:
+      "A private Christian book club meets monthly in members' homes to discuss literature and community service projects. The club is not a church or religious institution, receives no government funding, and performs no public function. The club admits only members of one racial or ethnic group. Lydia, an applicant from a different racial or ethnic background, is rejected and sues the club directly under the Equal Protection Clause. The club's strongest constitutional defense is that:",
+    choices: [
+      {
+        letter: "A",
+        text: "Strict scrutiny applies because the book club uses race or ethnicity in its membership criteria.",
+        verdict: "trap",
+        mold: "strict-scrutiny skipped-threshold trap",
+        explanation:
+          "A jumps to the scrutiny tier too soon. Strict scrutiny matters only after state action is established.",
+      },
+      {
+        letter: "B",
+        text: "The book club loses because the Constitution bans all private discrimination.",
+        verdict: "trap",
+        mold: "constitutional overclaim",
+        explanation:
+          "B overstates the Constitution. The Equal Protection Clause requires state action and does not itself ban all private discrimination.",
+      },
+      {
+        letter: "C",
+        text: "The Equal Protection Clause does not reach purely private discrimination without state action.",
+        verdict: "correct",
+        mold: "state-action threshold",
+        explanation:
+          "C is correct. The challenged membership rule belongs to a private group, and no fact makes that rule fairly attributable to the government.",
+      },
+      {
+        letter: "D",
+        text: "Rational basis applies because private clubs receive deference in membership decisions.",
+        verdict: "trap",
+        mold: "wrong level of analysis",
+        explanation:
+          "D uses a scrutiny-tier frame when the threshold problem is state action. The claim fails before any tier of review applies.",
+      },
+    ],
+    answerFlow: [
+      "Start with the defendant: a private book club.",
+      "Name the claim: Equal Protection.",
+      "Check state action before choosing a scrutiny tier.",
+      "No fact shows government funding, public-function responsibility, coercion, joint participation, or entwinement.",
+      "The challenged membership rule is purely private conduct.",
+      "Cut strict scrutiny because scrutiny comes only after state action.",
+      "Cut the broad private-discrimination and rational-basis-deference traps.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Equal Protection starts with state action; private conduct needs an attribution bridge before the Fourteenth Amendment applies.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students to see race or ethnicity and jump straight to scrutiny.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive facts are private membership, no government funding, no public function, and no state role in the club's rule.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: skipping the threshold and treating every race fact as a strict-scrutiny question.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONSTITUTIONAL-LAW-LYDIA-BOOK-CLUB-01",
+        body: "The Equal Protection Clause is a constraint on government action; the threshold problem is state action, and the scrutiny tier is reached only after state action is established.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONSTITUTIONAL-LAW-LYDIA-BOOK-CLUB-01",
+        body: "When a constitutional claim is filed against a private actor, run the state-action threshold first; do not skip to the scrutiny tier.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-PRIVATE-DISCRIMINATION-EP-01",
+        body: "An Equal Protection answer can mention private discrimination only after asking whether the private conduct is fairly attributable to the government.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the constitutional clause.",
+      "Name the defendant.",
+      "Separate private conduct from government action.",
+      "Check for funding, public function, coercion, joint participation, or entwinement.",
+      "Refuse to choose a scrutiny tier before the threshold is satisfied.",
+      "Reject the Constitution-bans-all-private-discrimination overclaim.",
+      "Reject rational basis as the wrong level of analysis.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Threshold Before Scrutiny",
+        prompt:
+          "A private social group with no government funding and no public-function role limits membership to one racial group. A rejected applicant sues under Equal Protection. Does the constitutional claim reach the scrutiny tier?",
+        answer:
+          "No. The Equal Protection Clause requires state action, so the claim fails at the threshold before scrutiny.",
+      },
+      {
+        title: "Strict Scrutiny Trap",
+        prompt:
+          "A choice says strict scrutiny applies because a private club uses race. What step is missing?",
+        answer:
+          "State action. Strict scrutiny applies only after the challenged conduct is fairly attributable to the government.",
+      },
+      {
+        title: "Private Discrimination Overclaim",
+        prompt:
+          "A choice says the Constitution bans all private discrimination. Why is that overbroad for Equal Protection?",
+        answer:
+          "Equal Protection requires state action. The constitutional claim itself does not reach purely private conduct without an attribution bridge.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

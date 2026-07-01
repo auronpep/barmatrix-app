@@ -3000,6 +3000,135 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "20981",
+    transformId: "20981_lydia-station-fountain",
+    title: "Public Display Needs Context",
+    selectorCode: "44040501",
+    selectorMatch: "exact",
+    outlineCode: "44040501",
+    sourceOutlineCode: "44040501",
+    coverageGroup: "free_exercise",
+    seedBucket: "needs_human_review",
+    key: "A",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "When a longstanding religious symbol is maintained on public property with civic history and no required religious participation, should the Establishment Clause answer be automatic or context-sensitive?",
+    stem:
+      "For 92 years, an ichthys-shaped stone fountain has stood in the city's Lydia Station plaza. The fountain was dedicated to volunteers who rescued residents during a historic flood and sits among murals and plaques honoring firefighters, nurses, and other local servants. The city cleans the fountain and maintains the plaza, but it does not sponsor prayers there or ask anyone to take part in religious activity. Which statement is most accurate?",
+    choices: [
+      {
+        letter: "A",
+        text: "A court should evaluate the fountain's history, setting, and coercive effect rather than use an automatic rule.",
+        verdict: "correct",
+        mold: "context-sensitive Establishment inquiry",
+        explanation:
+          "A is correct. Longstanding religiously expressive public displays are judged by history, setting, and coercion, not by an automatic symbol rule.",
+      },
+      {
+        letter: "B",
+        text: "The fountain is automatically constitutional because it has stood for many decades.",
+        verdict: "trap",
+        mold: "age-is-dispositive half-truth",
+        explanation:
+          "B overuses a real fact. Age matters to the context inquiry, but it does not automatically decide the Establishment Clause issue.",
+      },
+      {
+        letter: "C",
+        text: "The fountain is constitutional only if the city adds comparable symbols from every major faith.",
+        verdict: "trap",
+        mold: "fabricated all-faiths requirement",
+        explanation:
+          "C invents a condition. The Constitution does not require a city to add symbols from every major faith before a longstanding civic display can remain.",
+      },
+      {
+        letter: "D",
+        text: "The fountain is automatically unconstitutional because it uses a Christian symbol on city property.",
+        verdict: "trap",
+        mold: "automatic invalidity overclaim",
+        explanation:
+          "D is the dominant trap. A Christian symbol on public property triggers Establishment Clause analysis, but it does not automatically establish a violation.",
+      },
+    ],
+    answerFlow: [
+      "Name the issue: Establishment Clause public religious display.",
+      "Notice the city maintenance and public plaza facts.",
+      "Notice the religious symbol, but do not stop there.",
+      "Use the age, civic dedication, surrounding displays, and no-participation facts.",
+      "Cut automatic invalidity.",
+      "Cut automatic validity from age alone.",
+      "Cut the invented all-faiths requirement.",
+      "Choose A because it preserves the context inquiry.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "The issue is automatic symbol invalidity versus context-sensitive Establishment Clause review.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with three shortcuts: automatic invalidity, automatic validity, and an invented equal-symbols condition.",
+      },
+      {
+        label: "Blue signal",
+        body: "The stem gives history, civic setting, and no required religious activity because those facts matter.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating a religious symbol on public property as the answer instead of the issue trigger.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-RELIGIOUS-SYMBOLS-01",
+        body: "A religious symbol on public property is not automatically unconstitutional, and age alone is not automatically dispositive. For longstanding public monuments, symbols, and practices, the Establishment Clause analysis is history-focused and context-sensitive.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-AUTOMATIC-RULE-01",
+        body: "When three choices try to end an Establishment Clause display case with automatically or only if, cut those extremes first and keep the answer that weighs the stem's context facts.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-ESTABLISHMENT-COERCION-CONTEXT-01",
+        body: "No required religious participation is a context fact; it does not create a one-word test, but it helps reject automatic invalidity.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the clause.",
+      "Find the government actor.",
+      "Find the religious symbol.",
+      "Find the history and civic setting.",
+      "Find the no-coercion fact.",
+      "Cut automatic answers.",
+      "Reject the invented all-faiths condition.",
+      "Pick A.",
+    ],
+    drillSeeds: [
+      {
+        title: "Public Display Rule",
+        prompt:
+          "A longstanding religious symbol sits on public property with civic history and no required religious activity. Is it automatically unconstitutional?",
+        answer:
+          "No. The court evaluates history, setting, and coercive effect rather than using an automatic symbol rule.",
+      },
+      {
+        title: "Age Trap",
+        prompt:
+          "Why is 'it is old, so it is automatically valid' wrong in an Establishment Clause display question?",
+        answer:
+          "Age is relevant context, but it is not a complete constitutional test by itself.",
+      },
+      {
+        title: "All-Faiths Trap",
+        prompt:
+          "Does the city have to add comparable symbols from every major faith to keep a longstanding civic display?",
+        answer:
+          "No. That is an invented all-symbols requirement, not the Establishment Clause rule.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

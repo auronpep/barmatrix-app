@@ -2558,6 +2558,128 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "17318",
+    transformId: "source_only_17318_refreshing-recollection-calendar",
+    title: "Refreshing Recollection: On-Stand Access",
+    outlineCode: "31010407",
+    sourceOutlineCode: "31010407",
+    coverageGroup: "adjacent_pilot_code",
+    seedBucket: "needs_human_review",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "When a witness uses a writing while testifying to refresh memory, may the adverse party inspect it even though the writing was not offered into evidence?",
+    stem:
+      "In a federal civil trial, Sarah testifies that she cannot remember the date she inspected a warehouse. Her lawyer hands her a handwritten calendar. Sarah looks at the calendar, returns it, and testifies, \"Now I remember: the inspection was May 3.\" Opposing counsel Moses immediately asks to inspect the calendar and cross-examine Sarah about the entry. Sarah's lawyer objects that the calendar was not offered into evidence. How should the court rule?",
+    choices: [
+      {
+        letter: "A",
+        text: "Sustain the objection because a writing used only to refresh memory is unavailable to the adverse party unless the proponent offers it into evidence.",
+        verdict: "trap",
+        mold: "flat_misstatement / evidence-offer trap",
+        explanation:
+          "A makes admissibility by the proponent the access trigger. Rule 612 gives the adverse party inspection rights when the writing is used while testifying.",
+      },
+      {
+        letter: "B",
+        text: "Overrule the objection because a writing used to refresh a witness while testifying must be produced for inspection and related cross-examination by the adverse party.",
+        verdict: "correct",
+        mold: "residue / Rule 612 on-stand access",
+        explanation:
+          "Sarah used the calendar while testifying. Under Rule 612, Moses may inspect it and cross-examine Sarah about related portions even though Sarah's lawyer did not offer it into evidence.",
+      },
+      {
+        letter: "C",
+        text: "Admit the entire calendar as substantive evidence because Sarah used it to refresh her recollection.",
+        verdict: "trap",
+        mold: "overcorrection / substantive-evidence trap",
+        explanation:
+          "C swings too far. Refreshing memory gives inspection and cross-examination rights; it does not automatically make the whole writing substantive evidence.",
+      },
+      {
+        letter: "D",
+        text: "Sustain the objection unless Moses first proves that the calendar is an original business record.",
+        verdict: "trap",
+        mold: "wrong_doctrine / business-record import",
+        explanation:
+          "D imports business-record and original-document ideas. The issue is Rule 612 access after a writing refreshes testimony.",
+      },
+    ],
+    answerFlow: [
+      "Spot when Sarah used the calendar: while testifying.",
+      "Apply Rule 612's mandatory on-stand production rule.",
+      "Reject A because the proponent does not need to offer the writing.",
+      "Reject C because inspection rights do not equal automatic substantive admission.",
+      "Reject D because business-record proof is not the access trigger.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Use while testifying triggers mandatory adverse-party access under Rule 612.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps confuse inspection with admissibility, substantive evidence, and business-record foundation.",
+      },
+      {
+        label: "Blue signal",
+        body: "The word immediately after Sarah refreshed on the stand points to on-stand access, not later discovery discretion.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: thinking a refresh writing stays hidden unless the proponent offers it.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-612-ON-STAND-PRODUCTION-01",
+        body: "A writing used to refresh memory while the witness is testifying must be produced for adverse-party inspection and related cross-examination.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-REFRESH-ACCESS-NOT-SUBSTANTIVE-ADMISSION",
+        body: "Rule 612 access does not automatically admit the entire writing as substantive evidence.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-REFRESH-NOT-OFFERED-OBJECTION",
+        body: "The objection that the writing was not offered into evidence misses the point; on-stand refresh triggers inspection rights.",
+      },
+    ],
+    leadMeSteps: [
+      "Ask whether the witness used the writing before testifying or while testifying.",
+      "Mark this as while-testifying use.",
+      "Apply mandatory production for inspection.",
+      "Keep inspection separate from substantive admission.",
+      "Ignore business-record and original-document distractions.",
+      "Pick the on-stand access answer.",
+    ],
+    drillSeeds: [
+      {
+        title: "Not Offered",
+        prompt:
+          "A witness uses a note on the stand to refresh memory, but the proponent never offers the note. Can the adverse party inspect it?",
+        answer: "Yes. Use while testifying triggers Rule 612 inspection rights.",
+      },
+      {
+        title: "Access vs. Admission",
+        prompt:
+          "A witness refreshes memory from a calendar. Does Rule 612 automatically admit the whole calendar as substantive evidence?",
+        answer:
+          "No. It gives the adverse party inspection and related cross-examination rights, not automatic substantive admission.",
+      },
+      {
+        title: "Wrong Foundation",
+        prompt:
+          "A choice requires the calendar to qualify as a business record before inspection. What is wrong with that?",
+        answer:
+          "Business-record foundation is not the Rule 612 trigger; the trigger is use to refresh while testifying.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

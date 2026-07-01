@@ -386,13 +386,13 @@
   },
   {
     "question_id": "14757",
-    "outline_code": "33040301",
+    "outline_code": "33040103",
     "source_outline_code": "33040301",
     "coverage_group": "hearsay_exception",
     "seed_bucket": "hard_or_high_pick_rate_trap",
     "correct_percent": "17",
-    "key": "D",
-    "has_finished_transform": false,
+    "key": "B",
+    "has_finished_transform": true,
     "review_status": "seed_candidate_needs_human_review"
   },
   {
@@ -424,7 +424,7 @@
     "coverage_group": "hearsay_exception",
     "seed_bucket": "clean_teaching",
     "correct_percent": "69",
-    "key": "D",
+    "key": "C",
     "has_finished_transform": true,
     "review_status": "seed_candidate_needs_human_review"
   },
@@ -501,7 +501,7 @@
     "coverage_group": "fre_403_insurance_policy_purpose",
     "seed_bucket": "clean_teaching",
     "correct_percent": "94",
-    "key": null,
+    "key": "D",
     "has_finished_transform": true,
     "review_status": "seed_candidate_needs_human_review"
   },

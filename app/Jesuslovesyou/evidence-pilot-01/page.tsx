@@ -7,8 +7,27 @@ import {
   evidencePilotPageModules,
   pilotSubsets,
 } from "@/lib/jesuslovesyou/pilot-data";
+import { evidenceQuestionDetails } from "@/lib/jesuslovesyou/evidence-question-details";
 
 const evidencePilot = pilotSubsets[0];
+const evidenceKeys = evidenceQuestionDetails.flatMap((detail) =>
+  detail.keys.map((keyItem) => ({
+    ...keyItem,
+    questionId: detail.questionId,
+  })),
+);
+const evidenceLeadMeStepCount = evidenceQuestionDetails.reduce(
+  (sum, detail) => sum + detail.leadMeSteps.length,
+  0,
+);
+const evidenceDrillSeedCount = evidenceQuestionDetails.reduce(
+  (sum, detail) => sum + detail.drillSeeds.length,
+  0,
+);
+const evidenceAnswerFlowStepCount = evidenceQuestionDetails.reduce(
+  (sum, detail) => sum + detail.answerFlow.length,
+  0,
+);
 
 export const metadata: Metadata = {
   title: "Evidence-Pilot-01 - Jesuslovesyou BarMatrix",
@@ -59,6 +78,70 @@ export default function EvidencePilotPage() {
             >
               Open prefixed checkout <span className="arrow">-&gt;</span>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container">
+          <div className="section-rule">
+            <span className="label">&#x258C; Keys + LeadMe Inventory</span>
+          </div>
+          <div
+            className="info-panel"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
+              gap: 16,
+              marginBottom: 24,
+            }}
+          >
+            {[
+              ["Case studies", evidenceQuestionDetails.length],
+              ["Reusable keys", evidenceKeys.length],
+              ["LeadMe steps", evidenceLeadMeStepCount],
+              ["Drill seeds", evidenceDrillSeedCount],
+              ["Answer-flow steps", evidenceAnswerFlowStepCount],
+            ].map(([label, value]) => (
+              <div key={label}>
+                <p className="mono" style={{ margin: "0 0 8px", fontSize: 12 }}>
+                  {label}
+                </p>
+                <p className="display" style={{ margin: 0, fontSize: 40 }}>
+                  {value}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))",
+              gap: 16,
+            }}
+          >
+            {evidenceKeys.slice(0, 6).map((keyItem) => (
+              <article
+                className="info-panel"
+                key={`${keyItem.questionId}-${keyItem.id}`}
+              >
+                <p className="mono" style={{ margin: "0 0 10px", fontSize: 12 }}>
+                  {keyItem.kind} / Q{keyItem.questionId}
+                </p>
+                <h2 className="serif" style={{ fontSize: 24, margin: "0 0 10px" }}>
+                  {keyItem.id}
+                </h2>
+                <p style={{ margin: "0 0 14px", lineHeight: 1.55 }}>
+                  {keyItem.body}
+                </p>
+                <Link
+                  href={`${JESUSLOVESYOU_ROUTE_PREFIX}/evidence-pilot-01/seeds/${keyItem.questionId}`}
+                  className="btn ghost"
+                >
+                  Open case study <span className="arrow">-&gt;</span>
+                </Link>
+              </article>
+            ))}
           </div>
         </div>
       </section>

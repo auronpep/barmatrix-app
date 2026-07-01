@@ -1580,6 +1580,135 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14225",
+    transformId: "14225_christian-tutor-license",
+    title: "Fair Hearing Means Testing The Witnesses",
+    selectorCode: "44040203",
+    selectorMatch: "exact",
+    outlineCode: "44040203",
+    sourceOutlineCode: "44040203",
+    coverageGroup: "due_process_equal_protection_routing",
+    seedBucket: "needs_human_review",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A state agency revokes a professional license based only on statements from unnamed absent informants. Does the licensee's inability to question them violate procedural due process?",
+    stem:
+      "Timothy is a licensed private bar-prep tutor in a state that requires a license to offer paid bar-exam preparation services. A state statute provides that the Tutor Licensing Commission may revoke a tutor's license if it finds that the tutor used a place of business for an illegal purpose. Federal narcotics agents arrested Timothy at his tutoring office, alleging that he sold methamphetamine from the office in violation of federal law. The local United States Attorney declined to prosecute, and the charges were dropped. Nevertheless, the Commission initiated a proceeding to revoke Timothy's license on the ground that he used his tutoring office for illegal drug sales. At the hearing, the only evidence against Timothy consisted of written, signed statements from unnamed informants, none of whom were present or available for questioning. The statements asserted that each informant purchased methamphetamine from Timothy at the tutoring office. Based solely on those statements, the Commission found that Timothy used his place of business for an illegal purpose and ordered his license revoked. In a suit to set aside the revocation, Timothy's best constitutional argument is:",
+    choices: [
+      {
+        letter: "A",
+        text: "The administrative license revocation proceeding was invalid because it denied full faith and credit to the dismissal of the criminal charges by the United States Attorney.",
+        verdict: "trap",
+        mold: "full faith and credit misfire",
+        explanation:
+          "A reaches for the wrong constitutional tool. A prosecutor's decision not to proceed is not a state judgment that the licensing commission must honor under full faith and credit.",
+      },
+      {
+        letter: "B",
+        text: "Article II requires a penalty of this kind to be imposed by a court rather than by an administrative agency.",
+        verdict: "trap",
+        mold: "agency power overclaim",
+        explanation:
+          "B overstates the separation-of-powers point. Agencies may conduct licensing proceedings; the constitutional issue is whether the hearing gave enough process.",
+      },
+      {
+        letter: "C",
+        text: "Timothy's inability to cross-examine his accusers denied him a fair hearing and caused the deprivation of his tutor license without due process.",
+        verdict: "correct",
+        mold: "procedural due process hearing defect",
+        explanation:
+          "C is correct. A professional license is a protected interest, and revocation based solely on untested statements from absent informants creates a serious due process problem.",
+      },
+      {
+        letter: "D",
+        text: "Federal laws penalizing the illegal sale of methamphetamine preempt state action relating to drug trafficking of the kind involved.",
+        verdict: "trap",
+        mold: "preemption overclaim",
+        explanation:
+          "D sounds sophisticated but skips the actual injury. Federal drug laws do not automatically displace a state's power to regulate licenses; Timothy's strongest claim is the defective hearing.",
+      },
+    ],
+    answerFlow: [
+      "Start with what the state took: Timothy's professional tutor license.",
+      "Treat the license as a protected property interest.",
+      "Ask what process the Commission gave before revocation.",
+      "The only evidence was statements from unnamed absent informants.",
+      "Timothy had no meaningful way to test credibility through questioning.",
+      "Cut full faith and credit because a prosecutor's declination is not the kind of judgment the Commission must honor.",
+      "Cut Article II and preemption because they do not address the hearing defect.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Procedural due process protects a professional license with notice and a meaningful opportunity to be heard before revocation.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with sovereign and structural doctrines instead of the fairness of the hearing.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive fact is that the only evidence came from unnamed absent informants Timothy could not question.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: picking a plausible constitutional doctrine instead of the argument tied to the specific injury.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-DPHEAR-01",
+        body: "A state-issued professional license is a property interest protected by due process. When the only evidence against the licensee is untested statements from absent informants, the hearing is not meaningful unless the licensee has a fair way to test that evidence.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-BESTARG-01",
+        body: "When the call asks for the best constitutional argument, choose the argument that directly attacks the injury in the facts, not the doctrine that merely sounds constitutional.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-CROSS-EXAM-ONLY-EVIDENCE-01",
+        body: "When credibility is the whole case, inability to question adverse witnesses can make an administrative hearing constitutionally inadequate.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the state action.",
+      "Name the interest taken.",
+      "Classify the license as property.",
+      "Inspect the evidence used at the hearing.",
+      "Ask whether Timothy could test that evidence.",
+      "Reject full faith and credit, Article II, and preemption frames.",
+      "Tie the best argument to the hearing defect.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "License Revocation Process",
+        prompt:
+          "A state agency revokes a professional license based solely on untested statements from absent informants. What constitutional right is violated?",
+        answer:
+          "Procedural due process under the Fourteenth Amendment: the licensee needs a meaningful hearing, including a fair way to confront and question adverse witnesses when credibility drives the case.",
+      },
+      {
+        title: "Preemption Overclaim",
+        prompt:
+          "A student argues that federal drug laws automatically preempt a state's authority to revoke a professional license for drug sales from the licensed business. What is the error?",
+        answer:
+          "Federal regulation on the same subject is not enough. Preemption requires express preemption, field occupation, or an actual conflict with federal law.",
+      },
+      {
+        title: "Best Argument Focus",
+        prompt:
+          "When a question asks for the best constitutional argument, what should you compare?",
+        answer:
+          "Compare which argument most directly addresses the specific injury. Here, the injury is the defective hearing before license revocation, so procedural due process beats structural distractions.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

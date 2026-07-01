@@ -2610,6 +2610,134 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14236",
+    transformId: "14236_sacred-grove",
+    title: "Free Exercise Needs Targeting",
+    selectorCode: "44040501",
+    selectorMatch: "exact",
+    outlineCode: "44040501",
+    sourceOutlineCode: "44040501",
+    coverageGroup: "free_exercise",
+    seedBucket: "needs_human_review",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A federal land-use permit will eliminate a sincere worship site on public land. What must the community show to win a First Amendment Free Exercise claim?",
+    stem:
+      "For generations, a small Christian community has gathered at a clearing on a hillside within a national forest to hold outdoor worship services and baptisms at a natural spring. The community's pastor, Timothy, has led these gatherings for more than a decade. Last year, the United States Forest Service granted a permit to a private company to operate a commercial logging operation that will clear the trees around the spring and destroy the clearing where the community worships. Timothy and the community filed suit in federal district court against the Forest Service, claiming solely that the permit violates their First Amendment right to the free exercise of religion. The Forest Service concedes that the community's religious beliefs are sincere and that the logging will eliminate the worship site. What must the community show to prevail on its First Amendment claim?",
+    choices: [
+      {
+        letter: "A",
+        text: "The burden on the community's religious exercise from the logging operation outweighs the government's interest in permitting commercial timber harvesting.",
+        verdict: "trap",
+        mold: "pre-Smith balancing trap",
+        explanation:
+          "A uses the old balancing instinct. For a neutral, generally applicable land-use action, the First Amendment Free Exercise claim does not turn on burden-versus-interest balancing.",
+      },
+      {
+        letter: "B",
+        text: "The logging operation will have a discriminatory impact on the community's religious practices in relation to the practices of other religious groups.",
+        verdict: "trap",
+        mold: "impact without targeting",
+        explanation:
+          "B focuses on effect. Discriminatory impact is not enough; the First Amendment Free Exercise claim needs proof that the government aimed at religion.",
+      },
+      {
+        letter: "C",
+        text: "The permit issued by the Forest Service is aimed at suppressing the community's religious practices.",
+        verdict: "correct",
+        mold: "intent-to-target requirement",
+        explanation:
+          "C is correct. Sincerity and severe burden are not enough by themselves; the community must show the permit was motivated by intent to target or suppress religious practice.",
+      },
+      {
+        letter: "D",
+        text: "The government can serve its legitimate interest in timber harvesting by selecting a logging site that is less burdensome on the community's religious practices.",
+        verdict: "trap",
+        mold: "least-burdensome alternative premature",
+        explanation:
+          "D imports strict-scrutiny tailoring before strict scrutiny is triggered. Least-burdensome alternatives matter only after the challenger shows targeting or another strict-scrutiny trigger.",
+      },
+    ],
+    answerFlow: [
+      "Read the claim: First Amendment Free Exercise only.",
+      "Confirm the government concedes sincerity and severe adverse effect.",
+      "Do not stop there; severe burden alone is not enough under the First Amendment rule for neutral, generally applicable action.",
+      "Cut A because the case is not solved by burden-versus-interest balancing.",
+      "Cut B because impact is not intent.",
+      "Cut D because least-burdensome alternatives belong to strict scrutiny after the trigger.",
+      "Ask what would trigger strict scrutiny: government action aimed at religion.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "The issue is neutral/general land-use burden versus intent to target religion.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with burden balancing, impact alone, and least-burdensome alternatives.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive missing fact is anti-religious targeting; sincerity and serious burden are conceded but not sufficient.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: applying Sherbert-style balancing or strict-scrutiny tailoring before proving targeting.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-FREEEX-01",
+        body: "Under Employment Division v. Smith, a neutral law of general applicability does not violate the First Amendment Free Exercise Clause merely because it incidentally burdens religion. The challenger must prove government action was motivated by intent to target or suppress religion.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-FREEEX-IMPACT-INTENT-01",
+        body: "In Free Exercise questions, do not equate severe religious impact with unconstitutional targeting; impact and intent are separate steps.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-FREEEX-STRICT-SCRUTINY-TRIGGER-01",
+        body: "Least-burdensome alternatives and narrow tailoring matter only after strict scrutiny is triggered by targeting or another recognized trigger.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the claim.",
+      "Confirm sincerity.",
+      "Confirm burden.",
+      "Reject balancing.",
+      "Reject impact alone.",
+      "Reject premature least-burden analysis.",
+      "Look for targeting.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Smith Framework",
+        prompt:
+          "A neutral government permit incidentally destroys a sincere worship site on public land. What must the religious group show for a First Amendment Free Exercise win?",
+        answer:
+          "The group must show the government action was aimed at suppressing or targeting religious practice.",
+      },
+      {
+        title: "Impact Versus Intent",
+        prompt:
+          "Why is severe impact on one religious community not enough by itself?",
+        answer:
+          "The First Amendment Free Exercise claim requires targeting or suppression of religion, not merely adverse impact from neutral action.",
+      },
+      {
+        title: "Least-Burden Trap",
+        prompt: "Why is 'the government could use a less burdensome site' premature?",
+        answer:
+          "Least-burdensome alternatives are part of strict scrutiny; strict scrutiny is not triggered unless the action targets religion or another trigger applies.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

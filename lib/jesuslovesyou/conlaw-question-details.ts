@@ -559,6 +559,132 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "22611",
+    transformId: "22611_state-id-church-roster",
+    title: "Speculative Chill Is Not Ripe",
+    selectorCode: "43020201",
+    selectorMatch: "exact",
+    outlineCode: "43020201",
+    sourceOutlineCode: "43020201",
+    coverageGroup: "standing_ripeness_mootness_gate",
+    seedBucket: "needs_human_review",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "Can a federal court hear a First Amendment chilling-effect claim when the plaintiff alleges only the existence of a government roster and no objective harm or specific threat?",
+    stem:
+      "A state community services department keeps a Community Participation Roster that lists residents who attend public volunteer trainings, join neighborhood-safety briefings, or serve in outreach programs. The roster is kept by state agency staff and may be reviewed by program directors. David, a resident who appears on the roster, files suit in federal court against the responsible state officials, seeking an injunction to stop the practice. David alleges that because nearly every active volunteer appears on the roster, the file is likely to chill his First Amendment rights of speech and association. David has never been denied any benefit, disciplined, or threatened with adverse action because of the roster. What is the clearest reason for dismissing David's suit?",
+    choices: [
+      {
+        letter: "A",
+        text: "The creation of a community participation roster involves the resolution of a political question.",
+        verdict: "trap",
+        mold: "political-question overclaim / wrong justiciability doctrine",
+        explanation:
+          "A uses a real doctrine in the wrong place. A First Amendment challenge to a state roster gives courts manageable legal standards.",
+      },
+      {
+        letter: "B",
+        text: "The action is unripe.",
+        verdict: "correct",
+        mold: "ripeness answer / speculative chill without objective harm",
+        explanation:
+          "B is correct. David alleges only a possible chill from the roster's existence, with no objective harm and no specific threat of future harm.",
+      },
+      {
+        letter: "C",
+        text: "Under the Eleventh Amendment, state officials are immune to lawsuits of this kind.",
+        verdict: "trap",
+        mold: "sovereign-immunity overclaim / injunction exception ignored",
+        explanation:
+          "C is the dominant trap. The word state tempts immunity, but an injunction against officials for ongoing unconstitutional conduct is not barred merely because officials are named.",
+      },
+      {
+        letter: "D",
+        text: "The question presented is moot.",
+        verdict: "trap",
+        mold: "timing-doctrine confusion / already-over instead of too-early",
+        explanation:
+          "D picks the wrong timing doctrine. Mootness means the controversy has ended; this dispute is live but too speculative.",
+      },
+    ],
+    answerFlow: [
+      "Start with the call: clearest reason for dismissal.",
+      "David alleges a chilling effect from a government roster.",
+      "The stem gives no denied benefit, discipline, or threat.",
+      "That makes the alleged injury speculative rather than concrete.",
+      "Label the timing problem as ripeness.",
+      "Cut political-question, immunity, and mootness bait.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Ripeness asks whether the court should decide the dispute now; a subjective chill without objective harm is too early.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set pits one timing answer against three familiar justiciability labels.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive negative fact is that David has never been denied a benefit, disciplined, or threatened.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating every constitutional concern as a court-ready injury.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-RIPENESS-SPECULATIVE-CHILL-01",
+        body: "A subjective chilling effect from a government data practice is not enough by itself; the plaintiff needs objective harm or a specific threat of future harm before the case is court-ready.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-RIPENESS-01",
+        body: "When a plaintiff challenges the mere existence of a data-collection practice, ask whether anything has actually happened to the plaintiff yet.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-RIPENESS-MOOTNESS-01",
+        body: "Unripe means too early; moot means already over. Do not use mootness when the practice still exists.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the requested dismissal ground.",
+      "Identify the asserted injury as a chilling effect.",
+      "Find the missing harm or threat.",
+      "Sort the timing doctrine: too early, not already over.",
+      "Reject immunity and political-question labels.",
+      "Pick B.",
+    ],
+    drillSeeds: [
+      {
+        title: "Subjective Chill",
+        prompt:
+          "A plaintiff says a state file chills his First Amendment activity, but he has not been punished or threatened. What justiciability problem appears first?",
+        answer:
+          "Ripeness. A subjective chill without objective harm or a specific threat is too speculative.",
+      },
+      {
+        title: "Too Early Or Already Over",
+        prompt:
+          "The challenged roster still exists, but no one has acted against the plaintiff. Is the timing problem mootness or ripeness?",
+        answer:
+          "Ripeness. Mootness is for disputes that have already ended.",
+      },
+      {
+        title: "Immunity Overclaim",
+        prompt:
+          "Why does an Eleventh Amendment immunity answer overreach when the plaintiff seeks an injunction against state officials?",
+        answer:
+          "Suits for prospective injunctive relief against officials are not barred merely because state officials are named.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

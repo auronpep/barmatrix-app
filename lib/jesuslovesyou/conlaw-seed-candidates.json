@@ -60,7 +60,7 @@
     "coverage_group": "standing_ripeness_mootness_gate",
     "seed_bucket": "needs_human_review",
     "correct_percent": null,
-    "key": "C",
+    "key": "B",
     "has_finished_transform": true,
     "review_status": "seed_candidate_needs_human_review"
   },

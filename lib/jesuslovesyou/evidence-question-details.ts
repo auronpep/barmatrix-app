@@ -5702,6 +5702,131 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14863",
+    transformId: "14863_grace_wings_ministry_plane",
+    title: "Insurance Purpose Opens Ownership Proof",
+    outlineCode: "35030304",
+    sourceOutlineCode: "35030304",
+    coverageGroup: "fre_403_insurance_policy_purpose",
+    seedBucket: "clean_teaching",
+    key: "D",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "Can liability insurance evidence be admitted to prove ownership or responsibility for property when the defendant denies both?",
+    stem:
+      "At a federal trial, Hannah is suing Barnabas, director of Grace Wings, a Christian nonprofit that uses small aircraft for short-term mission trips and medical supply deliveries to remote villages. Hannah alleges that Barnabas owned or was responsible for a small plane that crashed, injuring her during a Scripture airlift flight, because he negligently failed to have it properly maintained. Barnabas has asserted in defense that he never owned the plane or had any responsibility to maintain it. At trial, Hannah calls a witness to testify that the witness had sold to Barnabas a liability insurance policy on the plane. The testimony of the witness is",
+    choices: [
+      {
+        letter: "A",
+        text: "inadmissible, because the policy itself is required under the original document rule.",
+        verdict: "trap",
+        mold: "wrong document rule / existence versus contents",
+        explanation:
+          "A overuses the original document rule. The witness is testifying to the fact that he sold the policy, not to the policy's terms.",
+      },
+      {
+        letter: "B",
+        text: "admissible to show that Barnabas had little motivation to invest money in maintenance of the airplane.",
+        verdict: "trap",
+        mold: "wrong purpose / negligence-incentive inference",
+        explanation:
+          "B uses insurance for the forbidden negligence-style inference. The useful purpose here is ownership or responsibility, not maintenance incentive.",
+      },
+      {
+        letter: "C",
+        text: "inadmissible, because of the rule against proof of insurance where insurance is not itself at issue.",
+        verdict: "trap",
+        mold: "overbroad ban / FRE 411 shortcut",
+        explanation:
+          "C is the dominant trap. FRE 411 is not a blanket ban; it allows insurance evidence for other purposes, including ownership or control.",
+      },
+      {
+        letter: "D",
+        text: "admissible as some evidence of Barnabas's ownership of or responsibility for the airplane.",
+        verdict: "correct",
+        mold: "residue / FRE 411 permitted purpose",
+        explanation:
+          "D matches the disputed issue. Barnabas denied ownership and responsibility, so the policy sale is relevant circumstantial evidence on that permitted purpose.",
+      },
+    ],
+    answerFlow: [
+      "Start with the purpose for offering the insurance testimony.",
+      "Do not use insurance to prove negligence or wrongful conduct.",
+      "Use Barnabas's denial of ownership and responsibility as the frame.",
+      "Cut original document because the witness proves the sale, not policy terms.",
+      "Cut maintenance motivation because it is the wrong inference.",
+      "Cut the blanket insurance ban because FRE 411 has permitted purposes.",
+      "Choose D.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "FRE 411 bars insurance evidence for negligence, but permits it for ownership, agency, control, bias, or another proper purpose.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tests purpose of offer: forbidden negligence inference versus permitted ownership proof.",
+      },
+      {
+        label: "Blue signal",
+        body: "Barnabas denies owning or being responsible for the plane, so ownership and control are live issues.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating policy exclusions as total bans instead of purpose-gated rules.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-FRE411-PURPOSE-01",
+        body: "FRE 411 bars liability-insurance evidence to prove negligence or wrongful conduct, but permits it for ownership, agency, control, bias, or another proper purpose.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-PURPOSE-OF-OFFER-01",
+        body: "When a policy-exclusion rule appears, ask exactly what the evidence is offered to prove before applying the exclusion.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-BEST-EVIDENCE-EXISTENCE",
+        body: "The original document rule applies to proving contents, not to live testimony that a transaction happened.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the evidence: a witness sold Barnabas insurance on the plane.",
+      "Name the disputed fact: Barnabas denies ownership and responsibility.",
+      "Ask whether the evidence is offered to prove negligence.",
+      "Use FRE 411's ownership/control permitted purpose.",
+      "Cut the original-document answer.",
+      "Cut the blanket insurance-ban answer.",
+      "Pick D.",
+    ],
+    drillSeeds: [
+      {
+        title: "Purpose Gate",
+        prompt:
+          "A party offers liability insurance to prove control of a machine after control is denied. Does FRE 411 automatically exclude it?",
+        answer:
+          "No. FRE 411 permits insurance evidence for ownership or control even though it bars use for negligence.",
+      },
+      {
+        title: "Forbidden Inference",
+        prompt:
+          "What is the forbidden use of liability insurance evidence under FRE 411?",
+        answer:
+          "Using insurance to prove the person acted negligently or otherwise wrongfully.",
+      },
+      {
+        title: "Contents Versus Existence",
+        prompt:
+          "A witness says he sold a policy to the defendant but does not describe the policy terms. Does the original document rule require the policy?",
+        answer:
+          "No. The testimony proves the transaction's existence, not the contents of the writing.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

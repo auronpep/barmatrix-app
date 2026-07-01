@@ -3055,6 +3055,131 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14840",
+    transformId: "14840_youth-ministry-leadership-rivalry",
+    title: "Bias: Impeaching the Hearsay Declarant",
+    outlineCode: "31010503",
+    sourceOutlineCode: "31010503",
+    coverageGroup: "witness_truthfulness_bias",
+    seedBucket: "clean_teaching",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "When former testimony is admitted from an unavailable declarant, what evidence of the declarant's motive to lie is most likely admissible?",
+    stem:
+      "At the trial of Barnabas for the murder of a rival Christian youth ministry leader, the prosecution introduced, as former testimony, a statement by Timothy, a former youth leader who testified against Barnabas at a preliminary hearing and has now invoked his privilege against self-incrimination. If Barnabas now seeks to impeach the credibility of Timothy, which evidence is the court most likely to admit?",
+    choices: [
+      {
+        letter: "A",
+        text: "Evidence that Timothy had three misdemeanor convictions for disorderly conduct at youth events.",
+        verdict: "trap",
+        mold: "half_truth / misdemeanor-conviction trap",
+        explanation:
+          "A treats any misdemeanor as credibility impeachment. Misdemeanors impeach under Rule 609(a)(2) only when they involve dishonesty or a false statement.",
+      },
+      {
+        letter: "B",
+        text: "Testimony by a psychologist that persons with Timothy's background have a tendency to fabricate.",
+        verdict: "trap",
+        mold: "wrong_frame / expert-credibility trap",
+        explanation:
+          "B sounds sophisticated, but general credibility is for the jury. Expert testimony that a witness or declarant tends to fabricate is usually excluded.",
+      },
+      {
+        letter: "C",
+        text: "Testimony by a witness that, at the time Timothy testified, Timothy was actively campaigning to replace Barnabas as the director of the regional youth conference.",
+        verdict: "correct",
+        mold: "residue / bias impeachment",
+        explanation:
+          "C shows direct bias. Timothy had a motive to implicate Barnabas falsely because Barnabas held the leadership position Timothy wanted.",
+      },
+      {
+        letter: "D",
+        text: "Testimony by a witness that Timothy runs a side business selling pirated copies of Christian worship albums.",
+        verdict: "trap",
+        mold: "half_truth / bad-act truthfulness trap",
+        explanation:
+          "D offers a bad act that is only weakly tied to truthfulness and would usually run into the extrinsic-proof limit for specific bad acts.",
+      },
+    ],
+    answerFlow: [
+      "Recognize that former testimony is a hearsay statement.",
+      "Apply Rule 806: the declarant's credibility may be attacked as if he had testified.",
+      "Look for the impeachment method most likely to be admitted.",
+      "Bias is highly probative and liberally admitted.",
+      "Cut A because disorderly conduct is not dishonesty or false statement.",
+      "Cut B because expert veracity testimony invades the jury's credibility role.",
+      "Cut D because the side business is not strong truthfulness evidence and extrinsic proof is limited.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Rule 806 lets a party impeach a hearsay declarant the same way a live witness could be impeached.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps use familiar impeachment boxes: convictions, expert credibility, and bad acts.",
+      },
+      {
+        label: "Blue signal",
+        body: "The leadership rivalry gives Timothy a personal motive to lie about Barnabas.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: looking for character-for-truthfulness evidence before checking direct bias.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-FRE806-BIAS-01",
+        body: "When a hearsay statement is admitted, Rule 806 treats the declarant like a witness for impeachment; bias evidence is admissible if it would be allowed against a live witness.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-BIAS-BEATS-CHARACTER-IMPEACHMENT",
+        body: "Bias asks why this declarant might lie in this case; that is stronger than general character attacks.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-EXPERT-CREDIBILITY-JURY-ROLE",
+        body: "A psychologist's generalized opinion that a person tends to fabricate usually invades the jury's job of judging credibility.",
+      },
+    ],
+    leadMeSteps: [
+      "Identify the declarant whose former testimony was admitted.",
+      "Use Rule 806 to allow impeachment as if the declarant testified.",
+      "Search for a concrete motive to lie.",
+      "Choose the leadership-rivalry bias evidence.",
+      "Reject misdemeanor convictions not involving dishonesty.",
+      "Reject expert veracity testimony.",
+      "Reject weak bad-act truthfulness evidence.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Declarant Treated Like Witness",
+        prompt:
+          "Former testimony from an unavailable declarant is admitted. Can the opposing party use bias evidence to impeach that declarant?",
+        answer: "Yes. Rule 806 allows impeachment as if the declarant had testified.",
+      },
+      {
+        title: "Bias Signal",
+        prompt:
+          "A declarant wanted the defendant's leadership role when he made the statement. What impeachment category is that?",
+        answer: "Bias: a personal motive to lie.",
+      },
+      {
+        title: "Misdemeanor Limit",
+        prompt:
+          "A declarant has misdemeanor disorderly conduct convictions. Why is that usually weak impeachment?",
+        answer:
+          "The misdemeanors do not involve dishonesty or false statement under Rule 609(a)(2).",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

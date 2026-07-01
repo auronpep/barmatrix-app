@@ -670,6 +670,129 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14778",
+    transformId: "14778_retreat_loading_warning",
+    title: "Non-Hearsay Purpose: Reason for Refusal",
+    outlineCode: "33040203",
+    sourceOutlineCode: "33040203",
+    coverageGroup: "non_hearsay_purpose",
+    seedBucket: "clean_teaching",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "If a hiring defendant offers a former supervisor's warning only to explain why he refused to hire the plaintiff, is the warning hearsay or admissible for the hiring reason?",
+    stem:
+      "Naomi sued Peter under an age discrimination statute, alleging that Peter refused to hire her for a dawn loading-crew job at his private Christian retreat-supply company because she was 67. Peter's defense was that he refused to employ Naomi because he reasonably believed that she could not safely complete the physical shift. Peter seeks to testify that Ruth, Naomi's former supervisor at a hymnbook bindery, warned him not to hire Naomi because Naomi could not keep up with lifting packed hymnals onto delivery carts for an entire predawn route. The testimony of Peter is:",
+    choices: [
+      {
+        letter: "A",
+        text: "Admissible as evidence that Naomi could not keep up with lifting packed hymnals for an entire predawn route.",
+        verdict: "trap",
+        mold: "half_truth / wrong-purpose admissibility",
+        explanation:
+          "A reaches the word admissible but uses the warning to prove Naomi's actual work capacity. The admissible purpose is Peter's reason, not the truth of Ruth's assertion.",
+      },
+      {
+        letter: "B",
+        text: "Inadmissible, because Ruth's warning is hearsay not within any exception.",
+        verdict: "trap",
+        mold: "bait_doctrine / hearsay-exception reflex",
+        explanation:
+          "This is the dominant trap. No hearsay exception is needed when the warning is offered for its effect on Peter and his reason for refusing to hire Naomi.",
+      },
+      {
+        letter: "C",
+        text: "Admissible as evidence of Peter's reason for refusing to hire Naomi.",
+        verdict: "correct",
+        mold: "residue / listener-reason purpose",
+        explanation:
+          "Peter is not offering the warning to prove Naomi actually lacked endurance. He is offering it to show what he heard and why he acted, so the hearsay rule is not triggered.",
+      },
+      {
+        letter: "D",
+        text: "Inadmissible, because Peter's view of Naomi's abilities is not based on personal knowledge.",
+        verdict: "trap",
+        mold: "misfit / personal-knowledge misframe",
+        explanation:
+          "Peter does not need personal knowledge of Naomi's actual lifting ability for this purpose. He has personal knowledge that he received the warning and that it affected his decision.",
+      },
+    ],
+    answerFlow: [
+      "Identify the consequential fact: Peter's asserted reason for refusing to hire Naomi.",
+      "Ask why Ruth's warning is offered. It is offered to show Peter's reason, not to prove Naomi's actual ability.",
+      "Classify the warning as a non-hearsay listener-reason use.",
+      "Cut B because the hearsay-exception reflex skips the truth-purpose threshold.",
+      "Cut A because it converts the warning into proof of the asserted work-capacity fact.",
+      "Cut D because Peter can testify to what he heard and why he acted.",
+      "Choose C because the warning explains Peter's hiring decision.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Purpose of offer controls: reason-for-action use is different from truth-of-warning use.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set surrounds the correct listener-reason route with a hearsay-exception trap, a truth-purpose trap, and a personal-knowledge misframe.",
+      },
+      {
+        label: "Blue signal",
+        body: "Peter's defense makes his reason consequential, so what he heard before deciding matters even if Ruth's assertion might be false.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: hunting hearsay exceptions before asking whether the statement is offered for truth.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-NONHEARSAY-PURPOSE-01",
+        body: "An out-of-court statement is hearsay only when offered for its truth. If it is offered to show its effect on the listener or the listener's reason for acting, no hearsay exception is needed.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-PURPOSE-OF-OFFER-01",
+        body: "When answer choices split between truth of the assertion and reason for the action, name the purpose-of-offer axis before deciding hearsay.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-HEARSAY-EXCEPTION-REFLEX",
+        body: "Do not hunt hearsay exceptions until the statement is actually offered for truth. A listener-reason use can stop at non-hearsay.",
+      },
+    ],
+    leadMeSteps: [
+      "Name Peter's defense: he refused to hire Naomi for a reason other than age.",
+      "Separate that reason from the truth of Ruth's warning.",
+      "Ask whether the warning is offered for truth before applying any hearsay exception.",
+      "Reject the choice that admits the warning as proof of Naomi's actual ability.",
+      "Reject the personal-knowledge objection because Peter can testify to receiving the warning and acting on it.",
+      "Pick the reason-for-refusal answer.",
+    ],
+    drillSeeds: [
+      {
+        title: "Purpose Sort",
+        prompt:
+          "A witness repeats a warning to explain why she cancelled a contract. Is the warning offered for truth or effect on listener?",
+        answer:
+          "Effect on listener if offered only to explain the cancellation.",
+      },
+      {
+        title: "Two-Answer Clash",
+        prompt:
+          "Two choices say a warning is admissible. One says it proves the warning true; one says it explains the listener's action. Which survives?",
+        answer: "The listener-action purpose survives.",
+      },
+      {
+        title: "Personal Knowledge Target",
+        prompt:
+          "A decisionmaker did not personally observe a worker's ability, but heard a warning and acted on it. What does personal knowledge need to cover?",
+        answer:
+          "The decisionmaker needs personal knowledge of receiving the warning and of the decision process, not firsthand knowledge that the warning was true.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

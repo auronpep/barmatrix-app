@@ -4189,6 +4189,133 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14896",
+    transformId: "14896_gospel_fair_cashbox",
+    title: "404(b): Identity Needs a Bridge",
+    outlineCode: "32020404",
+    sourceOutlineCode: "32020402",
+    coverageGroup: "adjacent_pilot_code",
+    seedBucket: "recode_or_ambiguous",
+    key: "A",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "When identity is denied, are generic similar prior robberies enough to admit other-act evidence for identity or intent?",
+    stem:
+      "Lydia ran a mobile Bible-engraving cart at a private gospel-music festival. A masked person robbed her cash box, and Peter is now on trial for armed robbery. Peter's defense is mistaken identity. Before resting the state's case, the prosecutor offers proof that Peter robbed two other vendor cash tables at faith-and-music events during the last eight months. This evidence is",
+    choices: [
+      {
+        letter: "A",
+        text: "inadmissible, because its probative value is substantially outweighed by the danger of unfair prejudice.",
+        verdict: "correct",
+        mold: "residue / no-bridge Rule 403 exclusion",
+        explanation:
+          "A is the endpoint once the claimed purpose has no bridge. Generic prior robberies mostly invite the forbidden inference that Peter did it before, so he did it now.",
+      },
+      {
+        letter: "B",
+        text: "inadmissible, because character must be proved by reputation or opinion and may not be proved by specific acts.",
+        verdict: "trap",
+        mold: "wrong_layer / method-of-proof trap",
+        explanation:
+          "B answers a later character-proof method question. The first problem is that the other robberies are not admissible for a valid purpose.",
+      },
+      {
+        letter: "C",
+        text: "admissible, to prove Peter's intent and identity.",
+        verdict: "trap",
+        mold: "bait_doctrine / purpose-label without bridge",
+        explanation:
+          "C uses real 404(b) labels, but the stem gives no special signature, plan, or other non-propensity bridge from the prior robberies to this robber.",
+      },
+      {
+        letter: "D",
+        text: "admissible, to prove a pertinent trait of Peter's character and Peter's action in conformity therewith.",
+        verdict: "trap",
+        mold: "flat_misstatement / explicit propensity use",
+        explanation:
+          "D states the forbidden inference directly. Other-act evidence cannot be used to prove character and action in conformity.",
+      },
+    ],
+    answerFlow: [
+      "Start with the offered evidence: two prior robberies.",
+      "Notice the defense is mistaken identity.",
+      "Do not let the word identity do all the work.",
+      "Ask for a non-propensity bridge.",
+      "Cut the method-of-proof answer as a later layer.",
+      "Cut the intent-and-identity label because the bridge is missing.",
+      "Cut explicit character-conformity reasoning.",
+      "Choose A.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "A permitted 404(b) purpose needs a real non-propensity bridge; same general crime is not enough.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps are exception-label shopping, proof-method distraction, and explicit propensity.",
+      },
+      {
+        label: "Blue signal",
+        body: "The prior acts are only other vendor-table robberies; the stem gives no signature or special linking fact.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: buying intent or identity as magic words without checking the factual bridge.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-OTHER-ACTS-PROPENSITY-01",
+        body: "Other-act evidence cannot use he did it before, so he did it this time. A listed purpose like identity or intent needs a real non-propensity bridge; same general crime is not enough.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-PURPOSE-FIRST-01",
+        body: "Pin the offered purpose before buying an exception label; if the label has no factual bridge, treat it as a purpose-axis trap.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-IDENTITY-LABEL-NOT-MAGIC",
+        body: "Identity being disputed does not automatically make generic prior crimes admissible identity evidence.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the prior acts: two other robberies.",
+      "Name the defense: mistaken identity.",
+      "Ask whether the prior robberies share a special signature.",
+      "Notice the stem gives only generic similarity.",
+      "Reject proof-method analysis as too late.",
+      "Reject intent and identity without a bridge.",
+      "Reject character-conformity reasoning.",
+      "Pick A.",
+    ],
+    drillSeeds: [
+      {
+        title: "Bridge Check",
+        prompt:
+          "The state offers two generic prior robberies and says identity is disputed. What fact must you find before admitting them for identity?",
+        answer:
+          "A real non-propensity bridge, such as a distinctive signature or special linking method.",
+      },
+      {
+        title: "Layer Order",
+        prompt:
+          "A choice talks about reputation or opinion proof for character. What should you decide first?",
+        answer:
+          "Whether the evidence is admissible for a valid purpose at all.",
+      },
+      {
+        title: "Propensity Cut",
+        prompt:
+          "Why is 'he robbed before, so he robbed now' not a valid purpose?",
+        answer:
+          "It is character-conformity reasoning, which Rule 404 blocks.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

@@ -3683,6 +3683,132 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "17130",
+    transformId: "17130_bias_mini_trial_403",
+    title: "Bias Proof Without a Mini-Trial",
+    outlineCode: "32020302",
+    sourceOutlineCode: "32020302",
+    coverageGroup: "fre_403_insurance_policy_purpose",
+    seedBucket: "medium_friction",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "May the judge allow targeted bias inquiry while excluding a time-consuming collateral presentation under Rule 403?",
+    stem:
+      "In a federal contract trial, Naomi wants to impeach a witness by showing that the witness has been hostile toward her for years. Naomi offers to call seven witnesses and introduce records, emails, and accountant testimony about a separate business dispute between Naomi and the witness. The judge allows Naomi to ask the witness directly about hostility but excludes the seven-witness side presentation under Rule 403. Was the exclusion proper?",
+    choices: [
+      {
+        letter: "A",
+        text: "No, because bias evidence can never be limited.",
+        verdict: "trap",
+        mold: "flat_misstatement / bias-is-untouchable trap",
+        explanation:
+          "A overstates the bias rule. Bias evidence is important, but the method and volume of proof can still be controlled.",
+      },
+      {
+        letter: "B",
+        text: "No, because once evidence is relevant to credibility, Rule 403 does not apply.",
+        verdict: "trap",
+        mold: "flat_misstatement / credibility-immunity trap",
+        explanation:
+          "B gives credibility evidence immunity it does not have. Rule 403 still applies to credibility proof.",
+      },
+      {
+        letter: "C",
+        text: "Yes, because the court may allow targeted bias inquiry while excluding a collateral mini-trial whose time and confusion substantially outweigh added probative value.",
+        verdict: "correct",
+        mold: "residue / targeted-bias Rule 403 control",
+        explanation:
+          "C preserves both ideas. The judge lets Naomi ask about hostility but blocks a sprawling side dispute with limited additional value.",
+      },
+      {
+        letter: "D",
+        text: "Yes, but only because bias evidence is always inadmissible character evidence.",
+        verdict: "trap",
+        mold: "wrong_reason / bias-character confusion",
+        explanation:
+          "D reaches the yes result for the wrong reason. Bias is not barred character evidence; the problem is collateral proof that wastes time and confuses the trial.",
+      },
+    ],
+    answerFlow: [
+      "Start with the judge's compromise.",
+      "Notice that bias can be tested directly.",
+      "Separate bias relevance from proof volume.",
+      "Reject the idea that bias evidence can never be limited.",
+      "Reject the idea that credibility evidence escapes Rule 403.",
+      "Reject the character-evidence label.",
+      "Use Rule 403 to control the collateral mini-trial.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "A strong impeachment purpose does not erase Rule 403 control over cumulative or confusing collateral proof.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps treat bias as either untouchable, immune from Rule 403, or wrongly reclassified as character evidence.",
+      },
+      {
+        label: "Blue signal",
+        body: "The judge allowed direct hostility questions but excluded seven witnesses and records about a separate dispute.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: thinking relevance to credibility automatically permits every supporting side presentation.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-403-BIAS-MINI-TRIAL-01",
+        body: "Bias impeachment is relevant, but Rule 403 lets the judge limit collateral proof that adds little beyond a direct bias inquiry while consuming time or confusing the issues.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-PROOF-METHOD-01",
+        body: "Separate whether a fact may be explored from how much proof the court must allow to prove it.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-CREDIBILITY-NOT-403-IMMUNE",
+        body: "Credibility evidence is not immune from Rule 403 just because it attacks or supports a witness.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the purpose: bias impeachment.",
+      "Confirm the judge allowed a direct question about hostility.",
+      "Spot the proposed seven-witness side presentation.",
+      "Treat the side dispute as collateral proof.",
+      "Reject bias-is-untouchable language.",
+      "Reject credibility immunity from Rule 403.",
+      "Reject the character-evidence reason.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Bias Scope",
+        prompt:
+          "A party may ask a witness directly about hostility. Must the court also allow seven witnesses to prove a separate dispute?",
+        answer:
+          "No. Rule 403 may limit collateral proof that adds little and creates delay or confusion.",
+      },
+      {
+        title: "Credibility Control",
+        prompt:
+          "Does evidence become immune from Rule 403 because it relates to witness credibility?",
+        answer: "No. Credibility evidence remains subject to Rule 403.",
+      },
+      {
+        title: "Wrong Reason",
+        prompt:
+          "Why is it wrong to say bias evidence is always inadmissible character evidence?",
+        answer:
+          "Bias is a proper impeachment purpose; the issue is excessive collateral proof, not character inadmissibility.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

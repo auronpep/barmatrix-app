@@ -4442,6 +4442,133 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "22231",
+    transformId: "22231_revival_bus_cards",
+    title: "Plan Theory Beats Propensity",
+    outlineCode: "32020404",
+    sourceOutlineCode: "32020404",
+    coverageGroup: "adjacent_pilot_code",
+    seedBucket: "needs_human_review",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "When a defendant used one payment card fraudulently and police found dozens more cards in other names plus matching IDs, can the prosecutor use that stash to show a broader fraud plan rather than bad character?",
+    stem:
+      "The defendant was arrested after she used a fleet fuel card bearing the name Lydia Harper to pay for diesel for a charter bus headed to a regional revival concert. She was later charged with fraudulent use of a payment card. At trial, a police officer testified that when he arrested the defendant, he found seven fleet fuel cards bearing Lydia Harper's name and 34 other fuel cards bearing 34 different names. He also found driver's licenses matching each of the names on the cards. If defense counsel moves to exclude evidence that the defendant possessed cards or driver's licenses other than the card she was charged with fraudulently using, which argument would be the prosecutor's most effective response?",
+    choices: [
+      {
+        letter: "A",
+        text: "The number of fuel cards in the defendant's possession makes it likely that she stole them.",
+        verdict: "trap",
+        mold: "misfit / uncharged-theft propensity detour",
+        explanation:
+          "A feels powerful because the stash makes theft seem likely. The defect is that theft is not the fact of consequence for the charged fraudulent use, so the answer depends on forbidden propensity reasoning.",
+      },
+      {
+        letter: "B",
+        text: "The defendant's possession of 41 fuel cards in names other than her own counts as an admission by conduct.",
+        verdict: "trap",
+        mold: "bait_doctrine / wrong evidence label",
+        explanation:
+          "B uses a real evidence label, but these facts do not show consciousness of guilt for the charged swipe. Mere possession of more cards is not conduct like flight, concealment, or a bribe.",
+      },
+      {
+        letter: "C",
+        text: "The number of fuel cards and matching driver's licenses in the defendant's possession tends to show a larger fraud plan.",
+        verdict: "correct",
+        mold: "residue / 404(b) plan purpose",
+        explanation:
+          "C gives the stash a noncharacter job tied to the charged offense. The prosecutor can argue that the charged use was part of a coordinated fraud plan, subject to ordinary Rule 403 balancing.",
+      },
+      {
+        letter: "D",
+        text: "Once that many cards were found, the defendant had to explain why she had them.",
+        verdict: "trap",
+        mold: "backwards / unconstitutional burden shift",
+        explanation:
+          "D appeals to common-sense suspicion, but the prosecutor cannot make a criminal defendant explain incriminating possession. The admissibility theory has to stand without forcing the defendant to testify.",
+      },
+    ],
+    answerFlow: [
+      "Start with the evidence the prosecutor wants: extra cards and matching IDs.",
+      "Identify the charge: fraudulent use of one payment card.",
+      "Ask what lawful job the extra stash does for that charge.",
+      "Cut the stolen-card answer because it proves another possible crime.",
+      "Cut admission by conduct because possession is not consciousness of guilt.",
+      "Cut the forced-explanation answer because the defendant does not have to testify.",
+      "Keep the answer that ties the stash to a larger fraud plan.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Other acts may show plan only when the plan theory does work beyond a bad-character inference.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps are uncharged-crime suspicion, doctrine-label shopping, and burden shifting.",
+      },
+      {
+        label: "Blue signal",
+        body: "The matching cards and licenses can explain the charged swipe as one step in a broader fraud setup.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating highly suspicious evidence as automatically admissible.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-PLAN-NONCHARACTER-01",
+        body: "Other-act evidence can be admitted for a real noncharacter purpose like plan, but not merely to prove the defendant is the kind of person who commits crimes.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-BEST-RESPONSE-01",
+        body: "When the call asks for the prosecutor's best response to exclusion, choose the theory that connects the extra acts to the charged offense itself.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-SUSPICION-NOT-PURPOSE",
+        body: "A fact can be suspicious and still fail if the answer only uses it to prove another bad act or general criminality.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the extra evidence: more cards and matching IDs.",
+      "Name the offered use: the prosecutor wants to defeat exclusion.",
+      "Separate plan from propensity.",
+      "Reject the stolen-card detour.",
+      "Reject admission by conduct.",
+      "Reject any answer that forces the defendant to explain.",
+      "Use the plan theory tied to the charged fraudulent use.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Plan Job",
+        prompt:
+          "Why does a stash of matching cards and IDs help the prosecutor more as plan evidence than as theft evidence?",
+        answer:
+          "Plan evidence gives the stash a noncharacter job tied to the charged fraud; theft evidence only invites a forbidden propensity jump.",
+      },
+      {
+        title: "Best Response Call",
+        prompt:
+          "When the call asks for the prosecutor's best response to exclusion, what should the winning answer do?",
+        answer:
+          "It should name a valid admissibility theory that connects the extra evidence to the charged offense.",
+      },
+      {
+        title: "Burden Shift",
+        prompt:
+          "Why is an answer requiring the defendant to explain suspicious possession a bad move in a criminal case?",
+        answer:
+          "A criminal defendant cannot be forced to testify or explain incriminating facts.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

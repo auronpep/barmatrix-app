@@ -2804,6 +2804,131 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "22211",
+    transformId: "22211_lydia-purple-cloth",
+    title: "Business Records vs. Past Recollection Recorded",
+    outlineCode: "31010407",
+    sourceOutlineCode: "31010407",
+    coverageGroup: "adjacent_pilot_code",
+    seedBucket: "needs_human_review",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "When a business record is made from information supplied by an employee with a business duty to report, is it admitted as a business record or past recollection recorded?",
+    stem:
+      "Lydia is a dealer in purple cloth. She employs a warehouse clerk named Marcus who inspects every incoming shipment and reports its contents to her. On March 3, Marcus inspected a shipment of dye materials and immediately told Lydia what it contained. Lydia wrote the information on a shipping receipt and signed it. A copy was sent to the buyer, a textile workshop in Philippi. At trial in a contract dispute over the shipment, Lydia testifies that she supervised the transaction, that she no longer has any independent recollection of what the shipment contained, and that the original receipt is now in the hands of her attorney. Her attorney shows her a document; Lydia identifies it as the receipt she signed. The attorney offers the receipt into evidence. The opposing party objects. If the court admits the receipt into evidence, what will it be admitted as?",
+    choices: [
+      {
+        letter: "A",
+        text: "An original document under the best evidence rule.",
+        verdict: "trap",
+        mold: "wrong_frame / best-evidence distraction",
+        explanation:
+          "A points to the wrong rule. The best evidence rule governs proof of a writing's contents; it is not a hearsay exception that makes the receipt admissible.",
+      },
+      {
+        letter: "B",
+        text: "A present recollection refreshed.",
+        verdict: "trap",
+        mold: "procedural_misfit / refresh-vs-exhibit",
+        explanation:
+          "B fails because Lydia has no recollection to refresh and the receipt itself is being offered as an exhibit. Rule 612 is a testimony tool, not this exhibit's admission theory.",
+      },
+      {
+        letter: "C",
+        text: "A record kept in the usual course of business.",
+        verdict: "correct",
+        mold: "residue / business-record exception",
+        explanation:
+          "C fits FRE 803(6). Lydia made the receipt in the ordinary course from Marcus's prompt report, and Marcus had a business duty to inspect and report the shipment contents.",
+      },
+      {
+        letter: "D",
+        text: "A past recollection recorded.",
+        verdict: "trap",
+        mold: "half_truth / PRC personal-knowledge trap",
+        explanation:
+          "D is the dominant trap. Lydia made the record and now lacks memory, but past recollection recorded requires the witness's own knowledge of the recorded facts. She relied on Marcus's report.",
+      },
+    ],
+    answerFlow: [
+      "Notice that the receipt itself is offered into evidence.",
+      "Cut present recollection refreshed because that uses a writing to jog testimony, not admit the writing.",
+      "Cut best evidence because it is not a hearsay exception.",
+      "Clash business records against past recollection recorded.",
+      "Ask whether Lydia personally knew the shipment contents.",
+      "She did not; Marcus inspected and reported them under a business duty.",
+      "That defeats past recollection recorded and supports the business-record exception.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Business records can use information transmitted by a person with knowledge and a business duty to report.",
+      },
+      {
+        label: "Purple profile",
+        body: "The trap sells past recollection recorded because the witness made a record and now lacks memory.",
+      },
+      {
+        label: "Blue signal",
+        body: "The splitting fact is that Marcus, not Lydia, personally inspected the shipment.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating every made-when-fresh record as past recollection recorded without checking personal knowledge.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-PRC-VS-BR-01",
+        body: "Past recollection recorded requires the witness's own knowledge; business records may rely on information from a person with knowledge and a business duty to report.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-EXHIBIT-NOT-REFRESH",
+        body: "When the document itself is offered as an exhibit, do not classify it as present recollection refreshed under Rule 612.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-BER-NOT-HEARSAY-EXCEPTION",
+        body: "The best evidence rule does not supply a hearsay exception; it does not answer why a record is admissible.",
+      },
+    ],
+    leadMeSteps: [
+      "Classify the procedural posture: the receipt is offered as an exhibit.",
+      "Remove Rule 612 because no refreshed testimony is being used.",
+      "Remove best evidence because it is not an admissibility exception.",
+      "Compare business records with past recollection recorded.",
+      "Check whose knowledge supplied the contents.",
+      "Use Marcus's business duty to route to business records.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Entrant Lacks Personal Knowledge",
+        prompt:
+          "A manager records shipment contents from a clerk's business-duty report, then later has no memory. The record is offered as an exhibit. Which exception fits?",
+        answer: "Business records under FRE 803(6), not past recollection recorded.",
+      },
+      {
+        title: "PRC Split",
+        prompt:
+          "What fact defeats past recollection recorded when a signed business receipt is offered?",
+        answer:
+          "The witness did not personally observe the recorded facts; another employee supplied them.",
+      },
+      {
+        title: "Exhibit vs. Refresh",
+        prompt:
+          "The document itself is offered into evidence. Why is present recollection refreshed wrong?",
+        answer:
+          "Rule 612 refreshes testimony; it does not admit the refresh document as the exhibit.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

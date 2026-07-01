@@ -811,6 +811,132 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14233",
+    transformId: "14233_galilee_nets_fieldhouse",
+    title: "Public Money Does Not Decide the Act",
+    selectorCode: "44040100",
+    selectorMatch: "exact",
+    outlineCode: "44040100",
+    sourceOutlineCode: "44040100",
+    coverageGroup: "state_action",
+    seedBucket: "needs_human_review",
+    key: "A",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "Does a one-time state grant to a privately owned team make the team's later private contractor-selection decisions state action?",
+    stem:
+      "A state wanted to prevent the Galilee Nets, its only professional e-sports team, from moving its training center and home finals to a rival state. The team was privately owned by Lydia Sports LLC. After a loud legislative fight, the state enacted a statute providing a one-time grant of $7.5 million in state funds to the team to cover part of the projected sponsorship and streaming losses the team would suffer during the next four years if it stayed in the state. The statute required that the team remain in the state for at least nine years if it accepted the grant. After accepting the grant, the owners of the Galilee Nets decided to build a new $120 million media arena and training hall called Bethany Fieldhouse. As plans for construction proceeded, it became evident that all contractors and subcontractors would be white males, chosen by the team owners without public bids because those contractors had successfully built the only other dedicated e-sports arena in the region. Several contractors who were women or members of minority racial groups sued the owners in federal district court to compel public solicitation of bids on an equal-opportunity basis and to enjoin construction until compliance was ensured. Their only claim was that the owners' contracting practices denied them equal protection in violation of the Fourteenth Amendment. In this suit, the court will probably rule that",
+    choices: [
+      {
+        letter: "A",
+        text: "In the absence of additional evidence that the state controlled, encouraged, or participated in the team owners' contracting decisions, the one-time grant is insufficient to warrant treating those decisions as subject to the limitations of the Fourteenth Amendment.",
+        verdict: "correct",
+        mold: "state-action threshold / missing state responsibility",
+        explanation:
+          "A is correct. The challenged act is the owners' contractor selection, and the stem gives no state control, encouragement, or participation in that choice.",
+      },
+      {
+        letter: "B",
+        text: "The intense public preoccupation with professional e-sports teams, coupled with the fact that live gaming finals have become a favorite modern pastime, is sufficient to justify application of the Fourteenth Amendment to the activities of professional e-sports teams.",
+        verdict: "trap",
+        mold: "public-function overread / popularity as government power",
+        explanation:
+          "B sells cultural importance as state action. A private entertainment team does not become the state because the public values it.",
+      },
+      {
+        letter: "C",
+        text: "The issues presented by this case are nonjusticiable political questions because the fieldhouse grant followed a partisan legislative fight and there is a lack of judicially manageable standards to resolve the dispute.",
+        verdict: "trap",
+        mold: "political-question misfit / background politics bait",
+        explanation:
+          "C turns political background into political-question doctrine. Courts can decide whether the challenged conduct is state action.",
+      },
+      {
+        letter: "D",
+        text: "The nexus between the contracting decisions of the team owners and the one-time grant of state funds is sufficiently substantial to subject those decisions to the limitations of the Fourteenth Amendment.",
+        verdict: "trap",
+        mold: "grant-nexus overread / subsidy treated as control",
+        explanation:
+          "D is the dominant trap. The state wrote a check and attached a stay condition, but no fact ties the state to the contractor-selection decision.",
+      },
+    ],
+    answerFlow: [
+      "Start with the sued-over act: contractor selection.",
+      "Identify who made that act: the private owners.",
+      "Separate the public grant from the later private contracting decision.",
+      "Ask whether the state controlled, encouraged, or participated in that decision.",
+      "No fact supplies that missing link.",
+      "Cut popularity, political-question, and grant-nexus overreads.",
+      "Choose A.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "State action turns on whether the challenged private decision is fairly attributable to the state.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set makes the grant look powerful, but the missing link is state responsibility for contractor selection.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive split is grant/stay condition versus control of the contracting decision.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating public money or public attention as enough without tying the state to the challenged act.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-STATE-ACTION-GRANT-01",
+        body: "Public money, public affection, or regulation does not make a private entity's own decision state action unless the state is responsible for the challenged decision through coercion, significant encouragement, joint participation, management, or an exclusive public function.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-CHALLENGED-ACT-FIRST-01",
+        body: "Circle the challenged act before ranking the government facts; the sued-over decision may be private even when the background includes state money.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-PUBLIC-MONEY-BAIT-01",
+        body: "A subsidy is evidence to inspect, not a shortcut to state action. Look for state responsibility for the specific decision being challenged.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the challenged act.",
+      "Name the actor who made that act.",
+      "Separate the grant from the contracting decision.",
+      "Test for state control or encouragement.",
+      "Reject public-popularity and political-question bait.",
+      "Pick A.",
+    ],
+    drillSeeds: [
+      {
+        title: "Challenged Act First",
+        prompt:
+          "A state gives a private team a retention grant, and the team later picks contractors. Which act matters for state action?",
+        answer:
+          "The challenged contractor-selection decision, not the background decision to offer the grant.",
+      },
+      {
+        title: "Subsidy Is Not Control",
+        prompt:
+          "Why does a one-time state grant not automatically make a private team's later business decision state action?",
+        answer:
+          "The plaintiff still needs a link showing state control, coercion, encouragement, joint participation, or an exclusive public function.",
+      },
+      {
+        title: "Popularity Trap",
+        prompt:
+          "Does public affection for a private sports or entertainment team make the team a state actor?",
+        answer:
+          "No. Cultural importance is not an exclusive governmental function and does not make private decisions state action.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

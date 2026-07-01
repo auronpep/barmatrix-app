@@ -24,7 +24,7 @@ export default function ConLawPilotPage() {
           <div className="hero-meta">
             <span className="stamp">CONLAW-PILOT-01</span>
             <span className="stamp">{conLawPilot.seedCount} SEED QUESTIONS</span>
-            <span className="stamp">CANDIDATE QUEUE</span>
+            <span className="stamp">IMPLEMENTED SEED ROUTES</span>
           </div>
           <div className="eyebrow-red" style={{ marginBottom: 24 }}>
             &#x258C; ACTOR / SOURCE / RIGHTS GATE
@@ -36,8 +36,9 @@ export default function ConLawPilotPage() {
             Con Law is the second factory test.
           </h1>
           <p className="body-lg" style={{ marginBottom: 0, maxWidth: "70ch" }}>
-            This pilot tests actor, source, posture, forum, and tier gates after
-            the Evidence pipeline proved the route and seed workflow.
+            This pilot tests actor, source, posture, forum, and tier gates using
+            the same route and seed-detail workflow proven by the Evidence
+            pilot.
           </p>
           <div className="hero-actions" style={{ marginTop: 32 }}>
             <Link

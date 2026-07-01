@@ -25,7 +25,7 @@ export const pilotSubsets: PilotSubset[] = [
     id: "EVIDENCE-PILOT-01",
     subject: "Evidence",
     name: "Use / Purpose / Witness Attack / Hearsay Gate",
-    status: "First implementation group",
+    status: "Seed/detail routes complete locally",
     seedCount: 50,
     thesis:
       "Evidence calibrates the factory first because use, purpose, foundation, witness attack, and hearsay gates produce strong answer-flow and LeadMe cards.",
@@ -120,7 +120,7 @@ export const pilotSubsets: PilotSubset[] = [
     id: "CONLAW-PILOT-01",
     subject: "Constitutional Law",
     name: "Actor / Source / Rights Gate",
-    status: "Runs after Evidence calibration",
+    status: "Seed/detail routes complete locally",
     seedCount: 30,
     thesis:
       "Con Law tests actor, source, posture, forum, and tier gates after the Evidence pipeline proves the content factory.",

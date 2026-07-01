@@ -7,6 +7,16 @@ import {
   pilotSubsets,
   pipelineSteps,
 } from "@/lib/jesuslovesyou/pilot-data";
+import {
+  evidenceQuestionDetails,
+  evidenceSeedCandidates,
+} from "@/lib/jesuslovesyou/evidence-question-details";
+import {
+  conLawQuestionDetails,
+} from "@/lib/jesuslovesyou/conlaw-question-details";
+import {
+  conLawSeedCandidates,
+} from "@/lib/jesuslovesyou/conlaw-seed-candidates";
 
 export const metadata: Metadata = {
   title: "Jesuslovesyou Pilot - BarMatrix V6 Rebuild",
@@ -19,6 +29,10 @@ export const metadata: Metadata = {
 
 export default function JesuslovesyouPilotPage() {
   const evidence = pilotSubsets[0];
+  const conLaw = pilotSubsets[1];
+  const totalDetails =
+    evidenceQuestionDetails.length + conLawQuestionDetails.length;
+  const totalSeeds = evidenceSeedCandidates.length + conLawSeedCandidates.length;
 
   return (
     <>
@@ -27,7 +41,7 @@ export default function JesuslovesyouPilotPage() {
           <div className="hero-meta">
             <span className="stamp">JESUSLOVESYOU ROUTE</span>
             <span className="stamp">V6 PILOT</span>
-            <span className="stamp">EVIDENCE FIRST</span>
+            <span className="stamp">{totalDetails} DETAIL PAGES</span>
           </div>
           <div className="eyebrow-red" style={{ marginBottom: 24 }}>
             &#x258C; BARMATRIX CONTENT REBUILD
@@ -40,9 +54,45 @@ export default function JesuslovesyouPilotPage() {
           </h1>
           <p className="body-lg" style={{ marginBottom: 0, maxWidth: "68ch" }}>
             This route is the side-by-side implementation path for the new
-            BarMatrix content system. The first group proves the full pipeline
-            on {evidence.id}, then uses the lessons to run ConLaw-Pilot-01.
+            BarMatrix content system. The first group now has {totalDetails} of{" "}
+            {totalSeeds} seed detail pages implemented locally across{" "}
+            {evidence.id} and {conLaw.id}.
           </p>
+          <div
+            className="info-panel"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+              gap: 12,
+              marginTop: 28,
+              maxWidth: 760,
+            }}
+          >
+            <div>
+              <p className="mono" style={{ fontSize: 12, margin: "0 0 6px" }}>
+                EVIDENCE
+              </p>
+              <h2 className="serif" style={{ fontSize: 30, margin: 0 }}>
+                {evidenceQuestionDetails.length}/{evidenceSeedCandidates.length}
+              </h2>
+            </div>
+            <div>
+              <p className="mono" style={{ fontSize: 12, margin: "0 0 6px" }}>
+                CON LAW
+              </p>
+              <h2 className="serif" style={{ fontSize: 30, margin: 0 }}>
+                {conLawQuestionDetails.length}/{conLawSeedCandidates.length}
+              </h2>
+            </div>
+            <div>
+              <p className="mono" style={{ fontSize: 12, margin: "0 0 6px" }}>
+                NEXT GATE
+              </p>
+              <h2 className="serif" style={{ fontSize: 30, margin: 0 }}>
+                Keys + LeadMe
+              </h2>
+            </div>
+          </div>
           <div className="hero-actions" style={{ marginTop: 32 }}>
             <Link
               href={`${JESUSLOVESYOU_ROUTE_PREFIX}/evidence-pilot-01`}

@@ -3511,6 +3511,133 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "17574",
+    transformId: "17574_christian_podcast_school_board",
+    title: "Advance Approval Is Prior Restraint",
+    selectorCode: "44040502",
+    selectorMatch: "exact",
+    outlineCode: "44040502",
+    sourceOutlineCode: "44040502",
+    coverageGroup: "first_amendment_speech_forum",
+    seedBucket: "needs_human_review",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A pretrial court order requires a podcaster to obtain a public official's approval before publishing future civic commentary. What First Amendment doctrine is implicated?",
+    stem:
+      "A state court in Texas entered a pretrial order in a defamation case brought by Paul, a local school-board member. The order bars Mary, a Christian podcaster in Houston who publishes weekly commentary about local civic affairs, from publishing any future podcast episodes about Paul unless Paul first reviews and approves the episode. Mary's podcast earns revenue from third-party ads. What First Amendment doctrine is most directly implicated?",
+    choices: [
+      {
+        letter: "A",
+        text: "Rational basis, because defamation is a tort.",
+        verdict: "trap",
+        mold: "rational-basis procedural frame",
+        explanation:
+          "A follows the tort label instead of the speech restraint. A prepublication order is not ordinary after-the-fact defamation liability.",
+      },
+      {
+        letter: "B",
+        text: "Prior restraint, because the order requires advance approval before publication.",
+        verdict: "correct",
+        mold: "advance-approval restraint",
+        explanation:
+          "B is correct. A court order requiring advance approval before future publication is the classic prior-restraint problem.",
+      },
+      {
+        letter: "C",
+        text: "Commercial speech, because the podcaster earns ad revenue.",
+        verdict: "trap",
+        mold: "monetization-to-commercial-speech trap",
+        explanation:
+          "C overreads the ad-revenue fact. Civic commentary about a school-board member is not commercial advertising merely because the show is monetized.",
+      },
+      {
+        letter: "D",
+        text: "No First Amendment doctrine, because podcasts are not newspapers.",
+        verdict: "trap",
+        mold: "medium-not-press trap",
+        explanation:
+          "D is wrong because First Amendment protection is not limited to newspapers. Podcasts, blogs, newsletters, and other media can all raise prior-restraint issues.",
+      },
+    ],
+    answerFlow: [
+      "Start with the government action: a court order.",
+      "Ask when the order operates: before publication.",
+      "Ask what it requires: approval before future speech about Paul.",
+      "That is prior restraint.",
+      "Cut A because the tort posture does not erase the prepublication restraint.",
+      "Cut C because ad revenue does not turn civic commentary into commercial speech.",
+      "Cut D because the First Amendment is not limited to newspapers.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "The issue is advance approval before publication versus after-the-fact defamation liability.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with tort posture, ad revenue, and medium-based press misconceptions.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive words are unless Paul first reviews and approves the episode.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: letting red-herring facts about medium or revenue overpower the prepublication approval trigger.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-PRIOR-RESTRAINT-01",
+        body: "A court order that requires advance approval before speech is published is a prior restraint and carries a heavy presumption against constitutional validity.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-MONETIZED-CIVIC-SPEECH-01",
+        body: "Ad revenue does not convert civic commentary about public officials into commercial speech.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-MEDIUM-NEUTRAL-PRESS-01",
+        body: "First Amendment speech and press protections are not limited to institutional newspapers.",
+      },
+    ],
+    leadMeSteps: [
+      "Find the order.",
+      "Find the timing.",
+      "Find the approval condition.",
+      "Name prior restraint.",
+      "Reject tort-label drift.",
+      "Reject ad-revenue drift.",
+      "Reject newspaper-only drift.",
+      "Pick B.",
+    ],
+    drillSeeds: [
+      {
+        title: "Prior Restraint Trigger",
+        prompt:
+          "A court order bars a speaker from publishing future commentary unless the subject first approves it. What doctrine is triggered?",
+        answer: "Prior restraint.",
+      },
+      {
+        title: "Ad Revenue Trap",
+        prompt:
+          "Does earning ad revenue turn civic commentary about a public official into commercial speech?",
+        answer:
+          "No. Monetization does not change civic commentary into advertising.",
+      },
+      {
+        title: "Medium Trap",
+        prompt: "Does prior-restraint doctrine protect only newspapers?",
+        answer:
+          "No. The First Amendment protects speakers across media, including podcasts and blogs.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

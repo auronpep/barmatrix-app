@@ -2432,6 +2432,132 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14825",
+    transformId: "14825_pantry-volunteer-incident-report",
+    title: "Refreshing Recollection: Before vs. During",
+    outlineCode: "31010407",
+    sourceOutlineCode: "31010407",
+    coverageGroup: "adjacent_pilot_code",
+    seedBucket: "clean_teaching",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "When a witness refreshes memory with a writing before testifying, when may or must the court let the adverse party examine the writing?",
+    stem:
+      "Lydia has volunteered for years at Grace Community Food Pantry, a Christian ministry that gives groceries to families in need. She was working the distribution line when a man she later identified as the defendant took several boxes of donated canned goods from the loading area without authorization. At trial for theft, Lydia testified for the prosecution. Before she took the stand, she had trouble remembering the exact sequence of what she saw the defendant load and carry. To prepare, she refreshed her memory by silently reviewing a short incident report that Timothy, the pantry's volunteer coordinator, had written the day after the event. The defendant has asked to examine the report. How should the court respond?",
+    choices: [
+      {
+        letter: "A",
+        text: "The court must allow the examination, but only to the extent that the report contains Lydia's own statement to Timothy.",
+        verdict: "trap",
+        mold: "fabricated_rule / own-statement limit",
+        explanation:
+          "A adds an authorship limit that Rule 612 does not require. The inspection right turns on the writing being used to refresh, not on whether Lydia wrote or adopted it.",
+      },
+      {
+        letter: "B",
+        text: "The court should not allow the examination, because the report was not shown to have been read and approved by Lydia while the matter was fresh in her mind.",
+        verdict: "trap",
+        mold: "flat_misstatement / recorded-recollection import",
+        explanation:
+          "B imports the read-and-approved-while-fresh idea from recorded recollection. Refreshing recollection under Rule 612 does not require that foundation.",
+      },
+      {
+        letter: "C",
+        text: "The court may allow the examination if the report was used by Lydia to refresh her memory before testifying, and must allow it if she used it during her testimony.",
+        verdict: "correct",
+        mold: "residue / Rule 612 timing distinction",
+        explanation:
+          "Lydia used the report before testifying, so the court may allow examination if justice requires. If the refresh happened while she was testifying, production would be mandatory.",
+      },
+      {
+        letter: "D",
+        text: "The court should not allow the examination, unless the report was used by Lydia to refresh her memory while on the witness stand.",
+        verdict: "trap",
+        mold: "half_truth / only-on-the-stand trap",
+        explanation:
+          "D states only half the timing rule. Refreshing while testifying makes inspection mandatory, but pre-testimony refresh can still trigger discretionary production.",
+      },
+    ],
+    answerFlow: [
+      "Spot the timing fact: Lydia refreshed before she took the stand.",
+      "Apply the Rule 612 timing split.",
+      "Before testifying means the court may allow inspection if justice requires.",
+      "While testifying would mean the adverse party is entitled to inspection.",
+      "Cut A because authorship is not the trigger.",
+      "Cut B because it imports recorded-recollection foundation.",
+      "Cut D because it ignores the pre-testimony discretionary lane.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Timing controls: before testifying is discretionary; while testifying is mandatory.",
+      },
+      {
+        label: "Purple profile",
+        body: "The array baits students with own-statement limits, recorded-recollection freshness, and an only-on-the-stand half-rule.",
+      },
+      {
+        label: "Blue signal",
+        body: "The phrase before she took the stand is the key signal; the answer must preserve the may-before and must-during split.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: importing the recorded-recollection rule or memorizing only the in-court refresh rule.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-612-REFRESH-TIMING-01",
+        body: "Under Rule 612, a writing used while testifying must be produced to the adverse party; a writing used before testifying may be produced if justice requires.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-REFRESH-NOT-RECORDED-RECOLLECTION",
+        body: "Do not import recorded-recollection foundation into refreshing recollection; authorship and read-and-approved status are not the Rule 612 trigger.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-REFRESH-ONLY-ON-STAND",
+        body: "The on-stand rule is mandatory, but it is not exclusive; pre-testimony refresh remains discretionary.",
+      },
+    ],
+    leadMeSteps: [
+      "Find when the witness used the writing.",
+      "Classify the use as before testifying or while testifying.",
+      "Apply may before if justice requires.",
+      "Apply must during if used on the stand.",
+      "Reject the own-statement limit.",
+      "Reject the read-and-approved-while-fresh requirement.",
+      "Reject the only-on-the-stand half-rule.",
+      "Pick the timing-split answer.",
+    ],
+    drillSeeds: [
+      {
+        title: "Before vs. During",
+        prompt:
+          "A witness reviews a third-party report the night before trial to refresh memory. What is the court's inspection rule for the adverse party?",
+        answer:
+          "The court may allow inspection if justice requires.",
+      },
+      {
+        title: "On-Stand Refresh",
+        prompt:
+          "A witness reviews a writing while testifying. What is the adverse party's right?",
+        answer:
+          "The adverse party is entitled to have the writing produced for inspection and related cross-examination.",
+      },
+      {
+        title: "Recorded-Recollection Import",
+        prompt:
+          "A choice requires the refresh writing to have been read and approved while fresh. What rule is it confusing with Rule 612?",
+        answer: "Recorded recollection.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

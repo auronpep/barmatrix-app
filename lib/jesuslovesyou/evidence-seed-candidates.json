@@ -83,7 +83,7 @@
     "coverage_group": "witness_truthfulness_bias",
     "seed_bucket": "medium_friction",
     "correct_percent": "46",
-    "key": "C",
+    "key": "B",
     "has_finished_transform": true,
     "review_status": "seed_candidate_needs_human_review"
   },

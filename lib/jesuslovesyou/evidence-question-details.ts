@@ -1169,6 +1169,134 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14844",
+    transformId: "14844_divorce-to-deacon",
+    title: "Witness Truthfulness: Cross vs. Extrinsic Proof",
+    outlineCode: "31010406",
+    sourceOutlineCode: "31010406",
+    coverageGroup: "witness_truthfulness_bias",
+    seedBucket: "medium_friction",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "May an expert witness be asked on cross-examination about prior false testimony that is probative of truthfulness, even though extrinsic proof of that prior act would be barred?",
+    stem:
+      "A church hired a licensed contractor to build a new fellowship hall. After the work was completed, the church sued the contractor for breach of contract, claiming that the building had serious structural defects. The church called a structural engineer as an expert witness to testify about the cost of repairs. On cross-examination, the contractor's attorney asks the engineer whether he had previously provided false testimony as a witness in his own divorce proceedings. This question is:",
+    choices: [
+      {
+        letter: "A",
+        text: "Inadmissible, because impeachment on a collateral matter may not be proved by extrinsic evidence.",
+        verdict: "trap",
+        mold: "right_rule_wrong_form / extrinsic-evidence overread",
+        explanation:
+          "A states the extrinsic-evidence limit, but the lawyer is asking the expert a question on cross-examination. FRE 608(b) bars outside proof of the act; it does not automatically bar the question.",
+      },
+      {
+        letter: "B",
+        text: "Admissible, because the questioning occurred on cross-examination of the expert witness.",
+        verdict: "correct",
+        mold: "residue / FRE 608(b) cross-examination lane",
+        explanation:
+          "The prior false testimony is a specific dishonest act that bears on the expert's truthfulness. The inquiry is on cross-examination, so it may be allowed in the court's discretion.",
+      },
+      {
+        letter: "C",
+        text: "Inadmissible, because a witness's character for truthfulness cannot be attacked by specific instances of conduct.",
+        verdict: "trap",
+        mold: "tiered_absolute / overbroad character rule",
+        explanation:
+          "C overstates the rule. Specific acts generally cannot be proved with extrinsic evidence, but truthful-character impeachment may include cross-examination about dishonest acts that bear on truthfulness.",
+      },
+      {
+        letter: "D",
+        text: "Admissible, because a certified transcript of the prior testimony would be self-authenticating.",
+        verdict: "trap",
+        mold: "authentication_not_admissibility / wrong proof route",
+        explanation:
+          "Authentication does not solve the FRE 608(b) problem. A transcript may prove what happened, but extrinsic proof of the prior act is barred when offered only to attack truthfulness.",
+      },
+    ],
+    answerFlow: [
+      "Identify the form of the impeachment: the lawyer asks the expert a question on cross-examination.",
+      "Identify the act: allegedly false testimony in the expert's own divorce proceeding.",
+      "Connect the act to truthfulness because false testimony is a dishonest act.",
+      "Apply FRE 608(b): the court may allow cross-examination about a specific act probative of truthfulness.",
+      "Keep the extrinsic-evidence bar in its lane: it blocks outside proof, not the question itself.",
+      "Cut A because it applies the extrinsic-evidence limit to the wrong procedural form.",
+      "Cut C because it turns a limited rule into an absolute ban.",
+      "Cut D because authentication does not make barred extrinsic proof admissible.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Question vs. proof: asking about a dishonest act on cross is different from proving that act with a transcript or another outside source.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set offers one proper cross-examination route, then distracts with collateral-proof, overbroad character, and authentication reasons.",
+      },
+      {
+        label: "Blue signal",
+        body: "The phrase on cross-examination is the signal that keeps the issue inside the FRE 608(b) inquiry lane.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: seeing a specific act and stopping at barred, without asking whether the lawyer is only asking about the act on cross.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-TRUTHFULNESS-01",
+        body: "A witness may be asked on cross-examination about a specific dishonest act if the act is probative of that witness's truthfulness; the examiner may not prove the act with extrinsic evidence just for that attack.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-CROSS-EXTRINSIC-01",
+        body: "First classify the impeachment method. Cross-examination may be allowed; a transcript or other outside proof is the separate barred route.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-AUTHENTICATION-NOT-ADMISSIBILITY",
+        body: "A document can be authenticated and still excluded if it is offered as extrinsic proof of a specific truthfulness act.",
+      },
+    ],
+    leadMeSteps: [
+      "Ask whether the lawyer is asking a question or offering proof.",
+      "Identify whose credibility is being attacked.",
+      "Classify false testimony as a dishonest act probative of truthfulness.",
+      "Apply the cross-examination side of FRE 608(b).",
+      "Hold the extrinsic-evidence bar for transcripts, documents, or other outside proof.",
+      "Reject the absolute specific-act answer.",
+      "Reject authentication as a substitute for admissibility.",
+      "Pick the cross-examination answer.",
+    ],
+    drillSeeds: [
+      {
+        title: "Cross or Proof?",
+        prompt:
+          "Counsel asks a witness on cross about a prior lie but offers no transcript. Which side of FRE 608(b) are you on?",
+        answer:
+          "The cross-examination side. The judge may allow the question if the prior lie bears on truthfulness.",
+      },
+      {
+        title: "Absolute Language",
+        prompt:
+          "An answer says truthfulness cannot be attacked by specific acts. What word makes that answer dangerous?",
+        answer:
+          "Cannot. FRE 608(b) allows some specific-act questions on cross-examination.",
+      },
+      {
+        title: "Authentication Does Not Cure Purpose",
+        prompt:
+          "A certified transcript could prove the prior false testimony. Why is that not enough?",
+        answer:
+          "Authentication only proves what the document is. FRE 608(b) still bars extrinsic proof offered only to prove the specific act.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

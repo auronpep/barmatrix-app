@@ -3936,6 +3936,132 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14873",
+    transformId: "14873_crossbow_goliath_room",
+    title: "404(b): Purpose Beats Propensity",
+    outlineCode: "32020404",
+    sourceOutlineCode: "32020404",
+    coverageGroup: "adjacent_pilot_code",
+    seedBucket: "medium_friction",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "When the defendant claims accident, can prior violent acts against the same victim be admitted to show intent rather than propensity?",
+    stem:
+      "Daniel is on trial for the murder of Peter, his partner in a privately owned Bible-themed escape room business. Daniel's defense is that an antique crossbow in the David and Goliath room discharged accidentally while he and Peter were resetting props. The prosecutor calls Stephen, the mall's security supervisor, to testify that twice during the year before the incident, he responded to noise alarms from the business's storage bay, found Daniel and Peter in heated arguments, and had to pull Daniel off Peter while Daniel was striking him. The testimony is:",
+    choices: [
+      {
+        letter: "A",
+        text: "inadmissible, because Stephen lacks first-hand knowledge of who started the storage-bay arguments.",
+        verdict: "trap",
+        mold: "wrong_element / side-fact foundation trap",
+        explanation:
+          "A focuses on who started the prior arguments. Stephen personally observed Daniel striking Peter, and starter identity is not the purpose question.",
+      },
+      {
+        letter: "B",
+        text: "admissible to show that Daniel killed Peter intentionally.",
+        verdict: "correct",
+        mold: "residue / non-propensity intent purpose",
+        explanation:
+          "B names the permitted purpose. Daniel claims accident, so intent and absence of accident are live issues.",
+      },
+      {
+        letter: "C",
+        text: "admissible to show that Daniel is a violent person.",
+        verdict: "trap",
+        mold: "flat_misstatement / propensity-purpose trap",
+        explanation:
+          "C gives the forbidden reason. The prior acts cannot be used to prove Daniel is violent and therefore acted violently this time.",
+      },
+      {
+        letter: "D",
+        text: "inadmissible, because it is improper character evidence.",
+        verdict: "trap",
+        mold: "bait_doctrine / character-label panic",
+        explanation:
+          "D hears the character-evidence danger but stops too early. The offered purpose is intent or absence of accident, not propensity.",
+      },
+    ],
+    answerFlow: [
+      "Start with the defense theory: accident.",
+      "Ask what fact the prior acts are offered to prove.",
+      "Treat intent and absence of accident as live issues.",
+      "Cut the who-started-it side fact.",
+      "Cut the violent-person propensity answer.",
+      "Cut the blanket character-evidence exclusion.",
+      "Keep the non-propensity intent purpose.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Purpose controls: prior acts barred for propensity can be admitted for intent or absence of accident when that issue is live.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps either panic at the character label, accept propensity, or chase a side foundation fact.",
+      },
+      {
+        label: "Blue signal",
+        body: "Daniel says the crossbow discharge was accidental, so intent is the disputed purpose.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating all prior bad acts as one category instead of reading the offered purpose.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-404B-NONPROPENSITY-01",
+        body: "Prior bad acts are not usable for propensity, but they may be used for a non-propensity purpose such as intent or absence of mistake or accident when that purpose is genuinely disputed.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-PURPOSE-AXIS-01",
+        body: "In a character-evidence array, lock the offered purpose before the admissibility word.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-CHARACTER-LABEL-PANIC",
+        body: "Do not stop at 'prior bad act.' Ask whether the answer uses it for propensity or for a permitted non-propensity purpose.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the defense theory: accident.",
+      "Spot the same-victim prior acts.",
+      "Ask what purpose the prosecutor offers them for.",
+      "Reject the side-fact foundation answer.",
+      "Reject violent-person propensity.",
+      "Reject blanket character exclusion.",
+      "Use intent and absence of accident.",
+      "Pick B.",
+    ],
+    drillSeeds: [
+      {
+        title: "Purpose Lock",
+        prompt:
+          "A defendant claims a killing was accidental. Prior violence against the same victim is offered. What permitted 404(b) purpose should you test?",
+        answer: "Intent or absence of accident.",
+      },
+      {
+        title: "Character Trap",
+        prompt:
+          "A choice says prior violence is admissible to show the defendant is violent. What is wrong with that purpose?",
+        answer:
+          "It is propensity reasoning, which is barred even if the same act could be admitted for intent.",
+      },
+      {
+        title: "Side Fact Cut",
+        prompt:
+          "The witness saw the defendant strike the victim but does not know who started the argument. Does that decide admissibility?",
+        answer:
+          "No. The key is the observed act and its offered purpose, not who started the argument.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

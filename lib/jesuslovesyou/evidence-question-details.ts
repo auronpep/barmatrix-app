@@ -5827,6 +5827,131 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "17192",
+    transformId: "17192_bible_study_carpool_insurance_statement",
+    title: "Insurance Reassurance Is Not Fault Proof",
+    outlineCode: "35030304",
+    sourceOutlineCode: "35030304",
+    coverageGroup: "fre_403_insurance_policy_purpose",
+    seedBucket: "needs_human_review",
+    key: "A",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "In a negligence case, can the plaintiff introduce the defendant's post-accident statement that he has plenty of insurance?",
+    stem:
+      "Hannah was a passenger in a car Barnabas drove after a small Bible study carpool. The car struck a pole. Hannah later asserted a claim against Barnabas, alleging that injuries from Barnabas's negligent driving caused her to be hospitalized for more than a month. During Hannah's direct case at trial, she testified that immediately after the accident, while Barnabas was extremely nervous and upset, Barnabas said, \"Don't worry, I've got plenty of insurance.\" Upon objection by Barnabas's attorney, that portion of Hannah's testimony should be",
+    choices: [
+      {
+        letter: "A",
+        text: "excluded, because it is not relevant to a material issue.",
+        verdict: "correct",
+        mold: "residue / insurance status not fault proof",
+        explanation:
+          "A is the clean answer. Insurance status does not make negligent driving more or less probable, and FRE 411 bars using insurance to prove fault.",
+      },
+      {
+        letter: "B",
+        text: "excluded, because it relates to a compromise offer.",
+        verdict: "trap",
+        mold: "wrong label / no bargain for claim release",
+        explanation:
+          "B reaches exclusion with the wrong reason. Barnabas did not offer payment in exchange for Hannah giving up or settling a claim.",
+      },
+      {
+        letter: "C",
+        text: "admitted as evidence of an admission of a party.",
+        verdict: "trap",
+        mold: "admission overclaim / relevance still required",
+        explanation:
+          "C forgets the threshold gate. Even a party statement must be relevant and cannot use insurance status to prove fault.",
+      },
+      {
+        letter: "D",
+        text: "admitted as evidence of an excited utterance.",
+        verdict: "trap",
+        mold: "exception overclaim / unrelated insurance statement",
+        explanation:
+          "D overuses the excitement facts. The statement is about insurance, not the accident, and a hearsay exception would not fix the relevance and FRE 411 problem.",
+      },
+    ],
+    answerFlow: [
+      "Start with the exact statement: Barnabas said he had plenty of insurance.",
+      "Ask what Hannah is using it to prove in her negligence case.",
+      "Reject the fault inference because insurance status is not a material issue.",
+      "Use FRE 411 as the policy rule behind the relevance problem.",
+      "Cut compromise because there was no exchange for settlement.",
+      "Cut admission and excited utterance because labels do not override relevance.",
+      "Choose A.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Liability insurance is not admissible to prove negligence or fault; it needs a permitted purpose such as ownership, control, agency, or bias.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with real evidence labels, but relevance and FRE 411 block the statement.",
+      },
+      {
+        label: "Blue signal",
+        body: "The only content of the statement is insurance coverage, not how the accident happened.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: letting a hearsay label carry evidence past the threshold relevance and policy-exclusion gates.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-FRE411-FAULT-01",
+        body: "FRE 411 bars liability-insurance evidence when offered to prove negligence or wrongful conduct.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-RELEVANCE-BEFORE-LABELS-01",
+        body: "A hearsay exception or party-admission label does not matter unless the evidence is relevant to a material issue.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-COMPROMISE-NO-EXCHANGE",
+        body: "A reassurance about insurance is not a compromise offer unless it proposes something in exchange for settling or dropping a claim.",
+      },
+    ],
+    leadMeSteps: [
+      "Identify what the statement says: insurance coverage.",
+      "Identify what the case is about: negligent driving.",
+      "Ask whether insurance coverage proves negligent driving.",
+      "Apply FRE 411's fault-use bar.",
+      "Reject compromise because no settlement exchange appears.",
+      "Reject admission and excited utterance as irrelevant labels.",
+      "Pick A.",
+    ],
+    drillSeeds: [
+      {
+        title: "Fault Use Bar",
+        prompt:
+          "A defendant says after an accident, 'I have plenty of insurance.' Can the plaintiff use that to prove negligent driving?",
+        answer:
+          "No. Insurance status is not fault proof, and FRE 411 bars using it to prove negligence or wrongful conduct.",
+      },
+      {
+        title: "Label Does Not Save It",
+        prompt:
+          "If a statement might be a party admission, what threshold evidence question still comes first?",
+        answer:
+          "Whether the statement is relevant to a material issue and not barred by a policy rule like FRE 411.",
+      },
+      {
+        title: "Compromise Offer Check",
+        prompt:
+          "What is missing from a mere reassurance, 'I have insurance,' if an answer calls it a compromise offer?",
+        answer:
+          "An offer or promise made in exchange for settling, discontinuing, or not asserting a claim.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

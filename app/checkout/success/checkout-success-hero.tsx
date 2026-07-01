@@ -8,11 +8,13 @@ type ActivationKind = "confirmed" | "pending" | "missing";
 interface CheckoutSuccessHeroProps {
   activationKind: ActivationKind;
   accountHref: string;
+  checkoutHref?: string;
 }
 
 export function CheckoutSuccessHero({
   activationKind,
   accountHref,
+  checkoutHref = "/checkout",
 }: CheckoutSuccessHeroProps) {
   const dash = useDashboard();
   const signedInAccessActive = dash.data?.enrolled === true;
@@ -79,7 +81,7 @@ export function CheckoutSuccessHero({
             Open Account <span className="arrow">→</span>
           </Link>
           {activationKind !== "confirmed" && !signedInAccessActive && (
-            <Link href="/checkout" className="btn btn-lg ghost">
+            <Link href={checkoutHref} className="btn btn-lg ghost">
               Back to Checkout <span className="arrow">→</span>
             </Link>
           )}

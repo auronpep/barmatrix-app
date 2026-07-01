@@ -23,7 +23,11 @@ type AttributionState = {
   hasDiagnosticContext: boolean;
 };
 
-export default function CheckoutClient() {
+interface CheckoutClientProps {
+  routePrefix?: string;
+}
+
+export default function CheckoutClient({ routePrefix = "" }: CheckoutClientProps = {}) {
   const [phase, setPhase] = useState<Phase>("ready");
   const [error, setError] = useState<string | null>(null);
   const [attribution, setAttribution] = useState<AttributionState>({
@@ -108,7 +112,7 @@ export default function CheckoutClient() {
         referral_click_id: getReferralClickId(checkoutSearchParams),
         diagnostic_id: getDiagnosticId(checkoutSearchParams),
         coupon_code: plan === "pay_in_full" ? getCouponCode(checkoutSearchParams) : null,
-        ...buildCheckoutReturnUrls(plan, trackedAttribution),
+        ...buildCheckoutReturnUrls(plan, trackedAttribution, routePrefix),
       });
       window.location.assign(session.checkout_url);
     } catch (err) {
@@ -657,16 +661,27 @@ function getDiagnosticId(searchParams: URLSearchParams): string | null {
   return candidate && DIAGNOSTIC_ID_RE.test(candidate) ? candidate : null;
 }
 
-function buildCheckoutReturnUrls(plan: PaymentPlan, attribution: StoredAttribution) {
+function normalizeCheckoutRoutePrefix(routePrefix: string): "" | "/Jesuslovesyou" {
+  return routePrefix === "/Jesuslovesyou" ? routePrefix : "";
+}
+
+function buildCheckoutReturnUrls(
+  plan: PaymentPlan,
+  attribution: StoredAttribution,
+  routePrefix: string,
+) {
   const origin = window.location.origin;
-  const successUrl = new URL("/checkout/success", origin);
+  const prefix = normalizeCheckoutRoutePrefix(routePrefix);
+  const successUrl = new URL(`${prefix}/checkout/success`, origin);
+  const cancelUrl = new URL(prefix || "/pricing", origin);
   successUrl.searchParams.set("payment_plan", plan);
   successUrl.searchParams.set("partner_id", attribution.partner_id);
   successUrl.searchParams.set("cohort_id", DEFAULT_LAUNCH_COHORT_ID);
+  cancelUrl.searchParams.set("checkout", "cancelled");
   const successConnector = successUrl.toString().includes("?") ? "&" : "?";
 
   return {
     success_url: `${successUrl.toString()}${successConnector}checkout_session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${origin}/pricing?checkout=cancelled`,
+    cancel_url: cancelUrl.toString(),
   };
 }

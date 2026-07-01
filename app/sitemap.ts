@@ -9,6 +9,7 @@ const ROUTES = [
   "/mobile-apps",
   "/how-it-works",
   "/pricing",
+  "/Jesuslovesyou",
   "/diagnostic",
   "/foundations",
   "/mastery",

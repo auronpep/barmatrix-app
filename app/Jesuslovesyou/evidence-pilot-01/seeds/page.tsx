@@ -248,16 +248,17 @@ export default function EvidenceSeedCandidatesPage() {
                         {candidate.correct_percent || "n/a"}
                         {candidate.correct_percent ? "%" : ""}
                       </p>
-                      {hasEvidenceQuestionDetail(candidate.question_id) ? (
-                        <div style={{ marginTop: 12 }}>
-                          <Link
-                            href={`${JESUSLOVESYOU_ROUTE_PREFIX}/evidence-pilot-01/seeds/${candidate.question_id}`}
-                            className="btn ghost"
-                          >
-                            Open case study <span className="arrow">-&gt;</span>
-                          </Link>
-                        </div>
-                      ) : null}
+                      <div style={{ marginTop: 12 }}>
+                        <Link
+                          href={`${JESUSLOVESYOU_ROUTE_PREFIX}/evidence-pilot-01/seeds/${candidate.question_id}`}
+                          className="btn ghost"
+                        >
+                          {hasEvidenceQuestionDetail(candidate.question_id)
+                            ? "Open case study"
+                            : "Open review row"}{" "}
+                          <span className="arrow">-&gt;</span>
+                        </Link>
+                      </div>
                     </div>
                   ))}
                 </div>

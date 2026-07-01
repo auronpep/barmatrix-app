@@ -1,3 +1,17 @@
+import rawSeedCandidates from "@/lib/jesuslovesyou/evidence-seed-candidates.json";
+
+export type EvidenceSeedCandidate = {
+  question_id: string;
+  outline_code: string;
+  source_outline_code: string;
+  coverage_group: string;
+  seed_bucket: string;
+  correct_percent: string | null;
+  key: string | null;
+  has_finished_transform: boolean;
+  review_status: string;
+};
+
 export type EvidenceQuestionDetail = {
   questionId: string;
   transformId: string;
@@ -34,6 +48,9 @@ export type EvidenceQuestionDetail = {
     answer: string;
   }[];
 };
+
+export const evidenceSeedCandidates =
+  rawSeedCandidates as EvidenceSeedCandidate[];
 
 export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
   {
@@ -163,10 +180,22 @@ export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(
   ({ questionId }) => ({ questionId }),
 );
 
+export const evidenceSeedQuestionParams = evidenceSeedCandidates.map(
+  ({ question_id: questionId }) => ({ questionId }),
+);
+
 export function getEvidenceQuestionDetail(questionId: string) {
   return (
     evidenceQuestionDetails.find((question) => question.questionId === questionId) ??
     null
+  );
+}
+
+export function getEvidenceSeedCandidate(questionId: string) {
+  return (
+    evidenceSeedCandidates.find(
+      (candidate) => candidate.question_id === questionId,
+    ) ?? null
   );
 }
 

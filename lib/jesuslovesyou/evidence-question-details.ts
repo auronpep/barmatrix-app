@@ -3809,6 +3809,133 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "18503",
+    transformId: "18503_barnabas-stipulated-status",
+    title: "Stipulation Reduces the 403 Need",
+    outlineCode: "32020302",
+    sourceOutlineCode: "32020302",
+    coverageGroup: "fre_403_insurance_policy_purpose",
+    seedBucket: "hard_trap",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "How does a stipulation to a prior-conviction status element affect Rule 403 balancing of the prior judgment's details?",
+    stem:
+      "Barnabas is charged in federal court with being a felon in possession of a firearm. At a pretrial hearing, Barnabas's lawyer offers a written stipulation that Barnabas has a qualifying prior felony conviction. The prosecutor declines and instead offers a certified copy of the judgment from ten years earlier, which states that Barnabas was convicted of aggravated assault and sentenced to imprisonment. How should the court rule on the details in the judgment?",
+    choices: [
+      {
+        letter: "A",
+        text: "Admit the full judgment because the prosecutor is always entitled to prove every element in the most dramatic way.",
+        verdict: "trap",
+        mold: "wrong_frame / prosecutorial-autonomy overclaim",
+        explanation:
+          "A overclaims. The prosecutor has to prove the element, but Rule 403 still limits proof whose added value is substantially outweighed by unfair prejudice.",
+      },
+      {
+        letter: "B",
+        text: "Exclude the nature and details of the prior conviction if the stipulation supplies the status element and the remaining probative value is substantially outweighed by unfair prejudice.",
+        verdict: "correct",
+        mold: "residue / stipulated-status Rule 403 balance",
+        explanation:
+          "B applies the reduced-need step. The stipulation proves status, so the name and details of the prior offense add less probative value and carry more unfair-prejudice risk.",
+      },
+      {
+        letter: "C",
+        text: "Admit the judgment only to prove Barnabas's bad character.",
+        verdict: "trap",
+        mold: "wrong_purpose / character-evidence bleed",
+        explanation:
+          "C spots the prejudice risk but states a forbidden purpose. The judgment is not admitted to prove bad character.",
+      },
+      {
+        letter: "D",
+        text: "Exclude all evidence of the prior conviction, including the fact of a qualifying conviction, because prior convictions are never relevant.",
+        verdict: "trap",
+        mold: "flat_misstatement / total-ban overclaim",
+        explanation:
+          "D goes too far. The fact of a qualifying conviction remains relevant to the status element; the issue is the unnecessary details.",
+      },
+    ],
+    answerFlow: [
+      "Identify the status element.",
+      "Notice the written stipulation supplies that element.",
+      "Separate the fact of conviction from the name and details.",
+      "Cut the dramatic-proof entitlement overclaim.",
+      "Cut the bad-character purpose.",
+      "Cut the total-ban answer.",
+      "Reweigh the details under Rule 403 after the stipulation reduces their need.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "A stipulation to a status element reduces the probative need for more prejudicial details.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps overprotect prosecution choice, import character evidence, or overban prior convictions.",
+      },
+      {
+        label: "Blue signal",
+        body: "Barnabas offers a stipulation that already proves the qualifying-conviction element.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: forgetting that available alternative proof can change the Rule 403 balance.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-STIP-01",
+        body: "When a stipulation fully supplies a status element, the probative value of more detailed proof drops; Rule 403 may require the less prejudicial form of proof.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-STATUS-DETAIL-SPLIT-01",
+        body: "Split the fact needed for the element from extra details that mainly create prejudice.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-PROSECUTOR-NOT-ALWAYS-DRAMATIC",
+        body: "A prosecutor is not always entitled to prove an element through the most dramatic version when less prejudicial proof fully supplies the point.",
+      },
+    ],
+    leadMeSteps: [
+      "Name what the government must prove: qualifying-conviction status.",
+      "Read the stipulation as supplying that status element.",
+      "Ask what the judgment details add.",
+      "Weigh the added value against unfair prejudice.",
+      "Reject the prosecutor-always-chooses trap.",
+      "Reject the bad-character purpose.",
+      "Reject the total-ban overclaim.",
+      "Pick B.",
+    ],
+    drillSeeds: [
+      {
+        title: "Status Split",
+        prompt:
+          "In a felon-in-possession case, what is the difference between the fact of a qualifying conviction and the name of the prior offense?",
+        answer:
+          "The fact proves the status element; the name may add little after a stipulation and create unfair prejudice.",
+      },
+      {
+        title: "403 Reweigh",
+        prompt:
+          "How does a complete stipulation affect the probative value of more detailed proof of the same element?",
+        answer:
+          "It reduces the need for the details, so their probative value drops in the Rule 403 balance.",
+      },
+      {
+        title: "Dramatic Proof Trap",
+        prompt:
+          "A choice says the prosecutor is always entitled to the most dramatic proof. What word should bother you?",
+        answer:
+          "Always. Rule 403 is a balancing rule, so absolute entitlement language is suspect.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

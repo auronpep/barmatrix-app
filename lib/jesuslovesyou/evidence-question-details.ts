@@ -918,6 +918,131 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14836",
+    transformId: "14836_picnic_alibi",
+    title: "Witness Truthfulness: Extrinsic Evidence Bar",
+    outlineCode: "31010406",
+    sourceOutlineCode: "31010406",
+    coverageGroup: "witness_truthfulness",
+    seedBucket: "clean_teaching",
+    key: "A",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A witness's credibility is attacked by a separate witness's testimony about a specific prior false statement on an application. Is that extrinsic evidence admissible to attack truthfulness?",
+    stem:
+      "At the defendant's trial for embezzlement from her church, one of the defendant's friends supported the defendant's alibi that they were planning the church's annual picnic together on the morning of the alleged theft. On cross-examination, the friend was asked whether her statement on a small-business loan application that she had been continuously self-employed as a freelance bookkeeper for the past eight years was false. The friend denied that the statement was false. The prosecutor then calls a witness, a loan officer who processed the application, to testify that although the friend had been self-employed for the first two and the most recent four of those years, there had been a two-year period during which she had not been self-employed at all. The testimony of the witness is:",
+    choices: [
+      {
+        letter: "A",
+        text: "Inadmissible, because whether the friend lied in her application is a matter that cannot be proved by extrinsic evidence.",
+        verdict: "correct",
+        mold: "residue / FRE 608(b) extrinsic-evidence bar",
+        explanation:
+          "FRE 608(b) bars extrinsic evidence of specific instances offered to attack a witness's character for truthfulness. The prosecutor left cross-examination and called a separate witness.",
+      },
+      {
+        letter: "B",
+        text: "Admissible, in the judge's discretion, because the friend's credibility is a fact of major consequence to the case.",
+        verdict: "trap",
+        mold: "EAR_FALSITY / wrong balancing frame",
+        explanation:
+          "This is the dominant trap. The judge has discretion over cross-examination inquiry, not over admitting extrinsic proof barred by FRE 608(b).",
+      },
+      {
+        letter: "C",
+        text: "Inadmissible, because the misstatement by the friend could have been caused by a misunderstanding of the application form.",
+        verdict: "trap",
+        mold: "EAR_DISTORTION / right verdict wrong reason",
+        explanation:
+          "C reaches the right bottom-line word but gives a common-sense speculation instead of the rule. The legal reason is the extrinsic-evidence bar.",
+      },
+      {
+        letter: "D",
+        text: "Admissible, as a matter of right, because the friend opened the door by her denial on cross-examination.",
+        verdict: "trap",
+        mold: "EAR_FALSITY / open-the-door overreach",
+        explanation:
+          "The denial may permit further cross-examination. It does not open the door to a separate witness proving the specific instance.",
+      },
+    ],
+    answerFlow: [
+      "Identify the attack: a specific prior false statement used to attack truthfulness.",
+      "Spot the method: the prosecutor calls a separate witness after the friend denies the point on cross.",
+      "Classify that method as extrinsic evidence.",
+      "Apply FRE 608(b): specific instances may be inquired into on cross, but not proved by extrinsic evidence.",
+      "Cut B because the rule is structural, not a major-consequence balancing test.",
+      "Cut D because opening the door does not waive the 608(b) extrinsic-proof bar.",
+      "Choose A because it names the actual rule.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Cross-examination inquiry is allowed only in the court's discretion; separate-witness proof is extrinsic evidence.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set pairs two admissible lures with two inadmissible answers, forcing a clash on the stated reason.",
+      },
+      {
+        label: "Blue signal",
+        body: "The phrase calls a witness is the giveaway that the prosecutor has moved from cross-examination to extrinsic proof.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating credibility as a 403-style weighing question when FRE 608(b) supplies a structural bar.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVID-EXTRINSIC-01",
+        body: "FRE 608(b) bars extrinsic evidence of specific instances to attack truthfulness. Cross-examination inquiry is the only door, and even that is discretionary.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVID-ARRAY-01",
+        body: "When two answers share the same bottom-line verdict, clash on the stated reason. The correct answer names the operative rule.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVID-OPEN-DOOR-608B",
+        body: "A denial on cross does not let the examiner call a separate witness to prove a specific-instance truthfulness attack.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the impeachment target: character for truthfulness.",
+      "Name the conduct type: a specific prior statement on an application.",
+      "Ask whether the examiner stayed on cross-examination.",
+      "Circle the separate witness as extrinsic evidence.",
+      "Reject judicial-discretion language unless the answer is about cross-examination inquiry.",
+      "Reject open-the-door language when it tries to admit separate-witness proof.",
+      "Pick the extrinsic-evidence bar answer.",
+    ],
+    drillSeeds: [
+      {
+        title: "Spot the Separate Witness",
+        prompt:
+          "Cross asks a witness about a specific prior false statement, then calls a separate witness to prove it. Admissible under FRE 608(b)?",
+        answer:
+          "No. FRE 608(b) bars extrinsic evidence of specific instances for truthfulness; cross-examination inquiry is the only door.",
+      },
+      {
+        title: "Verdict Clash",
+        prompt:
+          "Two answers say inadmissible. One says extrinsic evidence is barred; one says the witness might have misunderstood. Which reason wins?",
+        answer:
+          "The extrinsic-evidence bar wins because it states the operative FRE 608(b) rule.",
+      },
+      {
+        title: "Open-the-Door Scope",
+        prompt:
+          "A witness denies on cross that a prior statement was false. Does that let the examiner call a separate witness to prove the prior statement?",
+        answer:
+          "No. The examiner may keep probing on cross if allowed, but FRE 608(b) bars separate-witness extrinsic proof.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

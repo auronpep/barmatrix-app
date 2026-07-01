@@ -66,6 +66,12 @@ export default function ConLawPilotPage() {
             >
               Open seed candidates <span className="arrow">-&gt;</span>
             </Link>
+            <Link
+              href={`${JESUSLOVESYOU_ROUTE_PREFIX}/conlaw-pilot-01/qa-report`}
+              className="btn btn-lg ghost"
+            >
+              Open QA report <span className="arrow">-&gt;</span>
+            </Link>
             <Link href={JESUSLOVESYOU_ROUTE_PREFIX} className="btn btn-lg ghost">
               Back to Jesuslovesyou <span className="arrow">-&gt;</span>
             </Link>

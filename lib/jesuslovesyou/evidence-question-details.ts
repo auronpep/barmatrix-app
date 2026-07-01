@@ -301,6 +301,129 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14824",
+    transformId: "14824_banner_drone",
+    title: "Preliminary Questions: Judge May Consider Hearsay",
+    outlineCode: "31010107",
+    sourceOutlineCode: "31010107",
+    coverageGroup: "preliminary_question_judge_jury",
+    seedBucket: "medium_friction",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A party offers a doctor's affidavit only to help the judge decide whether a dying statement is admissible. May the judge consider the hearsay affidavit?",
+    stem:
+      "At a private Christian makers' fair, Hannah is struck by a banner drone after Timothy launches it toward the exhibit hall. Hannah later dies, and Lydia, Hannah's executor, sues Timothy for wrongful death. At trial, Lydia calls Ruth, a nurse, to testify that the next morning Hannah said Timothy launched the drone after the marshal dropped the landing flag. To lay the foundation for Hannah's statement, Lydia offers the court Dr. Luke's affidavit stating that Hannah had said several times that she knew she was about to die. Is the affidavit properly considered by the court in ruling on the admissibility of Hannah's statement?",
+    choices: [
+      {
+        letter: "A",
+        text: "No, because statements made under belief of imminent death may be used only in prosecutions for homicide.",
+        verdict: "trap",
+        mold: "tiered_absolute / civil-case overclaim",
+        explanation:
+          "This over-tightens the dying-declaration exception. Under the federal rule, a dying declaration may apply in a homicide prosecution or in a civil case.",
+      },
+      {
+        letter: "B",
+        text: "Yes, because the judge may consider hearsay in ruling on preliminary questions.",
+        verdict: "correct",
+        mold: "residue / FRE 104(a) layer lock",
+        explanation:
+          "The affidavit is foundation material for the judge's admissibility ruling, not ordinary merits evidence for the jury. Under FRE 104(a), the judge is not bound by evidence rules except privilege.",
+      },
+      {
+        letter: "C",
+        text: "No, because the affidavit is hearsay and no hearsay exception covers it.",
+        verdict: "trap",
+        mold: "bait_doctrine / exception hunt",
+        explanation:
+          "This is the dominant trap. It treats the affidavit like trial evidence and starts hunting for a hearsay exception, but the call asks what the judge may consider while deciding admissibility.",
+      },
+      {
+        letter: "D",
+        text: "Yes, because, although hearsay, the affidavit is a statement of then-existing mental condition.",
+        verdict: "trap",
+        mold: "bait_doctrine / right-result-wrong-reason",
+        explanation:
+          "The yes result is right, but the reason is wrong. The affidavit is considered because of the preliminary-question rule, not because the affidavit itself fits the mental-condition exception.",
+      },
+    ],
+    answerFlow: [
+      "Lock the layer: the affidavit is offered to the court for an admissibility ruling.",
+      "Apply FRE 104(a): the judge decides preliminary questions and is not bound by evidence rules except privilege.",
+      "Cut C because the affidavit does not need a hearsay exception at this layer.",
+      "Cut D because a right yes/no result with the wrong hearsay-exception reason is still wrong.",
+      "Cut A because the federal dying-declaration exception is not limited to homicide prosecutions.",
+      "Choose B because the judge may consider hearsay while ruling on the preliminary admissibility question.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Layer before label: ask whether the evidence is for the judge's preliminary ruling before asking for a hearsay exception.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set surrounds the Rule 104(a) answer with a hearsay-exception hunt, a scope overclaim, and a right-result-wrong-reason choice.",
+      },
+      {
+        label: "Blue signal",
+        body: "The phrase considered by the court in ruling on admissibility points to the judge's preliminary-question layer.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating every hearsay-looking document as jury evidence that needs its own exception.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-PRELIM-HEARSAY-01",
+        body: "For a preliminary admissibility question, the judge may consider hearsay; FRE 104(a) frees the court from the evidence rules except privilege.",
+      },
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-DYING-CIVIL-02",
+        body: "A federal dying declaration is not limited to homicide prosecutions; it may also apply in a civil case when the declarant is unavailable and believed death was imminent.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-BANNER-DRONE-01",
+        body: "Lock the layer: the call asks what the judge may consider while ruling, not whether the affidavit is admissible to the jury.",
+      },
+    ],
+    leadMeSteps: [
+      "Circle the words court and ruling on admissibility.",
+      "Say who is using the affidavit: the judge, not the jury.",
+      "Name FRE 104(a) before any hearsay exception.",
+      "Reject the answer that needs an exception for the affidavit.",
+      "Check the word only in the homicide-prosecution choice.",
+      "Pick the answer that explains the preliminary-question layer.",
+    ],
+    drillSeeds: [
+      {
+        title: "Layer Lock",
+        prompt:
+          "A party offers a hearsay affidavit only to help the judge decide admissibility. May the judge consider it?",
+        answer:
+          "Yes. Under FRE 104(a), the judge is not bound by evidence rules except privilege when deciding preliminary questions.",
+      },
+      {
+        title: "Exception Hunt",
+        prompt:
+          "The call asks whether the court may consider a foundation affidavit. Should you first hunt for a hearsay exception?",
+        answer:
+          "No. First lock the preliminary-admissibility layer. FRE 104(a) controls what the judge may consider.",
+      },
+      {
+        title: "Scope Word",
+        prompt:
+          "A choice says dying declarations are usable only in homicide prosecutions. What breaks that choice under the federal rule?",
+        answer:
+          "The federal dying-declaration exception also reaches civil cases.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

@@ -2929,6 +2929,132 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "22227",
+    transformId: "22227_barn-fire-daniel",
+    title: "Refreshing Recollection: Pretrial Notes Inspection",
+    outlineCode: "31010407",
+    sourceOutlineCode: "31010407",
+    coverageGroup: "adjacent_pilot_code",
+    seedBucket: "needs_human_review",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "When a witness refreshed recollection before trial by reviewing notes, what may the court require on the opposing party's motion?",
+    stem:
+      "Three years passed before a negligence suit against a landowner reached trial. The plaintiff alleged that the defendant's poorly maintained fence allowed livestock to escape onto a neighboring road, causing a collision that injured the plaintiff. At trial, the plaintiff's attorney called Daniel, an eyewitness to the accident. Daniel testified that before coming to court, he had refreshed his recollection by reviewing written notes he had taken during his conversation with the plaintiff's attorney two weeks after the accident. On proper motion by the defendant's attorney, what should the court do?",
+    choices: [
+      {
+        letter: "A",
+        text: "Admit the notes into evidence as an admission of a party.",
+        verdict: "trap",
+        mold: "issue_misfit / admission trap",
+        explanation:
+          "A misfires because Daniel is a witness, not a party. A nonparty witness's notes are not admissions of a party-opponent.",
+      },
+      {
+        letter: "B",
+        text: "Strike Daniel's testimony, unless it is shown that the notes themselves are unavailable.",
+        verdict: "trap",
+        mold: "flat_misstatement / best-evidence trap",
+        explanation:
+          "B imports the best evidence rule. Daniel is testifying from refreshed memory, not proving the contents of the notes, so there is no basis to strike his testimony.",
+      },
+      {
+        letter: "C",
+        text: "Direct that the notes be brought into court for inspection by the defendant's attorney.",
+        verdict: "correct",
+        mold: "residue / FRE 612 production",
+        explanation:
+          "C applies Rule 612. Because Daniel used the notes to refresh memory before testifying, the court may require production so the defendant can inspect them and cross-examine effectively.",
+      },
+      {
+        letter: "D",
+        text: "Direct that the notes cannot be brought into court because they have not been offered into evidence.",
+        verdict: "trap",
+        mold: "flat_misstatement / not-offered trap",
+        explanation:
+          "D gets Rule 612 backwards. A refresh writing can be produced for inspection even though it has not been offered into evidence.",
+      },
+    ],
+    answerFlow: [
+      "Identify the trigger: Daniel refreshed memory before trial by reviewing notes.",
+      "Ask whether the notes are being used to prove their contents.",
+      "They are not; Daniel is testifying from refreshed memory.",
+      "Cut the best evidence rule trap.",
+      "Cut the admission trap because Daniel is not a party.",
+      "Cut the not-offered trap because Rule 612 production does not require offering the notes.",
+      "Apply Rule 612 inspection.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Rule 612 lets the court require production of writings used to refresh memory before testifying.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps confuse refresh inspection with best evidence, party admissions, and formal admission of the writing.",
+      },
+      {
+        label: "Blue signal",
+        body: "Daniel reviewed the notes before coming to court and then testified from memory; that points to Rule 612, not proof of contents.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: seeing notes and unavailable and reflexively applying the best evidence rule.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-REFRESH-01",
+        body: "A writing used to refresh recollection before trial can be produced for opposing-party inspection; the witness testifies from memory, and the writing is a cross-examination tool.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-REFRESH-NOT-BEST-EVIDENCE",
+        body: "The best evidence rule applies to proving a writing's contents, not to testimony from memory after a refresh.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-NONPARTY-NOTES-NOT-ADMISSION",
+        body: "Notes made by a nonparty witness are not admissions of a party-opponent merely because they involve a party's attorney.",
+      },
+    ],
+    leadMeSteps: [
+      "Find the refresh event.",
+      "Confirm the witness refreshed before trial.",
+      "Separate refreshed-memory testimony from proof of note contents.",
+      "Reject best evidence.",
+      "Reject admissions because the witness is not a party.",
+      "Reject the offered-into-evidence prerequisite.",
+      "Order production for inspection.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Refresh vs. Contents",
+        prompt:
+          "A witness reviews notes before trial and then testifies from memory. Does the best evidence rule require the notes to be unavailable before the testimony stands?",
+        answer:
+          "No. The best evidence rule governs proof of contents, not refreshed-memory testimony.",
+      },
+      {
+        title: "Production Trigger",
+        prompt:
+          "A writing was used to refresh recollection before testimony. What can the court require on the opposing party's motion?",
+        answer:
+          "Production of the writing for inspection and related cross-examination under Rule 612.",
+      },
+      {
+        title: "Admission Misfit",
+        prompt:
+          "A nonparty witness's notes from a conversation with a party's lawyer are offered as an admission. What is the missing requirement?",
+        answer: "A party-opponent statement.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

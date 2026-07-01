@@ -6077,6 +6077,131 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "22156",
+    transformId: "22156_book_fair_van_insurance",
+    title: "Insurance Policy Proves Ownership",
+    outlineCode: "35030304",
+    sourceOutlineCode: "31010100",
+    coverageGroup: "fre_403_insurance_policy_purpose",
+    seedBucket: "recode_or_ambiguous",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "In a negligence case where vehicle ownership is disputed, may a plaintiff offer authenticated liability-insurance evidence to show the defendant owned the vehicle?",
+    stem:
+      "A statute makes the owner of a motor vehicle vicariously liable for the negligence of a person driving with the owner's permission. Ruth was injured when a delivery van struck her near a community Bible book fair. Ruth sued Daniel, alleging that she was injured by Mary's negligent driving while Mary was operating Daniel's delivery van with Daniel's permission. Daniel denies owning the van. Over Daniel's objection, Ruth offers a liability insurance policy authenticated by an officer of the insurance company, who states that the policy was purchased by and issued to Daniel, and that on the day of the accident the policy was in force on the van in question. Should the policy and authenticating testimony be admitted?",
+    choices: [
+      {
+        letter: "A",
+        text: "No, because policy prohibits the introduction of evidence that a party did or did not have liability insurance on the day of an accident.",
+        verdict: "trap",
+        mold: "tiered absolute / insurance-is-always-barred trap",
+        explanation:
+          "A is the dominant trap. FRE 411 blocks insurance evidence for fault, but it is not an all-purpose ban.",
+      },
+      {
+        letter: "B",
+        text: "Yes, because it tends to establish that Daniel owned the van at the time of the accident.",
+        verdict: "correct",
+        mold: "residue / FRE 411 ownership purpose",
+        explanation:
+          "B is the clean answer. Daniel denies ownership, and a policy issued to him on the van makes ownership more probable.",
+      },
+      {
+        letter: "C",
+        text: "No, because it has no probative value relative to the issues in the case.",
+        verdict: "trap",
+        mold: "flat misstatement / probative-value denial",
+        explanation:
+          "C ignores the live ownership dispute. The policy has probative value because ownership is a fact of consequence under the statute.",
+      },
+      {
+        letter: "D",
+        text: "Yes, because it is relevant to Daniel's ability to pay a judgment rendered against him.",
+        verdict: "trap",
+        mold: "wrong element / collectability detour",
+        explanation:
+          "D reaches the right admissibility result for the wrong reason. Ability to pay is not a liability or damages issue here.",
+      },
+    ],
+    answerFlow: [
+      "Start with the purpose for offering the policy.",
+      "Do not use liability insurance to prove negligence or wrongful conduct.",
+      "Spot Daniel's ownership denial.",
+      "Use the policy issued to Daniel on the van as ownership evidence.",
+      "Cut the categorical insurance ban because FRE 411 has permitted purposes.",
+      "Cut ability to pay because collectability is not the issue.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "FRE 411 bars liability-insurance evidence for fault, but allows it for another relevant purpose such as ownership or control.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set splits forbidden insurance uses from the permitted ownership purpose.",
+      },
+      {
+        label: "Blue signal",
+        body: "Daniel denies owning the van, so ownership is the fact that makes the policy relevant.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: cutting every insurance answer automatically instead of asking what the evidence proves.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-FRE411-OWNERSHIP-01",
+        body: "FRE 411 bars liability-insurance evidence to prove negligence or wrongful conduct, but allows it for another relevant purpose such as ownership or control.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-INSURANCE-PURPOSE-CHECK-01",
+        body: "When insurance appears in an Evidence answer, ask the purpose first: fault and ability-to-pay are danger zones, but ownership or control may be fair game.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-INSURANCE-ABSOLUTE-BAN",
+        body: "An answer that treats insurance evidence as always barred is overbroad when the evidence is offered for a permitted purpose.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the evidence: a liability policy issued to Daniel on the van.",
+      "Name the disputed fact: Daniel denies ownership.",
+      "Ask whether Ruth is using the policy to prove negligence.",
+      "Use FRE 411's ownership-purpose allowance.",
+      "Reject ability to pay as a collectability detour.",
+      "Reject no probative value because ownership matters.",
+      "Pick B.",
+    ],
+    drillSeeds: [
+      {
+        title: "Insurance Purpose Check",
+        prompt:
+          "A plaintiff offers liability insurance to prove the defendant was negligent. Admissible?",
+        answer:
+          "No. FRE 411 bars using liability insurance to prove negligence or wrongful conduct.",
+      },
+      {
+        title: "Ownership Purpose",
+        prompt:
+          "A defendant denies owning the accident vehicle, and a policy covers that vehicle in the defendant's name. What purpose may support admission?",
+        answer:
+          "Ownership or control. FRE 411 permits liability-insurance evidence for that purpose.",
+      },
+      {
+        title: "Collectability Detour",
+        prompt:
+          "Why is Daniel's ability to pay a judgment the wrong reason to admit the insurance policy?",
+        answer:
+          "Ability to pay is not a fact of consequence for negligence liability or damages; ownership is the relevant purpose.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

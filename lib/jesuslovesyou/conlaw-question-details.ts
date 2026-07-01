@@ -3129,6 +3129,130 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "22592",
+    transformId: "22592_house_fellowship_lamb_rite",
+    title: "Sincerity Yes, Reasonableness No",
+    selectorCode: "44040501",
+    selectorMatch: "exact",
+    outlineCode: "44040501",
+    sourceOutlineCode: "44040501",
+    coverageGroup: "free_exercise",
+    seedBucket: "needs_human_review",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "In a Free Exercise challenge, which inquiry is forbidden when a claimant says a religious practice required violating an animal-cruelty law?",
+    stem:
+      'A state statute makes it unlawful to kill an animal "by a method that inflicts needless pain or suffering." Daniel is prosecuted after he suffocates a lamb during a private faith-fellowship ceremony that he says his religious community requires. Daniel argues that applying the statute to him violates his free exercise of religion. Which of the following may the court NOT consider in deciding the constitutional issue?',
+    choices: [
+      {
+        letter: "A",
+        text: "Whether the lamb rite has been practiced by the fellowship for many years.",
+        verdict: "trap",
+        mold: "history-as-forbidden-inquiry trap",
+        explanation:
+          "A overextends the rule. A court may consider history or tradition as evidence bearing on sincerity or religious character; that is not the same as judging whether the belief is reasonable.",
+      },
+      {
+        letter: "B",
+        text: "Whether Daniel is sincere in the religious belief that requires the lamb rite.",
+        verdict: "trap",
+        mold: "sincerity-reasonableness confusion",
+        explanation:
+          "B confuses two different inquiries. Courts may test whether Daniel honestly holds the asserted belief, but they may not decide whether the belief itself makes sense.",
+      },
+      {
+        letter: "C",
+        text: "Whether the religious belief requiring the lamb rite is reasonable.",
+        verdict: "correct",
+        mold: "forbidden belief-evaluation inquiry",
+        explanation:
+          "C is correct. Free Exercise doctrine permits sincerity review, but courts may not grade the reasonableness, truth, or logic of a religious belief.",
+      },
+      {
+        letter: "D",
+        text: "Whether applying the statute is necessary to protect a compelling state interest.",
+        verdict: "trap",
+        mold: "legal-scrutiny-not-belief-evaluation",
+        explanation:
+          "D is not the forbidden inquiry. Compelling-interest review is not automatic for every neutral, generally applicable law, but government-interest review may be considered when constitutionality is being decided.",
+      },
+    ],
+    answerFlow: [
+      "Read the negative call: identify the inquiry the court may not consider.",
+      "Separate belief evaluation from surrounding legal inquiries.",
+      "Cut A because tradition can be relevant without judging reasonableness.",
+      "Cut B because sincerity is a permissible threshold inquiry.",
+      "Cut D because government-interest review is legal scrutiny, not belief evaluation.",
+      "Choose C because it asks the court to judge whether the religious belief is reasonable.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Belief reasonableness is forbidden; sincerity, tradition, and government-interest review are different inquiries.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students to treat every look at religion as forbidden.",
+      },
+      {
+        label: "Blue signal",
+        body: "The word reasonable points at the belief itself, not Daniel's honesty or the state's justification.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: turning the no-reasonableness rule into a no-inquiry-at-all rule.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-FREEEX-REASONABLENESS-01",
+        body: "Courts may test sincerity, but they may not decide whether a religious belief is reasonable, logical, true, or sensible.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-FREEEX-SINCERITY-01",
+        body: "Sincerity asks whether the claimant honestly holds the belief; reasonableness asks whether judges think the belief makes sense.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-NEGATIVE-CALL-01",
+        body: "In a NOT-consider call, pick the legally forbidden inquiry, not an inquiry that is merely non-dispositive.",
+      },
+    ],
+    leadMeSteps: [
+      "Spot the negative call.",
+      "Name the claim: Free Exercise.",
+      "Separate sincerity from reasonableness.",
+      "Separate legal scrutiny from belief evaluation.",
+      "Reject no-inquiry overextension.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Sincerity Versus Reasonableness",
+        prompt:
+          "In a Free Exercise claim, what can a court test: sincerity or reasonableness of the belief?",
+        answer:
+          "The court may test sincerity, but it may not judge the belief's reasonableness.",
+      },
+      {
+        title: "Negative Call Discipline",
+        prompt:
+          "When the call asks what the court may NOT consider, why is a merely non-dispositive factor not enough?",
+        answer:
+          "Because the answer must be a forbidden inquiry, not just a factor that does not always decide the case.",
+      },
+      {
+        title: "Government Interest Trap",
+        prompt: "Why is compelling-interest review not the forbidden inquiry here?",
+        answer:
+          "It is legal scrutiny of the state's justification, not a judgment about whether the religious belief is reasonable.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

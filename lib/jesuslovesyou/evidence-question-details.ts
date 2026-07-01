@@ -1679,6 +1679,132 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14826",
+    transformId: "14826_mary_scooter_fundraiser_bias",
+    title: "Bias Impeachment: Hearsay Declarant",
+    outlineCode: "31010503",
+    sourceOutlineCode: "31010503",
+    coverageGroup: "witness_truthfulness_bias",
+    seedBucket: "clean_teaching",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "After a hearsay declarant's statement is admitted, may the opponent attack the declarant's credibility with evidence showing possible bias against the opponent?",
+    stem:
+      "Mary is suing Peter for injuries suffered when their electric scooters collided outside a Christian homeschool co-op fundraiser. At trial, Mary's first witness testified that, although she did not see the collision, she heard her friend Lydia say just before the crash, \"Watch Peter weave through the cones like a maniac!\" Peter offers evidence to impeach Lydia by asking the witness, \"Isn't it true that Lydia shoved Peter and tore his jacket the night before the fundraiser?\" The question is:",
+    choices: [
+      {
+        letter: "A",
+        text: "Improper, because Lydia has not been given an opportunity to explain or deny the incident.",
+        verdict: "trap",
+        mold: "half_truth / explain-or-deny trap",
+        explanation:
+          "A focuses on Lydia's absence and misses the admitted-declarant lane. Once Lydia's hearsay statement is in evidence, her credibility can be attacked as if she had testified.",
+      },
+      {
+        letter: "B",
+        text: "Proper, because it tends to show Lydia's violent character.",
+        verdict: "trap",
+        mold: "bait_doctrine / character shortcut",
+        explanation:
+          "B names the wrong purpose. The incident is not offered to show violent character; it is offered to show possible hostility toward Peter.",
+      },
+      {
+        letter: "C",
+        text: "Proper, because it tends to show possible bias of Lydia against Peter.",
+        verdict: "correct",
+        mold: "residue / Rule 806 declarant-bias impeachment",
+        explanation:
+          "Lydia's statement has been admitted through the witness, so Peter may attack Lydia's credibility. The prior hostile incident tends to show bias against Peter.",
+      },
+      {
+        letter: "D",
+        text: "Improper, because impeachment cannot properly be by specific instances of conduct.",
+        verdict: "trap",
+        mold: "tiered_absolute / specific-instance overclaim",
+        explanation:
+          "D overstates the rule. Specific conduct may be used when the purpose is bias rather than general character impeachment.",
+      },
+    ],
+    answerFlow: [
+      "Identify the credibility target: Lydia, the out-of-court declarant.",
+      "Confirm Lydia's statement has been admitted through the in-court witness.",
+      "Apply the declarant-impeachment lane: Lydia can be attacked as if she had testified.",
+      "Classify the shove-and-jacket incident by purpose: possible bias against Peter.",
+      "Cut B because violent character is the wrong frame.",
+      "Cut D because specific-incident limits are not an absolute bar to bias proof.",
+      "Clash A against C: Lydia's absence does not defeat Rule 806 bias impeachment.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Target first: the person being impeached is the admitted hearsay declarant, and bias is a proper credibility attack.",
+      },
+      {
+        label: "Purple profile",
+        body: "The array tries to mislabel the hostile incident as character, procedure, or an absolute specific-act problem.",
+      },
+      {
+        label: "Blue signal",
+        body: "The night-before shove and torn jacket point to hostility toward Peter, which is a bias signal.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: forgetting that admitted hearsay declarants can be impeached and then applying live-witness or character shortcuts.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-DECLARANT-BIAS-806-01",
+        body: "When a hearsay statement is admitted, the declarant's credibility can be attacked as if the declarant had testified; bias against a party is a proper attack.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-BIAS-PURPOSE-FIRST-01",
+        body: "Before using a character or specific-act rule, ask what the incident is offered to prove; bias is a credibility purpose with its own lane.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-SPECIFIC-ACT-BIAS-OVERCLAIM",
+        body: "A specific incident is not categorically barred when it is offered to show bias rather than general character.",
+      },
+    ],
+    leadMeSteps: [
+      "Identify whose credibility is being attacked.",
+      "Confirm the out-of-court statement has been admitted.",
+      "Treat the declarant as an impeachment target.",
+      "Ask whether the incident shows character or bias.",
+      "Reject the character shortcut.",
+      "Reject the absolute specific-act answer.",
+      "Reject the explain-or-deny trap.",
+      "Pick the declarant-bias answer.",
+    ],
+    drillSeeds: [
+      {
+        title: "Rule 806 Target",
+        prompt:
+          "A witness repeats an out-of-court speaker's statement, and the opponent wants to show the speaker disliked the opponent. What rule lane should fire?",
+        answer:
+          "Rule 806 declarant impeachment by bias.",
+      },
+      {
+        title: "Bias Not Character",
+        prompt:
+          "A prior hostile incident is offered to show the speaker had a reason to accuse a party. Is the purpose character or bias?",
+        answer: "Bias.",
+      },
+      {
+        title: "Specific Act Check",
+        prompt:
+          "An answer says a specific prior incident can never be used for impeachment. What should you check before accepting it?",
+        answer:
+          "Check whether the incident is offered for bias rather than character.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

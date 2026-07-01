@@ -80,6 +80,14 @@ export default function EvidencePilotPage() {
                 <p style={{ margin: 0, color: "var(--ink-soft)", lineHeight: 1.55 }}>
                   {code.node}
                 </p>
+                <div style={{ marginTop: 18 }}>
+                  <Link
+                    href={`${JESUSLOVESYOU_ROUTE_PREFIX}/evidence-pilot-01/${code.code}`}
+                    className="btn ghost"
+                  >
+                    Open node <span className="arrow">-&gt;</span>
+                  </Link>
+                </div>
               </article>
             ))}
           </div>

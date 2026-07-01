@@ -1,4 +1,8 @@
 import type { MetadataRoute } from "next";
+import {
+  JESUSLOVESYOU_ROUTE_PREFIX,
+  evidencePilotCodeParams,
+} from "@/lib/jesuslovesyou/pilot-data";
 
 const LAST_MODIFIED = new Date("2026-06-05T00:00:00.000Z");
 
@@ -110,5 +114,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "weekly" as const,
     priority: route === "/campaign.html" ? 0.8 : 0.65,
   }));
-  return [...appRoutes, ...nicheRoutes, ...comparisonRoutes, ...campaignRoutes];
+  const evidencePilotRoutes = evidencePilotCodeParams.map(({ code }) => ({
+    url: `https://barmatrix.app${JESUSLOVESYOU_ROUTE_PREFIX}/evidence-pilot-01/${code}`,
+    lastModified: LAST_MODIFIED,
+    changeFrequency: "weekly" as const,
+    priority: 0.65,
+  }));
+  return [
+    ...appRoutes,
+    ...nicheRoutes,
+    ...comparisonRoutes,
+    ...campaignRoutes,
+    ...evidencePilotRoutes,
+  ];
 }

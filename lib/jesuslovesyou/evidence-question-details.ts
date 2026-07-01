@@ -793,6 +793,131 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14808",
+    transformId: "14808_christian-radio-dispatch",
+    title: "Non-Hearsay Purpose: Effect on the Listener",
+    outlineCode: "33040203",
+    sourceOutlineCode: "33040203",
+    coverageGroup: "non_hearsay_purpose",
+    seedBucket: "clean_teaching",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A defendant offers three pieces of evidence to show what description the arresting officer heard, not whether the description was accurate. Which items are admissible?",
+    stem:
+      "Peter sued a county sheriff's deputy for false arrest. The deputy's defense was that, based on a suspect description he heard over the sheriff's radio, he reasonably believed Peter was the person who had robbed a convenience store. A radio dispatcher at the sheriff's office, reading from a written note, had broadcast the robbery suspect's description over the radio. The deputy offers three items as evidence: the deputy's testimony relating the description he heard, the dispatcher's testimony relating the description he read over the radio, and the written note containing the description the dispatcher testifies he read over the radio. Which of the items are admissible on the issue of what description the deputy heard?",
+    choices: [
+      {
+        letter: "A",
+        text: "Only the deputy's testimony and the dispatcher's testimony.",
+        verdict: "trap",
+        mold: "EAR_FALSITY / half_truth",
+        explanation:
+          "A correctly admits both witnesses' testimony but wrongly excludes the note. The note is offered to show what was communicated, not to prove that the description was accurate.",
+      },
+      {
+        letter: "B",
+        text: "Only the dispatcher's testimony and the written note.",
+        verdict: "trap",
+        mold: "EAR_FALSITY / half_truth",
+        explanation:
+          "B correctly admits the dispatcher evidence but wrongly excludes the deputy's own testimony. The deputy's testimony is direct evidence of what he heard and how it affected him.",
+      },
+      {
+        letter: "C",
+        text: "All three items offered by the deputy.",
+        verdict: "correct",
+        mold: "residue / all-inclusive non-hearsay purpose",
+        explanation:
+          "All three items are admissible because they are offered to show what description reached the deputy, not to prove that the suspect actually matched the description.",
+      },
+      {
+        letter: "D",
+        text: "Only the deputy's testimony relating the description he heard.",
+        verdict: "trap",
+        mold: "ISSUE_SENSE / under-inclusion",
+        explanation:
+          "This is the dominant trap. The effect-on-listener doctrine is not limited to the listener's own testimony; the dispatcher testimony and note also show what was communicated.",
+      },
+    ],
+    answerFlow: [
+      "Lock the call phrase: on the issue of what description the deputy heard.",
+      "Separate what the deputy heard from whether the robbery description was true.",
+      "Classify each item as evidence of the communication and its effect on the listener.",
+      "Keep the deputy's testimony because he can testify to what he heard.",
+      "Keep the dispatcher's testimony because it shows what was broadcast.",
+      "Keep the written note because it is not offered to prove the truth or terms of the writing.",
+      "Choose C because every item is admissible for the limited non-hearsay purpose.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Truth purpose versus listener-effect purpose decides the hearsay issue before any exception analysis.",
+      },
+      {
+        label: "Purple profile",
+        body: "Every wrong answer under-includes by excluding one admissible item from the same communication chain.",
+      },
+      {
+        label: "Blue signal",
+        body: "The call asks what description the deputy heard, which makes the broadcast's effect on the deputy the proof target.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: applying the best evidence rule to a writing without asking whether its terms are being proved.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-EFFECT-ON-LISTENER-01",
+        body: "An out-of-court statement offered to show its effect on the person who heard it is not hearsay because it is not offered for the truth of the matter asserted.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-CALL-LOCK-01",
+        body: "When the call asks what a person heard, use that phrase as the purpose filter. Every item offered to show what was heard can come in for that limited purpose.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-BEST-EVIDENCE-OVERSCOPE",
+        body: "The best evidence rule applies when proving the terms of a writing. It does not exclude a note offered only to show what was communicated.",
+      },
+    ],
+    leadMeSteps: [
+      "Circle the call phrase: what description the deputy heard.",
+      "Ask whether the evidence proves the robber's actual description or the deputy's reasonable belief.",
+      "Admit the deputy's testimony as firsthand evidence of what he heard.",
+      "Admit the dispatcher's testimony as evidence of what was broadcast.",
+      "Admit the note because it shows what was read, not whether the description was true.",
+      "Reject every answer that leaves out one admissible item.",
+      "Pick the all-three answer.",
+    ],
+    drillSeeds: [
+      {
+        title: "Effect Classification",
+        prompt:
+          "A witness repeats a manager's warning to prove the store had notice of a wet floor. Is the warning hearsay?",
+        answer:
+          "No, if it is offered to show notice or effect on the listener rather than the truth of the warning.",
+      },
+      {
+        title: "Best Evidence Scope",
+        prompt:
+          "A note is offered to show what was communicated, not to prove the note's terms as true. Does the original-document rule automatically bar it?",
+        answer:
+          "No. The rule applies when the proponent is proving the contents or terms of the writing.",
+      },
+      {
+        title: "Under-Inclusion Cut",
+        prompt:
+          "An answer admits the listener's testimony but excludes the speaker's testimony and the note used by the speaker. What is wrong?",
+        answer:
+          "It under-includes. All three can be admissible when each is offered to show what was heard.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

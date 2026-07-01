@@ -4695,6 +4695,133 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14767",
+    transformId: "14767_paul_retreat_harness_admission",
+    title: "Own-Fault Statement Against Interest",
+    outlineCode: "33040301",
+    sourceOutlineCode: "33040301",
+    coverageGroup: "hearsay_exception",
+    seedBucket: "clean_teaching",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "When an unavailable injury victim admits he caused the accident in a way that would defeat his own claim, which hearsay exception admits the statement?",
+    stem:
+      "Mary sued Daniel for damages for the death of Mary's husband, Paul, after Paul fell from a climbing wall at a Christian retreat center. At trial, Daniel calls Paul's treating physician, Dr. Lydia, to testify that three days after the fall and the evening before Paul died, while Paul was in severe pain, Paul said, I caused the fall. I unclipped my own safety line before Daniel told me to. Dr. Lydia's testimony should be admitted as",
+    choices: [
+      {
+        letter: "A",
+        text: "a statement under belief of impending death.",
+        verdict: "trap",
+        mold: "dying-declaration trap / missing imminence",
+        explanation:
+          "A feels close because Paul died soon after the statement. The missing trigger is that the stem never says Paul believed death was imminent when he spoke.",
+      },
+      {
+        letter: "B",
+        text: "an excited utterance.",
+        verdict: "trap",
+        mold: "excited-utterance trap / stale stress timing",
+        explanation:
+          "B leans on the dramatic fall and severe pain. The statement came three days after the fall, with no fact showing Paul was still speaking under the stress of that event.",
+      },
+      {
+        letter: "C",
+        text: "a statement against interest.",
+        verdict: "correct",
+        mold: "residue / civil-liability statement against interest",
+        explanation:
+          "C matches the required trigger. Paul was unavailable, and his own-fault statement would expose him to civil liability or defeat the claim brought from his injury.",
+      },
+      {
+        letter: "D",
+        text: "a statement of Paul's then-existing state of mind.",
+        verdict: "trap",
+        mold: "state-of-mind trap / memory-belief limit",
+        explanation:
+          "D is the dominant trap because the words sound like what Paul thought. The statement is offered to prove the past fact remembered or believed, not Paul's then-existing mental condition.",
+      },
+    ],
+    answerFlow: [
+      "Start with unavailability: Paul died.",
+      "Read the statement for what it proves.",
+      "Notice Paul admitted his own fault.",
+      "Tie that admission to civil liability or defeat of the claim.",
+      "Cut dying declaration because there is no belief of imminent death.",
+      "Cut excited utterance because the timing and stress facts are missing.",
+      "Cut state of mind because the statement proves a past fact.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "An unavailable declarant's own-fault statement can come in when it was against civil interest when made.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps are exception-label shopping: dying declaration, excited utterance, and state of mind.",
+      },
+      {
+        label: "Blue signal",
+        body: "Paul's statement would expose him to fault and undermine Mary's claim against Daniel.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: picking the label that matches the emotional scene instead of the exception trigger.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-AGAINST-INTEREST-CIVIL-01",
+        body: "For an unavailable declarant, a statement that would expose the declarant to civil liability or defeat the declarant's own claim is admissible as a statement against interest.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-EXCEPTION-MENU-TRIGGER-01",
+        body: "In a four-exception hearsay menu, pick the label whose required trigger is in the stem, not the label that merely sounds emotionally close.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-STATE-OF-MIND-PAST-FACT",
+        body: "A statement of memory or belief offered to prove the remembered fact is not a then-existing state-of-mind answer.",
+      },
+    ],
+    leadMeSteps: [
+      "Start with Paul's unavailability.",
+      "Identify what Paul admitted.",
+      "Ask whether the statement hurt Paul's civil position.",
+      "Use statement against interest for the own-fault admission.",
+      "Reject dying declaration because imminence is missing.",
+      "Reject excited utterance because the stress-timing fact is missing.",
+      "Reject state of mind because the statement proves past fault.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Civil Interest",
+        prompt:
+          "A now-dead plaintiff said before death, 'The spill was my fault.' The defendant offers it in the civil case. Best exception?",
+        answer:
+          "Statement against interest, if the statement would expose the declarant to civil liability or defeat the declarant's claim.",
+      },
+      {
+        title: "State Of Mind Limit",
+        prompt:
+          "A declarant says, 'I remember causing the crash,' and the statement is offered to prove the declarant caused the crash. Is this then-existing state of mind?",
+        answer:
+          "No. It is a memory or belief offered to prove the remembered fact.",
+      },
+      {
+        title: "Dying Declaration Trigger",
+        prompt:
+          "A declarant later dies after making a statement in pain. What extra trigger is needed for dying declaration?",
+        answer:
+          "The declarant must have believed death was imminent when making the statement.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

@@ -176,6 +176,134 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14294",
+    transformId: "14294_bible_quiz_uprising",
+    title: "State Ground Ends Federal Review",
+    selectorCode: "43020201",
+    selectorMatch: "exact",
+    outlineCode: "43020201",
+    sourceOutlineCode: "43020201",
+    coverageGroup: "standing_ripeness_mootness_gate",
+    seedBucket: "needs_human_review",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "When a state supreme court reverses a conviction under its own state constitution and says it need not decide the federal free-speech issue, what should the United States Supreme Court do after granting certiorari?",
+    stem:
+      "Peter has a fierce temper and a voice that carries across a hall. At a privately run Christian Bible quiz finals, several close scoring rulings went against Peter's favorite youth team. Peter repeatedly stood on his folding chair, swung a rolled program overhead, and angrily shouted, \"Throw the quiz officials out!\" The third time he did this, many other spectators also rose from their seats, waved programs, and shouted, \"Throw the quiz officials out!\" Peter's favorite team lost the match. Although no violence occurred, spectators pressed menacingly around the quiz officials after the event. The officials were able to leave the hall only with the help of a large police escort. For his conduct, Peter was charged with inciting to riot and was convicted in a jury trial in state court. He appealed. The state supreme court reversed the conviction. In its opinion, the court discussed in detail decisions of the United States Supreme Court dealing with the First Amendment Free Speech Clause as incorporated into the Fourteenth Amendment. At the end of that discussion, however, the court stated that it need not decide how those federal cases would resolve Peter's case. Instead, the court stated that it had always interpreted the free-expression guarantee of the state constitution more broadly than the federal guarantee, and that because no riot or other violence occurred, the state constitution did not permit the conviction for incitement to riot to stand. The United States Supreme Court grants a writ of certiorari to review this decision of the state supreme court. In this case, the United States Supreme Court should:",
+    choices: [
+      {
+        letter: "A",
+        text: "Remand the case to the state supreme court with directions that it resolve the First and Fourteenth Amendment free-speech issue that it discussed in such detail.",
+        verdict: "trap",
+        mold: "procedural remand bait / federal discussion overclaim",
+        explanation:
+          "A is the dominant trap. The state court discussed federal law, but it clearly said state constitutional law independently controlled the judgment.",
+      },
+      {
+        letter: "B",
+        text: "Dismiss the writ as improvidently granted, because the state supreme court's decision rests on an independent and adequate state law ground.",
+        verdict: "correct",
+        mold: "jurisdictional exit / independent state ground",
+        explanation:
+          "B matches the posture. A clear state constitutional ground independently supports reversal, so a federal merits ruling would not change the judgment.",
+      },
+      {
+        letter: "C",
+        text: "Reverse the decision of the state supreme court, because incitement to imminent crowd violence is not speech protected by the First and Fourteenth Amendments.",
+        verdict: "trap",
+        mold: "merits bait / unprotected-speech reversal",
+        explanation:
+          "C answers the federal incitement merits. The Court should not reach that issue once the state-law ground independently supports the result.",
+      },
+      {
+        letter: "D",
+        text: "Affirm the state supreme court's decision, because Peter's heated festival outburst was commonplace hyperbole that cannot, consistently with the First and Fourteenth Amendments, be punished.",
+        verdict: "trap",
+        mold: "right-result wrong-verb / protected-speech affirmance",
+        explanation:
+          "D gives Peter the same practical win, but for the wrong reason. The proper action is dismissal, not federal merits affirmance.",
+      },
+    ],
+    answerFlow: [
+      "Start with the call: what should the United States Supreme Court do after granting certiorari?",
+      "Notice that the state supreme court discussed federal free-speech cases.",
+      "Then lock the decisive sentence: the state court said it need not decide the federal issue.",
+      "The court rested the reversal on a broader state constitutional free-expression guarantee.",
+      "That state ground is independent of federal law and adequate to support the judgment.",
+      "Cut remand because the state court already gave a clear state-law ground.",
+      "Cut both merits answers because federal speech doctrine would not change the state judgment.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Supreme Court review stops when a state judgment rests on a clear state-law ground that independently supports the result.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set offers remand bait plus two federal free-speech merits answers before the jurisdictional exit.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive signal is the state court's plain statement that state constitutional law, not federal law, controls.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: chasing vivid First Amendment facts before choosing the Supreme Court action verb.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-STATE-GROUNDS-01",
+        body: "When a state supreme court clearly rests its judgment on a state constitutional ground that is independent of federal law and adequate to support the result, the United States Supreme Court dismisses rather than decides the federal issue.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-COURT-ACTION-01",
+        body: "On a Supreme Court disposition call, choose the action verb before touching the merits: dismiss, affirm, reverse, and remand do different work.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-FEDERAL-DISCUSSION-01",
+        body: "A state opinion can discuss federal cases without making federal law the ground of decision.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the reviewing court.",
+      "Name the action verb the call asks for.",
+      "Find whether the state court relied on federal law or state law.",
+      "Ask whether the state ground independently supports the judgment.",
+      "Reject remand if the state-law ground is already clear.",
+      "Reject federal merits answers.",
+      "Pick B.",
+    ],
+    drillSeeds: [
+      {
+        title: "Plain State Ground",
+        prompt:
+          "A state supreme court discusses federal law, then says its state constitution independently requires the same judgment. What should the United States Supreme Court do?",
+        answer:
+          "Dismiss the writ because the judgment rests on an independent and adequate state ground.",
+      },
+      {
+        title: "Federal Discussion Trap",
+        prompt:
+          "Does detailed discussion of federal cases automatically make the state judgment reviewable on federal grounds?",
+        answer:
+          "No. The controlling question is whether federal law actually supports the judgment or whether a clear independent state ground does.",
+      },
+      {
+        title: "Merits Bait Cut",
+        prompt:
+          "Why are federal free-speech answers wrong when a state constitutional ground independently supports the judgment?",
+        answer:
+          "Because deciding federal merits would not change the state judgment; the Court should not issue an advisory opinion.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

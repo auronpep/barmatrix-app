@@ -112,6 +112,12 @@ export default function JesuslovesyouPilotPage() {
             >
               Open prefixed checkout <span className="arrow">-&gt;</span>
             </Link>
+            <Link
+              href={`${JESUSLOVESYOU_ROUTE_PREFIX}/artifacts`}
+              className="btn btn-lg ghost"
+            >
+              Open artifact hub <span className="arrow">-&gt;</span>
+            </Link>
             <Link href="#pilot-plan" className="btn btn-lg ghost">
               Review pilot plan <span className="arrow">-&gt;</span>
             </Link>

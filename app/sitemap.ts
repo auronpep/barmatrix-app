@@ -17,6 +17,7 @@ const ROUTES = [
   "/how-it-works",
   "/pricing",
   "/Jesuslovesyou",
+  "/Jesuslovesyou/artifacts",
   "/Jesuslovesyou/evidence-pilot-01",
   "/Jesuslovesyou/evidence-pilot-01/qa-report",
   "/Jesuslovesyou/evidence-pilot-01/seeds",

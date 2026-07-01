@@ -5453,6 +5453,130 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "22152",
+    transformId: "22152_ruth_goat_shoulder",
+    title: "Treatment Purpose Unlocks the Exception",
+    outlineCode: "33040302",
+    sourceOutlineCode: "31010500",
+    coverageGroup: "hearsay_exception",
+    seedBucket: "medium_friction",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "Can a doctor testify that a patient reported no pain during a treatment follow-up before the later accident?",
+    stem:
+      "Ruth hurt her shoulder when her neighbor's goat slipped through an open gate and knocked her into a stack of hymn folders she was carrying to a home Bible study. Ruth had a history of shoulder problems, but she claimed that a recent surgery had left her completely pain-free before the goat incident. Afterward, Ruth claimed that constant shoulder pain had returned. Ruth sued her neighbor for her injuries. At trial, Ruth sought to call her orthopedic doctor to testify that, at a routine follow-up appointment after the surgery but before the goat incident, Ruth told the doctor that she had no pain at all in her shoulder. Is the doctor's testimony admissible?",
+    choices: [
+      {
+        letter: "A",
+        text: "Yes, because Ruth is subject to cross-examination.",
+        verdict: "trap",
+        mold: "cross-examination bait / wrong admissibility reason",
+        explanation:
+          "A uses Ruth's trial availability as the reason. The missing step is the hearsay exception that admits the out-of-court statement through the doctor.",
+      },
+      {
+        letter: "B",
+        text: "No, because Ruth is not unavailable.",
+        verdict: "trap",
+        mold: "fabricated requirement / Rule 803 availability overclaim",
+        explanation:
+          "B imports an unavailability requirement from the wrong hearsay lane. Rule 803 exceptions apply whether or not the declarant is available.",
+      },
+      {
+        letter: "C",
+        text: "Yes, because Ruth's statement was made for the purpose of medical treatment.",
+        verdict: "correct",
+        mold: "residue / medical-treatment hearsay exception",
+        explanation:
+          "C matches the treatment-room facts. Ruth made a symptom statement to her doctor during a post-surgery follow-up, so FRE 803(4) supplies the admissibility route.",
+      },
+      {
+        letter: "D",
+        text: "No, because Ruth's statement is inadmissible hearsay.",
+        verdict: "trap",
+        mold: "half truth / hearsay exception omitted",
+        explanation:
+          "D correctly sees hearsay but stops too soon. The statement is hearsay, but the medical-treatment exception makes it admissible.",
+      },
+    ],
+    answerFlow: [
+      "Start with the doctor's testimony repeating Ruth's earlier statement.",
+      "Call the statement hearsay if offered to prove Ruth had no pain before the accident.",
+      "Reject cross-examination as the wrong admissibility reason.",
+      "Reject unavailability because Rule 803 exceptions do not require it.",
+      "Use the doctor follow-up and symptom-statement facts.",
+      "Apply the medical-treatment exception.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "A symptom statement to a medical provider during diagnosis or treatment can fit FRE 803(4).",
+      },
+      {
+        label: "Purple profile",
+        body: "The dominant trap stops at hearsay and never checks the medical-treatment exception.",
+      },
+      {
+        label: "Blue signal",
+        body: "Ruth spoke to her orthopedic doctor at a routine post-surgery follow-up about shoulder pain.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating hearsay as excluded before asking whether Rule 803 gives a route in.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-MEDICAL-TREATMENT-01",
+        body: "FRE 803(4) admits statements made for medical diagnosis or treatment that describe medical history, symptoms, pain, sensations, or general cause when reasonably pertinent to treatment.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-TREATMENT-ROOM-FIRST-01",
+        body: "When the statement was made to a medical provider during care, test the medical-treatment exception before stopping at hearsay.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-803-AVAILABILITY-OVERCLAIM",
+        body: "Rule 803 exceptions do not require the declarant to be unavailable.",
+      },
+    ],
+    leadMeSteps: [
+      "Identify the out-of-court statement: Ruth said she had no shoulder pain.",
+      "Identify who heard it: her orthopedic doctor.",
+      "Mark the setting: a post-surgery treatment follow-up.",
+      "Cut cross-examination as the wrong reason.",
+      "Cut unavailability because Rule 803 does not require it.",
+      "Use FRE 803(4) for the symptom statement.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Treatment Room First",
+        prompt:
+          "A patient tells a doctor during follow-up, 'I have no pain.' What hearsay exception should you test?",
+        answer:
+          "Statements for medical diagnosis or treatment under FRE 803(4).",
+      },
+      {
+        title: "Availability Cut",
+        prompt:
+          "Does a Rule 803 medical-treatment exception require the patient to be unavailable?",
+        answer: "No. Rule 803 applies regardless of availability.",
+      },
+      {
+        title: "Hearsay Half Truth",
+        prompt:
+          "A choice says no because the doctor's testimony repeats an out-of-court statement. What is missing?",
+        answer:
+          "The exception analysis: a treatment-purpose symptom statement can be admissible.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

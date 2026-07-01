@@ -1930,6 +1930,131 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14829",
+    transformId: "14829_daniel_retreat_supply_room_confession",
+    title: "Preliminary Questions: Confession Hearing",
+    outlineCode: "31010107",
+    sourceOutlineCode: "31010107",
+    coverageGroup: "preliminary_question_judge_jury",
+    seedBucket: "clean_teaching",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "When a criminal defendant challenges the admissibility of an alleged confession, must the court hold the preliminary hearing outside the jury's hearing?",
+    stem:
+      "Daniel was on trial for burglary after a retreat center supply room was broken into during a weekend Christian leadership event. The prosecutor called the arresting deputy to testify that, shortly after Daniel's arrest and questioning, Daniel orally admitted committing the burglary. Before the deputy testified, Daniel objected that no Miranda warnings had been given and asked for a hearing outside the presence of the jury to hear evidence on that issue. How should the court proceed?",
+    choices: [
+      {
+        letter: "A",
+        text: "The court may grant or deny the request, because preliminary admissibility hearings are generally within the court's discretion as to whether the jury hears them.",
+        verdict: "trap",
+        mold: "half_truth / generic-discretion trap",
+        explanation:
+          "A states a generally plausible idea about preliminary matters, but this is a confession-admissibility hearing. Rule 104(c) makes that hearing outside the jury's hearing mandatory.",
+      },
+      {
+        letter: "B",
+        text: "The court should deny the request and admit the statement, because Daniel's own statement offered against him is an opposing-party statement.",
+        verdict: "trap",
+        mold: "bait_doctrine / hearsay-lane trap",
+        explanation:
+          "B answers a different question. Opposing-party statement status does not solve the Miranda challenge or the required hearing procedure.",
+      },
+      {
+        letter: "C",
+        text: "The court should grant the request, because a hearing on the admissibility of a confession must be conducted so the jury cannot hear it.",
+        verdict: "correct",
+        mold: "residue / Rule 104(c) confession-hearing carveout",
+        explanation:
+          "Daniel challenges the admissibility of an alleged confession. That preliminary hearing must be conducted so the jury cannot hear it.",
+      },
+      {
+        letter: "D",
+        text: "The court should deny the request and rule the statement inadmissible, because only signed confessions may be used in criminal trials.",
+        verdict: "trap",
+        mold: "fabricated_rule / signed-confession myth",
+        explanation:
+          "D invents a formality. An oral confession is not categorically barred just because it was not signed; the real issue is the Miranda-based admissibility hearing.",
+      },
+    ],
+    answerFlow: [
+      "Classify the objection: Daniel challenges an alleged confession.",
+      "Notice the requested procedure: a hearing outside the jury's presence.",
+      "Apply the special Rule 104(c) lane for confession admissibility.",
+      "Cut D because there is no signed-confession-only rule.",
+      "Cut B because hearsay status does not answer the Miranda hearing issue.",
+      "Clash A against C: generic discretion loses to the confession-specific carveout.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Classify the preliminary question first; confession admissibility triggers a mandatory outside-the-jury hearing.",
+      },
+      {
+        label: "Purple profile",
+        body: "The array mixes a generic-discretion half-truth, a hearsay bait lane, and a fabricated signature requirement.",
+      },
+      {
+        label: "Blue signal",
+        body: "The words confession, Miranda, and outside the jury point to Rule 104(c)'s protected hearing procedure.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: applying ordinary preliminary-hearing discretion before classifying the confession category.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-PRELIM-CONFESSION-HEARING-01",
+        body: "A hearing on the admissibility of a confession is a mandatory outside-the-jury hearing under Rule 104(c); it is not left to ordinary preliminary-hearing discretion.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-PRELIM-CLASSIFY-HEARING-01",
+        body: "Before choosing discretion, classify the preliminary question; confession admissibility is the special category that forces the hearing outside the jury's hearing.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-PARTY-OPPONENT-MIRANDA-SKIP",
+        body: "A defendant's own statement may clear a hearsay label, but that does not skip Miranda admissibility or the Rule 104(c) hearing procedure.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the offered evidence: Daniel's alleged confession.",
+      "Name the objection: no Miranda warnings.",
+      "Name the requested procedure: outside-jury hearing.",
+      "Classify the preliminary question as confession admissibility.",
+      "Reject the signed-confession myth.",
+      "Reject the opposing-party shortcut.",
+      "Reject generic discretion.",
+      "Pick the Rule 104(c) hearing answer.",
+    ],
+    drillSeeds: [
+      {
+        title: "Rule 104(c) Trigger",
+        prompt:
+          "A defendant challenges an alleged confession and asks for a hearing outside the jury's presence. What hearing-location rule fires?",
+        answer:
+          "The confession-admissibility hearing must be conducted so the jury cannot hear it.",
+      },
+      {
+        title: "Hearsay Lane Check",
+        prompt:
+          "The prosecution says the statement is the defendant's own words. Why does that not end the analysis?",
+        answer:
+          "Party-opponent status does not answer the Miranda challenge or Rule 104(c) hearing procedure.",
+      },
+      {
+        title: "Oral Confession Form",
+        prompt:
+          "An answer says an oral confession is inadmissible solely because it was not signed. What is wrong?",
+        answer: "There is no signed-confession-only rule.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

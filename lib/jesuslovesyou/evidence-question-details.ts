@@ -1552,6 +1552,133 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14765",
+    transformId: "14765_daniel_bookstore_arson_bias",
+    title: "Bias Impeachment: Leniency Promise",
+    outlineCode: "31010503",
+    sourceOutlineCode: "31010503",
+    coverageGroup: "witness_truthfulness_bias",
+    seedBucket: "clean_teaching",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "When a prosecution witness has been promised dismissal of her own pending charge after she testifies, may the defendant use that promise to impeach her for bias?",
+    stem:
+      "Daniel was charged with arson after a storage room at a Christian bookstore burned. Ruth testified for the prosecution. On cross-examination of Ruth, Daniel seeks to elicit an admission that Ruth was also charged with the same arson and that the prosecutor told her, \"If you testify against Daniel, we will dismiss the charges against you after Daniel's trial.\" The evidence about the prosecutor's promise is:",
+    choices: [
+      {
+        letter: "A",
+        text: "Inadmissible, because the promise is hearsay not within any exception.",
+        verdict: "trap",
+        mold: "flat_misstatement / hearsay-purpose trap",
+        explanation:
+          "A treats the promise as though Daniel offers it to prove dismissal will actually happen. The impeachment use is different: the promise shows Ruth's motive to favor the prosecution.",
+      },
+      {
+        letter: "B",
+        text: "Admissible, as proper impeachment of Ruth.",
+        verdict: "correct",
+        mold: "residue / bias and motive-to-testify impeachment",
+        explanation:
+          "Ruth has a concrete reason to testify favorably for the prosecution: her own charge may be dismissed. That expected benefit is admissible to show bias or motive to lie.",
+      },
+      {
+        letter: "C",
+        text: "Inadmissible, because the law encourages negotiated resolutions of criminal charges.",
+        verdict: "trap",
+        mold: "half_truth / plea-policy overprotection",
+        explanation:
+          "C overextends a real policy instinct. Negotiated resolutions may be encouraged, but that does not hide a prosecution witness's motive to testify favorably.",
+      },
+      {
+        letter: "D",
+        text: "Admissible, as a statement by an agent of a party-opponent.",
+        verdict: "trap",
+        mold: "wrong_route / party-opponent shortcut",
+        explanation:
+          "D reaches the admissible result through the wrong route. The prosecutor's promise is used to show witness bias, not as a party-opponent admission against the government.",
+      },
+    ],
+    answerFlow: [
+      "Identify Ruth's status: she is a prosecution witness.",
+      "Identify the benefit: her same-arson charge may be dismissed after Daniel's trial.",
+      "Ask why Daniel offers the promise: to show Ruth's motive to favor the prosecution.",
+      "Classify the use as bias impeachment, not truth of the dismissal promise.",
+      "Cut A because hearsay depends on purpose of offer.",
+      "Cut C because settlement or plea policy does not erase witness-bias impeachment.",
+      "Cut D because party-opponent admission is the wrong admissibility theory.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Purpose of offer: the promise matters because it gives Ruth a reason to shade testimony, not because dismissal must actually occur.",
+      },
+      {
+        label: "Purple profile",
+        body: "The array separates correct admissibility from wrong theories: hearsay, plea-policy overprotection, and party-opponent shortcut.",
+      },
+      {
+        label: "Blue signal",
+        body: "The charge against Ruth and the promised dismissal are the bias signals; they point to motive-to-testify impeachment.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: seeing prosecutor promise and jumping to hearsay or plea policy before asking what the promise proves about the witness.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-BIAS-LENIENCY-PROMISE-01",
+        body: "A promise of leniency or dismissal to a prosecution witness is admissible to show bias or motive to testify favorably.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-BIAS-PURPOSE-OF-OFFER-01",
+        body: "Before calling a prosecutor's promise hearsay, ask whether the promise is offered for its truth or to reveal why the witness may favor one side.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-PLEA-POLICY-OVERPROTECTION",
+        body: "Policy favoring negotiated resolutions does not block cross-examination that exposes a prosecution witness's expected benefit.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the witness's role.",
+      "Name the promised benefit.",
+      "Ask what the promise shows about the witness.",
+      "Classify the use as bias rather than truth.",
+      "Reject the hearsay-purpose trap.",
+      "Reject the plea-policy shield.",
+      "Reject the party-opponent shortcut.",
+      "Pick the bias-impeachment answer.",
+    ],
+    drillSeeds: [
+      {
+        title: "Bias Not Truth",
+        prompt:
+          "A prosecutor promises a witness dismissal if she testifies. The defense offers the promise to show the witness wants to please the prosecution. Is it hearsay?",
+        answer:
+          "No. It is offered to show bias or motive, not to prove the promise will be performed.",
+      },
+      {
+        title: "Leniency Signal",
+        prompt:
+          "A prosecution witness has a pending charge that may be dismissed after testimony. What impeachment route does that create?",
+        answer:
+          "Bias or motive-to-testify impeachment.",
+      },
+      {
+        title: "Wrong Admissible Route",
+        prompt:
+          "A choice says the prosecutor's promise is admissible as a party-opponent admission. What is wrong with that route?",
+        answer:
+          "The cleaner route is bias impeachment; the promise is used to show the witness's motive.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

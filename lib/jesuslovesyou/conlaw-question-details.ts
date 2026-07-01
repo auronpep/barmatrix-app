@@ -685,6 +685,132 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14231",
+    transformId: "14231_hymn-trailer-premium",
+    title: "State Action Before Scrutiny",
+    selectorCode: "44040100",
+    selectorMatch: "exact",
+    outlineCode: "44040100",
+    sourceOutlineCode: "44040100",
+    coverageGroup: "state_action",
+    seedBucket: "needs_human_review",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "Does equal protection apply to a private insurer's risk-based pricing decision when the state only audits the insurer for solvency?",
+    stem:
+      "In one state, theft coverage for privately owned event equipment is sold only by private insurance companies. The state insurance commissioner audits the companies to make sure they remain solvent, but the state does not set their premiums or policy terms. Covenant Mutual, a private insurer, charges higher premiums for theft coverage on personal hymn-sing sound trailers kept by residents in the west end of Cedar County than for similar trailers kept by residents in the east end, because theft claims have been more frequent in the west end. Martha owns one of those trailers for neighborhood hymn-sings and lives in the west end, so Covenant Mutual charged her the higher premium. Martha sues Covenant Mutual, alleging that the premium difference unconstitutionally denies her the equal protection of the laws. Will Martha's suit succeed?",
+    choices: [
+      {
+        letter: "A",
+        text: "No, because the different theft rates in the two areas provide a rational basis for the different premiums.",
+        verdict: "trap",
+        mold: "rational-basis merits trap / threshold skipped",
+        explanation:
+          "A reaches the right bottom line for the wrong reason. Scrutiny only matters after state action exists.",
+      },
+      {
+        letter: "B",
+        text: "No, because the Equal Protection Clause does not apply to this private insurer's pricing decision.",
+        verdict: "correct",
+        mold: "state-action threshold / private pricing",
+        explanation:
+          "B is correct. Covenant Mutual is private, and the state only audits solvency without setting or driving the challenged premium.",
+      },
+      {
+        letter: "C",
+        text: "Yes, because the higher theft rate in Martha's neighborhood shows that the county sheriff is not giving residents there the equal protection of the laws.",
+        verdict: "trap",
+        mold: "wrong-party detour / police theory",
+        explanation:
+          "C changes the defendant and the challenged act. Martha sued the insurer over premiums, not the sheriff over policing.",
+      },
+      {
+        letter: "D",
+        text: "Yes, because charging a higher premium based on a customer's residential area is inherently discriminatory.",
+        verdict: "trap",
+        mold: "private-discrimination overclaim / fairness bait",
+        explanation:
+          "D treats equal protection as a general fairness code for private pricing. Without state action, that is too broad.",
+      },
+    ],
+    answerFlow: [
+      "Start with the actor: Martha sued Covenant Mutual.",
+      "Covenant Mutual is a private insurer.",
+      "The state audits solvency but does not set premiums or policy terms.",
+      "That means the challenged premium is not the state's act.",
+      "Resolve constitutional reach before rational-basis scrutiny.",
+      "Cut the sheriff detour and private-discrimination overclaim.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Equal protection starts with state action; private conduct is outside the clause unless the state is responsible for the challenged act.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set offers two no answers: one threshold answer and one rational-basis decoy.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive fact is that the state audits solvency but does not set premiums or policy terms.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: applying scrutiny before asking whether the Constitution reaches the defendant.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-STATE-ACTION-01",
+        body: "Equal protection starts with the actor: the Fourteenth Amendment restricts state action, not ordinary private pricing. State inspection or general regulation of a private business is not enough unless the state drives the challenged act.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-THRESHOLD-FIRST-01",
+        body: "When one no answer says no constitutional reach and another no answer applies scrutiny, resolve reach first.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-WRONG-DEFENDANT-01",
+        body: "Do not let a government actor mentioned in the facts pull you away from the defendant and challenged conduct in the call.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the defendant.",
+      "Identify the challenged conduct.",
+      "Ask whether the state set or drove that conduct.",
+      "Separate threshold reach from scrutiny.",
+      "Reject wrong-party and fairness-code answers.",
+      "Pick B.",
+    ],
+    drillSeeds: [
+      {
+        title: "Threshold Before Scrutiny",
+        prompt:
+          "A private insurer sets a risk-based premium, and the state only audits solvency. Should you analyze rational basis first?",
+        answer:
+          "No. Ask first whether the insurer's pricing is state action. If not, scrutiny never turns on.",
+      },
+      {
+        title: "Regulation Is Not Enough",
+        prompt:
+          "Why does ordinary state regulation or inspection of a private business not automatically create state action?",
+        answer:
+          "The state must be responsible for the challenged act; general oversight alone does not make every private decision governmental.",
+      },
+      {
+        title: "Wrong Defendant",
+        prompt:
+          "A plaintiff sues a private insurer, but an answer blames the sheriff. What is the move?",
+        answer:
+          "Cut it as a wrong-defendant detour unless the call asks about the sheriff's policy.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

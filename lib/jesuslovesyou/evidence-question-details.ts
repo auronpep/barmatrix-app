@@ -5577,6 +5577,131 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "22157",
+    transformId: "22157_christian_shepherd_dispute",
+    title: "Intent Statement Beats Excited-Utterance Bait",
+    outlineCode: "33040302",
+    sourceOutlineCode: "31010100",
+    coverageGroup: "hearsay_exception",
+    seedBucket: "recode_or_ambiguous",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A declarant made a statement of then-existing intent to go do something. Is a witness's testimony about that statement admissible over a hearsay objection?",
+    stem:
+      "Peter and his former business partner, Lydia, had a bitter falling-out over the division of their flock of sheep. Lydia moved to another town. One morning, Peter's neighbor, Barnabas, overheard Peter say to his worker, \"I can't take this anymore! I'm riding over to Lydia's farm right now to tell her I'm not giving her another ewe - she contributed nothing to the breeding program, and she knows it!\" Barnabas plans to testify to this statement at a civil trial in which Peter's conduct toward Lydia is at issue. Is Barnabas's testimony admissible?",
+    choices: [
+      {
+        letter: "A",
+        text: "No, because Peter is unavailable to testify.",
+        verdict: "trap",
+        mold: "wrong framework / Rule 803 availability trap",
+        explanation:
+          "A imports an unavailability requirement from the wrong hearsay lane. FRE 803 exceptions apply regardless of whether the declarant is available.",
+      },
+      {
+        letter: "B",
+        text: "No, because Peter's statement is inadmissible hearsay.",
+        verdict: "trap",
+        mold: "half truth / exception omitted",
+        explanation:
+          "B correctly sees the hearsay issue but stops too early. The statement has an admissibility route because it describes Peter's then-existing intent.",
+      },
+      {
+        letter: "C",
+        text: "Yes, because Peter's statement showed his intent to go to Lydia's farm.",
+        verdict: "correct",
+        mold: "residue / FRE 803(3) then-existing intent",
+        explanation:
+          "C matches the operative words. Peter said he was going to Lydia's farm right now, so FRE 803(3) admits the statement to show his then-existing intent.",
+      },
+      {
+        letter: "D",
+        text: "Yes, because Peter's statement was an excited utterance.",
+        verdict: "trap",
+        mold: "right result wrong reason / emotional-language bait",
+        explanation:
+          "D is the dominant trap. Peter sounds angry, but excited utterance requires a startling event and stress from that event; mere emotional venting is not enough.",
+      },
+    ],
+    answerFlow: [
+      "Start with the out-of-court statement Barnabas overheard.",
+      "Treat it as hearsay if offered to prove Peter intended to go to Lydia's farm.",
+      "Reject availability as the wrong requirement because this is a Rule 803 lane.",
+      "Reject the blanket hearsay answer because an exception may apply.",
+      "Clash then-existing intent against excited utterance.",
+      "Use the intent words and the missing startling event.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "FRE 803(3) covers then-existing intent; FRE 803(2) needs a startling event, not just angry wording.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set splits yes/no admissibility while hiding the correct yes answer beside a wrong hearsay label.",
+      },
+      {
+        label: "Blue signal",
+        body: "Peter says he is riding to Lydia's farm right now, which is a present statement of intent to act.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating emotional language as excited utterance before checking for a triggering startling event.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-SHEPHERD-01",
+        body: "FRE 803 exceptions do not require the declarant to be available; only FRE 804 exceptions require unavailability.",
+      },
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-SHEPHERD-02",
+        body: "Excited utterance requires a startling event and stress from that event. Emotional venting alone does not qualify.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-HEARSAY-EXCEPTION-OMITTED",
+        body: "A statement can be hearsay and still admissible when a Rule 803 exception fits the facts.",
+      },
+    ],
+    leadMeSteps: [
+      "Name Peter's exact statement.",
+      "Mark why the testimony raises hearsay.",
+      "Ask whether the exception is in Rule 803 or Rule 804.",
+      "Cut the unavailability answer.",
+      "Test excited utterance for a startling event.",
+      "Use the present-intent words.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "803 Versus 804",
+        prompt:
+          "A statement fits FRE 803(3). Does the proponent need to show the declarant is unavailable?",
+        answer:
+          "No. FRE 803 exceptions apply regardless of availability; unavailability is a Rule 804 requirement.",
+      },
+      {
+        title: "Intent Words",
+        prompt:
+          "A declarant says, 'I am going to confront her right now.' Which hearsay exception should you test first?",
+        answer:
+          "Then-existing state of mind or intent under FRE 803(3).",
+      },
+      {
+        title: "Emotional Language Trap",
+        prompt:
+          "Why does 'I can't take this anymore' not automatically make a statement an excited utterance?",
+        answer:
+          "Excited utterance requires a startling event and stress caused by that event; anger or frustration alone is not enough.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

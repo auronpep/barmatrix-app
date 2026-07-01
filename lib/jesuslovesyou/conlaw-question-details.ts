@@ -1322,6 +1322,135 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "17114",
+    transformId: "17114_farmstand_excessive_fine",
+    title: "Incorporation Before Proportionality",
+    selectorCode: "44040201",
+    selectorMatch: "exact",
+    outlineCode: "44040201",
+    sourceOutlineCode: "44040201",
+    coverageGroup: "due_process_equal_protection_routing",
+    seedBucket: "needs_human_review",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A county seeks a large forfeiture for a minor food-code placard violation. The defendant invokes the Excessive Fines Clause through the Fourteenth Amendment. What is the incorporation route?",
+    stem:
+      "Daniel runs a small roadside farm stand in a rural county, selling eggs, honey, and produce raised on his own land. After a routine inspection, the county health department cited him for failing to display a state-issued refrigeration placard on one small cooler. The county then brought a forfeiture action seeking $400,000, even though the maximum civil fine for this kind of citation, if proven, is $250. Daniel concedes the placard violation but argues that the forfeiture is grossly excessive under the Excessive Fines Clause of the Eighth Amendment, applied to the county through the Fourteenth Amendment Due Process Clause. The county moves to dismiss on the ground that the Excessive Fines Clause constrains only the federal government. What is the best incorporation route for Daniel's Excessive Fines claim?",
+    choices: [
+      {
+        letter: "A",
+        text: "The claim fails because the Excessive Fines Clause of the Eighth Amendment applies only to the federal government, not to states or their political subdivisions.",
+        verdict: "trap",
+        mold: "federal-only incorporation trap",
+        explanation:
+          "A is the dominant trap. The Excessive Fines Clause is not federal-only; it applies to state and local governments through the Fourteenth Amendment Due Process Clause.",
+      },
+      {
+        letter: "B",
+        text: "The claim wins automatically because every forfeiture larger than the maximum statutory fine is unconstitutional, regardless of the violation.",
+        verdict: "trap",
+        mold: "automatic-win overclaim",
+        explanation:
+          "B skips the call. Incorporation answers whether the right applies; the merits still require a gross-disproportionality analysis.",
+      },
+      {
+        letter: "C",
+        text: "The claim can proceed because the Excessive Fines Clause of the Eighth Amendment is incorporated against the states and their political subdivisions through the Fourteenth Amendment Due Process Clause.",
+        verdict: "correct",
+        mold: "incorporated-right route",
+        explanation:
+          "C is correct. A county is a local government actor, and the Excessive Fines Clause reaches it through Fourteenth Amendment incorporation.",
+      },
+      {
+        letter: "D",
+        text: "The claim belongs only under the procedural due process rules requiring notice and a hearing before a forfeiture is imposed.",
+        verdict: "trap",
+        mold: "procedural due process misdirection",
+        explanation:
+          "D swaps the issue. Daniel challenges the size of the forfeiture, not the notice or hearing used to impose it.",
+      },
+    ],
+    answerFlow: [
+      "Start with the government actor: a county seeks the forfeiture.",
+      "Name the right Daniel invokes: the Eighth Amendment Excessive Fines Clause.",
+      "Name the route question: does that right apply to the county through the Fourteenth Amendment?",
+      "The Excessive Fines Clause is incorporated against states and local governments through Due Process.",
+      "Cut the federal-only answer.",
+      "Do not make incorporation an automatic merits win.",
+      "Cut procedural due process because Daniel challenges excessiveness, not process.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "The call asks for incorporation route, not whether the forfeiture is ultimately excessive.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with federal-only Bill of Rights thinking, automatic victory, and notice-and-hearing language.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive fact is a local government fine paired with an Eighth Amendment right applied through Fourteenth Amendment Due Process.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: answering the proportionality or procedure question before answering whether the right applies.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-FARMSTAND-EXCESSIVE-FINE-01",
+        body: "The Excessive Fines Clause of the Eighth Amendment is incorporated against the states and their political subdivisions through the Fourteenth Amendment Due Process Clause; the federal-only incorporation theory fails.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-FARMSTAND-EXCESSIVE-FINE-01",
+        body: "When the call asks for the best incorporation route, test each answer against the route question before deciding the proportionality merits.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-EXCESSIVE-FINES-NOTICE-01",
+        body: "A claim that a fine is too large is not merely a notice-and-hearing problem; keep the Excessive Fines constraint separate from procedural due process.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the government actor.",
+      "Name the Eighth Amendment right.",
+      "Translate the call into an incorporation question.",
+      "Apply Fourteenth Amendment Due Process incorporation.",
+      "Reject the federal-only trap.",
+      "Reject automatic merits victory.",
+      "Reject the procedural due process misdirection.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Incorporation Route",
+        prompt:
+          "A county seeks a large forfeiture, and the defendant invokes the Excessive Fines Clause through the Fourteenth Amendment. What route lets the claim proceed against the county?",
+        answer:
+          "The Excessive Fines Clause is incorporated against states and local governments through the Fourteenth Amendment Due Process Clause.",
+      },
+      {
+        title: "Route Is Not Merits",
+        prompt:
+          "If the Excessive Fines Clause applies to a county, does the defendant automatically win because the forfeiture is larger than the ordinance fine?",
+        answer:
+          "No. Incorporation only answers whether the right applies; the merits still ask whether the forfeiture is grossly disproportional.",
+      },
+      {
+        title: "Not Notice And Hearing",
+        prompt:
+          "A forfeiture challenge says the amount is grossly excessive. Why is procedural due process not the best route?",
+        answer:
+          "Procedural due process focuses on notice and hearing. The Excessive Fines claim attacks the size of the forfeiture.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

@@ -304,6 +304,134 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "20714",
+    transformId: "20714_prayer_robotics_kits",
+    title: "Taxpayer Standing Has a Narrow Door",
+    selectorCode: "43020201",
+    selectorMatch: "exact",
+    outlineCode: "43020201",
+    sourceOutlineCode: "43020201",
+    coverageGroup: "standing_ripeness_mootness_gate",
+    seedBucket: "needs_human_review",
+    key: "D",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A federal taxpayer challenges a congressional spending program that gives neutral materials to public and church-affiliated private recipients, claiming an Establishment Clause violation. Does the taxpayer have standing?",
+    stem:
+      "After reports that teenagers at weekend robotics competitions are injuring themselves while soldering circuit boards, Congress enacts a provision distributing free soldering-safety kits to participants in public programs and private youth academies. The kits contain goggles, burn pads, and safety cards; they contain no prayer, worship material, or religious instruction. In many states, most private youth academies are church-affiliated. Lydia, a federal taxpayer, challenges the provision, arguing that it unconstitutionally supports religious entities. Does Lydia have standing to make the challenge?",
+    choices: [
+      {
+        letter: "A",
+        text: "No, because Lydia has not shown the required nexus between her taxpayer status and the safety-kit expenditures.",
+        verdict: "trap",
+        mold: "backwards / missing-nexus overread",
+        explanation:
+          "A sounds technical, but the spending-power connection is supplied by the facts: congressional spending challenged under an Establishment Clause limit.",
+      },
+      {
+        letter: "B",
+        text: "Yes, because any federal taxpayer may challenge a congressional spending authorization.",
+        verdict: "trap",
+        mold: "overclaim / any-taxpayer myth",
+        explanation:
+          "B is too broad. Federal taxpayer standing is generally barred; this item turns on a narrow exception, not an open gate.",
+      },
+      {
+        letter: "C",
+        text: "No, because there is no proof that any money freed up by the free kits will be used for religious purposes.",
+        verdict: "trap",
+        mold: "wrong element / merits proof on a standing call",
+        explanation:
+          "C litigates whether religious support has been proved. The call asks whether Lydia may bring the challenge at all.",
+      },
+      {
+        letter: "D",
+        text: "Yes, because the challenge alleges a possible violation of a specific constitutional limit on Congress's spending power.",
+        verdict: "correct",
+        mold: "exception / congressional spending plus Establishment Clause",
+        explanation:
+          "D fits the narrow taxpayer-standing exception: congressional spending plus an alleged violation of a specific constitutional limit on that spending power.",
+      },
+    ],
+    answerFlow: [
+      "Start with the call: standing, not Establishment Clause merits.",
+      "The actor is Congress, and the provision distributes federally funded safety kits.",
+      "Lydia is suing as a federal taxpayer.",
+      "General taxpayer status is usually too attenuated for Article III standing.",
+      "The narrow exception is congressional taxing-and-spending action challenged under a specific constitutional limit.",
+      "The Establishment Clause is the classic trigger for that exception.",
+      "Cut any-taxpayer language and downstream religious-use proof.",
+      "Choose D.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Taxpayer standing is a threshold question; decide entry to court before deciding whether the aid is unconstitutional.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set creates a two-yes/two-no split: one overbroad yes, one merits-proof no, one technical no, and one narrow-exception yes.",
+      },
+      {
+        label: "Blue signal",
+        body: "The key signal is federal taxpayer plus congressional spending plus an Establishment Clause challenge.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating taxpayer standing as either always available or never available.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-FLAST-SPENDING-01",
+        body: "Federal taxpayers generally lack standing, but they may challenge a congressional taxing-and-spending enactment when the claim alleges violation of a specific constitutional limit on that spending power; the Establishment Clause is the classic trigger.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-STANDING-MERITS-01",
+        body: "On a standing call, separate entry-to-court from whether the plaintiff will win the constitutional merits.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-OVERCLAIM-ANY-TAXPAYER-01",
+        body: "The phrase any federal taxpayer is usually too broad; look for the narrow exception facts.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the call as standing.",
+      "Identify the plaintiff's status as a federal taxpayer.",
+      "Identify the challenged action as congressional spending.",
+      "Identify the constitutional limit as the Establishment Clause.",
+      "Reject any-taxpayer overclaim.",
+      "Reject merits-proof bait.",
+      "Pick D.",
+    ],
+    drillSeeds: [
+      {
+        title: "Flast Trigger",
+        prompt:
+          "A federal taxpayer challenges congressional spending as violating the Establishment Clause. What standing exception is triggered?",
+        answer:
+          "The narrow Flast taxpayer-standing exception for congressional spending challenged under a specific constitutional limit.",
+      },
+      {
+        title: "Any Taxpayer Trap",
+        prompt:
+          "A choice says any federal taxpayer may challenge any congressional spending. What is wrong with it?",
+        answer:
+          "It overclaims. Federal taxpayer standing is generally barred and allowed only in narrow circumstances.",
+      },
+      {
+        title: "Standing Versus Merits",
+        prompt:
+          "Why does lack of proof that freed-up money will be used for religion not defeat standing here?",
+        answer:
+          "That is a merits/proof issue. Standing turns on congressional spending plus the Establishment Clause challenge.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

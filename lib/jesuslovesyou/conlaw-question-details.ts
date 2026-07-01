@@ -2738,6 +2738,140 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "20153",
+    transformId: "20153_lampstand_labs",
+    title: "Neutral Secular Aid Survives",
+    selectorCode: "44040501",
+    selectorMatch: "exact",
+    outlineCode: "44040501",
+    sourceOutlineCode: "44040501",
+    coverageGroup: "free_exercise",
+    seedBucket: "needs_human_review",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "Congress funds secular-use educational equipment for religious and nonreligious private schools on equal terms. Should a federal court enjoin the spending?",
+    stem:
+      "Congress enacts the Lampstand Labs Act, which authorizes federal tax funds to buy robotics kits, digital microscopes, and portable planetarium projectors for qualifying private schools. The kits are available on identical terms to private schools with religious missions and to secular private schools. The Act states that every donated kit must be used only for secular instruction and secular academic activities. Mary and Peter, federal taxpayers whose children attend public schools in the state, sue in federal court for an order enjoining the federal government from spending tax funds on kits that will go to Christian and other religious private schools. They argue that the spending is unconstitutional. Should the court issue the requested injunction?",
+    choices: [
+      {
+        letter: "A",
+        text: "Yes, because education is solely a matter for the states.",
+        verdict: "trap",
+        mold: "states-only spending-power overclaim",
+        explanation:
+          "A overclaims. Education is often regulated by states, but Congress can spend for the general welfare, including neutral education aid.",
+      },
+      {
+        letter: "B",
+        text: "No, because the Act restricts the donated kits to secular educational use.",
+        verdict: "correct",
+        mold: "neutral secular-use aid",
+        explanation:
+          "B is correct. The program treats religious and secular private schools alike and restricts the donated equipment to secular educational use, so the requested injunction should not issue on this Establishment Clause theory.",
+      },
+      {
+        letter: "C",
+        text: "No, because Mary and Peter lack standing to challenge federal spending.",
+        verdict: "trap",
+        mold: "right result wrong threshold",
+        explanation:
+          "C reaches the right no-injunction result for the wrong reason. Federal taxpayers can have standing under the Establishment Clause exception for congressional taxing-and-spending challenges.",
+      },
+      {
+        letter: "D",
+        text: "Yes, because using public funds to buy equipment for religious private schools violates the Establishment Clause.",
+        verdict: "trap",
+        mold: "per se establishment overclaim",
+        explanation:
+          "D treats all public aid reaching religious schools as automatically unconstitutional. Neutral aid limited to secular educational use is not a per se establishment.",
+      },
+    ],
+    answerFlow: [
+      "Read the requested remedy: an injunction against federal spending.",
+      "Classify the constitutional claim: Establishment Clause challenge to school aid.",
+      "Confirm the program is neutral: religious and secular private schools receive the same terms.",
+      "Confirm the use restriction: the equipment must be used only for secular instruction and academic activities.",
+      "Cut A because Congress is not categorically barred from spending on education.",
+      "Cut C because the taxpayer-standing trap does not solve an Establishment Clause challenge to congressional spending.",
+      "Cut D because aid to religious schools is not automatically unconstitutional.",
+      "Choose B because it gives the no-injunction result for the correct neutral, secular-use reason.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "The issue is neutral secular-use educational aid versus per se Establishment Clause invalidity.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with states-only federalism, standing dismissal, and public-money absolutism.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive facts are equal terms for religious and secular schools plus a secular-use restriction.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: picking the right yes/no outcome without grading the because.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-ESTABLISHMENT-NEUTRAL-AID-01",
+        body: "Neutral educational aid available to religious and nonreligious schools on equal terms is not automatically an Establishment Clause violation when the aid is restricted to secular educational use.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-RELIGION-AID-BECAUSE-01",
+        body: "In yes/no injunction questions, grade the reason after the result; a no answer with a false standing reason still loses.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-TAXPAYER-STANDING-FLAST-01",
+        body: "Federal taxpayer standing is usually barred, but Establishment Clause challenges to congressional taxing-and-spending measures can fit the Flast exception.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-SPENDING-EDUCATION-01",
+        body: "Education is not solely a state function for spending-power purposes; Congress may spend for the general welfare.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the claim.",
+      "Check the remedy.",
+      "Find neutrality.",
+      "Find secular-use restriction.",
+      "Reject states-only.",
+      "Reject standing dismissal.",
+      "Reject per se establishment.",
+      "Pick B.",
+    ],
+    drillSeeds: [
+      {
+        title: "Neutral Aid",
+        prompt:
+          "Congress buys secular-use science kits for religious and nonreligious private schools on equal terms. Is that automatically an Establishment Clause violation?",
+        answer:
+          "No. Neutral, secular-use aid is not automatically unconstitutional merely because religious schools receive it on equal terms.",
+      },
+      {
+        title: "Standing Trap",
+        prompt:
+          "Why is 'federal taxpayers lack standing' a bad reason in an Establishment Clause challenge to congressional spending?",
+        answer:
+          "The Flast exception can permit federal taxpayer standing for Establishment Clause challenges to congressional taxing-and-spending measures.",
+      },
+      {
+        title: "Outcome Versus Reason",
+        prompt:
+          "Two choices say no injunction. One says no because of secular-use neutral aid; the other says no because taxpayers lack standing. Which reason wins?",
+        answer:
+          "The secular-use neutral-aid reason wins; the standing reason is the trap.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

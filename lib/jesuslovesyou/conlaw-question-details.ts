@@ -2355,6 +2355,134 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14242",
+    transformId: "14242_lydia_linen_kiosk",
+    title: "Grandfather Lines Get Rational Basis",
+    selectorCode: "44040300",
+    selectorMatch: "child_code",
+    outlineCode: "44040305",
+    sourceOutlineCode: "44040305",
+    coverageGroup: "due_process_equal_protection_routing",
+    seedBucket: "needs_human_review",
+    key: "A",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "Does Equal Protection invalidate an ordinary city vendor ordinance with a grandfather exemption when no suspect class or fundamental right is involved?",
+    stem:
+      "A city has severe pedestrian backups around its commuter plaza. To reduce the congestion, the city enacted an ordinance prohibiting all retail sales or repair services offered directly to the public from rolling kiosks, trailers, or carts stationed on city-owned sidewalks and plazas. The ordinance included an inseverable grandfather provision exempting vendors who, for 18 years or more, have continuously offered such goods or services from mobile stands on those public walkways. Peter, a shoe-repair vendor, qualifies for the exemption and is the only repair vendor who does. Lydia operates a linen-mending cart similar to Peter's mobile stand, but she has offered her service from city walkways for only seven years. Lydia filed suit in an appropriate federal district court to enjoin enforcement of the ordinance on the ground that it denies her equal protection of the laws. In this case, the court will probably rule that the ordinance is:",
+    choices: [
+      {
+        letter: "A",
+        text: "Constitutional, because its validity is governed by the rational basis test, and courts defer to economic choices in local legislation if they are even plausibly justifiable.",
+        verdict: "correct",
+        mold: "rational-basis economic regulation",
+        explanation:
+          "A is correct. The ordinance regulates ordinary commercial activity, uses no suspect classification, and burdens no fundamental right, so deferential rational-basis review applies.",
+      },
+      {
+        letter: "B",
+        text: "Unconstitutional, because economic benefits or burdens imposed by legislatures through grandfather provisions have consistently been declared per se violations of the Equal Protection Clause of the Fourteenth Amendment.",
+        verdict: "trap",
+        mold: "grandfather-clause per se overclaim",
+        explanation:
+          "B overclaims. Economic grandfather provisions are not automatically invalid; if no suspect class or fundamental right is involved, they are reviewed under rational basis.",
+      },
+      {
+        letter: "C",
+        text: "Constitutional, because it is narrowly tailored to implement the city's compelling interest in reducing pedestrian congestion and therefore satisfies the strict scrutiny test applicable to such cases.",
+        verdict: "trap",
+        mold: "correct result wrong scrutiny",
+        explanation:
+          "C is the dominant trap because it reaches constitutionality through the wrong test. Strict scrutiny is not triggered by the seriousness of the city's congestion problem alone.",
+      },
+      {
+        letter: "D",
+        text: "Unconstitutional, because the relationship between the legitimate purpose of the ordinance and the conduct it regulates is so tenuous and underinclusive that the ordinance fails the substantial relationship test applicable to such cases.",
+        verdict: "trap",
+        mold: "underinclusion intermediate-scrutiny import",
+        explanation:
+          "D imports the wrong lane. Rational basis tolerates imperfect and incremental economic lines if a plausible legitimate reason supports the classification.",
+      },
+    ],
+    answerFlow: [
+      "Identify the government action: a city regulates mobile commercial stands on public walkways.",
+      "Identify the classification: long-time vendors are grandfathered; newer vendors are excluded.",
+      "Check for a suspect class.",
+      "None appears.",
+      "Check for a fundamental right.",
+      "None is burdened.",
+      "Route the case to rational basis, not strict scrutiny or substantial relationship.",
+      "Choose A because the ordinance is plausibly tied to congestion control and local economic regulation.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "The issue is rational-basis economic regulation versus heightened-scrutiny or per se invalidity theories.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with per se invalidity, correct-result wrong-test strict scrutiny, and underinclusion under substantial relationship.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive facts are ordinary commercial activity, a grandfather line, no suspect class, and no fundamental-right burden.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating unfair-looking economic classifications as heightened scrutiny without first identifying the scrutiny trigger.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-EP-RATIONAL-BASIS-01",
+        body: "Ordinary economic and social-welfare classifications receive rational-basis review unless the law burdens a fundamental right or uses a suspect classification.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-EP-SCRUTINY-LANE-01",
+        body: "Before judging whether the city wins, identify the classification and pick the scrutiny lane; a correct result with the wrong scrutiny is not responsive.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-GRANDFATHER-LINES-01",
+        body: "Grandfather clauses in ordinary economic regulation may look like favoritism, but they are not per se Equal Protection violations.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the classification.",
+      "Check for suspect class.",
+      "Check for fundamental right.",
+      "Reject per se invalidity.",
+      "Reject strict scrutiny.",
+      "Reject substantial relationship.",
+      "Apply rational basis.",
+      "Pick A.",
+    ],
+    drillSeeds: [
+      {
+        title: "Scrutiny Lane",
+        prompt:
+          "A city regulates ordinary commercial vendors and exempts businesses that have operated for many years. No suspect class or fundamental right appears. What scrutiny applies?",
+        answer: "Rational basis.",
+      },
+      {
+        title: "Correct Result, Wrong Reason",
+        prompt:
+          "An answer says the economic ordinance is constitutional because it satisfies strict scrutiny. What is the cut?",
+        answer:
+          "Wrong scrutiny lane. Strict scrutiny is not triggered by ordinary economic regulation.",
+      },
+      {
+        title: "Grandfather Overclaim",
+        prompt:
+          "An Equal Protection answer says all economic grandfather clauses are per se invalid. What is the breaker?",
+        answer:
+          "Economic grandfather clauses are reviewed under rational basis and are not automatically invalid.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

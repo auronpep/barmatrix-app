@@ -432,6 +432,133 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "22590",
+    transformId: "22590_good_neighbor_shuttle",
+    title: "Ripeness Before Merits",
+    selectorCode: "43020201",
+    selectorMatch: "exact",
+    outlineCode: "43020201",
+    sourceOutlineCode: "43020201",
+    coverageGroup: "standing_ripeness_mootness_gate",
+    seedBucket: "needs_human_review",
+    key: "A",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "Can a federal court decide a pre-enforcement challenge to possible retroactive penalties when the city has not imposed them and may never do so?",
+    stem:
+      "A city enacted a Good Neighbor Shuttle program for private shuttle companies that use curb lanes outside a city-owned civic center. The program required each shuttle to display a small window decal listing a city phone number for traffic, safety, and noise complaints. A national association of shuttle companies, including companies owned by Lydia, Barnabas, and Timothy, sued the city in federal court, arguing that the program was unfair and unconstitutional. The city agreed not to enforce the decal rule while that litigation was pending, and the rule was ultimately upheld. After the rule was upheld, the association filed a new suit to stop the city from penalizing companies for failing to display the decals while the earlier litigation was pending. The city has not imposed any such penalties. The city moved to dismiss the new claim. How should the court rule?",
+    choices: [
+      {
+        letter: "A",
+        text: "Grant the motion, because the association's claim depends on penalties the city has not imposed and may never impose.",
+        verdict: "correct",
+        mold: "ripe timing answer / missing enforcement event",
+        explanation:
+          "A is the only answer that uses the missing event. The city has not imposed the feared penalties, so the dispute depends on contingent future enforcement.",
+      },
+      {
+        letter: "B",
+        text: "Deny the motion, because Article I, Section 10 prohibits ex post facto laws.",
+        verdict: "trap",
+        mold: "merits bait / ex post facto label",
+        explanation:
+          "B jumps to whether a retroactive penalty would be unconstitutional. The court first has to ask whether there is a ripe enforcement dispute.",
+      },
+      {
+        letter: "C",
+        text: "Grant the motion, because no state court has yet ruled on the city's shuttle program.",
+        verdict: "trap",
+        mold: "fabricated rule / state-court waiting requirement",
+        explanation:
+          "C invents the wrong procedural reason. The problem is missing concrete enforcement, not missing state-court review.",
+      },
+      {
+        letter: "D",
+        text: "Deny the motion, because the city program affects companies that operate in interstate commerce.",
+        verdict: "trap",
+        mold: "merits bait / commerce frame",
+        explanation:
+          "D is the dominant trap. Interstate commerce might matter in another challenge, but it does not make this contingent penalty claim ripe.",
+      },
+    ],
+    answerFlow: [
+      "Start with the motion: the city asks to dismiss the new claim.",
+      "The association wants protection from penalties for the earlier litigation period.",
+      "The rule was upheld, which tempts a merits fight about what the city can do next.",
+      "But the city has not imposed those penalties.",
+      "Ask whether the claim depends on future enforcement that may never occur.",
+      "Because it does, the claim is premature under ripeness doctrine.",
+      "Cut ex post facto, state-court-first, and interstate-commerce bait.",
+      "Choose A.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Ripeness asks whether the court can decide the dispute now; contingent future enforcement is usually too early.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set offers one timing answer against three merits or procedural bait answers.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive phrase is that the city has not imposed any such penalties.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: chasing constitutional labels before checking whether the feared enforcement has happened.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-RIPENESS-CONTINGENT-01",
+        body: "A federal court does not decide a claim that depends on future government enforcement the government has not yet attempted and may never attempt.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-CALL-TIMING-01",
+        body: "On a motion-to-dismiss call, check whether the court can hear the dispute now before chasing merits labels in the answer choices.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-MERITS-BAIT-01",
+        body: "Commerce, ex post facto, and similar labels can be legally meaningful but still lose when the justiciability gate is closed.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the requested ruling.",
+      "Identify the feared penalty.",
+      "Ask whether the city has imposed or clearly threatened that penalty.",
+      "Label the missing event as a ripeness problem.",
+      "Reject merits labels.",
+      "Reject state-court-first bait.",
+      "Pick A.",
+    ],
+    drillSeeds: [
+      {
+        title: "Contingent Enforcement",
+        prompt:
+          "A plaintiff asks a federal court to block a penalty the city has not imposed and may never impose. What justiciability issue comes first?",
+        answer: "Ripeness. The claim depends on contingent future enforcement.",
+      },
+      {
+        title: "Merits Bait Cut",
+        prompt:
+          "Why should a commerce-based answer be cut when the city has not imposed the feared penalty?",
+        answer:
+          "It answers the merits before the claim is ready for adjudication.",
+      },
+      {
+        title: "State-Court Myth",
+        prompt:
+          "Does a federal court have to wait for a state court before deciding every local-rule constitutional challenge?",
+        answer:
+          "No. The ripeness defect here is the missing enforcement event, not the absence of state-court review.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

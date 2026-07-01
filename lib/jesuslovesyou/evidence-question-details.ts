@@ -4316,6 +4316,132 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "19579",
+    transformId: "19579_grace_chapel",
+    title: "Entrapment Opens Predisposition Proof",
+    outlineCode: "32020404",
+    sourceOutlineCode: "32020404",
+    coverageGroup: "adjacent_pilot_code",
+    seedBucket: "needs_human_review",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "When a defendant raises entrapment, may the prosecution use prior similar sales to prove predisposition?",
+    stem:
+      "At a private Christian university, President Elias suspected that some students were selling illegal drugs on campus and requested state-police help. An undercover officer, Silas, enrolled as a transfer student and became friendly with Timothy, who was rumored among dorm residents to be involved in drug sales. After Timothy twice denied knowing anything about drugs, Silas kept pressing and offered $50 for a small packet. Timothy then handed Silas the packet and accepted the money. Timothy was arrested and charged with an unauthorized drug sale. At trial, Timothy raised the defense of entrapment. The prosecution called three dorm residents, Peter, John, and Lydia, who each testified that they had previously bought the same drug from Timothy that semester. Timothy's attorney objected. The objection should have been",
+    choices: [
+      {
+        letter: "A",
+        text: "overruled, since evidence of past conduct is relevant to establish that a defendant engaged in criminal behavior on a particular occasion.",
+        verdict: "trap",
+        mold: "flat_misstatement / propensity-purpose trap",
+        explanation:
+          "A gives the wrong reason. Prior acts cannot come in just to prove Timothy acted the same way on the charged occasion.",
+      },
+      {
+        letter: "B",
+        text: "overruled, since such evidence would tend to prove that Timothy was predisposed to commit the crime with which he has been charged.",
+        verdict: "correct",
+        mold: "residue / entrapment-predisposition purpose",
+        explanation:
+          "B names the purpose opened by the defense. Once Timothy raises entrapment, prior similar sales can rebut it by showing predisposition.",
+      },
+      {
+        letter: "C",
+        text: "sustained, since character evidence is not admissible against a defendant in a criminal proceeding.",
+        verdict: "trap",
+        mold: "overclaim / absolute-character-ban trap",
+        explanation:
+          "C states the character rule too broadly. Other-act evidence may be admitted for a permitted noncharacter purpose.",
+      },
+      {
+        letter: "D",
+        text: "sustained, since proof of unconvicted bad acts is not admissible for the purpose of establishing a person's character.",
+        verdict: "trap",
+        mold: "half_truth / general-rule trap",
+        explanation:
+          "D states a true general prohibition but misses the offered purpose. The prior sales are offered to prove predisposition after entrapment is raised, not character.",
+      },
+    ],
+    answerFlow: [
+      "Start with the objection to prior-buyer testimony.",
+      "Spot the defense: entrapment.",
+      "Name what entrapment puts in issue: predisposition.",
+      "Cut the pure propensity reason.",
+      "Cut the absolute character ban.",
+      "Cut the unconvicted-acts half truth.",
+      "Use the prior similar sales for predisposition.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Entrapment changes the purpose of prior similar acts: predisposition becomes a live noncharacter issue.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps recite general character limits but miss the defense-triggered purpose.",
+      },
+      {
+        label: "Blue signal",
+        body: "Timothy raised entrapment, so the prosecution may answer with evidence that he was already predisposed.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: stopping at the prior-bad-acts rule without asking what the defense put in issue.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-PREDISPOSITION-01",
+        body: "When the defendant claims entrapment, prior similar acts may be admitted under Rule 404(b) to prove predisposition, a non-propensity purpose.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-PURPOSE-01",
+        body: "When two admissibility choices survive, name the offered purpose; the entrapment fact decides whether prior acts are character or predisposition proof.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-UNCONVICTED-ACTS-HALF-TRUTH",
+        body: "A true statement about unconvicted bad acts can still lose when the acts are offered for a permitted noncharacter purpose.",
+      },
+    ],
+    leadMeSteps: [
+      "Read the objection target: prior similar sales.",
+      "Find the defense: entrapment.",
+      "Ask what entrapment puts in dispute.",
+      "Use predisposition as the live purpose.",
+      "Reject past-conduct propensity.",
+      "Reject absolute character-ban language.",
+      "Reject the unconvicted-acts half truth.",
+      "Pick B.",
+    ],
+    drillSeeds: [
+      {
+        title: "Entrapment Trigger",
+        prompt:
+          "A defendant raises entrapment and the prosecution offers prior similar sales. What purpose should you test?",
+        answer: "Predisposition to commit the charged crime.",
+      },
+      {
+        title: "Propensity Reason",
+        prompt:
+          "Why is 'past conduct proves he did it this time' the wrong reason?",
+        answer:
+          "That is propensity reasoning; the admissible purpose is predisposition after entrapment is raised.",
+      },
+      {
+        title: "Half-Truth Cut",
+        prompt:
+          "A choice says unconvicted bad acts cannot prove character. Why can that still be wrong here?",
+        answer:
+          "Because the prosecution is not offering the acts for character; it is offering them to rebut entrapment by showing predisposition.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

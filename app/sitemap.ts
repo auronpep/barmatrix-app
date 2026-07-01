@@ -3,6 +3,7 @@ import {
   JESUSLOVESYOU_ROUTE_PREFIX,
   evidencePilotCodeParams,
 } from "@/lib/jesuslovesyou/pilot-data";
+import { evidenceQuestionDetailParams } from "@/lib/jesuslovesyou/evidence-question-details";
 
 const LAST_MODIFIED = new Date("2026-06-05T00:00:00.000Z");
 
@@ -121,11 +122,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "weekly" as const,
     priority: 0.65,
   }));
+  const evidenceQuestionRoutes = evidenceQuestionDetailParams.map(
+    ({ questionId }) => ({
+      url: `https://barmatrix.app${JESUSLOVESYOU_ROUTE_PREFIX}/evidence-pilot-01/seeds/${questionId}`,
+      lastModified: LAST_MODIFIED,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    }),
+  );
   return [
     ...appRoutes,
     ...nicheRoutes,
     ...comparisonRoutes,
     ...campaignRoutes,
     ...evidencePilotRoutes,
+    ...evidenceQuestionRoutes,
   ];
 }

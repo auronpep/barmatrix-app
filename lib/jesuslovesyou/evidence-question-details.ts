@@ -3557,6 +3557,132 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14899",
+    transformId: "14899_v1",
+    title: "Polygraph Reference: Strike the Answer",
+    outlineCode: "32020302",
+    sourceOutlineCode: "32020302",
+    coverageGroup: "fre_403_insurance_policy_purpose",
+    seedBucket: "medium_friction",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "What should the court do when a witness volunteers inadmissible polygraph testimony after a narrow cross-examination question?",
+    stem:
+      "Paul was charged with stealing a laptop from a coworker's desk. At trial, a witness testified that she saw Paul take the laptop. The jurisdiction does not allow polygraph results into evidence. On cross-examination by Paul's attorney, the witness was asked, \"The office was too dimly lit to see clearly, wasn't it?\" She responded, \"I'm so certain it was Paul that I passed a polygraph test the police gave me.\" Paul's attorney immediately objects and moves to strike the witness's answer. The trial court should",
+    choices: [
+      {
+        letter: "A",
+        text: "deny the motion, because polygraph results are admissible when volunteered by a witness.",
+        verdict: "trap",
+        mold: "flat_misstatement / volunteered-evidence myth",
+        explanation:
+          "A invents a volunteered-evidence exception. If the jurisdiction bars polygraph results, the witness cannot make them admissible by blurting them out.",
+      },
+      {
+        letter: "B",
+        text: "deny the motion, because Paul's attorney opened the door by asking about the lighting.",
+        verdict: "trap",
+        mold: "wrong_frame / open-door overreach",
+        explanation:
+          "B uses a real doctrine too broadly. A lighting question does not open the door to a categorically barred polygraph reference.",
+      },
+      {
+        letter: "C",
+        text: "grant the motion, because the probative value of the unresponsive testimony is substantially outweighed by the danger of unfair prejudice.",
+        verdict: "correct",
+        mold: "residue / Rule 403 unfair-prejudice balance",
+        explanation:
+          "C keeps the right frame. The answer was unresponsive, the jurisdiction bars the evidence, and jurors may overvalue a claimed polygraph result.",
+      },
+      {
+        letter: "D",
+        text: "grant the motion, because the question was leading.",
+        verdict: "trap",
+        mold: "wrong_issue / question-form red herring",
+        explanation:
+          "D attacks the wrong thing. Leading questions are generally allowed on cross-examination, and the motion targets the witness's answer.",
+      },
+    ],
+    answerFlow: [
+      "Start with the motion: the lawyer asks the court to strike the answer.",
+      "Separate the cross-examination question from the witness's answer.",
+      "Keep the jurisdictional bar on polygraph results in view.",
+      "Cut the volunteered-evidence exception because it does not exist.",
+      "Cut the opened-door answer because the question asked only about lighting.",
+      "Cut the leading-question answer because leading is allowed on cross.",
+      "Use Rule 403 to name the unfair-prejudice danger.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "A jurisdictional evidence bar plus an unresponsive answer defeats open-door and volunteered-evidence traps.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps are procedural decoys: volunteered, opened door, and leading question.",
+      },
+      {
+        label: "Blue signal",
+        body: "The witness volunteered a polygraph result even though the jurisdiction bars polygraph evidence.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: letting a real doctrine like opened door override a categorical evidence bar.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVID-POLY-01",
+        body: "Polygraph or lie-detector references are inadmissible in many jurisdictions, and jurors may overvalue them; a volunteered reference can be struck under Rule 403.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVID-403-UNRESPONSIVE-ANSWER-01",
+        body: "For a motion to strike, separate the question from the answer; the answer may be excluded even when the question itself was proper.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVID-OPEN-DOOR-NOT-CATEGORICAL-BAR",
+        body: "Opened door is not a magic override for evidence that the jurisdiction categorically bars.",
+      },
+    ],
+    leadMeSteps: [
+      "Identify what the lawyer moved to strike.",
+      "Name the barred evidence: polygraph results.",
+      "Notice that the answer was unresponsive to a lighting question.",
+      "Reject the volunteered-evidence myth.",
+      "Reject the opened-door overreach.",
+      "Reject the leading-question red herring.",
+      "Apply Rule 403 unfair prejudice.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Motion Target",
+        prompt:
+          "A lawyer moves to strike after a witness gives an unresponsive answer. What should you separate first?",
+        answer: "Separate the propriety of the question from the admissibility of the answer.",
+      },
+      {
+        title: "Polygraph Signal",
+        prompt:
+          "A witness volunteers that she passed a polygraph in a jurisdiction that bars polygraph results. What is the Evidence move?",
+        answer:
+          "Grant the motion to strike because the barred reference creates unfair prejudice.",
+      },
+      {
+        title: "Opened Door Limit",
+        prompt:
+          "Does asking about lighting open the door to a barred polygraph result?",
+        answer:
+          "No. Opened door does not override a categorical bar, and the answer went beyond the question.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

@@ -1043,6 +1043,132 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14848",
+    transformId: "14848_choir_retreat_mileage_form",
+    title: "Witness Truthfulness: Specific Dishonest Acts on Cross",
+    outlineCode: "31010406",
+    sourceOutlineCode: "31010406",
+    coverageGroup: "witness_truthfulness",
+    seedBucket: "clean_teaching",
+    key: "D",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "May a party cross-examine a truthfulness-reputation witness about that witness's own prior dishonest act to attack the witness's credibility?",
+    stem:
+      "In a negligence action arising from the collapse of a temporary platform at a private Easter choir rehearsal, Lydia testified for the plaintiff. The defendant later called Stephen, who testified that Lydia's reputation for truthfulness was bad. On cross-examination of Stephen, the plaintiff's counsel asks, \"Isn't it true that last year, when you requested reimbursement for a youth-choir retreat, you signed a mileage form saying you drove the van even though you had ridden with Mary?\" This question is:",
+    choices: [
+      {
+        letter: "A",
+        text: "Improper, because character cannot be proved by specific instances of conduct.",
+        verdict: "trap",
+        mold: "tiered_absolute / overbroad character rule",
+        explanation:
+          "A states a familiar character-evidence warning too broadly. FRE 608(b) permits cross-examination about a specific dishonest act if it bears on truthfulness.",
+      },
+      {
+        letter: "B",
+        text: "Proper, because it will show the witness's standard for judging another person's reputation for truthfulness.",
+        verdict: "trap",
+        mold: "wrong_element / proper result wrong reason",
+        explanation:
+          "This is the dominant trap. The question is proper, but not because it calibrates Stephen's reputation standards. It attacks Stephen's own credibility.",
+      },
+      {
+        letter: "C",
+        text: "Improper, because a party may not impeach a witness called only to impeach another witness.",
+        verdict: "trap",
+        mold: "flat_misstatement / witness-immunity myth",
+        explanation:
+          "An impeachment witness is still a witness. Nothing in the stem gives Stephen immunity from a proper credibility attack.",
+      },
+      {
+        letter: "D",
+        text: "Proper, because it bears on the witness's credibility.",
+        verdict: "correct",
+        mold: "residue / FRE 608(b) cross-examination lane",
+        explanation:
+          "The question asks Stephen on cross about his own prior dishonest paperwork. That act is probative of Stephen's truthfulness, so the question is proper in the court's discretion.",
+      },
+    ],
+    answerFlow: [
+      "Identify Stephen's role: he is a witness who gave reputation-for-truthfulness testimony.",
+      "Name the method: plaintiff's counsel asks Stephen a question on cross-examination.",
+      "Name the act: allegedly false mileage paperwork, a specific dishonest act.",
+      "Apply FRE 608(b): specific dishonest acts may be asked about on cross if probative of truthfulness.",
+      "Cut A because it ignores the cross-examination truthfulness lane.",
+      "Cut C because impeachment witnesses can be impeached.",
+      "Clash B against D: both say proper, but D names the right target, Stephen's credibility.",
+      "Choose D.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Cross-examination about the witness's own dishonest act is different from proving the act with extrinsic evidence.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set uses two proper/improper pairs, so the because-clause target decides the proper-answer clash.",
+      },
+      {
+        label: "Blue signal",
+        body: "The question is asked to Stephen on cross, which keeps the inquiry inside the FRE 608(b) lane.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating every specific act as barred character proof without checking the cross-examination truthfulness exception.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-TRUTHFULNESS-01",
+        body: "A witness may be asked on cross-examination about a specific dishonest act if the act is probative of that witness's truthfulness; the examiner may not prove the act with extrinsic evidence just for that attack.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-BECAUSE-CLAUSE-01",
+        body: "When two answers give the same proper/improper result, decide by the because-clause target.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-IMPEACHMENT-WITNESS-MYTH",
+        body: "A witness called to impeach another witness is still a witness whose own credibility can be attacked.",
+      },
+    ],
+    leadMeSteps: [
+      "Ask whether the lawyer is asking on cross or offering extrinsic proof.",
+      "Identify whose credibility the question attacks.",
+      "Connect false reimbursement paperwork to truthfulness.",
+      "Reject the broad character-specific-act bar because this is cross-examination.",
+      "Reject the impeachment-witness immunity answer.",
+      "Compare the two proper answers by their because clauses.",
+      "Pick the credibility target answer.",
+    ],
+    drillSeeds: [
+      {
+        title: "Because-Clause Target",
+        prompt:
+          "Two answers both say a cross-examination question is proper. One says it tests reputation standards; one says it bears on credibility. What do you compare?",
+        answer:
+          "Compare the target of the question. A prior lie targets the witness's credibility.",
+      },
+      {
+        title: "FRE 608(b) Trigger",
+        prompt:
+          "A witness is asked on cross about a prior dishonest form. What truthfulness rule should trigger?",
+        answer:
+          "Specific dishonest acts may be asked about on cross if probative of truthfulness.",
+      },
+      {
+        title: "Cross vs. Extrinsic Proof",
+        prompt:
+          "The lawyer asks the witness about a lie on cross but does not offer a document or separate witness to prove it. Is that the same as extrinsic evidence?",
+        answer:
+          "No. Asking on cross is the lane FRE 608(b) may permit; proving it with outside evidence is the barred extrinsic-evidence move.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

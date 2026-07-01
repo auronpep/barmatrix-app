@@ -3180,6 +3180,131 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14852",
+    transformId: "14852_family_worship_laptop_bias",
+    title: "Bias: Motive Is Not Truthfulness Character",
+    outlineCode: "31010503",
+    sourceOutlineCode: "31010503",
+    coverageGroup: "witness_truthfulness_bias",
+    seedBucket: "clean_teaching",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "May cross-examination ask about a recent punishment to show the witness had a motive to accuse falsely, even if the punished act is not about truthfulness?",
+    stem:
+      "Timothy was prosecuted for assaulting Hannah, his 13-year-old niece, after a family Bible-study music night. Hannah testified about Timothy's conduct. On cross-examination, Timothy's lawyer asks Hannah, \"Isn't it true that shortly before you reported that Timothy assaulted you, he grounded you from the next music night because you deliberately cracked his laptop that held the worship-track recordings?\" The question is:",
+    choices: [
+      {
+        letter: "A",
+        text: "proper, because Hannah's misconduct is relevant to her character for truthfulness.",
+        verdict: "trap",
+        mold: "flat_misstatement / right-result-wrong-reason",
+        explanation:
+          "A reaches the proper side but gives the wrong reason. Cracking a laptop is not character-for-truthfulness impeachment.",
+      },
+      {
+        letter: "B",
+        text: "improper, because the question goes beyond the subject matter covered on direct examination.",
+        verdict: "trap",
+        mold: "flat_misstatement / scope-of-direct trap",
+        explanation:
+          "B overstates the scope limit. Credibility issues, including bias and motive, may be explored on cross-examination.",
+      },
+      {
+        letter: "C",
+        text: "proper, because it relates to a possible motive for Hannah to accuse Timothy falsely.",
+        verdict: "correct",
+        mold: "residue / bias-motive impeachment",
+        explanation:
+          "C names the correct offered purpose. The recent punishment could give Hannah a motive to be angry at Timothy and accuse him falsely.",
+      },
+      {
+        letter: "D",
+        text: "improper, because cracking the laptop had nothing to do with Hannah's truthfulness.",
+        verdict: "trap",
+        mold: "half_truth / offered-purpose trap",
+        explanation:
+          "D states a true premise but draws the wrong conclusion. The laptop incident is not offered to prove truthfulness character; it is offered to show bias or motive.",
+      },
+    ],
+    answerFlow: [
+      "Identify the setting: this is cross-examination about credibility.",
+      "Name the offered purpose before judging the fact.",
+      "The punishment fact is offered to show motive to accuse falsely.",
+      "Do not ask whether laptop damage itself proves truthfulness.",
+      "Cut A because it gives the wrong truthfulness-character reason.",
+      "Cut B because cross may cover credibility matters.",
+      "Cut D because it ignores the bias purpose.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Bias and motive to lie are independent impeachment lanes.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps force the student into the wrong frame: truthfulness character or direct-exam scope.",
+      },
+      {
+        label: "Blue signal",
+        body: "The timing matters: Timothy grounded Hannah shortly before she reported him.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: rejecting motive evidence because the underlying act is not dishonest.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-BIAS-MOTIVE-01",
+        body: "Bias or motive to lie is its own impeachment lane; the fact showing bias does not have to be a truthfulness act under Rule 608.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-OFFERED-PURPOSE-01",
+        body: "Before judging an impeachment fact, name what the question is offered to show: truthfulness character, contradiction, or bias.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-NONTRUTHFULNESS-HALF-TRUTH",
+        body: "A fact can have nothing to do with truthfulness and still be admissible to show bias or motive.",
+      },
+    ],
+    leadMeSteps: [
+      "Start with the cross-examination purpose.",
+      "Spot the recent punishment.",
+      "Connect the punishment to possible resentment or motive.",
+      "Separate motive from character for truthfulness.",
+      "Reject the right-result-wrong-reason answer.",
+      "Reject the scope-of-direct overrestriction.",
+      "Reject the truthfulness half-truth.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Purpose Sort",
+        prompt:
+          "A witness is asked about being punished by the defendant shortly before accusing him. Is the fact offered for truthfulness character or bias?",
+        answer: "Bias or motive to accuse falsely.",
+      },
+      {
+        title: "Cross Scope",
+        prompt:
+          "Direct examination did not mention the witness's anger at the defendant. May cross-examination ask about it if it affects credibility?",
+        answer: "Yes. Credibility matters may be explored on cross-examination.",
+      },
+      {
+        title: "Half-Truth Trap",
+        prompt:
+          "A choice says a prior property-damage incident has nothing to do with truthfulness. What must you ask next?",
+        answer:
+          "Whether the incident is offered for another impeachment purpose, such as bias or motive.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

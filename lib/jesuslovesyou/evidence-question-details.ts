@@ -3430,6 +3430,133 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14875",
+    transformId: "14875_rule_403_surprise_not_factor",
+    title: "Rule 403: The Missing Factor",
+    outlineCode: "32020302",
+    sourceOutlineCode: "32020302",
+    coverageGroup: "fre_403_insurance_policy_purpose",
+    seedBucket: "clean_teaching",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "Which concern is not one of the Rule 403 dangers that can substantially outweigh probative value?",
+    stem:
+      "A trial judge is applying Rule 403 to relevant evidence. Which concern is not part of the Rule 403 balancing list?",
+    choices: [
+      {
+        letter: "A",
+        text: "The jury may be confused about how the evidence applies to the issues in the case.",
+        verdict: "trap",
+        mold: "flat_misstatement / listed-factor trap",
+        explanation:
+          "A is a real Rule 403 concern. Confusing the issues or misleading the jury can justify exclusion when it substantially outweighs probative value.",
+      },
+      {
+        letter: "B",
+        text: "The evidence may create unfair prejudice against one side.",
+        verdict: "trap",
+        mold: "flat_misstatement / listed-factor trap",
+        explanation:
+          "B is the classic Rule 403 danger. The rule targets unfair prejudice, not merely damaging evidence.",
+      },
+      {
+        letter: "C",
+        text: "The opposing party is surprised by the evidence and is not fairly prepared to meet it.",
+        verdict: "correct",
+        mold: "residue / discovery-problem contrast",
+        explanation:
+          "C is the odd one out. Surprise or lack of preparation may raise scheduling, disclosure, or discovery issues, but it is not one of Rule 403's balancing dangers.",
+      },
+      {
+        letter: "D",
+        text: "The trial would become longer and more cumbersome because the evidence has only slight importance.",
+        verdict: "trap",
+        mold: "flat_misstatement / listed-factor trap",
+        explanation:
+          "D describes undue delay, wasting time, or cumulative/trivial proof. Those are Rule 403 concerns.",
+      },
+    ],
+    answerFlow: [
+      "Read the call as a negative-list question.",
+      "Recall the Rule 403 dangers.",
+      "Keep unfair prejudice.",
+      "Keep confusion or misleading the jury.",
+      "Keep delay, waste of time, and needless cumulative proof.",
+      "Separate surprise from Rule 403.",
+      "Treat surprise as a different procedural problem.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Rule 403 has a specific balancing list; do not add general unfairness concerns to it.",
+      },
+      {
+        label: "Purple profile",
+        body: "Three choices are real Rule 403 dangers, and the correct answer is the outsider.",
+      },
+      {
+        label: "Blue signal",
+        body: "Surprise and lack of preparation point toward disclosure or case-management problems, not Rule 403 balancing.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating any unfair-sounding trial problem as a Rule 403 factor.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-403-ENUMERATED-DANGERS-01",
+        body: "Rule 403 weighs probative value against unfair prejudice, confusing the issues, misleading the jury, undue delay, wasting time, or needlessly cumulative evidence.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-NEGATIVE-CALL-01",
+        body: "When the call asks which item is not included, turn each answer into a checklist item and hunt for the outsider.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-SURPRISE-NOT-403",
+        body: "Surprise may matter under disclosure, continuance, or discovery rules, but it is not a Rule 403 balancing danger by itself.",
+      },
+    ],
+    leadMeSteps: [
+      "Mark the word not in the call.",
+      "List the Rule 403 dangers from memory.",
+      "Match jury confusion to the list.",
+      "Match unfair prejudice to the list.",
+      "Match delay or waste of time to the list.",
+      "Notice that surprise is absent.",
+      "Move surprise to procedural/discovery territory.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "403 List Drill",
+        prompt:
+          "Name three Rule 403 dangers besides unfair prejudice.",
+        answer:
+          "Confusing the issues, misleading the jury, undue delay, wasting time, or needless cumulative evidence.",
+      },
+      {
+        title: "Surprise Sort",
+        prompt:
+          "A party says evidence should be excluded because it was a surprise and they are unprepared. Is that a Rule 403 danger by itself?",
+        answer:
+          "No. Treat it as a disclosure, continuance, or discovery issue unless another Rule 403 danger is present.",
+      },
+      {
+        title: "Negative Call",
+        prompt:
+          "A question asks which factor is not part of a rule. What is the safest first move?",
+        answer:
+          "Build the rule's checklist, then select the answer that is outside it.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

@@ -4569,6 +4569,132 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14757",
+    transformId: "14757_bethany_bible_quest",
+    title: "Transcript Layer Fails First",
+    outlineCode: "33040103",
+    sourceOutlineCode: "33040301",
+    coverageGroup: "hearsay_exception",
+    seedBucket: "hard_or_high_pick_rate_trap",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A civil plaintiff offers a transcript from a former worker's criminal trial against the company, but the company was not a party to that trial and the worker was no longer employed when he testified. Is the transcript admissible?",
+    stem:
+      "Bethany Bible Quest, a private Christian escape-room company, ran a live Nativity-themed maze in a rented warehouse. During one evening event, Daniel entered a restricted prop loft without the required badge. Stephen, a floor marshal for Bethany Bible Quest, forced Daniel down from the loft catwalk; Daniel fell and died. Stephen was convicted of manslaughter for Daniel's death. At Stephen's criminal trial, after Stephen was no longer working for Bethany Bible Quest, Stephen testified that Lydia, the company's safety manager, had instructed him to keep unbadged guests out of the prop loft whatever it takes. Stephen's conviction is on appeal, and he refuses to testify at the civil wrongful-death trial brought by Daniel's estate against Bethany Bible Quest. Daniel's estate offers an authenticated transcript of Stephen's criminal-trial testimony concerning Lydia's instruction. This evidence is",
+    choices: [
+      {
+        letter: "A",
+        text: "admissible, because Lydia's instruction to Stephen is not hearsay.",
+        verdict: "trap",
+        mold: "wrong_element / inner-statement-only trap",
+        explanation:
+          "A focuses on Lydia's instruction, which may feel like the important statement. The defect is that the transcript layer still has to be admissible before the quoted instruction can matter.",
+      },
+      {
+        letter: "B",
+        text: "inadmissible, because it is hearsay not within any exception.",
+        verdict: "correct",
+        mold: "residue / multiple-hearsay failure",
+        explanation:
+          "B catches the outside layer first. Stephen's former testimony is hearsay, and it is neither a current employee statement nor former testimony against a party that had a chance to develop it.",
+      },
+      {
+        letter: "C",
+        text: "admissible as a statement by Stephen as an agent of a party-opponent.",
+        verdict: "trap",
+        mold: "bait_doctrine / agent-statement timing trap",
+        explanation:
+          "C uses a familiar party-opponent label, but Stephen testified after he no longer worked for Bethany Bible Quest. The employment relationship timing breaks the agent-statement theory.",
+      },
+      {
+        letter: "D",
+        text: "admissible, although hearsay, as former testimony.",
+        verdict: "trap",
+        mold: "bait_doctrine / former-testimony opportunity trap",
+        explanation:
+          "D is the dominant trap because a sworn trial transcript sounds like former testimony. The missing fact is party opportunity: Bethany Bible Quest was not a party to Stephen's criminal case and had no chance to examine him there.",
+      },
+    ],
+    answerFlow: [
+      "Start with the offered item: a criminal-trial transcript.",
+      "Notice the transcript quotes a manager's instruction.",
+      "Scan hearsay outside-in.",
+      "Check Stephen's transcript testimony first.",
+      "Cut the inner-statement-only answer.",
+      "Cut the agent answer because Stephen testified after leaving the company.",
+      "Cut former testimony because the company had no prior chance to develop the testimony.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Multiple hearsay fails unless every layer has its own admissibility path.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps stop at the inner instruction, buy the former-agent label, or overtrust a trial transcript.",
+      },
+      {
+        label: "Blue signal",
+        body: "The civil defendant was absent from the criminal case, and the worker testified after leaving the company.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: checking the quoted statement before clearing the transcript layer.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-MULTIPLE-HEARSAY-01",
+        body: "A statement inside another statement is admissible only if each hearsay layer has its own exclusion or exception.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-OUTSIDE-IN-01",
+        body: "When a transcript repeats someone else's words, clear the transcript layer before analyzing the quoted statement.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-FORMER-TESTIMONY-OPPORTUNITY",
+        body: "A prior transcript is not former testimony against a party that had no earlier opportunity and similar motive to develop it.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the offered proof: Stephen's prior transcript.",
+      "Spot the inner quote: Lydia's instruction.",
+      "Run the outside-in hearsay scan.",
+      "Ask whether Stephen's transcript testimony has a path in.",
+      "Reject agent admission because Stephen had left the company.",
+      "Reject former testimony because Bethany Bible Quest had no prior chance to question him.",
+      "Reject the answer that checks only Lydia's instruction.",
+      "Pick B.",
+    ],
+    drillSeeds: [
+      {
+        title: "Outside-In Layer",
+        prompt:
+          "A transcript repeats a former worker's testimony about a manager's instruction. Which layer must be checked first?",
+        answer: "The transcript testimony layer.",
+      },
+      {
+        title: "Agent Timing",
+        prompt:
+          "A former employee testifies after leaving the company. Does Rule 801(d)(2)(D) cover that testimony as an employee statement?",
+        answer:
+          "No. The statement has to be made during the employment relationship.",
+      },
+      {
+        title: "Former Testimony",
+        prompt:
+          "A civil defendant was not a party to a worker's criminal trial. Can the plaintiff use that criminal transcript against the defendant as former testimony?",
+        answer:
+          "No. The party against whom the testimony is offered needed an earlier opportunity and similar motive to develop it.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

@@ -2180,6 +2180,132 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14835",
+    transformId: "14835_conference_badge_email",
+    title: "Preliminary Questions: Expert Qualification",
+    outlineCode: "31010107",
+    sourceOutlineCode: "31010107",
+    coverageGroup: "preliminary_question_judge_jury",
+    seedBucket: "clean_teaching",
+    key: "D",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "Who decides an expert-qualification objection, and may that decisionmaker consider a hearsay email about the expert's reputation?",
+    stem:
+      "In a federal prosecution of Paul for counterfeiting admission badges to a private Christian youth conference, the prosecution calls Lydia, a forensic ink-and-paper analyst, as an expert. Paul objects that Lydia is not adequately qualified as an expert. To support Lydia's qualifications, the prosecution offers a printed email from Lydia's former forensic-document supervisor, stating that Lydia is widely regarded among document examiners as well qualified. On the issue of Lydia's qualifications, the email may be considered by:",
+    choices: [
+      {
+        letter: "A",
+        text: "Both the judge and the jury, because the email is not being used for a hearsay purpose.",
+        verdict: "trap",
+        mold: "bait_doctrine / nonhearsay-purpose overreach",
+        explanation:
+          "A imports a familiar hearsay-purpose label into the wrong lane. Expert qualification is a judge-only preliminary admissibility question, not evidence for both judge and jury.",
+      },
+      {
+        letter: "B",
+        text: "Neither the judge nor the jury, because the email is hearsay and no hearsay exception applies.",
+        verdict: "trap",
+        mold: "flat_misstatement / hearsay overblock",
+        explanation:
+          "B treats hearsay as a complete bar. For the judge's Rule 104(a) preliminary ruling, the evidence rules do not bind the court except privilege.",
+      },
+      {
+        letter: "C",
+        text: "The jury, without regard to the hearsay rule.",
+        verdict: "trap",
+        mold: "wrong_element / right hearsay move, wrong actor",
+        explanation:
+          "C catches that hearsay does not block the preliminary decision, but assigns the decision to the wrong actor. The judge decides qualification.",
+      },
+      {
+        letter: "D",
+        text: "The judge, without regard to the hearsay rule.",
+        verdict: "correct",
+        mold: "residue / Rule 104(a) expert-qualification ruling",
+        explanation:
+          "Expert qualification is a preliminary admissibility question for the judge, and the judge may consider the email without applying the hearsay rule.",
+      },
+    ],
+    answerFlow: [
+      "Identify the issue: Lydia's expert qualification.",
+      "Classify it as a preliminary admissibility question.",
+      "Lock the decisionmaker: the judge decides expert qualification.",
+      "Cut A because both judge and jury is too broad.",
+      "Cut C because it sends the decision to the jury.",
+      "Apply Rule 104(a): the judge is not bound by evidence rules except privilege.",
+      "Cut B because it overblocks hearsay.",
+      "Choose D.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Decisionmaker first: expert qualification is a judge-only preliminary admissibility question.",
+      },
+      {
+        label: "Purple profile",
+        body: "The array splits judge, jury, both, and neither while baiting students with hearsay labels.",
+      },
+      {
+        label: "Blue signal",
+        body: "The qualification objection and written reputation support point to Rule 104(a), not jury trial evidence.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: chasing hearsay labels before deciding who rules on expert qualification.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-104-JUDGE-HEARSAY-01",
+        body: "Expert qualification is a preliminary admissibility question for the judge, and the judge is not bound by evidence rules except privilege when deciding it.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-JUDGE-JURY-LANE-01",
+        body: "When the answer set splits judge, jury, both, and neither, lock the decisionmaker before chasing hearsay labels.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-NONHEARSAY-PURPOSE-JURY-OVERREACH",
+        body: "A nonhearsay-purpose label does not turn a judge-only preliminary qualification ruling into jury evidence.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the objection: expert qualification.",
+      "Classify the issue as preliminary admissibility.",
+      "Assign the ruling to the judge.",
+      "Reject both-actor and jury-only answers.",
+      "Ask whether hearsay blocks the judge.",
+      "Apply Rule 104(a)'s not-bound-by-evidence-rules rule.",
+      "Reject neither because hearsay overblocks.",
+      "Pick judge without regard to hearsay.",
+    ],
+    drillSeeds: [
+      {
+        title: "Expert Qualification Decider",
+        prompt:
+          "A party objects that an expert is not qualified. Who decides that preliminary question?",
+        answer: "The judge.",
+      },
+      {
+        title: "Hearsay Support",
+        prompt:
+          "The proponent offers a hearsay email to support expert qualification. May the judge consider it for the preliminary ruling?",
+        answer:
+          "Yes. Under Rule 104(a), the judge is not bound by the evidence rules except privilege.",
+      },
+      {
+        title: "Both-Actor Trap",
+        prompt:
+          "An answer lets both judge and jury consider hearsay support for expert qualification. What is the lane error?",
+        answer:
+          "Expert qualification is judge-only; the jury does not decide the threshold qualification issue.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

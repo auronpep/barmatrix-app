@@ -1805,6 +1805,131 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14830",
+    transformId: "14830_lydia_bike_repair_adjuster",
+    title: "Insurance Evidence: Bias Only",
+    outlineCode: "31010503",
+    sourceOutlineCode: "31010503",
+    coverageGroup: "witness_truthfulness_bias",
+    seedBucket: "clean_teaching",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "May a party ask a defense witness about employment by the defendant's liability insurer to show bias, and if so, for what purpose?",
+    stem:
+      "Lydia sued Peter, alleging that she was seriously injured when Peter steered a cargo bike through a retreat-center walkway and knocked her down while she was carrying hymnals. During Peter's case, Timothy testified that Lydia had told him that the cargo bike \"only brushed my sleeve.\" On cross-examination, should the court allow Lydia to ask Timothy whether he is a claims adjuster for Peter's liability insurance company?",
+    choices: [
+      {
+        letter: "A",
+        text: "Yes, for both substantive and impeachment purposes.",
+        verdict: "trap",
+        mold: "half_truth / purpose overclaim",
+        explanation:
+          "A sees the bias purpose but lets it travel too far. The insurance tie can impeach Timothy; it is not substantive proof that Peter acted negligently.",
+      },
+      {
+        letter: "B",
+        text: "No, because testimony about liability insurance is barred by the rules of evidence.",
+        verdict: "trap",
+        mold: "tiered_absolute / insurance bar overclaim",
+        explanation:
+          "B remembers the general insurance limit but treats it as absolute. FRE 411 allows insurance evidence for another purpose, including witness bias.",
+      },
+      {
+        letter: "C",
+        text: "Yes, for impeachment purposes only.",
+        verdict: "correct",
+        mold: "residue / limited-purpose bias impeachment",
+        explanation:
+          "Timothy's job with Peter's liability insurer gives him a possible motive to shade his testimony. The question is allowed for credibility impeachment only.",
+      },
+      {
+        letter: "D",
+        text: "No, because the reference to insurance raises a collateral issue.",
+        verdict: "trap",
+        mold: "flat_misstatement / collateral-label trap",
+        explanation:
+          "D sounds like trial-management language, but bias is a direct credibility issue. The insurer relationship explains a possible motive to slant testimony.",
+      },
+    ],
+    answerFlow: [
+      "Spot the insurance fact.",
+      "Ask what use Lydia is making of it.",
+      "Separate fault proof from credibility proof.",
+      "Block substantive use: insurance is not negligence evidence.",
+      "Allow impeachment use: Timothy may be biased because he works for Peter's insurer.",
+      "Cut B because the bar is not absolute.",
+      "Cut D because bias is not collateral clutter.",
+      "Clash A against C and choose the limited-purpose answer: C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Purpose split first: the same insurance fact is barred for proving fault but allowed for showing witness bias.",
+      },
+      {
+        label: "Purple profile",
+        body: "The array pressures students with an absolute bar, a collateral label, and an overbroad yes.",
+      },
+      {
+        label: "Blue signal",
+        body: "Timothy is a defense witness tied to Peter's insurer; that employment tie is a bias signal.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating one allowed purpose as all purposes, or memorizing insurance as always barred.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-INSURANCE-BIAS-01",
+        body: "FRE 411 bars liability-insurance evidence to prove negligence, but allows it for another purpose such as proving a witness's bias or prejudice.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-PURPOSE-SPLIT-01",
+        body: "When an answer says evidence is admissible for more than one purpose, split the purposes before choosing.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-INSURANCE-ALWAYS-BARRED",
+        body: "Insurance is not an always-barred word; the offered purpose controls.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the insurance fact.",
+      "Name the witness's relationship to the insurer.",
+      "Ask whether the use is fault proof or credibility proof.",
+      "Reject substantive negligence use.",
+      "Allow the bias-impeachment use.",
+      "Reject the absolute insurance bar.",
+      "Reject the collateral-issue label.",
+      "Pick the limited-purpose answer.",
+    ],
+    drillSeeds: [
+      {
+        title: "Insurance Purpose Split",
+        prompt:
+          "A defense witness works for the defendant's insurer. Is that fact admissible to prove negligence or to show bias?",
+        answer: "To show bias only.",
+      },
+      {
+        title: "Absolute Bar Check",
+        prompt:
+          "An answer says liability-insurance evidence is always barred. What exception should you check?",
+        answer:
+          "Check whether it is offered for another purpose, such as witness bias.",
+      },
+      {
+        title: "Both-Purposes Trap",
+        prompt:
+          "A choice allows insurance evidence for both substantive and impeachment purposes. What word should alarm you?",
+        answer: "Both.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

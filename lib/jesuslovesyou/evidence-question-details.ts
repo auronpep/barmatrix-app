@@ -4062,6 +4062,133 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14883",
+    transformId: "14883_burning_bible_bookstore",
+    title: "404(b): Test Both Offered Acts",
+    outlineCode: "32020404",
+    sourceOutlineCode: "32020404",
+    coverageGroup: "adjacent_pilot_code",
+    seedBucket: "clean_teaching",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "In an arson case, should the court admit both extra-insurance evidence and a witness threat when each has a noncharacter purpose?",
+    stem:
+      "Stephen is on trial for arson after a fire destroyed his privately owned Bible bookstore and coffee counter. During its case in chief, the prosecution offers evidence that, two weeks before the fire, Stephen quietly bought overlapping fire-insurance policies from two different companies on the store inventory and fixtures. The prosecution also offers evidence that Stephen told his former wife, Mary, that he would kill her if she testified for the prosecution. The court should admit evidence of",
+    choices: [
+      {
+        letter: "A",
+        text: "Stephen's threat to kill Mary only.",
+        verdict: "trap",
+        mold: "half_truth / threat-only answer",
+        explanation:
+          "A keeps the witness-threat evidence but wrongly drops the insurance evidence. The overlapping policies supply a motive for arson.",
+      },
+      {
+        letter: "B",
+        text: "both Stephen's overlapping fire insurance and his threat to kill Mary.",
+        verdict: "correct",
+        mold: "residue / both noncharacter purposes",
+        explanation:
+          "B tests both offered acts. The insurance shows motive, and the threat shows consciousness of guilt and witness suppression.",
+      },
+      {
+        letter: "C",
+        text: "neither Stephen's overlapping fire insurance nor his threat to kill Mary.",
+        verdict: "trap",
+        mold: "flat_misstatement / overbroad 404(b) shutoff",
+        explanation:
+          "C treats all bad-looking acts as barred. Rule 404(b) blocks propensity use, not every noncharacter use.",
+      },
+      {
+        letter: "D",
+        text: "Stephen's overlapping fire insurance only.",
+        verdict: "trap",
+        mold: "half_truth / insurance-only dominant trap",
+        explanation:
+          "D sees the obvious motive evidence but stops early. The threat also has a noncharacter purpose as consciousness-of-guilt evidence.",
+      },
+    ],
+    answerFlow: [
+      "Recognize the both/only/neither answer array.",
+      "Test the insurance evidence first.",
+      "Use overlapping coverage as motive for arson.",
+      "Test the witness threat separately.",
+      "Use the threat as consciousness of guilt or witness suppression.",
+      "Reject the broad neither answer.",
+      "Reject the one-item half answers.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Other-act evidence can be admitted when each act has a real noncharacter job.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps invite a half answer: insurance only, threat only, or neither because both look bad.",
+      },
+      {
+        label: "Blue signal",
+        body: "Insurance before an arson points to motive; threatening a witness points to consciousness of guilt.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: stopping after the most obvious admissible item instead of testing every offered item.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-404B-NONCHARACTER-01",
+        body: "Rule 404(b) bars propensity use, but permits other-act evidence offered for a real noncharacter purpose such as motive, plan, knowledge, identity, absence of mistake, or consciousness of guilt.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-BOTH-ONLY-ARRAY-01",
+        body: "In a two-item admissibility array, decide each item independently before choosing only, both, or neither.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-INSURANCE-ONLY-HALF-ANSWER",
+        body: "The obvious motive item does not make the second item inadmissible; ask whether the second item has its own noncharacter job.",
+      },
+    ],
+    leadMeSteps: [
+      "Mark the answer array: threat only, both, neither, insurance only.",
+      "Give the insurance its job: motive.",
+      "Give the threat its job: consciousness of guilt.",
+      "Reject neither because both jobs are real.",
+      "Reject threat only because insurance matters.",
+      "Reject insurance only because witness suppression matters.",
+      "Apply 404(b) as a purpose rule, not a total bad-act ban.",
+      "Pick B.",
+    ],
+    drillSeeds: [
+      {
+        title: "Two-Item Array",
+        prompt:
+          "In an arson trial, the defendant bought extra fire insurance and threatened a prosecution witness. Which item has a noncharacter purpose?",
+        answer:
+          "Both. Insurance shows motive, and the threat shows consciousness of guilt or witness suppression.",
+      },
+      {
+        title: "404(b) Recall",
+        prompt:
+          "What does Rule 404(b) block, and what does it allow?",
+        answer:
+          "It blocks propensity use but allows proper noncharacter purposes such as motive or consciousness of guilt.",
+      },
+      {
+        title: "Half-Answer Cut",
+        prompt:
+          "Why is an insurance-only answer incomplete in this arson/witness-threat fact pattern?",
+        answer:
+          "Because the threat also has a noncharacter purpose: consciousness of guilt and witness suppression.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

@@ -1066,6 +1066,133 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14275",
+    transformId: "14275_lantern_launch_observatory",
+    title: "Public Venue Is Not State Action",
+    selectorCode: "44040100",
+    selectorMatch: "exact",
+    outlineCode: "44040100",
+    sourceOutlineCode: "44040100",
+    coverageGroup: "state_action",
+    seedBucket: "needs_human_review",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A private group with a men-only leadership rule rents a city facility on neutral terms for a public officer induction; does that alone make the leadership rule unconstitutional state action?",
+    stem:
+      "A city owns and operates a large public observatory dome. It rents the dome to any group that wants to hold a meeting, lecture, recital, contest, or community display. Each user must post a cleaning deposit and pay rent calculated only for the actual hours the dome is used, and reservations are made on a first-come, first-served basis. A private organization called the Good Samaritan Kite League permits only men to serve on its National Steward Council, the League's highest offices. The League rented the observatory dome for its annual lantern-and-kite exposition and planned to install its new National Steward Council during that event. It broadly publicized the exposition and invited members of the public to attend the installation ceremony at the city observatory. No statute or administrative rule prohibits the League from restricting its highest offices to men. An appropriate plaintiff sues the League, seeking to enjoin it from using the city observatory for the installation of its new officers. The plaintiff's sole claim is that the League's use of the city observatory for the installation ceremony is unconstitutional because the League disqualifies women from serving in its highest offices. Will the plaintiff prevail?",
+    choices: [
+      {
+        letter: "A",
+        text: "Yes, because once the League invited the public to the officer-installation ceremony, the Fourteenth Amendment barred it from excluding women from any leadership role connected to that event.",
+        verdict: "trap",
+        mold: "fabricated public-invitation rule",
+        explanation:
+          "A treats public attendance as the constitutional trigger. A public invitation does not turn a private group's internal leadership rule into state action.",
+      },
+      {
+        letter: "B",
+        text: "No, because the League is a private organization, and its officer-selection rule is not state action merely because the ceremony uses a city facility rented on neutral terms.",
+        verdict: "correct",
+        mold: "state-action threshold / neutral public venue",
+        explanation:
+          "B is correct. The city made the facility neutrally available, but the League made the challenged leadership rule.",
+      },
+      {
+        letter: "C",
+        text: "No, because freedom of association under the Fourteenth Amendment prohibits the city from placing any conditions on a private group's use of city facilities.",
+        verdict: "trap",
+        mold: "correct result / association-rights overclaim",
+        explanation:
+          "C reaches the no result, but the reason is too broad. The cleaner answer is no state action, not an absolute ban on city facility conditions.",
+      },
+      {
+        letter: "D",
+        text: "Yes, because renting the city observatory for the officer-installation ceremony subjects the League's leadership rule to the Fourteenth Amendment.",
+        verdict: "trap",
+        mold: "public-venue conversion trap",
+        explanation:
+          "D is the dominant trap. City property is a real fact, but neutral rental alone does not make the League's internal rule the city's rule.",
+      },
+    ],
+    answerFlow: [
+      "Start with the actor: the League is private.",
+      "Circle the challenged act: the League's own officer-selection rule.",
+      "Separate city ownership of the venue from responsibility for that rule.",
+      "The city rents the dome to any group on first-come, hourly terms.",
+      "No fact shows city coercion, encouragement, joint participation, public function, or entwinement.",
+      "Cut public-invitation and association-overclaim answers.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "The Fourteenth Amendment needs state action; private conduct needs an attribution bridge.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set uses the public venue to make private conduct feel governmental.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive fact is neutral rental: the city did not make, enforce, or encourage the League's leadership rule.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating city property as automatic constitutional control over a private group's internal rule.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-STATE-ACTION-PUBLIC-VENUE-01",
+        body: "The Fourteenth Amendment reaches state action, not merely private conduct; a private group's internal rule is not state action merely because the group uses a public venue on neutral rental terms.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-STATE-ACTION-PRIVATE-ACTOR-01",
+        body: "When a constitutional claim targets a private actor, check state action before equal-protection merits.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-PUBLIC-BUILDING-CLUE-01",
+        body: "A public building fact is only a clue. Look for coercion, significant encouragement, joint participation, public function, or entwinement.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the actor.",
+      "Name the challenged rule.",
+      "Separate the public venue from the private rule.",
+      "Check the rental terms.",
+      "Look for an attribution bridge.",
+      "Reject public-invitation and association-rights overclaims.",
+      "Pick B.",
+    ],
+    drillSeeds: [
+      {
+        title: "Public Venue Threshold",
+        prompt:
+          "A private group rents a public building on neutral terms and applies its own internal rule. What is the first constitutional question?",
+        answer:
+          "Whether the private rule is fairly attributable to the state.",
+      },
+      {
+        title: "Stronger Than Rental",
+        prompt:
+          "Name two facts that would be stronger than neutral public-facility rental for state action.",
+        answer:
+          "State coercion, significant encouragement, joint participation, public function, or entwinement.",
+      },
+      {
+        title: "Right Result Wrong Reason",
+        prompt:
+          "A no answer says freedom of association forbids any city condition. Why is that not the best no?",
+        answer:
+          "It overstates association rights and misses that the cleaner reason is no state action.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

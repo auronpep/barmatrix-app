@@ -1709,6 +1709,135 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "17163",
+    transformId: "17163_permit_fee_ledger",
+    title: "Negligence Is Not Due Process",
+    selectorCode: "44040200",
+    selectorMatch: "child_code",
+    outlineCode: "44040203",
+    sourceOutlineCode: "44040203",
+    coverageGroup: "due_process_equal_protection_routing",
+    seedBucket: "needs_human_review",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A state employee accidentally loses a small permit fee while moving it between offices. The applicant sues under the Due Process Clause, alleging only negligence and a small property loss. Is that a constitutional violation?",
+    stem:
+      "Paul, a pastor at a small church, applied in person for a state concealed-carry permit at a county clerk's office. He paid the $75 application fee in cash to the clerk, Daniel, who placed the cash envelope in an interoffice pouch to be delivered to the finance office for deposit. While moving the pouch between offices, Daniel accidentally dropped the envelope behind a filing cabinet and never recovered it. Paul's permit was not issued, and the $75 was never refunded. Paul sued Daniel and the county in federal court under 42 U.S.C. § 1983, alleging a Due Process Clause violation based only on Daniel's negligence and the loss of the $75 fee. What is the best due process answer?",
+    choices: [
+      {
+        letter: "A",
+        text: "Strict scrutiny applies, because permit fees burden travel within the state.",
+        verdict: "trap",
+        mold: "wrong-frame level of review",
+        explanation:
+          "A jumps to the wrong frame. The claim is about an accidental loss of a small fee, not a suspect classification or a fundamental-rights burden.",
+      },
+      {
+        letter: "B",
+        text: "The clerk must receive a hearing before the applicant can sue.",
+        verdict: "trap",
+        mold: "wrong-party due process",
+        explanation:
+          "B redirects the call to Daniel's process. The question asks whether Paul's due process rights were violated by the negligent loss.",
+      },
+      {
+        letter: "C",
+        text: "The Due Process Clause is not ordinarily violated by mere negligence.",
+        verdict: "correct",
+        mold: "negligent-loss due process rule",
+        explanation:
+          "C is correct. Mere carelessness by a state employee causing an unintended property loss is not itself a constitutional due process violation.",
+      },
+      {
+        letter: "D",
+        text: "Every property loss by a state employee is a due process violation.",
+        verdict: "trap",
+        mold: "tiered absolute overclaim",
+        explanation:
+          "D is the dominant trap. Due process protects property, but it does not turn every careless government mistake into a federal constitutional case.",
+      },
+    ],
+    answerFlow: [
+      "Start with the allegation: Daniel accidentally lost the cash envelope.",
+      "Identify the injury: a $75 property loss and a permit not issued.",
+      "Ask what mental state the due process claim alleges.",
+      "The stem alleges only negligence, not deliberate or reckless state action.",
+      "Cut D because every property loss is too broad.",
+      "Cut A because strict scrutiny is the wrong frame for a negligent-loss claim.",
+      "Cut B because the applicant's process is at issue, not the clerk's employment process.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "The issue is every property loss versus the negligence rule: due process does not constitutionalize mere carelessness.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with an absolute property rule, a strict-scrutiny frame, and a wrong-party hearing issue.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive fact is that Daniel accidentally dropped the envelope; the claim alleges only negligence.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: seeing a state actor plus lost property and skipping the required wrongful-state-action check.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONSTITUTIONAL-LAW-PERMIT-FEE-LEDGER-01",
+        body: "Mere negligent loss of property by a state official is not a due process violation; the clause targets deliberate or reckless deprivations, not carelessness.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONSTITUTIONAL-LAW-PERMIT-FEE-LEDGER-01",
+        body: "On a constitutional item, keep the government actor as the government actor and do not reframe the call to the defendant's process.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-NEGLIGENCE-NOT-TORT-01",
+        body: "A state tort or refund problem does not automatically become a federal due process claim just because a state employee caused the loss.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the claimant.",
+      "Name the state actor.",
+      "Name the property loss.",
+      "Identify the alleged mental state.",
+      "Separate negligence from deliberate deprivation.",
+      "Reject strict scrutiny and wrong-party hearing frames.",
+      "Reject the every-loss overclaim.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Negligent Loss",
+        prompt:
+          "A state employee accidentally loses a citizen's $50 application fee. The citizen sues under the Due Process Clause. Is that a constitutional violation?",
+        answer:
+          "No. Negligent loss by a state official is not a constitutional deprivation; the likely remedy is state law, not a federal due process claim.",
+      },
+      {
+        title: "Wrong Party",
+        prompt:
+          "A due process claim is brought by a citizen against a state clerk. The answer choice says the clerk needs a hearing first. What is the problem?",
+        answer:
+          "The call is about the citizen's due process rights, not the clerk's employment process.",
+      },
+      {
+        title: "Overclaim Cut",
+        prompt:
+          "Why is 'every property loss by a state employee is a due process violation' too broad?",
+        answer:
+          "Because the Due Process Clause does not make every negligent state mistake constitutional. The student must ask whether there was wrongful state action, not mere carelessness.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

@@ -45,8 +45,14 @@ export default function JesuslovesyouPilotPage() {
           </p>
           <div className="hero-actions" style={{ marginTop: 32 }}>
             <Link
-              href={`${JESUSLOVESYOU_ROUTE_PREFIX}/checkout?lp=Jesuslovesyou&source=Jesuslovesyou`}
+              href={`${JESUSLOVESYOU_ROUTE_PREFIX}/evidence-pilot-01`}
               className="btn btn-lg red"
+            >
+              Open Evidence pilot <span className="arrow">-&gt;</span>
+            </Link>
+            <Link
+              href={`${JESUSLOVESYOU_ROUTE_PREFIX}/checkout?lp=Jesuslovesyou&source=Jesuslovesyou`}
+              className="btn btn-lg ghost"
             >
               Open prefixed checkout <span className="arrow">-&gt;</span>
             </Link>

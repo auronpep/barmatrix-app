@@ -192,3 +192,52 @@ export const firstDeliverables = [
   "Evidence QA report",
 ];
 
+export const evidencePilotPageModules = [
+  {
+    label: "Annotated Solve Board",
+    body: "Renders call lock, stem annotations, solve steps, answer decode, color strip, bank-it line, and repair prompt from validated scaffold data.",
+  },
+  {
+    label: "Choice Decode",
+    body: "Names the broken filter, why the choice looked attractive, why it loses, and which method class should repair it.",
+  },
+  {
+    label: "Trap Key Module",
+    body: "Appears when the selected wrong answer or an adjacent repair cell maps to an unseen high-priority Trap Key.",
+  },
+  {
+    label: "Gold / Silver Key Module",
+    body: "Stores reusable winning moves after the legal invariant layer is locked.",
+  },
+];
+
+export const evidenceLeadMeRun = {
+  moduleId: "leadme_evidence_104a_001",
+  title: "Roles of Judge and Jury LeadMe",
+  targetReason: "Repair decisionmaker inversion in Evidence preliminary admissibility.",
+  tasks: [
+    "Offer It First",
+    "Judge decides FRE 104(a)",
+    "Trap Key: jury decides because facts are disputed",
+    "Roles of Judge and Jury Q1",
+    "State the gate",
+  ],
+};
+
+export const evidenceOutlineNode = {
+  displayCode: "3.01.01.01.00.00",
+  legacyOutlineCode: "31010101",
+  title: "Roles of Judge and Jury",
+  path: "Evidence > Presentation of Evidence > General Provisions > Roles of judge and jury",
+  anchors: [
+    "FRE 104(a): court decides preliminary admissibility questions and is not bound by evidence rules except privilege.",
+    "FRE 104(b): court screens whether a reasonable jury could find a conditional fact; jury ultimately decides.",
+  ],
+  trapSummary: "Decisionmaker inversion: treating a judge question as a jury question.",
+  linkedAssets: [
+    "q_evid_104a_001",
+    "GK-EVIDENCE-FRE104A-JUDGE",
+    "TK-EVIDENCE-JURY-DISPUTED-FACTS",
+    "drill_roles_judge_jury_5q",
+  ],
+};

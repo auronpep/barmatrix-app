@@ -4822,6 +4822,133 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14777",
+    transformId: "14777_christian-variance",
+    title: "Double Hearsay, One Layer At A Time",
+    outlineCode: "33040301",
+    sourceOutlineCode: "33040301",
+    coverageGroup: "hearsay_exception",
+    seedBucket: "medium_friction",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "Two conspirators agree to sell stolen property. One flees. The prosecutor offers the fugitive's spouse testimony that the fugitive repeated the defendant's money-owed statement. Is the testimony admissible?",
+    stem:
+      "Peter and his friend Daniel agreed to sell a rare manuscript they knew had been stolen from a university library. Daniel later disappeared and cannot be found. At Peter's trial for conspiracy to sell stolen property, the prosecutor calls Daniel's wife, Ruth, to testify that Daniel told her: Peter said I still owe him half the money from that manuscript sale. Ruth's testimony is",
+    choices: [
+      {
+        letter: "A",
+        text: "inadmissible, because Daniel's statement was not in furtherance of the conspiracy.",
+        verdict: "trap",
+        mold: "true-premise / wrong-conclusion trap",
+        explanation:
+          "A spots that Daniel's casual statement to Ruth was not in furtherance of the conspiracy. The defect is stopping there; Daniel's layer can still come in as a statement against interest.",
+      },
+      {
+        letter: "B",
+        text: "inadmissible, because Daniel is not shown to have firsthand knowledge that the manuscript was stolen.",
+        verdict: "trap",
+        mold: "fabricated requirement / knowledge-of-stolen-status trap",
+        explanation:
+          "B invents a requirement. Daniel needed personal knowledge of the facts he asserted, and the money-owed statement itself exposed him to financial and penal risk.",
+      },
+      {
+        letter: "C",
+        text: "admissible, as evidence of a statement against interest by Daniel.",
+        verdict: "correct",
+        mold: "residue / double-hearsay layer match",
+        explanation:
+          "C clears both layers. Peter's statement is offered against Peter as a party-opponent statement, and Daniel's repetition is admissible because Daniel is unavailable and the statement was against his interest.",
+      },
+      {
+        letter: "D",
+        text: "admissible, as evidence of a statement by a party-opponent.",
+        verdict: "trap",
+        mold: "party-opponent misapplication / nonparty declarant trap",
+        explanation:
+          "D is the dominant trap. Peter's inner statement fits party-opponent treatment, but Daniel's outer statement to Ruth was not made by a party and was not in furtherance of the conspiracy.",
+      },
+    ],
+    answerFlow: [
+      "Start with the witness's testimony.",
+      "Split the double hearsay into two layers.",
+      "Layer one: Peter's statement to Daniel.",
+      "Use party-opponent treatment for Peter's own statement offered against Peter.",
+      "Layer two: Daniel's statement to Ruth.",
+      "Reject co-conspirator treatment because the statement was not in furtherance.",
+      "Use statement against interest because Daniel is unavailable and the statement hurts him.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Double hearsay is admissible only when each layer has its own exception or exemption.",
+      },
+      {
+        label: "Purple profile",
+        body: "The traps overextend party-opponent treatment, stop at the failed in-furtherance route, or invent a stolen-status knowledge requirement.",
+      },
+      {
+        label: "Blue signal",
+        body: "Daniel disappeared, and his statement tied him to money from the stolen manuscript sale.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating one clean hearsay layer as if it clears the whole combined statement.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-DOUBLE-HEARSAY-LAYERS-01",
+        body: "For hearsay within hearsay, clear each layer separately; one admissible layer does not save the whole statement.",
+      },
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-NONPARTY-AGAINST-INTEREST-01",
+        body: "A nonparty declarant's damaging statement can come in as a statement against interest if the declarant is unavailable and the statement was against interest when made.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-CONSPIRACY-NOT-MAGIC",
+        body: "A co-conspirator's casual story to a third party is not a party-opponent statement unless it was made during and in furtherance of the conspiracy.",
+      },
+    ],
+    leadMeSteps: [
+      "Identify the two out-of-court statements.",
+      "Clear Peter's statement as Peter's own party-opponent statement.",
+      "Move to Daniel's statement to Ruth.",
+      "Reject party-opponent treatment for Daniel's layer.",
+      "Reject the in-furtherance objection as only one failed route.",
+      "Use statement against interest for Daniel's unavailable-damaging statement.",
+      "Ignore the fabricated stolen-status knowledge requirement.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Layer Split",
+        prompt:
+          "A witness says, 'The defendant's partner told me the defendant said he still owes money from the deal.' What are the two hearsay layers?",
+        answer:
+          "The defendant's statement to the partner, and the partner's statement to the witness.",
+      },
+      {
+        title: "Nonparty Against Interest",
+        prompt:
+          "When can a nonparty declarant's statement be admitted against a defendant?",
+        answer:
+          "When the declarant is unavailable and the statement qualifies as a statement against interest.",
+      },
+      {
+        title: "In Furtherance",
+        prompt:
+          "A co-conspirator casually tells a spouse about a past crime. Does that satisfy the co-conspirator in-furtherance route?",
+        answer:
+          "No. Casual narrative to a third party is not made in furtherance of the conspiracy.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

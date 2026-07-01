@@ -6202,6 +6202,131 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "22229",
+    transformId: "22229_stephen-canoe",
+    title: "Insurance Reassurance Is Still Excluded",
+    outlineCode: "35030304",
+    sourceOutlineCode: "35030304",
+    coverageGroup: "fre_403_insurance_policy_purpose",
+    seedBucket: "needs_human_review",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "In a negligence case, is the defendant's post-accident reassurance about having plenty of insurance admissible because it is a party statement or excited utterance?",
+    stem:
+      "Stephen invited Barnabas to go canoeing on a river near their town. While navigating a stretch of rapids, Stephen lost control of the canoe and it struck a submerged rock. Barnabas was thrown from the canoe and struck his head on a boulder. He was hospitalized for six weeks with a serious head injury and later filed a negligence action against Stephen. At trial, during Barnabas's direct examination, Barnabas testified that immediately after the accident, while Stephen was visibly shaken and upset, Stephen said, \"Don't worry, my watercraft policy has plenty of coverage.\" Upon Stephen's objection, should that portion of Barnabas's testimony be excluded?",
+    choices: [
+      {
+        letter: "A",
+        text: "No, because it is an excited utterance.",
+        verdict: "trap",
+        mold: "wrong exception / excited-utterance overclaim",
+        explanation:
+          "A is tempting because Stephen was shaken right after the accident. But the statement is about insurance coverage, not the accident, and an exception label would not cure the relevance and FRE 411 problem.",
+      },
+      {
+        letter: "B",
+        text: "Yes, because it is not relevant to a material issue.",
+        verdict: "correct",
+        mold: "residue / insurance status not fault proof",
+        explanation:
+          "B is the clean answer. Insurance status does not make Stephen's negligent operation of the canoe more or less probable, and FRE 411 bars using insurance to prove fault.",
+      },
+      {
+        letter: "C",
+        text: "No, because it is an admission of a party.",
+        verdict: "trap",
+        mold: "half-truth / party admission overclaim",
+        explanation:
+          "C is the dominant trap. A party statement may avoid hearsay, but it still must be relevant and cannot use insurance status to prove negligence.",
+      },
+      {
+        letter: "D",
+        text: "Yes, because it relates to a compromise offer.",
+        verdict: "trap",
+        mold: "wrong label / no settlement exchange",
+        explanation:
+          "D reaches exclusion with the wrong reason. Stephen did not offer payment or coverage in exchange for Barnabas dropping or settling a claim.",
+      },
+    ],
+    answerFlow: [
+      "Start with what the statement says: Stephen has watercraft insurance.",
+      "Ask whether insurance status proves negligent canoe handling.",
+      "Reject the fault inference because insurance is not a material issue.",
+      "Use FRE 411 as the policy rule behind the relevance problem.",
+      "Cut excited utterance because the statement is not about the accident and relevance still matters.",
+      "Cut party admission because non-hearsay does not override relevance.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Liability insurance is not admissible to prove negligence or fault; a hearsay label does not make irrelevant insurance evidence admissible.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tests whether students stop at party admission or excited utterance labels instead of applying the relevance and FRE 411 floor.",
+      },
+      {
+        label: "Blue signal",
+        body: "The only content of Stephen's statement is insurance coverage, not how the canoe accident happened.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating not hearsay or a hearsay exception as the same thing as admissible evidence.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-FRE411-FAULT-02",
+        body: "FRE 411 bars liability-insurance evidence when offered to prove negligence or wrongful conduct.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-RELEVANCE-BEFORE-HEARSAY-01",
+        body: "A statement that clears a hearsay rule still must be relevant to a material issue.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-PARTY-ADMISSION-OVERCLAIM",
+        body: "Party admission means not hearsay; it does not mean automatically admissible.",
+      },
+    ],
+    leadMeSteps: [
+      "Identify the statement: Stephen says he has watercraft insurance.",
+      "Identify the case issue: negligent canoe handling.",
+      "Ask whether insurance coverage proves negligence.",
+      "Apply FRE 411's fault-use bar.",
+      "Reject excited utterance as an unrelated insurance statement.",
+      "Reject party admission because relevance is still required.",
+      "Pick B.",
+    ],
+    drillSeeds: [
+      {
+        title: "Relevance Before Hearsay",
+        prompt:
+          "A defendant's statement qualifies as a party admission. What admissibility question still comes first?",
+        answer:
+          "Whether the statement is relevant to a material issue and not barred by a policy rule like FRE 411.",
+      },
+      {
+        title: "Excited Utterance Limit",
+        prompt:
+          "After an accident, a shaken defendant says only, 'I have insurance.' Does excitement alone make that statement admissible?",
+        answer:
+          "No. The statement must relate to the startling event, and it still must be relevant.",
+      },
+      {
+        title: "Insurance Fault Bar",
+        prompt:
+          "Can a plaintiff use the defendant's insurance statement to prove the defendant was negligent?",
+        answer:
+          "No. Liability insurance is not fault proof, and FRE 411 bars that use.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

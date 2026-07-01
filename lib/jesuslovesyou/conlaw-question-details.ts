@@ -1967,6 +1967,135 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "17157",
+    transformId: "17157_vocational-rehab",
+    title: "Pregnancy Is Not Automatic Intermediate Scrutiny",
+    selectorCode: "44040300",
+    selectorMatch: "exact",
+    outlineCode: "44040300",
+    sourceOutlineCode: "44040300",
+    coverageGroup: "due_process_equal_protection_routing",
+    seedBucket: "needs_human_review",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A state disability-benefit program excludes pregnancy-related conditions; the plaintiff brings only an Equal Protection claim and offers no proof of sex-stereotyping purpose. What level of scrutiny applies?",
+    stem:
+      "A state vocational rehabilitation program provides paid medical leave for workers injured in program-sponsored training. The program excludes leave for disabilities arising from pregnancy-related complications. An employee brings a federal Equal Protection claim against the exclusion but offers no evidence that the state adopted the exclusion because of sex stereotypes. Which statement is most accurate?",
+    choices: [
+      {
+        letter: "A",
+        text: "Equal Protection requires every state benefit program to cover all medical conditions without exception.",
+        verdict: "trap",
+        mold: "universal-coverage overclaim",
+        explanation:
+          "A overstates Equal Protection. The state may draw rational lines in benefit programs; the Constitution does not require every program to cover every condition.",
+      },
+      {
+        letter: "B",
+        text: "The exclusion automatically receives intermediate scrutiny because pregnancy is always a sex classification under the Equal Protection Clause.",
+        verdict: "trap",
+        mold: "automatic-sex-classification trap",
+        explanation:
+          "B is the dominant trap. Pregnancy is sex-linked, but a pregnancy classification is not automatically a constitutional sex classification.",
+      },
+      {
+        letter: "C",
+        text: "The Equal Protection claim does not automatically trigger intermediate scrutiny on pregnancy status alone.",
+        verdict: "correct",
+        mold: "pregnancy-classification distinction",
+        explanation:
+          "C is correct. With only a constitutional Equal Protection claim and no sex-stereotyping proof, pregnancy status alone does not automatically trigger intermediate scrutiny.",
+      },
+      {
+        letter: "D",
+        text: "Strict scrutiny applies because pregnancy implicates bodily autonomy.",
+        verdict: "trap",
+        mold: "due-process frame import",
+        explanation:
+          "D imports a different framework. Bodily autonomy belongs in substantive due process analysis; this stem asks only about Equal Protection classification scrutiny.",
+      },
+    ],
+    answerFlow: [
+      "Start with the claim: federal Equal Protection only.",
+      "Identify the classification: pregnancy-related disabilities are excluded.",
+      "Ask whether the stem gives proof of sex stereotypes or sex-based purpose.",
+      "It does not.",
+      "Cut A because Equal Protection does not require universal benefit coverage.",
+      "Cut D because bodily autonomy is a due process frame, not this Equal Protection trigger.",
+      "Cut B because pregnancy is not automatically a sex classification under constitutional Equal Protection.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "The issue is pregnancy-linked classification versus automatic sex classification under constitutional Equal Protection.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with universal coverage, automatic intermediate scrutiny, and bodily-autonomy strict scrutiny.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive fact is the absence of proof that the state adopted the exclusion because of sex stereotypes.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: collapsing constitutional Equal Protection into statutory pregnancy-discrimination rules or substantive due process concerns.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-EP-01",
+        body: "A pregnancy-based classification is not automatically a sex-based classification under the constitutional Equal Protection Clause. Intermediate scrutiny applies only when the classification is genuinely sex-based or sex-stereotyping purpose is shown.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-EP-01",
+        body: "When a choice says pregnancy always triggers intermediate scrutiny and another says it does not automatically do so, the hedged Equal Protection answer is usually the safer constitutional rule.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-CONSTITUTIONAL-STATUTORY-LANE-01",
+        body: "Keep the constitutional Equal Protection lane separate from statutory pregnancy-discrimination protections; a statute may go further than the constitutional floor.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the claim.",
+      "Name the classification.",
+      "Check for sex-stereotyping proof.",
+      "Separate Equal Protection from statutory employment law.",
+      "Reject universal coverage.",
+      "Reject bodily-autonomy strict scrutiny.",
+      "Reject automatic intermediate scrutiny.",
+      "Pick C.",
+    ],
+    drillSeeds: [
+      {
+        title: "Constitutional Lane",
+        prompt:
+          "A state benefit program excludes pregnancy-related conditions, and the plaintiff brings only an Equal Protection claim with no sex-stereotyping proof. Does intermediate scrutiny automatically apply?",
+        answer:
+          "No. Under the constitutional Equal Protection rule, pregnancy status alone does not automatically make the classification sex-based.",
+      },
+      {
+        title: "Statutory Lane",
+        prompt:
+          "Why can a statutory pregnancy-discrimination rule be stronger than the constitutional Equal Protection rule?",
+        answer:
+          "Congress can define pregnancy discrimination as sex discrimination by statute, but that does not change the constitutional Equal Protection baseline for an EP-only claim.",
+      },
+      {
+        title: "Frame Separation",
+        prompt:
+          "A choice says strict scrutiny applies because pregnancy implicates bodily autonomy. Why is that wrong in an Equal Protection classification question?",
+        answer:
+          "Bodily autonomy is a substantive due process frame. Equal Protection scrutiny asks what classification the state used and whether heightened scrutiny is triggered.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

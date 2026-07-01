@@ -424,6 +424,129 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14763",
+    transformId: "14763_puppet_camp_notice",
+    title: "Non-Hearsay Purpose: Notice Is Not Truth",
+    outlineCode: "33040203",
+    sourceOutlineCode: "33040203",
+    coverageGroup: "non_hearsay_purpose",
+    seedBucket: "hard_or_high_pick_rate_trap",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A business offers a copy of a notice letter and routine-practice testimony only to prove that notice was given. Is the copy admissible?",
+    stem:
+      "Martha's MannaMakers, a private Christian puppet troupe, sues Daniel's privately owned Bible-memory camp for unpaid prop-and-travel add-ons under an expense-plus performance agreement. The agreement allowed reimbursement for materials not listed in the estimate only if the troupe first sent Daniel a written add-on notice. Daniel says he never received the required notice. At trial, Naomi, the troupe's booking coordinator, testifies that the troupe routinely sends add-on notices the same day they are approved. Naomi also offers a photocopy of the add-on notice letter to Daniel from the troupe's regular booking files. On the issue of giving notice, the letter copy is:",
+    choices: [
+      {
+        letter: "A",
+        text: "inadmissible, because it is hearsay not within any exception.",
+        verdict: "trap",
+        mold: "wrong_element / exception layer",
+        explanation:
+          "This answers a hearsay-exception question, but the call is notice. The letter is offered to show notice was given, not to prove the truth of the add-on details.",
+      },
+      {
+        letter: "B",
+        text: "inadmissible, because it is not the best evidence of the notice.",
+        verdict: "trap",
+        mold: "misfit / photocopy panic",
+        explanation:
+          "The photocopy is bait. The active question is not proving the exact terms of the writing; it is whether the notice event occurred.",
+      },
+      {
+        letter: "C",
+        text: "admissible, because of the routine practices of the troupe.",
+        verdict: "correct",
+        mold: "residue / notice non-hearsay",
+        explanation:
+          "The copy is offered on the issue of notice, not for the truth of its contents. The routine-practice evidence also supports the inference that the troupe acted in its usual way.",
+      },
+      {
+        letter: "D",
+        text: "admissible, though hearsay, under the business record exception.",
+        verdict: "trap",
+        mold: "bait_doctrine / right-result-wrong-route",
+        explanation:
+          "This was the dominant trap. It admits the copy but calls it hearsay and routes through business records. The better threshold answer is that notice use is not truth use.",
+      },
+    ],
+    answerFlow: [
+      "Lock the offered purpose: the letter copy is offered on the issue of giving notice.",
+      "Ask whether the letter is offered for the truth of its contents. It is not.",
+      "Use the routine-practice fact to support the inference that the notice was sent.",
+      "Cut D because a hearsay exception is unnecessary when the item is not hearsay.",
+      "Cut B because the original-document rule is not the active frame for notice use.",
+      "Choose C because notice purpose plus routine practice supplies the admissibility route.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Purpose before exception: identify notice use before naming business records.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set creates an admit/admit clash between the non-hearsay notice route and the business-records route.",
+      },
+      {
+        label: "Blue signal",
+        body: "On the issue of giving notice points away from truth use and toward the event of notice.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating every file copy from regular records as a business-records exception problem.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-NOTICE-NONHEARSAY-01",
+        body: "A letter offered to prove that notice was sent or received is not offered for the truth of the letter's contents. Do not use a hearsay exception when the offered purpose is notice rather than truth.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-NONHEARSAY-THRESHOLD-01",
+        body: "Before picking a hearsay exception, ask whether the evidence is hearsay at all. In a notice-use question, the threshold answer beats an exception answer.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-BUSINESS-RECORDS-OVERUSE",
+        body: "Regular files and routine office practice can make business-records language tempting, but a non-hearsay purpose does not need a hearsay exception.",
+      },
+    ],
+    leadMeSteps: [
+      "Underline on the issue of giving notice.",
+      "Say the offered purpose in six words: prove notice, not letter truth.",
+      "Decide hearsay threshold before exception.",
+      "Reject the business-records route as a right-result-wrong-route trap.",
+      "Check whether the photocopy objection is actually proving contents.",
+      "Pick the routine-practice/non-hearsay answer.",
+    ],
+    drillSeeds: [
+      {
+        title: "Purpose Pin",
+        prompt:
+          "A copy of a letter is offered only to show that notice was sent. Hearsay or not hearsay?",
+        answer:
+          "Not hearsay. It is offered to show notice, not the truth of the letter's contents.",
+      },
+      {
+        title: "Threshold Before Exception",
+        prompt:
+          "Cut or keep: admissible, though hearsay, under the business-records exception.",
+        answer:
+          "Cut for wrong route when the purpose is notice. The threshold answer is non-hearsay.",
+      },
+      {
+        title: "Photocopy Panic",
+        prompt:
+          "A photocopy is offered to show notice was given. Does the original-document rule automatically exclude it?",
+        answer:
+          "No. Do not use the original-document rule unless the contents are being proved or authenticity/fairness is contested.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

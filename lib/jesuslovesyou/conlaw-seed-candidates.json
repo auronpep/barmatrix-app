@@ -333,7 +333,7 @@
     "coverage_group": "first_amendment_speech_forum",
     "seed_bucket": "needs_human_review",
     "correct_percent": null,
-    "key": "C",
+    "key": "D",
     "has_finished_transform": true,
     "review_status": "seed_candidate_needs_human_review"
   },

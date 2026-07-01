@@ -3253,6 +3253,135 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14223",
+    transformId: "14223_library-bulletin",
+    title: "Commercial Speech Needs Fit",
+    selectorCode: "44040502",
+    selectorMatch: "exact",
+    outlineCode: "44040502",
+    sourceOutlineCode: "44040502",
+    coverageGroup: "first_amendment_speech_forum",
+    seedBucket: "needs_human_review",
+    key: "D",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A public library removes only commercial-ad postings from bulletin boards, citing clutter, but the policy clears only 10% of slots with no proof commercial flyers create more clutter. Is the policy constitutional?",
+    stem:
+      "A public library board enacted a policy removing from its branch lobbies all bulletin-board postings that consist entirely of commercial advertisements for for-profit services. The policy was enacted because of a concern about the adverse visual effects of clutter and paper waste from flyers posted on the library bulletin boards. However, the library board continued to allow postings for community events, church announcements, charitable notices, and other non-commercial matters on the same bulletin boards. As a result of the policy, 15 of the 150 bulletin-board slots across the library system were cleared. Is this library-board policy constitutional?",
+    choices: [
+      {
+        letter: "A",
+        text: "Yes, because regulations of commercial speech are subject only to the requirement that they be rationally related to a legitimate state goal, and that requirement is satisfied here.",
+        verdict: "trap",
+        mold: "rational-basis tier error",
+        explanation:
+          "A uses too low a standard. Truthful, lawful commercial speech gets First Amendment protection under the commercial-speech framework, not mere rational-basis review.",
+      },
+      {
+        letter: "B",
+        text: "Yes, because the library board has a compelling interest in protecting the appearance of its lobbies and reducing paper waste, and such a ban is necessary to vindicate this interest.",
+        verdict: "trap",
+        mold: "strict-scrutiny tier error",
+        explanation:
+          "B uses too high a standard. Commercial-speech regulations do not automatically require the compelling-interest and necessary-means language of strict scrutiny.",
+      },
+      {
+        letter: "C",
+        text: "No, because it does not constitute the least restrictive means with which to reduce clutter and paper waste in the library lobbies.",
+        verdict: "trap",
+        mold: "right outcome wrong tailoring",
+        explanation:
+          "C reaches the right no answer for the wrong reason. The commercial-speech test requires a reasonable fit, not the least restrictive means.",
+      },
+      {
+        letter: "D",
+        text: "No, because there is not a reasonable fit between the legitimate interest of the library board in reducing clutter and paper waste and the means it chose to advance that interest.",
+        verdict: "correct",
+        mold: "reasonable-fit failure",
+        explanation:
+          "D is correct. Clearing only 15 of 150 slots, with no evidence that commercial flyers create more clutter than the flyers left in place, does not reasonably fit the board's clutter-and-waste interest.",
+      },
+    ],
+    answerFlow: [
+      "Classify the speech: commercial advertising for for-profit services.",
+      "Use the commercial-speech framework, not rational basis or strict scrutiny.",
+      "Accept that reducing clutter and paper waste can be a legitimate and substantial interest.",
+      "Ask whether the policy directly advances that interest with a reasonable fit.",
+      "Cut A because rational basis is too low.",
+      "Cut B because strict scrutiny is too high.",
+      "Cut C because least restrictive means is not the commercial-speech tailoring test.",
+      "Choose D because the 15-of-150 clearance and missing proof show no reasonable fit.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "The issue is commercial-speech intermediate scrutiny and reasonable fit.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with wrong-tier answers and a right-result wrong-reason least-restrictive-means choice.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive facts are commercial advertisements, 15 of 150 slots, and no evidence that commercial flyers cause more clutter.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: swapping among scrutiny labels without locking the commercial-speech test.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-COMMERCIAL-SPEECH-01",
+        body: "Truthful, lawful commercial speech may be regulated only when the regulation serves a substantial government interest, directly advances that interest, and has a reasonable fit with the means chosen.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-COMMERCIAL-SPEECH-TIER-01",
+        body: "Commercial speech is not rational basis and not strict scrutiny; use the intermediate commercial-speech framework.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-REASONABLE-FIT-NOT-LRM-01",
+        body: "Commercial-speech tailoring requires reasonable fit, not least restrictive means.",
+      },
+    ],
+    leadMeSteps: [
+      "Classify speech.",
+      "Name commercial-speech test.",
+      "Reject rational basis.",
+      "Reject strict scrutiny.",
+      "Reject least restrictive means.",
+      "Check direct advancement.",
+      "Check reasonable fit.",
+      "Pick D.",
+    ],
+    drillSeeds: [
+      {
+        title: "Commercial Speech Tier",
+        prompt:
+          "A city regulates truthful commercial advertisements. What scrutiny lane should you use?",
+        answer:
+          "Use the commercial-speech framework: substantial interest, direct advancement, and reasonable fit.",
+      },
+      {
+        title: "Reasonable Fit",
+        prompt:
+          "A clutter policy removes only 10% of flyers and gives no proof that those flyers create more clutter. What prong is weak?",
+        answer:
+          "Reasonable fit and direct advancement are weak because the means barely address the stated problem.",
+      },
+      {
+        title: "Least Means Trap",
+        prompt:
+          "Why is 'not the least restrictive means' a trap in a commercial-speech question?",
+        answer:
+          "Least restrictive means is strict-scrutiny language; commercial speech requires a reasonable fit.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

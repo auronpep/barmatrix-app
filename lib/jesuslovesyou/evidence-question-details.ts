@@ -1425,6 +1425,133 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "22232",
+    transformId: "22232_harvest_stage_oath",
+    title: "Witness Truthfulness: Religion Is Not a Credibility Lever",
+    outlineCode: "31010406",
+    sourceOutlineCode: "31010502",
+    coverageGroup: "witness_truthfulness_bias",
+    seedBucket: "recode_or_ambiguous",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "May a lawyer use a witness's religious beliefs or opinions to suggest the witness does not take the oath seriously and is less credible?",
+    stem:
+      "During a negligence trial over a stage-platform collapse at a community harvest concert, Daniel takes the oath and testifies that Mary was the sole cause of the collapse. On cross-examination, Mary asks Daniel whether his leadership role in the Order of the Hollow Lantern means he does not take his oath to tell the truth seriously, because a known teaching of the order is that there is no divine being. After a proper objection, will the court require Daniel to answer that question?",
+    choices: [
+      {
+        letter: "A",
+        text: "Yes, because the question goes directly to whether the witness treats the oath as binding.",
+        verdict: "trap",
+        mold: "bait_doctrine / oath-duty detour",
+        explanation:
+          "A makes the religion-based credibility attack sound like a narrow oath question. FRE 610 still bars using religious beliefs or opinions to argue that a witness is less truthful.",
+      },
+      {
+        letter: "B",
+        text: "No, because religious beliefs or opinions cannot be used to attack or support a witness's credibility.",
+        verdict: "correct",
+        mold: "residue / full Rule 610 credibility bar",
+        explanation:
+          "The question uses Daniel's beliefs to attack his credibility under oath. FRE 610 bars using religious beliefs or opinions to attack or support credibility, so the court should not require an answer.",
+      },
+      {
+        letter: "C",
+        text: "No, because the question does not use the witness's religious beliefs to support credibility.",
+        verdict: "trap",
+        mold: "wrong_element / one-sided half-rule",
+        explanation:
+          "C reaches the no result but gives the wrong reason. The actual use is an attack on credibility, so the answer must state the full attack-or-support bar.",
+      },
+      {
+        letter: "D",
+        text: "Yes, because the witness is a ranking official in the religious organization.",
+        verdict: "trap",
+        mold: "fabricated_rule / rank-based exception myth",
+        explanation:
+          "D invents an exception. Rule 610 does not turn on whether the witness is an ordinary member, leader, or officer in the religious group.",
+      },
+    ],
+    answerFlow: [
+      "Identify the purpose of the question: counsel is using religious beliefs to suggest Daniel is less credible.",
+      "Keep the oath language in view but do not let it change the offered purpose.",
+      "Apply FRE 610: religious beliefs or opinions cannot be used to attack or support credibility.",
+      "Cut A because oath seriousness is only a label for the same forbidden credibility attack.",
+      "Cut D because religious rank creates no exception.",
+      "Clash B against C: both say no, but B states the full attack-or-support rule.",
+      "Reject C because it states only the support side while the stem is an attack.",
+      "Choose B.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Offered purpose controls: if religion is the lever for saying a witness is less truthful, FRE 610 shuts the question down.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set uses two yes answers that let religion into credibility and two no answers, one full rule and one half rule.",
+      },
+      {
+        label: "Blue signal",
+        body: "The words does not take his oath seriously are the trap signal; they repackage a credibility attack as oath analysis.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating oath language or religious title as a side door around the religion-credibility bar.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-RELIGION-CREDIBILITY-01",
+        body: "FRE 610 bars using a witness's religious beliefs or opinions to attack or support credibility, even when the question is framed as oath sincerity.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-FULL-RULE-CLASH-01",
+        body: "When two answers give the same bottom line, choose the one that states the full rule tied to the actual use in the stem.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-OATH-DETOUR-610",
+        body: "Rule 603 oath language does not authorize counsel to use religion as a credibility weapon.",
+      },
+    ],
+    leadMeSteps: [
+      "Ask why counsel is asking about religion.",
+      "Label the use as attack, support, or something else.",
+      "If the use is credibility, trigger FRE 610.",
+      "Cut yes answers that allow the religion-based credibility question.",
+      "Compare no answers by rule completeness.",
+      "Reject the one-sided support-only answer.",
+      "Reject rank or title as an invented exception.",
+      "Pick the full Rule 610 answer.",
+    ],
+    drillSeeds: [
+      {
+        title: "Oath Detour",
+        prompt:
+          "Counsel says the witness's beliefs show the oath means less to the witness. What rule blocks that move?",
+        answer:
+          "FRE 610. The oath framing is still a religion-based attack on credibility.",
+      },
+      {
+        title: "Full Rule Clash",
+        prompt:
+          "One no-answer says religion cannot support credibility; another says religion cannot attack or support credibility. Which one fits an attack question?",
+        answer:
+          "The full attack-or-support answer. The stem uses religion to attack credibility.",
+      },
+      {
+        title: "No Rank Exception",
+        prompt:
+          "Does a witness's leadership role in a religious group make religious beliefs usable for credibility impeachment?",
+        answer:
+          "No. FRE 610 has no rank-based exception.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

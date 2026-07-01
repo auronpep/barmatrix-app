@@ -2483,6 +2483,133 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "17680",
+    transformId: "17680_ministry_housing_permit",
+    title: "Animus Fails Rational Basis",
+    selectorCode: "44040300",
+    selectorMatch: "child_code",
+    outlineCode: "44040305",
+    sourceOutlineCode: "44040305",
+    coverageGroup: "due_process_equal_protection_routing",
+    seedBucket: "needs_human_review",
+    key: "A",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A town denies a routine permit to a disfavored group and gives only bare animus, with no safety, zoning, fiscal, or land-use reason. What is the strongest Equal Protection argument?",
+    stem:
+      "Mary applied to the town of Cedar Bend for a routine zoning permit to open a small transitional residence for women recovering from addiction. The town planning board held a public hearing, voted, and denied the permit. In the hearing record, board members stated that they wanted to keep \"that kind of recovery home\" out of the neighborhood and identified no safety, zoning, fiscal, or land-use reason for the denial. Mary sued in federal court, alleging that the denial violates the Equal Protection Clause. Which statement is the strongest Equal Protection argument on Mary's behalf?",
+    choices: [
+      {
+        letter: "A",
+        text: "The denial can fail rational basis review because it rests only on bare animus toward the group.",
+        verdict: "correct",
+        mold: "rational-basis with bite",
+        explanation:
+          "A is correct. Rational basis is deferential, but animus is not a legitimate government interest.",
+      },
+      {
+        letter: "B",
+        text: "Strict scrutiny applies automatically because the group is unpopular.",
+        verdict: "trap",
+        mold: "animus-to-tier-escalation trap",
+        explanation:
+          "B is the dominant trap. Animus can defeat rational basis without converting the group into a suspect class or automatically triggering strict scrutiny.",
+      },
+      {
+        letter: "C",
+        text: "The denial is valid because rational basis review means no review at all.",
+        verdict: "trap",
+        mold: "rational-basis rubber-stamp overclaim",
+        explanation:
+          "C overstates deference. Rational basis still requires a legitimate government interest, and bare animus is not legitimate.",
+      },
+      {
+        letter: "D",
+        text: "The denial is valid if any resident dislikes the group.",
+        verdict: "trap",
+        mold: "resident-dislike colloquialism",
+        explanation:
+          "D replaces legal analysis with neighborhood dislike. Equal Protection asks for a legitimate government interest, not whether someone dislikes the group.",
+      },
+    ],
+    answerFlow: [
+      "Read the call: strongest Equal Protection argument.",
+      "Identify the review lane: no suspect class or fundamental-right trigger appears.",
+      "Do not escalate to strict scrutiny merely because the group is unpopular.",
+      "Remember that rational basis is deferential, not nonexistent.",
+      "Ask whether the town identified a legitimate interest.",
+      "The hearing record gives only animus and no safety, zoning, fiscal, or land-use reason.",
+      "Animus is not a legitimate government interest.",
+      "Choose A.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "The issue is rational-basis with bite versus automatic tier escalation.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with strict scrutiny, no-review rational basis, and resident-dislike shortcuts.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive record fact is that the board gave only animus and no legitimate safety, zoning, fiscal, or land-use reason.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating rational basis as either no review or strict scrutiny whenever animus appears.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-RATIONAL-BASIS-ANIMUS-01",
+        body: "Even under rational basis review, government action based only on bare animus toward an unpopular group lacks a legitimate government interest.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-ANIMUS-NO-TIER-ESCALATION-01",
+        body: "Animus can make the government lose at rational basis without making the group suspect or automatically triggering strict scrutiny.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-RATIONAL-BASIS-STILL-REVIEWS-01",
+        body: "Rational basis is deferential, but it is not no review; there still must be a legitimate government reason.",
+      },
+    ],
+    leadMeSteps: [
+      "Read the call.",
+      "Name the review lane.",
+      "Reject automatic strict scrutiny.",
+      "Reject no-review rational basis.",
+      "Reject resident dislike.",
+      "Find the missing legitimate interest.",
+      "Apply the animus rule.",
+      "Pick A.",
+    ],
+    drillSeeds: [
+      {
+        title: "Animus Rule",
+        prompt:
+          "A town denies a routine permit and states only that it wants to keep 'those people' out. No safety, zoning, fiscal, or land-use reason appears. What is the strongest Equal Protection argument?",
+        answer:
+          "The denial can fail rational basis review because bare animus is not a legitimate government interest.",
+      },
+      {
+        title: "No Tier Escalation",
+        prompt: "Does animus toward a group automatically trigger strict scrutiny?",
+        answer:
+          "No. The government can lose under rational basis because animus is not legitimate, without the group becoming suspect.",
+      },
+      {
+        title: "Rational Basis Still Reviews",
+        prompt: "Does rational basis review mean the court gives no review at all?",
+        answer:
+          "No. It is deferential, but the government still needs a legitimate interest.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

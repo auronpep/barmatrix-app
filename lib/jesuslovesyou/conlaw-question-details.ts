@@ -2096,6 +2096,134 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14234",
+    transformId: "14234_barnabas-house",
+    title: "No Trigger Means Rational Basis",
+    selectorCode: "44040300",
+    selectorMatch: "child_code",
+    outlineCode: "44040301",
+    sourceOutlineCode: "44040301",
+    coverageGroup: "due_process_equal_protection_routing",
+    seedBucket: "needs_human_review",
+    key: "B",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A city denied a fully compliant permit for a reentry residence. What Equal Protection burden applies when no suspect or quasi-suspect class and no fundamental right are involved?",
+    stem:
+      "Emmaus City's land-use code provides that a person who wants to operate a community residence must obtain a conditional-use permit from the city's land-use commission. The code defines a community residence as a dwelling in which six or more unrelated adults live together. Daniel applied for a permit to run Barnabas House, an ordinary fee-based residence for adults moving from prison sentences into parole supervision. Barnabas House satisfied every listed condition for the permit. The commission nonetheless denied the application because of the proposed use. Daniel sued the commission for declaratory and injunctive relief under the Constitution. Which statement best describes the burden of persuasion?",
+    choices: [
+      {
+        letter: "A",
+        text: "Because the commission's action effectively discriminates against a quasi-suspect class in relation to a basic subsistence need, the commission must prove that the denial is substantially related to an important governmental interest.",
+        verdict: "trap",
+        mold: "fabricated intermediate-scrutiny trigger",
+        explanation:
+          "A sounds measured, but it invents the trigger. Reentry status is not a quasi-suspect class, and a basic living need does not automatically create intermediate scrutiny.",
+      },
+      {
+        letter: "B",
+        text: "Because the commission's action is in the nature of economic or social welfare regulation, Daniel must prove that the denial is not rationally related to a legitimate governmental interest.",
+        verdict: "correct",
+        mold: "rational-basis burden assignment",
+        explanation:
+          "B is correct. With no recognized suspect or quasi-suspect class and no fundamental right, Equal Protection uses rational basis and the challenger carries the burden.",
+      },
+      {
+        letter: "C",
+        text: "Because housing is a fundamental right, the commission must prove that the denial is necessary to serve a compelling governmental interest.",
+        verdict: "trap",
+        mold: "housing-as-fundamental-right overclaim",
+        explanation:
+          "C is the dominant trap. Housing is important, but the Supreme Court has not treated housing access as a fundamental right that automatically triggers strict scrutiny in this Equal Protection burden question.",
+      },
+      {
+        letter: "D",
+        text: "Because the commission's action invidiously discriminates against a suspect class, the commission must prove that the denial is necessary to serve a compelling governmental interest.",
+        verdict: "trap",
+        mold: "suspect-class label overclaim",
+        explanation:
+          "D uses strict-scrutiny vocabulary without a matching class. Adults moving from prison into parole supervision are not a recognized suspect class.",
+      },
+    ],
+    answerFlow: [
+      "Read the call as a burden-of-persuasion question.",
+      "Sort the answers by burden: A, C, and D put heightened scrutiny on the government; B puts rational-basis burden on Daniel.",
+      "Ask what fact elevates the Equal Protection scrutiny tier.",
+      "Housing is not a recognized fundamental right for this burden question.",
+      "Reentry or parole-transition status is not a suspect or quasi-suspect class.",
+      "No heightened trigger remains.",
+      "Use rational basis.",
+      "Choose B because Daniel must prove no rational relation to a legitimate governmental interest.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "The issue is recognized heightened-scrutiny trigger versus ordinary social or economic regulation.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with three government-burden heightened-scrutiny choices against one challenger-burden rational-basis answer.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive absence is no suspect class, no quasi-suspect class, and no recognized fundamental right.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: promoting a sympathetic housing or reentry fact into strict or intermediate scrutiny without a recognized constitutional trigger.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONSTITUTIONAL_LAW-RATIONAL-BASIS-REENTRY-01",
+        body: "Equal Protection uses rational basis when a government land-use decision burdens neither a recognized suspect or quasi-suspect class nor a fundamental right; the challenger bears the burden to negate rational relation to a legitimate governmental interest.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONSTITUTIONAL_LAW-BURDEN-ARRAY-01",
+        body: "In a burden-of-persuasion array, first sort who carries the burden. If no recognized heightened-scrutiny trigger appears, the challenger-burden rational-basis answer is the safe residual.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-HOUSING-NEED-IS-NOT-TRIGGER-01",
+        body: "Housing and reentry facts may be sympathetic, but importance alone does not make a right fundamental or a group suspect for Equal Protection scrutiny.",
+      },
+    ],
+    leadMeSteps: [
+      "Read the call.",
+      "Sort the burdens.",
+      "Name the class.",
+      "Check for a fundamental right.",
+      "Reject housing as an automatic strict-scrutiny trigger.",
+      "Reject reentry status as a suspect or quasi-suspect class.",
+      "Apply rational basis.",
+      "Pick B.",
+    ],
+    drillSeeds: [
+      {
+        title: "Scrutiny Trigger",
+        prompt:
+          "A city denies a permit for a reentry residence. The affected residents are adults moving from prison into parole supervision. What scrutiny tier applies absent another protected classification or fundamental right?",
+        answer:
+          "Rational basis. Reentry status alone does not create suspect or quasi-suspect classification review.",
+      },
+      {
+        title: "Burden Assignment",
+        prompt:
+          "Under rational-basis Equal Protection review, who bears the burden of showing that the government action lacks a rational relationship to a legitimate interest?",
+        answer: "The challenger bears that burden.",
+      },
+      {
+        title: "Housing Trap",
+        prompt:
+          "Why is 'housing is a fundamental right, so strict scrutiny applies' a trap in this permit-denial item?",
+        answer:
+          "Housing is important, but it is not a recognized fundamental right for this Equal Protection scrutiny question.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

@@ -1838,6 +1838,135 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "19025",
+    transformId: "19025_manna_roof_alert",
+    title: "Stigma Needs A Plus",
+    selectorCode: "44040200",
+    selectorMatch: "child_code",
+    outlineCode: "44040203",
+    sourceOutlineCode: "44040203",
+    coverageGroup: "due_process_equal_protection_routing",
+    seedBucket: "needs_human_review",
+    key: "A",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "Government publicly defames a contractor but does not change any license, contract, roster status, entitlement, or other legal right. Does reputation harm alone create a procedural due process liberty claim?",
+    stem:
+      'After spring floods, a state emergency-repair board uploaded a public vendor alert saying that Ruth, owner of Manna Roof & Repair, had "forged inspection tags and preyed on families." The statement was false. The board did not suspend Ruth\'s repair permit, cancel her cleanup contract, remove her from the state grant-vendor roster, or otherwise change any legal entitlement. Ruth sues for procedural due process, arguing that the public accusation damaged her reputation and required a hearing before it was posted. What is the best answer?',
+    choices: [
+      {
+        letter: "A",
+        text: "Ruth likely lacks a procedural due process liberty claim because the alert added stigma but did not change a legal status, entitlement, or right.",
+        verdict: "correct",
+        mold: "stigma-plus threshold",
+        explanation:
+          "A is correct. The alert is stigmatizing, but procedural due process requires more than reputation harm alone; the state must also alter a protected status, entitlement, or right.",
+      },
+      {
+        letter: "B",
+        text: "Ruth loses only if the board proves the alert was true beyond a reasonable doubt.",
+        verdict: "trap",
+        mold: "criminal-burden import",
+        explanation:
+          "B imports the wrong burden. This is a civil procedural due process threshold question, not a criminal prosecution.",
+      },
+      {
+        letter: "C",
+        text: "Ruth wins because due process regulates false accusations by private and public speakers alike.",
+        verdict: "trap",
+        mold: "general defamation code",
+        explanation:
+          "C turns due process into a universal false-statement rule. Due process is about government deprivation of protected interests, not every false accusation.",
+      },
+      {
+        letter: "D",
+        text: "Ruth has a due process liberty claim whenever government speech damages reputation.",
+        verdict: "trap",
+        mold: "reputation-alone overclaim",
+        explanation:
+          "D is the dominant trap. Government stigma can matter, but reputation harm alone is not enough without the plus of a changed legal status or right.",
+      },
+    ],
+    answerFlow: [
+      "Start with the threshold: procedural due process requires deprivation of a protected liberty or property interest.",
+      "Ruth has stigma because the state publicly accused her business of misconduct.",
+      "Now ask whether the board changed anything legal.",
+      "The board did not suspend a permit, cancel a contract, remove roster status, or alter an entitlement.",
+      "Cut B because beyond a reasonable doubt is a criminal burden, not this threshold.",
+      "Cut C because due process is not a general defamation rule for all speakers.",
+      "Cut D because reputation alone skips the required plus.",
+      "Choose A.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "The issue is reputation-only harm versus stigma plus alteration of legal status, entitlement, or right.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set tempts students with criminal-proof language, universal fairness, and an absolute reputation rule.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive facts are the no-change facts: no permit suspension, no contract cancellation, no roster removal, and no entitlement change.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: jumping straight to what hearing feels fair before proving a protected due process interest was deprived.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONLAW-STIGMA-PLUS-01",
+        body: "Reputation harm alone is not a procedural due process liberty deprivation; a claimant generally needs stigma plus alteration of legal status, entitlement, or right.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-DUE-PROCESS-THRESHOLD-01",
+        body: "On procedural due process questions, do the threshold check before the hearing check: identify the protected liberty or property interest first.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-DEFAMATION-NOT-DUE-PROCESS-01",
+        body: "A false statement may sound like defamation, but due process does not become a general reputation-repair code.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the government actor.",
+      "Name the stigma.",
+      "Look for the plus.",
+      "Confirm no permit, contract, roster, or entitlement changed.",
+      "Reject criminal burden language.",
+      "Reject universal false-statement due process.",
+      "Reject reputation-alone overclaim.",
+      "Pick A.",
+    ],
+    drillSeeds: [
+      {
+        title: "Stigma Plus",
+        prompt:
+          "A state official falsely calls a vendor dishonest but does not revoke a license, cancel a contract, or change vendor status. Is reputation harm alone a procedural due process liberty deprivation?",
+        answer:
+          "No. Reputation harm alone is not enough; the claim generally needs stigma plus alteration of legal status or right.",
+      },
+      {
+        title: "Absolute Language Cut",
+        prompt:
+          "Cut this answer: 'A due process liberty claim exists whenever government speech damages reputation.'",
+        answer:
+          "Cut it as an overclaim. Government stigma alone is not enough without the plus of a changed legal status, entitlement, or right.",
+      },
+      {
+        title: "Threshold Before Hearing",
+        prompt:
+          "Before deciding what hearing was owed in procedural due process, what must you identify?",
+        answer:
+          "A protected liberty or property interest that the government deprived.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

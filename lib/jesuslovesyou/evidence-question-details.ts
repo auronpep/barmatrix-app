@@ -2306,6 +2306,132 @@ export const evidenceQuestionDetails: EvidenceQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "14837",
+    transformId: "14837_dying-declaration-preliminary-hearing",
+    title: "Preliminary Questions: Dying Declaration Hearing",
+    outlineCode: "31010107",
+    sourceOutlineCode: "31010107",
+    coverageGroup: "preliminary_question_judge_jury",
+    seedBucket: "clean_teaching",
+    key: "C",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "In a criminal trial, who decides whether a hearsay exception's foundational requirement is met, who participates, and is the jury present?",
+    stem:
+      "Paul is on trial for the murder of Daniel. The prosecution calls Lydia to testify that, after being stabbed, Daniel said, \"Paul stabbed me.\" Before Lydia testifies, Paul's attorney requests a hearing on whether Daniel believed his death was imminent when he made the statement. Before admitting the dying declaration, the judge should:",
+    choices: [
+      {
+        letter: "A",
+        text: "Hear evidence from both sides, with the jury present, and decide whether the witness may testify to the statement.",
+        verdict: "trap",
+        mold: "flat_misstatement / jury-present trap",
+        explanation:
+          "A gets both sides and judge decision right, but leaves the jury in the room. The preliminary admissibility hearing must be conducted outside the jury's presence when justice requires it.",
+      },
+      {
+        letter: "B",
+        text: "Hear evidence from the prosecutor only, with the jury not present, and permit the testimony if the judge believes a jury could reasonably find that Daniel knew he was dying.",
+        verdict: "trap",
+        mold: "tiered_overclaim / prosecutor-only and wrong-standard trap",
+        explanation:
+          "B is the polished trap. The jury is out, but the defense is wrongly excluded and the choice imports a reasonable-jury standard instead of the judge deciding admissibility.",
+      },
+      {
+        letter: "C",
+        text: "Hear evidence from both sides, with the jury not present, and decide whether the witness may testify to the statement.",
+        verdict: "correct",
+        mold: "residue / Rule 104 preliminary-admissibility hearing",
+        explanation:
+          "The judge decides the preliminary admissibility issue, both sides may be heard, and the jury is kept out of the hearing.",
+      },
+      {
+        letter: "D",
+        text: "Hear evidence from both sides, with the jury present, and allow the jury to determine whether the witness may testify to the statement.",
+        verdict: "trap",
+        mold: "issue_sense / jury-decides trap",
+        explanation:
+          "D confuses jury factfinding with admissibility gatekeeping. The jury weighs admitted evidence; the judge decides whether the statement comes in.",
+      },
+    ],
+    answerFlow: [
+      "Identify the issue: foundation for a dying declaration.",
+      "Classify the issue as preliminary admissibility.",
+      "Apply Rule 104(a): the judge decides admissibility.",
+      "Require both sides to be heard on the admissibility issue.",
+      "Apply Rule 104(c): keep the jury out when justice requires.",
+      "Cut A because the jury is present.",
+      "Cut B because it excludes the defense and uses the wrong standard.",
+      "Cut D because it gives admissibility to the jury.",
+      "Choose C.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Run the three-part preliminary-hearing checklist: judge decides, both sides participate, jury out.",
+      },
+      {
+        label: "Purple profile",
+        body: "The array offers three near-misses: jury present, prosecutor only with the wrong standard, and jury decides.",
+      },
+      {
+        label: "Blue signal",
+        body: "The requested hearing on Daniel's belief in imminent death signals a Rule 104 admissibility gate, not a jury trial issue.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: accepting an answer that gets two procedural elements right while missing the third.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-EVIDENCE-PRELIM-01",
+        body: "Under Rule 104(a), the judge decides preliminary questions of admissibility, and both sides may present evidence and argument on the issue.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-EVIDENCE-PRELIM-01",
+        body: "On preliminary-hearing questions, check three elements in order: judge decides, both sides participate, jury stays out when justice requires.",
+      },
+      {
+        kind: "Trap Key",
+        id: "TK-EVIDENCE-104B-STANDARD-SWAP",
+        body: "Do not import a reasonable-jury conditional-relevance standard into a Rule 104(a) admissibility decision.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the offered statement.",
+      "Name the disputed foundation fact.",
+      "Classify the issue as preliminary admissibility.",
+      "Assign the decision to the judge.",
+      "Require both sides to participate.",
+      "Keep the jury out of the hearing.",
+      "Reject reasonable-jury standard language.",
+      "Pick the answer with all three procedure elements correct.",
+    ],
+    drillSeeds: [
+      {
+        title: "Three-Part Hearing Checklist",
+        prompt:
+          "A Rule 104 preliminary admissibility hearing appears in the choices. What three procedure points must be right?",
+        answer: "Judge decides, both sides participate, and the jury is out when justice requires.",
+      },
+      {
+        title: "Wrong Standard",
+        prompt:
+          "A choice says the judge should admit the statement if a jury could reasonably find the foundation fact. What standard is being smuggled in?",
+        answer:
+          "The conditional-relevance sufficiency standard, not the judge's Rule 104(a) admissibility decision.",
+      },
+      {
+        title: "Jury Role",
+        prompt:
+          "The jury weighs admitted evidence. Who decides whether the dying declaration comes in?",
+        answer: "The judge.",
+      },
+    ],
+  },
 ];
 
 export const evidenceQuestionDetailParams = evidenceQuestionDetails.map(

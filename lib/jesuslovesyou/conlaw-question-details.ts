@@ -1451,6 +1451,135 @@ export const conLawQuestionDetails: ConLawQuestionDetail[] = [
       },
     ],
   },
+  {
+    questionId: "19280",
+    transformId: "19280_patmos_relic_chalice",
+    title: "Guideposts, Not Jury Free Rein",
+    selectorCode: "44040202",
+    selectorMatch: "exact",
+    outlineCode: "44040202",
+    sourceOutlineCode: "44040202",
+    coverageGroup: "due_process_equal_protection_routing",
+    seedBucket: "needs_human_review",
+    key: "D",
+    reviewStatus: "seed_candidate_needs_human_review",
+    distilledCoreQuestion:
+      "A state-court fraud verdict with no physical harm produced tiny compensatory damages and a huge punitive award. What must the court consider on due process review?",
+    stem:
+      "Paul, a seminary student in a Christian college town, paid Esther, a local antiques dealer, $80 for what she represented as a genuine second-century communion chalice from the Patmos region, suitable for display in his chapel. Paul later learned through an expert analysis that the chalice was a modern reproduction worth roughly $30, and that Esther had known or recklessly disregarded the inaccuracy at the time of sale. Paul sued Esther in state court for a single economic tort with no physical harm. The jury awarded $80 in compensatory damages and $1.5 million in punitive damages. Comparable state civil penalties under the state's deceptive trade practices act are modest, capped at $5,000 per violation. Esther raises a due process challenge. What should the court consider?",
+    choices: [
+      {
+        letter: "A",
+        text: "Strict scrutiny because money is a fundamental right.",
+        verdict: "trap",
+        mold: "wrong-tier strict scrutiny",
+        explanation:
+          "A grabs the wrong tier. A punitive-damages excessiveness challenge is not strict scrutiny, and money is not a fundamental right.",
+      },
+      {
+        letter: "B",
+        text: "Mathews balancing of hearing procedures only.",
+        verdict: "trap",
+        mold: "procedural due process misdirection",
+        explanation:
+          "B uses a procedure frame. Esther challenges the size of the award, not the notice or hearing procedures.",
+      },
+      {
+        letter: "C",
+        text: "Nothing, because punitive damages are entirely within jury discretion.",
+        verdict: "trap",
+        mold: "jury-discretion overclaim",
+        explanation:
+          "C is the dominant trap. Juries have discretion, but due process still limits grossly excessive punitive awards.",
+      },
+      {
+        letter: "D",
+        text: "Reprehensibility, ratio to actual harm, and comparable civil penalties.",
+        verdict: "correct",
+        mold: "punitive-damages due process guideposts",
+        explanation:
+          "D is correct. Substantive due process review of punitive damages uses the defendant's reprehensibility, the ratio to harm, and comparable civil penalties.",
+      },
+    ],
+    answerFlow: [
+      "Start with the kind of challenge: due process against a punitive damages award.",
+      "Separate award size from trial procedure.",
+      "Cut strict scrutiny because no fundamental right or suspect class is involved.",
+      "Cut procedural balancing because the complaint is excessiveness, not process.",
+      "Cut jury free rein because constitutional review still applies.",
+      "Use the punitive-damages guideposts.",
+      "Look at reprehensibility, ratio to actual harm, and comparable civil penalties.",
+      "Choose D.",
+    ],
+    locks: [
+      {
+        label: "Red axis",
+        body: "Punitive-damages due process asks whether the award is grossly excessive, not whether the hearing procedures were enough.",
+      },
+      {
+        label: "Purple profile",
+        body: "The answer set mixes strict scrutiny, procedural balancing, jury discretion, and the real substantive guideposts.",
+      },
+      {
+        label: "Blue signal",
+        body: "The decisive facts are tiny compensatory damages, no physical harm, a huge punitive award, and modest comparable civil penalties.",
+      },
+      {
+        label: "Orange repair",
+        body: "Student habit to repair: treating damages as pure jury discretion or using the most familiar due process test without matching the call.",
+      },
+    ],
+    keys: [
+      {
+        kind: "Gold Key",
+        id: "GK-CONSTITUTIONAL_LAW-PATMOS-RELIC-CHALICE-01",
+        body: "A punitive damages award is reviewed under substantive due process for excessiveness using three guideposts: reprehensibility, the ratio of punitive damages to actual harm, and comparable civil penalties. Jury discretion does not displace that review.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONSTITUTIONAL_LAW-PATMOS-RELIC-CHALICE-01",
+        body: "On a punitive-damages due process challenge, separate tier of scrutiny from due process frame: strict scrutiny is wrong, procedural balancing is wrong, and excessiveness guideposts are right.",
+      },
+      {
+        kind: "Silver Key",
+        id: "SK-CONLAW-PUNITIVE-DAMAGES-RATIO-01",
+        body: "A huge punitive-to-compensatory ratio is a signal for guidepost review, not an automatic win by itself.",
+      },
+    ],
+    leadMeSteps: [
+      "Name the challenge.",
+      "Identify that the complaint is award size.",
+      "Reject strict scrutiny.",
+      "Reject procedural balancing.",
+      "Reject unlimited jury discretion.",
+      "Name the three guideposts.",
+      "Match the guideposts to the facts.",
+      "Pick D.",
+    ],
+    drillSeeds: [
+      {
+        title: "Guidepost Trio",
+        prompt:
+          "A punitive award is challenged as grossly excessive under due process. Name the three guideposts.",
+        answer:
+          "Reprehensibility, the ratio of punitive damages to actual harm, and comparable civil penalties.",
+      },
+      {
+        title: "Frame The Challenge",
+        prompt:
+          "A defendant challenges the size of a punitive award, not the hearing. Is procedural due process balancing the right frame?",
+        answer:
+          "No. The right frame is substantive due process excessiveness review.",
+      },
+      {
+        title: "Jury Discretion Ceiling",
+        prompt:
+          "Why is 'punitive damages are entirely within jury discretion' too broad?",
+        answer:
+          "Because due process imposes constitutional limits on grossly excessive punitive awards.",
+      },
+    ],
+  },
 ];
 
 export function getConLawQuestionDetail(questionId: string) {

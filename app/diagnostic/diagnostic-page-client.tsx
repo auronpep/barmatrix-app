@@ -262,8 +262,7 @@ export function DiagnosticPageClient() {
                     }}
                   >
                     Retry the start request. If the API is temporarily unavailable, the
-                    diagnostic can be restarted from this page without losing checkout or
-                    pricing context.
+                    diagnostic can be restarted from this page without losing your place.
                   </p>
                   <p
                     className="mono"
@@ -280,8 +279,8 @@ export function DiagnosticPageClient() {
                     <button type="button" onClick={start} className="btn red">
                       Try again <span className="arrow">→</span>
                     </button>
-                    <Link href="/pricing" className="btn ghost">
-                      View pricing
+                    <Link href="/sign-up?after=dashboard/path" className="btn ghost">
+                      Create free account
                     </Link>
                   </div>
                 </div>
@@ -291,7 +290,7 @@ export function DiagnosticPageClient() {
 
           <div style={{ marginTop: 48 }}>
             <Link
-              href="/pricing"
+              href="/sign-up?after=dashboard/path"
               style={{
                 fontFamily: "var(--mono)",
                 fontSize: 12,
@@ -302,7 +301,7 @@ export function DiagnosticPageClient() {
                 paddingBottom: 2,
               }}
             >
-              Skip to pricing →
+              Create free account →
             </Link>
           </div>
         </div>

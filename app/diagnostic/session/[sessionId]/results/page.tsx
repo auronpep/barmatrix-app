@@ -385,7 +385,7 @@ function ProgramCta({
             Checking account access
           </p>
           <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
-            We are checking whether this account already has Flagship access.
+            We are checking whether this account has guided repair access.
           </h2>
           <p className="mt-3 text-zinc-600">
             Your placement is ready. If access is active, the next step will
@@ -400,7 +400,7 @@ function ProgramCta({
             Recommended next step - L{results.placement_level}
           </p>
           <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
-            This placement is already tied to active Flagship access.
+            This placement is already tied to your guided repair account.
           </h2>
           <p className="mt-3 text-zinc-300">
             Your top leak is {topLeak}. Continue your repair path from{" "}
@@ -478,12 +478,11 @@ function ProgramCta({
             Account check needed
           </p>
           <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
-            This signed-in account is not showing active Flagship access yet.
+            This signed-in account is not showing guided repair access yet.
           </h2>
           <p className="mt-3 text-zinc-700">
-            Your placement is ready. Open your account to confirm or recover
-            access before another checkout; if this is the same email you used
-            at purchase, the account page is the right next step.
+            Your placement is ready. Open your account to refresh the
+            complimentary enrollment and continue into guided repair.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-4">
             <Link href="/account" className="btn red">
@@ -505,21 +504,21 @@ function ProgramCta({
             Account check needed
           </p>
           <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
-            Sign in before starting another checkout.
+            Create your free account to continue.
           </h2>
           <p className="mt-3 text-zinc-600">
-            If you already enrolled, use the email from checkout so BarMatrix
-            can connect this placement to your active account.
+            Save this placement and unlock the guided repair path. No card is
+            required.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-4">
-            <Link href="/sign-in?after=dashboard" className="btn red">
-              Sign in <span aria-hidden>→</span>
+            <Link href="/sign-up?after=dashboard/path" className="btn red">
+              Create free account <span aria-hidden>→</span>
             </Link>
             <Link
-              href="/checkout"
+              href="/sign-in?after=dashboard/path"
               className="text-sm text-zinc-700 underline hover:text-zinc-950"
             >
-              Enroll if you have not purchased
+              Already have an account? Sign in
             </Link>
           </div>
         </div>

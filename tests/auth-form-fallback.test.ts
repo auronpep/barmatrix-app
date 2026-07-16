@@ -28,7 +28,8 @@ describe("auth form fallback", () => {
     assert.match(wrapper, /<h1[^>]*>/);
     assert.match(wrapper, /Create your BarMatrix account/);
     assert.match(wrapper, /Sign in to BarMatrix/);
-    assert.match(wrapper, /Continue to your dashboard and repair tools/);
+    assert.match(wrapper, /Continue to your Red-Zone Map, guided repair path/);
+    assert.match(wrapper, /Registration is free/);
   });
 
   it("passes sanitized after destinations into Clerk redirect props", () => {
@@ -61,7 +62,7 @@ describe("auth form fallback", () => {
 
     assert.match(unavailable, /const returnPath = resolveAuthReturnPath\(after\);/);
     assert.match(unavailable, /href=\{returnPath\}/);
-    assert.match(unavailable, /Use the email from checkout/);
+    assert.match(unavailable, /Registration is complimentary/);
     assert.match(unavailable, /Continue to dashboard/);
     assert.doesNotMatch(unavailable, /coming online/);
     assert.doesNotMatch(unavailable, /being connected for the cohort launch/);

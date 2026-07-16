@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Diagnostic Homepage Variant - BarMatrix Preview",
+  title: "BarMatrix - Diagnostic-First MBE Repair",
   description:
-    "A preview homepage variant for BarMatrix diagnostic-first MBE repair.",
-  robots: { index: false, follow: false },
+    "Find your MBE red zones, understand the wrong-answer traps pulling you, and follow one guided repair task at a time.",
 };
 
 const redZones = [
@@ -247,7 +246,7 @@ export default function HomepageDiagnosticPreview() {
         <div className="container grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
           <div className="border border-[var(--ink)] bg-[var(--ink)] p-8 text-[var(--bg)]">
             <p className="m-0 font-mono text-xs uppercase tracking-[0.14em] text-[#ffb4bf]">
-              What this test page is trying
+              Diagnostic first
             </p>
             <h2 className="m-0 mt-5 font-serif text-5xl font-semibold leading-none">
               Make the diagnostic feel like the first useful product moment.
@@ -269,21 +268,21 @@ export default function HomepageDiagnosticPreview() {
       <section className="px-6 pb-16 lg:px-8">
         <div className="mx-auto max-w-[var(--maxw)] border border-[var(--red)] bg-[var(--highlighter-soft)] p-8 text-center md:p-12">
           <p className="m-0 font-mono text-xs uppercase tracking-[0.14em] text-[var(--red)]">
-            Proof before checkout
+            Your free guided repair path
           </p>
           <h2 className="m-0 mx-auto mt-5 max-w-3xl font-serif text-5xl font-semibold leading-none">
             Find your next MBE point before your next study block.
           </h2>
           <p className="mx-auto mb-0 mt-5 max-w-2xl text-base leading-7 text-[var(--muted)]">
-            Take the free diagnostic, get your Red-Zone Map, and decide from a
-            concrete repair target instead of a promise.
+            Take the free diagnostic, get your Red-Zone Map, then create a free
+            account to save it and continue into guided repair.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link href="/diagnostic" className="btn btn-lg red">
               Get my Red-Zone Map <span className="arrow">-&gt;</span>
             </Link>
-            <Link href="/pricing" className="btn btn-lg ghost">
-              View pricing
+            <Link href="/sign-up?after=dashboard/path" className="btn btn-lg ghost">
+              Create free account
             </Link>
           </div>
         </div>

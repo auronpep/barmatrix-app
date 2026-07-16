@@ -14,8 +14,8 @@ export function AuthUnavailable({ mode, after }: AuthUnavailableProps) {
       : "Sign in to BarMatrix.";
   const body =
     mode === "sign-up"
-      ? "Use the email from checkout. If your access email includes an account link, open that link first so enrollment connects automatically."
-      : "Use the email from checkout to reach your dashboard, Red-Zone Map, drills, and account status.";
+      ? "Registration is complimentary. Use your email to create an account and continue to the guided repair path."
+      : "Use your account email to reach your Red-Zone Map, guided repair path, and account status.";
 
   return (
     <section className="mx-auto max-w-3xl px-6 py-16 sm:py-20">

@@ -26,8 +26,8 @@ export function AuthForm({
     ? "Create your BarMatrix account"
     : "Sign in to BarMatrix";
   const body = isSignUp
-    ? "Use the email you used at checkout so your paid access can attach to the right enrollment."
-    : "Continue to your dashboard and repair tools. Use the email you used at checkout if you already enrolled.";
+    ? "Registration is free. Create your account to save your Red-Zone Map and unlock the guided MBE repair path. No card required."
+    : "Continue to your Red-Zone Map, guided repair path, and MBE precision tools.";
 
   useEffect(() => {
     const timeoutId = window.setTimeout(

@@ -117,14 +117,12 @@ const LEVEL_FALLBACKS: Record<
   },
 };
 
-function checkoutHrefForDiagnostic(diagnosticId: string): string {
+function signUpHrefForDiagnostic(diagnosticId: string): string {
   const params = new URLSearchParams({
+    after: "/dashboard/path",
     diagnostic_id: diagnosticId,
-    source: "diagnostic_results",
-    campaign: "red_zone_map",
-    lp: "diagnostic-results",
   });
-  return `/checkout?${params.toString()}`;
+  return `/sign-up?${params.toString()}`;
 }
 
 export default function DiagnosticResultsPage({
@@ -343,7 +341,7 @@ function TopTrapPatterns({
           {enrolled
             ? "You did not fall into a repeated trap pattern on this set. Keep your Red-Zone Map building as you drill."
             : accountCheckNeeded
-              ? "You did not fall into a repeated trap pattern on this set. Open your account to confirm or recover access before another checkout."
+              ? "You did not fall into a repeated trap pattern on this set. Open your account to continue into guided repair."
             : "You did not fall into a repeated trap pattern on this set. Enroll to run the full forensic bank and keep your Red-Zone Map building as you drill."}
         </p>
       </div>
@@ -459,7 +457,7 @@ function ResultsDecisionPanel({
 }) {
   const topPattern = results.top_trap_patterns[0];
   const topLeak = resolveTopLeak(results);
-  const checkoutHref = checkoutHrefForDiagnostic(diagnosticId);
+  const signUpHref = signUpHrefForDiagnostic(diagnosticId);
 
   switch (accessState) {
     case "checking":
@@ -469,7 +467,7 @@ function ResultsDecisionPanel({
             Checking account access
           </p>
           <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
-            We are checking whether this account already has Flagship access.
+            We are checking whether this account has guided repair access.
           </h2>
           <p className="mt-3 text-zinc-600">
             Your Red-Zone Map is ready. If access is active, the next step below
@@ -484,7 +482,7 @@ function ResultsDecisionPanel({
             Your repair path is built
           </p>
           <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
-            This map is already tied to active Flagship access.
+            This map is already tied to your guided repair account.
           </h2>
           <p className="mt-3 text-zinc-300">
             {topPattern
@@ -566,12 +564,11 @@ function ResultsDecisionPanel({
             Account check needed
           </p>
           <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight text-zinc-950">
-            This signed-in account is not showing active Flagship access yet.
+            This signed-in account is not showing guided repair access yet.
           </h2>
           <p className="mt-3 text-zinc-700">
-            Your diagnostic map is ready. Open your account to confirm or
-            recover access before another checkout; if this is the same email
-            you used at purchase, the account page is the right next step.
+            Your diagnostic map is ready. Open your account to refresh the
+            complimentary enrollment and continue into guided repair.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-4">
             <Link href="/account" className="btn red">
@@ -603,27 +600,27 @@ function ResultsDecisionPanel({
         {topPattern
           ? plainEnglishTrapInsight(topPattern)
           : "This diagnostic turned your answers into a repair map instead of a generic score report."}{" "}
-        Enroll to carry this diagnostic into checkout, save the map to your
-        account, and unlock the guided repair path built for the pattern.
+        Create a free account to save this map and unlock the guided repair path
+        built for the pattern. No card is required.
       </p>
       <p className="mt-4 font-mono text-sm font-semibold text-zinc-100">
-        BarMatrix Flagship is $999. Payment plan: $500 today + $499 in 30 days.
+        Complimentary registration is open for the July repair window.
       </p>
       <div className="mt-6 flex flex-wrap items-center gap-4">
-        <Link href={checkoutHref} className="btn red">
-          Enroll and save this map <span aria-hidden>→</span>
+        <Link href={signUpHref} className="btn red">
+          Create free account <span aria-hidden>→</span>
         </Link>
         <Link
-          href="/pricing"
+          href="/how-it-works"
           className="text-sm text-zinc-300 underline hover:text-white"
         >
-          See payment options
+          See how guided repair works
         </Link>
       </div>
       <ul className="mt-6 grid gap-3 text-sm text-zinc-300 sm:grid-cols-3">
         {[
-          "Stripe checkout opens only after the cohort status check passes.",
-          "Your diagnostic ID travels with checkout for fulfillment.",
+          "No card or checkout is required.",
+          "Your diagnostic is carried into your account.",
           "No score, pass result, or exam outcome is guaranteed.",
         ].map((item) => (
           <li key={item} className="border-t border-zinc-700 pt-3">
@@ -887,8 +884,8 @@ function ResultsError({ message }: { message: string }) {
         <Link href="/diagnostic" className="btn red">
           Run diagnostic again
         </Link>
-        <Link href="/pricing" className="btn ghost">
-          View pricing
+        <Link href="/sign-up?after=dashboard/path" className="btn ghost">
+          Create free account
         </Link>
       </div>
     </div>

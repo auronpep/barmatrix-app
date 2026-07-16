@@ -1,5 +1,1 @@
-import { permanentRedirect } from "next/navigation";
-
-export default function HomePage() {
-  permanentRedirect("/Jesuslovesyou");
-}
+export { default, metadata } from "./preview/homepage-diagnostic/page";

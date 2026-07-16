@@ -2,11 +2,11 @@
 
 // Red Zone detail — one weak area, opened from the Red Zone Library. Shows the
 // zone's stats, the questions inside it, the recent wrong-answer forensics that
-// built it, and a one-click repair drill into the existing /drills/{subject}
+// built it, and a one-click prescribed repair drill into the existing drill
 // runner. Auth + enrollment states mirror the library index.
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useClerkAuth } from "@/lib/use-clerk-auth";
 import {
@@ -16,16 +16,6 @@ import {
   type RedZoneDetailWrong,
 } from "@/lib/api-client";
 import { trackDrillStarted } from "@/lib/analytics";
-
-const KNOWN_DRILL_SLUGS = new Set([
-  "civil-procedure",
-  "constitutional-law",
-  "contracts",
-  "criminal-law",
-  "evidence",
-  "real-property",
-  "torts",
-]);
 
 type DetailState =
   | { phase: "loading" }
@@ -176,15 +166,54 @@ function ReadyView({ data }: { data: RedZoneDetail }) {
 }
 
 function RepairRail({ data }: { data: RedZoneDetail }) {
-  const slug = data.repair_slug;
-  const canDrill = !!slug && KNOWN_DRILL_SLUGS.has(slug);
+  const router = useRouter();
+  const { getToken } = useClerkAuth();
+  const [starting, setStarting] = useState(false);
+  const [startError, setStartError] = useState<string | null>(null);
 
-  const onStart = () => {
-    trackDrillStarted({
-      drillId: data.drill?.drill_slug ?? slug ?? `${data.dimension}-${data.tag}`,
-      source: "red_zone",
-      subject: data.repair_subject ?? undefined,
-    });
+  const onStart = async () => {
+    if (starting) return;
+    setStarting(true);
+    setStartError(null);
+
+    try {
+      const token = await getToken();
+      if (!token) {
+        router.push("/sign-in?after=red-zones");
+        return;
+      }
+
+      const result = await api.startDrill(
+        {
+          kind: "prescribed_red_zone",
+          red_zone_dimension: data.dimension,
+          red_zone_tag: data.tag,
+        },
+        token,
+      );
+
+      if (!result.drill_id) {
+        setStartError("No active questions are mapped to this repair drill yet.");
+        return;
+      }
+
+      trackDrillStarted({
+        drillId: result.drill_id,
+        source: "red_zone",
+        subject: data.repair_subject ?? undefined,
+      });
+      router.push(`/drills/${result.drill_id}`);
+    } catch (err) {
+      if (err instanceof ApiClientError && err.status === 401) {
+        setStartError("Sign in again to start this repair drill.");
+      } else if (err instanceof ApiClientError && err.status === 403) {
+        setStartError("Enrollment is required to start this repair drill.");
+      } else {
+        setStartError("Could not start this repair drill. Please try again.");
+      }
+    } finally {
+      setStarting(false);
+    }
   };
 
   return (
@@ -193,7 +222,7 @@ function RepairRail({ data }: { data: RedZoneDetail }) {
         Repair this zone
       </p>
       <h2 className="mt-3 font-serif text-2xl font-semibold tracking-tight">
-        {data.drill?.drill_name ?? "Targeted repair drill"}
+        {data.drill?.drill_name ?? `${titleize(data.tag)} repair drill`}
       </h2>
       {data.drill?.reason && (
         <p className="mt-3 text-sm leading-7 text-zinc-200">{data.drill.reason}</p>
@@ -202,19 +231,18 @@ function RepairRail({ data }: { data: RedZoneDetail }) {
         {data.repair_subject ? `${data.repair_subject} drill` : "Repair queue"}
       </p>
 
-      {canDrill ? (
-        <Link
-          href={`/drills/${slug}`}
-          onClick={onStart}
-          className="btn btn-lg red mt-6 w-full bg-red-700 text-center text-white hover:bg-red-900"
-        >
-          Start repair drill
-        </Link>
-      ) : (
-        <p className="mt-6 border border-zinc-700 bg-zinc-900 p-4 text-sm leading-6 text-zinc-300">
-          A subject repair drill isn&apos;t available for this zone yet. Review
-          the questions and recent forensics below, then practice from your
-          dashboard.
+      <button
+        type="button"
+        onClick={() => void onStart()}
+        disabled={starting}
+        className="btn btn-lg red mt-6 w-full bg-red-700 text-center text-white hover:bg-red-900 disabled:cursor-wait disabled:opacity-70"
+      >
+        {starting ? "Building repair drill…" : "Start repair drill"}
+      </button>
+
+      {startError && (
+        <p className="mt-4 border border-red-400 bg-red-950 p-3 text-sm leading-6 text-red-100" role="alert">
+          {startError}
         </p>
       )}
 

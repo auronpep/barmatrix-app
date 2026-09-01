@@ -97,6 +97,12 @@ export default function SmsPrivacyPage() {
             between you and BarMatrix. We do not purchase, rent, or import phone numbers, and we do
             not add anyone who has not personally asked to take part.
           </p>
+          <p className="mt-4">
+            Message frequency: approximately two scheduled messages per day, plus a reply to each
+            answer you send and any messages you request yourself; frequency varies with your own
+            use. Message and data rates may apply. Consent to receive text messages is not a
+            condition of purchasing any goods or services.
+          </p>
         </section>
 
         <section>

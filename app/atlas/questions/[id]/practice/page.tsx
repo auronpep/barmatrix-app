@@ -260,7 +260,7 @@ function Shell({
   atlasHref?: string;
 }) {
   return (
-    <main className="min-h-screen bg-[#f4f1ea] px-4 py-8 text-zinc-950 sm:px-6">
+    <div className="min-h-screen bg-[#f4f1ea] px-4 py-8 text-zinc-950 sm:px-6">
       <div className="mx-auto max-w-3xl">
         <Link
           href={atlasHref}
@@ -270,7 +270,7 @@ function Shell({
         </Link>
         <div className="mt-4">{children}</div>
       </div>
-    </main>
+    </div>
   );
 }
 

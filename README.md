@@ -64,3 +64,7 @@ Set the public frontend environment variables from [`.env.example`](.env.example
 ## License
 
 Proprietary — © BarMatrix. All rights reserved.
+
+## Maintainers
+
+- auronpep (owner)
